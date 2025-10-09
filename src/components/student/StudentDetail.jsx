@@ -204,17 +204,19 @@ const StudentDetail = () => {
               </div>
 
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">תלמיד {student.studentCode}</h1>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  👨‍🎓 תלמיד {student.studentCode}
+                </h1>
                 <div className="flex items-center space-x-3 space-x-reverse text-gray-600">
-                  <span className="font-medium">#{student.studentCode}</span>
+                  <span className="font-medium">🆔 #{student.studentCode}</span>
                   <span className="text-gray-400">|</span>
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                    {student.classId}
+                  <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium shadow-sm">
+                    🏫 {student.classId}
                   </span>
                   <span className="text-gray-400">|</span>
-                  <span>{student.quarter}</span>
+                  <span>📅 {student.quarter}</span>
                   <span className="text-gray-400">|</span>
-                  <span>{student.date}</span>
+                  <span>🗓️ {student.date}</span>
                 </div>
               </div>
             </div>
@@ -258,17 +260,17 @@ const StudentDetail = () => {
             <div className="mt-6">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700">
-                  התקדמות פעולות: {completedActionsCount}/{totalActions}
+                  ✅ התקדמות פעולות: {completedActionsCount}/{totalActions}
                 </span>
-                <span className="text-sm text-gray-500">
-                  {Math.round((completedActionsCount / totalActions) * 100)}%
+                <span className="px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full text-sm font-bold">
+                  🎯 {Math.round((completedActionsCount / totalActions) * 100)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${(completedActionsCount / totalActions) * 100}%` }}
-                  className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-green-400 via-green-500 to-emerald-500 h-3 rounded-full transition-all duration-500 shadow-md"
                 />
               </div>
             </div>
@@ -305,20 +307,20 @@ const StudentDetail = () => {
                   <div className="px-6 pb-6">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       {/* Learning Style */}
-                      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                        <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center">
-                          <Brain className="w-5 h-5 ml-2" />
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border-2 border-blue-200 shadow-sm">
+                        <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center">
+                          <span className="text-2xl ml-2">🧠</span>
                           סגנון למידה
                         </h3>
-                        <div className="text-blue-700 whitespace-pre-line">
+                        <div className="text-blue-800 whitespace-pre-line leading-relaxed">
                           {student.student_summary.learning_style}
                         </div>
                       </div>
 
                       {/* Strengths */}
-                      <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                        <h3 className="text-lg font-semibold text-green-800 mb-3 flex items-center">
-                          <Award className="w-5 h-5 ml-2" />
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 border-2 border-green-200 shadow-sm">
+                        <h3 className="text-lg font-semibold text-green-900 mb-3 flex items-center">
+                          <span className="text-2xl ml-2">💪</span>
                           חוזקות
                         </h3>
                         <ul className="space-y-2">
@@ -330,7 +332,7 @@ const StudentDetail = () => {
                               transition={{ delay: index * 0.1 }}
                               className="text-green-700 flex items-start"
                             >
-                              <Star className="w-4 h-4 mt-0.5 ml-2 flex-shrink-0" />
+                              <span className="text-lg ml-2">⭐</span>
                               {strength}
                             </motion.li>
                           ))}
@@ -338,9 +340,9 @@ const StudentDetail = () => {
                       </div>
 
                       {/* Challenges */}
-                      <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
-                        <h3 className="text-lg font-semibold text-amber-800 mb-3 flex items-center">
-                          <Target className="w-5 h-5 ml-2" />
+                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-5 border-2 border-amber-200 shadow-sm">
+                        <h3 className="text-lg font-semibold text-amber-900 mb-3 flex items-center">
+                          <span className="text-2xl ml-2">🎯</span>
                           אתגרים
                         </h3>
                         <ul className="space-y-2">
