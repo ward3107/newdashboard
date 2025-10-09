@@ -1,0 +1,31 @@
+{
+  "name": "student-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.2",
+    "axios": "^1.6.2",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.22",
+    "jspdf": "^3.0.3",
+    "lucide-react": "^0.544.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^6.20.0",
+    "recharts": "^3.2.1",
+    "xlsx": "^0.18.5"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.9.3",
+    "vite": "^5.0.8"
+  }
+}

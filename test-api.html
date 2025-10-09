@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Google Apps Script API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #357ae8;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Google Apps Script API</h1>
+
+    <div>
+        <h3>API URL:</h3>
+        <input type="text" id="apiUrl" style="width: 100%; padding: 8px;"
+               value="https://script.google.com/macros/s/AKfycbwIXltmTE2C-DrOLW4Ep8_uFyzDrUIGBog96133W-hOsxdjG57uPhkJuP5AJJgnNHso/exec">
+    </div>
+
+    <div style="margin-top: 20px;">
+        <button onclick="testConnection()">Test Connection</button>
+        <button onclick="getAllStudents()">Get All Students</button>
+        <button onclick="getStats()">Get Stats</button>
+    </div>
+
+    <div id="result" style="margin-top: 20px;"></div>
+
+    <script>
+        function getApiUrl() {
+            return document.getElementById('apiUrl').value;
+        }
+
+        function showResult(title, data, isError = false) {
+            const resultDiv = document.getElementById('result');
+            const className = isError ? 'error' : 'success';
+            resultDiv.innerHTML = `
+                <h3 class="${className}">${title}</h3>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+
+        async function testConnection() {
+            try {
+                const url = getApiUrl() + '?action=test';
+                showResult('Testing...', { status: 'Loading...' });
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                showResult('✅ Connection Successful!', data);
+            } catch (error) {
+                showResult('❌ Connection Failed', {
+                    error: error.message,
+                    details: error.toString()
+                }, true);
+            }
+        }
+
+        async function getAllStudents() {
+            try {
+                const url = getApiUrl() + '?action=getAllStudents';
+                showResult('Loading students...', { status: 'Loading...' });
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.error) {
+                    showResult('❌ Error', data, true);
+                } else {
+                    showResult('✅ Students Loaded', {
+                        count: data.students?.length || 0,
+                        students: data.students
+                    });
+                }
+            } catch (error) {
+                showResult('❌ Failed to Load Students', {
+                    error: error.message,
+                    details: error.toString()
+                }, true);
+            }
+        }
+
+        async function getStats() {
+            try {
+                const url = getApiUrl() + '?action=getStats';
+                showResult('Loading stats...', { status: 'Loading...' });
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.error) {
+                    showResult('❌ Error', data, true);
+                } else {
+                    showResult('✅ Stats Loaded', data);
+                }
+            } catch (error) {
+                showResult('❌ Failed to Load Stats', {
+                    error: error.message,
+                    details: error.toString()
+                }, true);
+            }
+        }
+
+        // Auto-test on load
+        window.onload = () => {
+            console.log('Testing API connection on page load...');
+            testConnection();
+        };
+    </script>
+</body>
+</html>
