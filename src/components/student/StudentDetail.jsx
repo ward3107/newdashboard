@@ -308,13 +308,13 @@ const StudentDetail = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       {/* Learning Style */}
                       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border-2 border-blue-200 shadow-sm">
-                        <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center">
+                        <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center">
                           <span className="text-2xl ml-2">🧠</span>
                           סגנון למידה
                         </h3>
-                        <div className="text-blue-800 whitespace-pre-line leading-relaxed">
+                        <p className="text-blue-800 text-base leading-relaxed text-right">
                           {student.student_summary.learning_style}
-                        </div>
+                        </p>
                       </div>
 
                       {/* Strengths */}
@@ -426,16 +426,33 @@ const StudentDetail = () => {
           >
             <button
               onClick={() => toggleSection('actions')}
-              className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              className="w-full p-6 hover:bg-gray-50 transition-colors rounded-t-xl text-right"
             >
-              <div className="flex items-center space-x-3 space-x-reverse">
-                <Target className="w-6 h-6 text-green-500" />
-                <h2 className="text-xl font-bold text-gray-900">פעולות מיידיות</h2>
-                <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                  {completedActionsCount}/{totalActions} הושלמו
-                </span>
+              <div className="flex items-center justify-between w-full">
+                {/* Right Side - Icon and Title */}
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-md">
+                    <Target className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex flex-col items-start gap-2">
+                    <h2 className="text-xl font-bold text-gray-900 text-right leading-tight">פעולות מיידיות</h2>
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-lg text-sm font-semibold whitespace-nowrap">
+                        {completedActionsCount}/{totalActions} הושלמו
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Left Side - Chevron */}
+                <div className="flex-shrink-0 mr-4">
+                  {expandedSections.actions ? (
+                    <ChevronUp className="w-6 h-6 text-gray-400" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6 text-gray-400" />
+                  )}
+                </div>
               </div>
-              {expandedSections.actions ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </button>
 
             <AnimatePresence>
