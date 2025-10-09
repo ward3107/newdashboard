@@ -4,22 +4,16 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
+// Error Boundary and Loading Components
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { Loading } from './components/common/Loading';
+
 // Lazy load components for code splitting
 const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
 const StudentDetail = lazy(() => import('./components/student/StudentDetail'));
 
 // Styles
 import './styles/global.css';
-
-// Loading component
-const LoadingSpinner = () => (
-  <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-    <div className="text-center">
-      <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
-      <p className="text-gray-600">טוען...</p>
-    </div>
-  </div>
-);
 
 // Create a client
 const queryClient = new QueryClient({
@@ -34,64 +28,70 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <div className="min-h-screen bg-gray-50" dir="rtl">
-          {/* Toast Notifications */}
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#fff',
-                color: '#333',
-                fontFamily: 'Inter, Assistant, sans-serif',
-                fontSize: '14px',
-                padding: '12px 16px',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                border: '1px solid #e5e7eb',
-                textAlign: 'right',
-                direction: 'rtl'
-              },
-              success: {
-                iconTheme: {
-                  primary: '#10b981',
-                  secondary: '#ffffff',
-                },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#ffffff',
-                },
-              },
-              loading: {
-                iconTheme: {
-                  primary: '#3b82f6',
-                  secondary: '#ffffff',
-                },
-              },
-            }}
-          />
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <ErrorBoundary>
+            <div className="min-h-screen bg-gray-50" dir="rtl">
+              {/* Toast Notifications */}
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#fff',
+                    color: '#333',
+                    fontFamily: 'Inter, Assistant, sans-serif',
+                    fontSize: '14px',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    border: '1px solid #e5e7eb',
+                    textAlign: 'right',
+                    direction: 'rtl'
+                  },
+                  success: {
+                    iconTheme: {
+                      primary: '#10b981',
+                      secondary: '#ffffff',
+                    },
+                  },
+                  error: {
+                    iconTheme: {
+                      primary: '#ef4444',
+                      secondary: '#ffffff',
+                    },
+                  },
+                  loading: {
+                    iconTheme: {
+                      primary: '#3b82f6',
+                      secondary: '#ffffff',
+                    },
+                  },
+                }}
+              />
 
-          {/* Main Application */}
-          <motion.main
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Suspense fallback={<LoadingSpinner />}>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/student/:studentId" element={<StudentDetail />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </motion.main>
-        </div>
-      </Router>
-    </QueryClientProvider>
+              {/* Main Application */}
+              <motion.main
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Suspense fallback={<Loading message="טוען דשבורד..." />}>
+                  <ErrorBoundary>
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/student/:studentId" element={<StudentDetail />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </ErrorBoundary>
+                </Suspense>
+              </motion.main>
+            </div>
+          </ErrorBoundary>
+        </Router>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
