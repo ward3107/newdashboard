@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_CONFIG, MOCK_DATA, FEATURES, GOOGLE_APPS_SCRIPT_CONFIG } from '../config.js';
+import { API_CONFIG, MOCK_DATA, FEATURES, GOOGLE_APPS_SCRIPT_CONFIG } from '../config';
 
 // Create axios instance with default config
 const api = axios.create({

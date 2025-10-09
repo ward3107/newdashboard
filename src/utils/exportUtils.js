@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import { EXPORT_CONFIG } from '../config.js';
+import { EXPORT_CONFIG } from '../config';
 
 /**
  * Export students data to Excel file

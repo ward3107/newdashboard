@@ -1,5 +1,14 @@
+import type {
+  APIConfig,
+  MockData,
+  Features,
+  GoogleAppsScriptConfig,
+  Theme,
+  ExportConfig
+} from './types/config';
+
 // API Configuration
-export const API_CONFIG = {
+export const API_CONFIG: APIConfig = {
   // Replace with your actual Google Apps Script Web App URL
   BASE_URL: import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec',
 
@@ -22,7 +31,7 @@ export const API_CONFIG = {
 };
 
 // Mock data for development (remove when connecting to real API)
-export const MOCK_DATA = {
+export const MOCK_DATA: MockData = {
   students: [
     {
       studentCode: "70132",
@@ -169,11 +178,11 @@ export const MOCK_DATA = {
 };
 
 // Development mode flag
-export const IS_DEVELOPMENT = import.meta.env.DEV;
+export const IS_DEVELOPMENT: boolean = import.meta.env.DEV;
 
 // Feature flags
-export const FEATURES = {
-  ENABLE_MOCK_DATA: import.meta.env.VITE_ENABLE_MOCK_DATA === 'true' || false, // Set to false to use real Google Apps Script API
+export const FEATURES: Features = {
+  ENABLE_MOCK_DATA: import.meta.env.VITE_ENABLE_MOCK_DATA === 'true' || false,
   ENABLE_CHARTS: true,
   ENABLE_EXPORT: true,
   ENABLE_ANIMATIONS: true,
@@ -181,7 +190,7 @@ export const FEATURES = {
 };
 
 // הגדרות להתחברות ל-Google Apps Script
-export const GOOGLE_APPS_SCRIPT_CONFIG = {
+export const GOOGLE_APPS_SCRIPT_CONFIG: GoogleAppsScriptConfig = {
   // הכנס כאן את ה-URL של ה-Google Apps Script Web App שלך
   WEB_APP_URL: import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec',
 
@@ -201,7 +210,6 @@ export const GOOGLE_APPS_SCRIPT_CONFIG = {
     NAME_FIELDS: ['name', 'studentName', 'שם התלמיד', 'שם מלא', 'Full Name', 'Student Name'],
     STUDENT_CODE_FIELDS: ['studentCode', 'קוד תלמיד', 'ID', 'Student ID', 'מספר תלמיד'],
     CLASS_FIELDS: ['classId', 'class', 'כיתה', 'Class', 'grade'],
-    // הוסף עוד מיפויים לפי הצורך
   },
 
   // הגדרות Claude API
@@ -213,7 +221,7 @@ export const GOOGLE_APPS_SCRIPT_CONFIG = {
 };
 
 // Theme configuration
-export const THEME = {
+export const THEME: Theme = {
   PRIMARY_COLOR: '#4285f4',
   SUCCESS_COLOR: '#34a853',
   WARNING_COLOR: '#fbbc04',
@@ -230,7 +238,7 @@ export const THEME = {
 };
 
 // Export format configurations
-export const EXPORT_CONFIG = {
+export const EXPORT_CONFIG: ExportConfig = {
   PDF: {
     FORMAT: 'a4',
     ORIENTATION: 'portrait',

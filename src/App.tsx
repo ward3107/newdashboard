@@ -21,12 +21,12 @@ const queryClient = new QueryClient({
     queries: {
       retry: 2,
       staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 10 * 60 * 1000, // 10 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
     },
   },
 });
 
-function App() {
+function App(): JSX.Element {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -96,7 +96,7 @@ function App() {
 }
 
 // 404 Not Found Component
-const NotFound = () => {
+const NotFound: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-center">
