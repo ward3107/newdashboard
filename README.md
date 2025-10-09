@@ -65,32 +65,116 @@ npm >= 8.0.0
 ### 1. הורדה והתקנה
 ```bash
 # הורד את הפרויקט
-git clone [URL]
+git clone https://github.com/YOUR_USERNAME/student-dashboard-fixed.git
 cd student-dashboard-fixed
 
 # התקן תלויות
 npm install
 ```
 
-### 2. הגדרת API
-ערוך את הקובץ `src/config.js`:
-```javascript
-export const API_CONFIG = {
-  BASE_URL: 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec',
-  // ...
-};
+### 2. הגדרת משתני סביבה
+```bash
+# העתק את קובץ הדוגמה
+cp .env.example .env
+
+# ערוך את .env עם הערכים שלך:
+# VITE_GOOGLE_SCRIPT_URL=https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec
+# VITE_SPREADSHEET_ID=YOUR_SPREADSHEET_ID
+# VITE_ENABLE_MOCK_DATA=true  # false בפרודקשן
 ```
 
-### 3. הפעלת הפיתוח
+**חשוב**: אל תעשה commit לקובץ `.env` - הוא כבר ב-`.gitignore`
+
+### 3. הגדרת Google Apps Script (Backend)
+
+#### 3.1 יצירת Google Apps Script
+1. פתח [Google Apps Script](https://script.google.com/)
+2. צור פרויקט חדש
+3. העתק את התוכן מ-`COMPLETE_INTEGRATED_SCRIPT.js`
+4. שמור והגדר כ-Web App
+
+#### 3.2 הגדרת API Key של Claude
+1. לך ל-Project Settings ⚙️ > Script Properties
+2. הוסף Property חדש:
+   - Name: `CLAUDE_API_KEY`
+   - Value: המפתח שלך מ-[Anthropic Console](https://console.anthropic.com/)
+3. **לעולם אל תשים את המפתח בקוד!**
+
+#### 3.3 פרסום Web App
+1. לחץ Deploy > New deployment
+2. בחר סוג: Web app
+3. הגדרות:
+   - Execute as: Me
+   - Who has access: Anyone
+4. העתק את ה-URL שמתקבל ל-`.env`
+
+### 4. הפעלת הפיתוח
 ```bash
 npm run dev
 ```
 הדשבורד יהיה זמין בכתובת: http://localhost:3000
 
-### 4. בנייה לפרודקשן
+### 5. הרצת טסטים
 ```bash
+# הרץ טסטים במצב watch
+npm test
+
+# הרץ טסטים פעם אחת
+npm test -- --run
+
+# הרץ עם coverage
+npm run test:coverage
+
+# פתח UI של הטסטים
+npm run test:ui
+```
+
+### 6. בנייה לפרודקשן
+```bash
+# בנה את האפליקציה עם PWA
 npm run build
+
+# תצוגה מקדימה של הבניה
 npm run preview
+
+# בדוק שה-service worker עובד
+# פתח DevTools > Application > Service Workers
+```
+
+## 📦 Deployment
+
+### Vercel
+```bash
+# התקן Vercel CLI
+npm i -g vercel
+
+# פרסם
+vercel
+
+# הוסף משתני סביבה ב-Vercel Dashboard:
+# Settings > Environment Variables
+```
+
+### Netlify
+```bash
+# התקן Netlify CLI
+npm i -g netlify-cli
+
+# פרסם
+netlify deploy --prod
+
+# הוסף משתני סביבה ב-Netlify Dashboard:
+# Site settings > Environment variables
+```
+
+### GitHub Pages
+```bash
+# הוסף ל-package.json:
+# "homepage": "https://YOUR_USERNAME.github.io/student-dashboard-fixed"
+
+# בנה ופרסם
+npm run build
+npx gh-pages -d dist
 ```
 
 ## 📊 מבנה הנתונים
