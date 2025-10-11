@@ -372,8 +372,9 @@ const COLOR_THEMES = {
 const FuturisticTeacherDashboard = () => {
   // State Management
   const [activeView, setActiveView] = useState("overview");
-  const [darkMode, setDarkMode] = useState(false);
   const [colorTheme, setColorTheme] = useState("clean");
+  // Set darkMode based on initial theme type
+  const [darkMode, setDarkMode] = useState(COLOR_THEMES["clean"].type !== 'light');
   const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [students, setStudents] = useState([]);
   const [analysisReport, setAnalysisReport] = useState(null);
@@ -656,6 +657,8 @@ const FuturisticTeacherDashboard = () => {
                           key={key}
                           onClick={() => {
                             setColorTheme(key);
+                            // Automatically set darkMode based on theme type
+                            setDarkMode(t.type !== 'light');
                             setShowThemeSelector(false);
                           }}
                           className={`p-3 rounded-xl border-2 transition-all ${
@@ -702,8 +705,8 @@ const FuturisticTeacherDashboard = () => {
                 <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
 
-              {/* Dark Mode Toggle */}
-              <button
+              {/* Dark Mode Toggle - Hidden as themes now control this automatically */}
+              {/* <button
                 onClick={() => setDarkMode(!darkMode)}
                 className={`p-2 rounded-xl backdrop-blur-md ${
                   darkMode
@@ -716,7 +719,7 @@ const FuturisticTeacherDashboard = () => {
                 ) : (
                   <Moon size={18} className="text-gray-700" />
                 )}
-              </button>
+              </button> */}
 
               {/* Profile */}
               <div className="flex items-center gap-3 pl-4 ml-2 border-l border-white/20">
