@@ -151,7 +151,7 @@ const COLOR_THEMES = {
     stat3: "from-zinc-500 to-slate-500",
     stat4: "from-slate-600 to-gray-600",
     icon: "🏢",
-    type: "muted",
+    type: "dark",
   },
   professional: {
     name: "מקצועי",
@@ -167,7 +167,7 @@ const COLOR_THEMES = {
     stat3: "from-gray-600 to-zinc-600",
     stat4: "from-zinc-600 to-blue-600",
     icon: "💼",
-    type: "muted",
+    type: "dark",
   },
   minimal: {
     name: "מינימליסטי",
@@ -183,7 +183,7 @@ const COLOR_THEMES = {
     stat3: "from-gray-600 to-zinc-600",
     stat4: "from-zinc-600 to-neutral-600",
     icon: "⚪",
-    type: "muted",
+    type: "dark",
   },
   earth: {
     name: "אדמה",
@@ -199,7 +199,7 @@ const COLOR_THEMES = {
     stat3: "from-neutral-700 to-stone-700",
     stat4: "from-yellow-700 to-neutral-700",
     icon: "🌍",
-    type: "muted",
+    type: "dark",
   },
   navy: {
     name: "כחול כהה",
@@ -215,7 +215,7 @@ const COLOR_THEMES = {
     stat3: "from-gray-700 to-slate-700",
     stat4: "from-indigo-700 to-gray-700",
     icon: "⚓",
-    type: "muted",
+    type: "dark",
   },
   sage: {
     name: "מרווה",
@@ -231,7 +231,7 @@ const COLOR_THEMES = {
     stat3: "from-gray-700 to-slate-700",
     stat4: "from-emerald-700 to-gray-700",
     icon: "🌿",
-    type: "muted",
+    type: "dark",
   },
   rose: {
     name: "ורד עדין",
@@ -247,7 +247,7 @@ const COLOR_THEMES = {
     stat3: "from-gray-700 to-slate-700",
     stat4: "from-pink-700 to-gray-700",
     icon: "🌹",
-    type: "muted",
+    type: "dark",
   },
   midnight: {
     name: "חצות",
@@ -263,7 +263,71 @@ const COLOR_THEMES = {
     stat3: "from-gray-700 to-slate-700",
     stat4: "from-blue-700 to-gray-700",
     icon: "🌙",
-    type: "muted",
+    type: "dark",
+  },
+  ocean: {
+    name: "אוקיינוס",
+    background: "from-cyan-950 via-teal-950 to-blue-950",
+    blob1: "bg-cyan-800",
+    blob2: "bg-teal-800",
+    blob3: "bg-blue-800",
+    primary: "from-cyan-600 to-teal-700",
+    secondary: "from-teal-600 to-blue-700",
+    accent: "from-blue-600 to-cyan-700",
+    stat1: "from-cyan-600 to-teal-600",
+    stat2: "from-teal-600 to-blue-600",
+    stat3: "from-blue-600 to-indigo-600",
+    stat4: "from-indigo-600 to-cyan-600",
+    icon: "🌊",
+    type: "dark",
+  },
+  forest: {
+    name: "יער",
+    background: "from-green-950 via-emerald-950 to-teal-950",
+    blob1: "bg-green-800",
+    blob2: "bg-emerald-800",
+    blob3: "bg-teal-800",
+    primary: "from-green-600 to-emerald-700",
+    secondary: "from-emerald-600 to-teal-700",
+    accent: "from-teal-600 to-green-700",
+    stat1: "from-green-600 to-emerald-600",
+    stat2: "from-emerald-600 to-teal-600",
+    stat3: "from-teal-600 to-cyan-600",
+    stat4: "from-cyan-600 to-green-600",
+    icon: "🌲",
+    type: "dark",
+  },
+  volcanic: {
+    name: "געשי",
+    background: "from-red-950 via-orange-950 to-amber-950",
+    blob1: "bg-red-800",
+    blob2: "bg-orange-800",
+    blob3: "bg-amber-800",
+    primary: "from-red-600 to-orange-700",
+    secondary: "from-orange-600 to-amber-700",
+    accent: "from-amber-600 to-red-700",
+    stat1: "from-red-600 to-orange-600",
+    stat2: "from-orange-600 to-amber-600",
+    stat3: "from-amber-600 to-yellow-600",
+    stat4: "from-yellow-600 to-red-600",
+    icon: "🌋",
+    type: "dark",
+  },
+  space: {
+    name: "חלל",
+    background: "from-black via-gray-950 to-violet-950",
+    blob1: "bg-purple-900",
+    blob2: "bg-violet-900",
+    blob3: "bg-indigo-900",
+    primary: "from-purple-600 to-violet-700",
+    secondary: "from-violet-600 to-indigo-700",
+    accent: "from-indigo-600 to-purple-700",
+    stat1: "from-purple-600 to-violet-600",
+    stat2: "from-violet-600 to-indigo-600",
+    stat3: "from-indigo-600 to-blue-600",
+    stat4: "from-blue-600 to-purple-600",
+    icon: "🚀",
+    type: "dark",
   },
 
   // ========== LIGHT/WHITE THEMES (Clean & Simple) ==========
@@ -363,6 +427,54 @@ const COLOR_THEMES = {
     icon: "💜",
     type: "light",
   },
+  sky: {
+    name: "שמיים",
+    background: "from-sky-50 via-blue-50 to-indigo-50",
+    blob1: "bg-sky-200",
+    blob2: "bg-blue-200",
+    blob3: "bg-indigo-200",
+    primary: "from-sky-500 to-blue-600",
+    secondary: "from-blue-500 to-indigo-600",
+    accent: "from-indigo-500 to-sky-600",
+    stat1: "from-sky-500 to-blue-500",
+    stat2: "from-blue-500 to-indigo-500",
+    stat3: "from-indigo-500 to-sky-500",
+    stat4: "from-cyan-500 to-blue-500",
+    icon: "☁️",
+    type: "light",
+  },
+  coral: {
+    name: "אלמוג",
+    background: "from-red-50 via-pink-50 to-rose-50",
+    blob1: "bg-red-200",
+    blob2: "bg-pink-200",
+    blob3: "bg-rose-200",
+    primary: "from-red-400 to-pink-500",
+    secondary: "from-pink-400 to-rose-500",
+    accent: "from-rose-400 to-red-500",
+    stat1: "from-red-400 to-pink-400",
+    stat2: "from-pink-400 to-rose-400",
+    stat3: "from-rose-400 to-red-400",
+    stat4: "from-orange-400 to-red-400",
+    icon: "🪸",
+    type: "light",
+  },
+  sand: {
+    name: "חול",
+    background: "from-stone-50 via-amber-50 to-yellow-50",
+    blob1: "bg-stone-200",
+    blob2: "bg-amber-200",
+    blob3: "bg-yellow-200",
+    primary: "from-stone-500 to-amber-600",
+    secondary: "from-amber-500 to-yellow-600",
+    accent: "from-yellow-500 to-stone-600",
+    stat1: "from-stone-500 to-amber-500",
+    stat2: "from-amber-500 to-yellow-500",
+    stat3: "from-yellow-500 to-orange-500",
+    stat4: "from-orange-500 to-stone-500",
+    icon: "🏖️",
+    type: "light",
+  },
 };
 
 // ============================================================================
@@ -376,6 +488,7 @@ const FuturisticTeacherDashboard = () => {
   // Set darkMode based on initial theme type
   const [darkMode, setDarkMode] = useState(COLOR_THEMES["clean"].type !== 'light');
   const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [themeTabActive, setThemeTabActive] = useState("light"); // "light" or "dark"
   const [students, setStudents] = useState([]);
   const [analysisReport, setAnalysisReport] = useState(null);
   const [stats, setStats] = useState({
@@ -644,46 +757,87 @@ const FuturisticTeacherDashboard = () => {
                     darkMode ? 'bg-gray-900' : 'bg-white'
                   } border ${
                     darkMode ? 'border-gray-700' : 'border-gray-200'
-                  } rounded-2xl p-4 shadow-2xl w-80 max-h-[500px] overflow-hidden flex flex-col`}>
-                    <h3 className={`font-semibold mb-3 flex items-center gap-2 ${
-                      darkMode ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      <Palette size={18} />
-                      ערכות צבעים
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3 overflow-y-auto pr-2 max-h-[420px] custom-scrollbar">
-                      {Object.entries(COLOR_THEMES).map(([key, t]) => (
+                  } rounded-2xl shadow-2xl w-96 max-h-[600px] overflow-hidden flex flex-col`}>
+                    {/* Header with tabs */}
+                    <div className="p-4 pb-0">
+                      <h3 className={`font-semibold mb-3 flex items-center gap-2 ${
+                        darkMode ? 'text-white' : 'text-gray-900'
+                      }`}>
+                        <Palette size={18} />
+                        ערכות צבעים
+                      </h3>
+                      {/* Tab buttons */}
+                      <div className="flex gap-2 mb-3">
                         <button
-                          key={key}
-                          onClick={() => {
-                            setColorTheme(key);
-                            // Automatically set darkMode based on theme type
-                            setDarkMode(t.type !== 'light');
-                            setShowThemeSelector(false);
-                          }}
-                          className={`p-3 rounded-xl border-2 transition-all ${
-                            colorTheme === key
+                          onClick={() => setThemeTabActive("light")}
+                          className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                            themeTabActive === "light"
                               ? darkMode
-                                ? "border-blue-500 bg-blue-500/20"
-                                : "border-blue-500 bg-blue-50"
+                                ? "bg-blue-600/20 text-blue-400 border border-blue-600/40"
+                                : "bg-blue-50 text-blue-600 border border-blue-200"
                               : darkMode
-                                ? "border-gray-700 bg-gray-800 hover:bg-gray-700"
-                                : "border-gray-200 bg-gray-50 hover:bg-gray-100"
+                                ? "bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700"
+                                : "bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200"
                           }`}
                         >
-                          <div
-                            className={`h-8 bg-gradient-to-r ${t.primary} rounded-lg mb-2`}
-                          ></div>
-                          <div className="flex items-center justify-between">
-                            <span className={`text-sm font-medium ${
-                              darkMode ? 'text-white' : 'text-gray-900'
-                            }`}>
-                              {t.name}
-                            </span>
-                            <span className="text-2xl">{t.icon}</span>
-                          </div>
+                          <Sun size={16} />
+                          <span>ערכות בהירות</span>
                         </button>
-                      ))}
+                        <button
+                          onClick={() => setThemeTabActive("dark")}
+                          className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${
+                            themeTabActive === "dark"
+                              ? darkMode
+                                ? "bg-blue-600/20 text-blue-400 border border-blue-600/40"
+                                : "bg-blue-50 text-blue-600 border border-blue-200"
+                              : darkMode
+                                ? "bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700"
+                                : "bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200"
+                          }`}
+                        >
+                          <Moon size={16} />
+                          <span>ערכות כהות</span>
+                        </button>
+                      </div>
+                    </div>
+                    {/* Theme grid */}
+                    <div className="p-4 pt-0">
+                      <div className="grid grid-cols-2 gap-3 overflow-y-auto pr-2 max-h-[450px] custom-scrollbar">
+                        {Object.entries(COLOR_THEMES)
+                          .filter(([_, t]) => (themeTabActive === "light" ? t.type === "light" : t.type === "dark"))
+                          .map(([key, t]) => (
+                          <button
+                            key={key}
+                            onClick={() => {
+                              setColorTheme(key);
+                              // Automatically set darkMode based on theme type
+                              setDarkMode(t.type !== 'light');
+                              setShowThemeSelector(false);
+                            }}
+                            className={`p-3 rounded-xl border-2 transition-all ${
+                              colorTheme === key
+                                ? darkMode
+                                  ? "border-blue-500 bg-blue-500/20"
+                                  : "border-blue-500 bg-blue-50"
+                                : darkMode
+                                  ? "border-gray-700 bg-gray-800 hover:bg-gray-700"
+                                  : "border-gray-200 bg-gray-50 hover:bg-gray-100"
+                            }`}
+                          >
+                            <div
+                              className={`h-8 bg-gradient-to-r ${t.primary} rounded-lg mb-2`}
+                            ></div>
+                            <div className="flex items-center justify-between">
+                              <span className={`text-sm font-medium ${
+                                darkMode ? 'text-white' : 'text-gray-900'
+                              }`}>
+                                {t.name}
+                              </span>
+                              <span className="text-2xl">{t.icon}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
