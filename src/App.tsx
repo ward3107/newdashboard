@@ -10,10 +10,12 @@ import { Loading } from './components/common/Loading';
 
 // Lazy load components for code splitting
 const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
+const FuturisticDashboard = lazy(() => import('./components/dashboard/FuturisticDashboard'));
 const StudentDetail = lazy(() => import('./components/student/StudentDetail'));
 
 // Styles
 import './styles/global.css';
+import './styles/cls-fixes.css';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -80,7 +82,8 @@ function App(): JSX.Element {
                 <Suspense fallback={<Loading message="טוען דשבורד..." />}>
                   <ErrorBoundary>
                     <Routes>
-                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/" element={<FuturisticDashboard />} />
+                      <Route path="/original" element={<Dashboard />} />
                       <Route path="/student/:studentId" element={<StudentDetail />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>

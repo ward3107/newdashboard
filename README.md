@@ -1,6 +1,6 @@
-# 🎓 מערכת ניתוח תלמידים מבוססת AI
+# 📚 AI Student Analysis Dashboard
 
-מערכת דשבורד מקצועית לניתוח ומעקב אחר התקדמות תלמידים באמצעות בינה מלאכותית (Claude AI).
+A modern React-based dashboard for analyzing and tracking student performance using AI-powered insights, integrated with Google Sheets backend.
 
 ## ✨ תכונות עיקריות
 
