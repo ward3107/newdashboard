@@ -401,8 +401,39 @@ const FuturisticTeacherDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
 
   const theme = COLOR_THEMES[colorTheme];
+
+  // Admin password - you can change this to any code you want
+  const ADMIN_CODE = "1234";
+
+  // Handler for admin access
+  const handleAdminClick = () => {
+    setShowPasswordDialog(true);
+    setPasswordError(false);
+    setAdminPassword("");
+  };
+
+  const handlePasswordSubmit = () => {
+    if (adminPassword === ADMIN_CODE) {
+      setShowPasswordDialog(false);
+      setShowAdminPanel(true);
+      setAdminPassword("");
+      setPasswordError(false);
+    } else {
+      setPasswordError(true);
+      setAdminPassword("");
+    }
+  };
+
+  const handlePasswordCancel = () => {
+    setShowPasswordDialog(false);
+    setAdminPassword("");
+    setPasswordError(false);
+  };
 
   // Handler for running smart analysis
   const handleSmartAnalysis = async () => {
@@ -506,10 +537,10 @@ const FuturisticTeacherDashboard = () => {
         ></div>
       </div>
 
-      {/* Glass Navigation Bar - Enhanced with extended background */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] backdrop-blur-xl bg-white/10 border-b border-white/20 shadow-2xl">
-        <div className="px-8 py-6">
-          <div className="flex items-center justify-between">
+      {/* Glass Navigation Bar - Extra tall to prevent overflow */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] backdrop-blur-xl bg-white/10 border-b border-white/20 shadow-2xl" style={{ minHeight: '120px' }}>
+        <div className="w-full h-full px-8 lg:px-12 xl:px-16 2xl:px-20 py-10">
+          <div className="flex items-center justify-between gap-8">
             {/* Logo */}
             <div className="flex items-center gap-4">
               <div className="relative">
@@ -524,14 +555,14 @@ const FuturisticTeacherDashboard = () => {
               </div>
               <div>
                 <h1
-                  className={`text-2xl font-bold bg-gradient-to-r ${theme.primary} bg-clip-text text-transparent`}
+                  className={`text-3xl font-bold bg-gradient-to-r ${theme.primary} bg-clip-text text-transparent`}
                 >
-                  AI Learning Hub
+                  ISHEBOT
                 </h1>
                 <p
-                  className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                  className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                 >
-                  פלטפורמת ניתוח מתקדמת
+                  New Era for Teachers
                 </p>
               </div>
             </div>
@@ -567,26 +598,26 @@ const FuturisticTeacherDashboard = () => {
                   className={`absolute inset-0 bg-gradient-to-r ${theme.secondary} rounded-xl blur opacity-75 group-hover:opacity-100 transition-opacity animate-pulse`}
                 ></div>
                 <div
-                  className={`relative px-4 py-2 bg-gradient-to-r ${theme.secondary} rounded-xl text-white font-medium flex items-center gap-2 shadow-lg`}
+                  className={`relative px-4 py-2.5 bg-gradient-to-r ${theme.secondary} rounded-xl text-white font-medium flex items-center gap-2 shadow-lg`}
                 >
-                  <Sparkles size={18} />
-                  <span>AI חכם</span>
+                  <Sparkles size={17} />
+                  <span className="text-sm">AI חכם</span>
                 </div>
               </button>
 
               {/* Admin Panel Button */}
               <button
-                onClick={() => setShowAdminPanel(true)}
+                onClick={handleAdminClick}
                 className="relative group"
               >
                 <div
                   className={`absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition-opacity`}
                 ></div>
                 <div
-                  className={`relative px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl text-white font-medium flex items-center gap-2 shadow-lg`}
+                  className={`relative px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl text-white font-medium flex items-center gap-2 shadow-lg`}
                 >
-                  <Settings size={18} />
-                  <span>Admin</span>
+                  <Settings size={17} />
+                  <span className="text-sm">Admin</span>
                 </div>
               </button>
 
@@ -594,7 +625,7 @@ const FuturisticTeacherDashboard = () => {
               <div className="relative">
                 <button
                   onClick={() => setShowThemeSelector(!showThemeSelector)}
-                  className={`p-2.5 rounded-xl backdrop-blur-md ${
+                  className={`p-2 rounded-xl backdrop-blur-md ${
                     darkMode
                       ? "bg-white/10 hover:bg-white/20"
                       : "bg-white/30 hover:bg-white/50"
@@ -602,18 +633,24 @@ const FuturisticTeacherDashboard = () => {
                   title="בחר ערכת צבעים"
                 >
                   <Palette
-                    size={20}
+                    size={18}
                     className={darkMode ? "text-white" : "text-gray-700"}
                   />
                 </button>
 
                 {showThemeSelector && (
-                  <div className="absolute left-0 mt-2 backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-4 shadow-2xl w-80">
-                    <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                  <div className={`absolute left-0 mt-2 ${
+                    darkMode ? 'bg-gray-900' : 'bg-white'
+                  } border ${
+                    darkMode ? 'border-gray-700' : 'border-gray-200'
+                  } rounded-2xl p-4 shadow-2xl w-80 max-h-[500px] overflow-hidden flex flex-col`}>
+                    <h3 className={`font-semibold mb-3 flex items-center gap-2 ${
+                      darkMode ? 'text-white' : 'text-gray-900'
+                    }`}>
                       <Palette size={18} />
                       ערכות צבעים
                     </h3>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-3 overflow-y-auto pr-2 max-h-[420px] custom-scrollbar">
                       {Object.entries(COLOR_THEMES).map(([key, t]) => (
                         <button
                           key={key}
@@ -621,17 +658,23 @@ const FuturisticTeacherDashboard = () => {
                             setColorTheme(key);
                             setShowThemeSelector(false);
                           }}
-                          className={`p-3 rounded-xl backdrop-blur-md border-2 transition-all ${
+                          className={`p-3 rounded-xl border-2 transition-all ${
                             colorTheme === key
-                              ? "border-white/50 bg-white/20"
-                              : "border-white/10 bg-white/5 hover:bg-white/10"
+                              ? darkMode
+                                ? "border-blue-500 bg-blue-500/20"
+                                : "border-blue-500 bg-blue-50"
+                              : darkMode
+                                ? "border-gray-700 bg-gray-800 hover:bg-gray-700"
+                                : "border-gray-200 bg-gray-50 hover:bg-gray-100"
                           }`}
                         >
                           <div
                             className={`h-8 bg-gradient-to-r ${t.primary} rounded-lg mb-2`}
                           ></div>
                           <div className="flex items-center justify-between">
-                            <span className="text-white text-sm font-medium">
+                            <span className={`text-sm font-medium ${
+                              darkMode ? 'text-white' : 'text-gray-900'
+                            }`}>
                               {t.name}
                             </span>
                             <span className="text-2xl">{t.icon}</span>
@@ -645,38 +688,38 @@ const FuturisticTeacherDashboard = () => {
 
               {/* Notifications */}
               <button
-                className={`p-2.5 rounded-xl backdrop-blur-md ${
+                className={`p-2 rounded-xl backdrop-blur-md ${
                   darkMode
                     ? "bg-white/10 hover:bg-white/20"
                     : "bg-white/30 hover:bg-white/50"
                 } transition-all duration-300 relative`}
               >
                 <Bell
-                  size={20}
+                  size={18}
                   className={darkMode ? "text-white" : "text-gray-700"}
                 />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+                <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
 
               {/* Dark Mode Toggle */}
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className={`p-2.5 rounded-xl backdrop-blur-md ${
+                className={`p-2 rounded-xl backdrop-blur-md ${
                   darkMode
                     ? "bg-white/10 hover:bg-white/20"
                     : "bg-white/30 hover:bg-white/50"
                 } transition-all duration-300`}
               >
                 {darkMode ? (
-                  <Sun size={20} className="text-yellow-400" />
+                  <Sun size={18} className="text-yellow-400" />
                 ) : (
-                  <Moon size={20} className="text-gray-700" />
+                  <Moon size={18} className="text-gray-700" />
                 )}
               </button>
 
               {/* Profile */}
-              <div className="flex items-center gap-3 pr-4 border-r border-white/20">
+              <div className="flex items-center gap-3 pl-4 ml-2 border-l border-white/20">
                 <div className="text-right">
                   <p
                     className={`text-sm font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}
@@ -694,9 +737,9 @@ const FuturisticTeacherDashboard = () => {
                     className={`absolute inset-0 bg-gradient-to-r ${theme.accent} rounded-full blur opacity-75`}
                   ></div>
                   <div
-                    className={`relative w-10 h-10 bg-gradient-to-br ${theme.accent} rounded-full flex items-center justify-center shadow-xl`}
+                    className={`relative w-9 h-9 bg-gradient-to-br ${theme.accent} rounded-full flex items-center justify-center shadow-xl`}
                   >
-                    <User size={20} className="text-white" />
+                    <User size={18} className="text-white" />
                   </div>
                 </div>
               </div>
@@ -705,8 +748,8 @@ const FuturisticTeacherDashboard = () => {
         </div>
       </nav>
 
-      {/* Main Content - Proper spacing from extended navbar */}
-      <main className="px-8 pb-8 relative z-10" style={{ paddingTop: '110px' }}>
+      {/* Main Content - Proper spacing from extra tall navbar */}
+      <main className="px-8 pb-8 relative z-10" style={{ paddingTop: '150px' }}>
         {activeView === "overview" && (
           <FuturisticOverview
             stats={stats}
@@ -744,6 +787,78 @@ const FuturisticTeacherDashboard = () => {
 
       {/* Loading */}
       {loading && <FuturisticLoader darkMode={darkMode} theme={theme} />}
+
+      {/* Password Dialog for Admin Access */}
+      {showPasswordDialog && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className={`backdrop-blur-xl ${
+            darkMode ? "bg-gray-900/95" : "bg-white"
+          } rounded-3xl p-8 border ${
+            darkMode ? "border-gray-700" : "border-gray-200"
+          } shadow-2xl w-96`}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>
+                Admin Access
+              </h2>
+              <button
+                onClick={handlePasswordCancel}
+                className={`p-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors`}
+              >
+                <X size={20} className={darkMode ? "text-gray-400" : "text-gray-600"} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${
+                  darkMode ? "text-gray-300" : "text-gray-700"
+                }`}>
+                  Enter Admin Code
+                </label>
+                <input
+                  type="password"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+                  placeholder="••••"
+                  className={`w-full px-4 py-2 rounded-xl border ${
+                    passwordError
+                      ? "border-red-500"
+                      : darkMode
+                        ? "border-gray-600 bg-gray-800 text-white"
+                        : "border-gray-300 bg-white text-gray-900"
+                  } focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors`}
+                  autoFocus
+                />
+                {passwordError && (
+                  <p className="text-red-500 text-sm mt-2">
+                    Incorrect code. Please try again.
+                  </p>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handlePasswordSubmit}
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:opacity-90 transition-opacity"
+                >
+                  Submit
+                </button>
+                <button
+                  onClick={handlePasswordCancel}
+                  className={`flex-1 px-4 py-2.5 rounded-xl font-medium transition-colors ${
+                    darkMode
+                      ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Admin Panel */}
       {showAdminPanel && (
