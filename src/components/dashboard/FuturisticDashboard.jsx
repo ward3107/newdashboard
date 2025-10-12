@@ -39,6 +39,7 @@ import {
 import AdminPanel from "../AdminPanel";
 import EnhancedStudentDetail from "../EnhancedStudentDetail";
 import * as API from "../../services/googleAppsScriptAPI";
+import AnalyticsDashboard from "../analytics/AnalyticsDashboard";
 
 // Use environment variable or config file for API URL
 // UPDATED 2025-10-10 - V5 WITH CORS HEADERS FIXED!
@@ -686,6 +687,7 @@ const FuturisticTeacherDashboard = () => {
               {[
                 { id: "overview", icon: Home, label: "סקירה" },
                 { id: "students", icon: Users, label: "תלמידים" },
+                { id: "analytics", icon: BarChart3, label: "ניתוחים" },
               ].map((item) => (
                 <button
                   key={item.id}
@@ -928,6 +930,14 @@ const FuturisticTeacherDashboard = () => {
             darkMode={darkMode}
             theme={theme}
             onStudentClick={setSelectedStudent}
+          />
+        )}
+
+        {activeView === "analytics" && (
+          <AnalyticsDashboard
+            students={students}
+            darkMode={darkMode}
+            theme={theme}
           />
         )}
       </main>

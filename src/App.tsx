@@ -12,6 +12,7 @@ import { Loading } from './components/common/Loading';
 const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
 const FuturisticDashboard = lazy(() => import('./components/dashboard/FuturisticDashboard'));
 const StudentDetail = lazy(() => import('./components/student/StudentDetail'));
+const TestAnalytics = lazy(() => import('./components/analytics/TestAnalytics'));
 
 // Styles
 import './styles/global.css';
@@ -85,6 +86,7 @@ function App(): JSX.Element {
                       <Route path="/" element={<FuturisticDashboard />} />
                       <Route path="/original" element={<Dashboard />} />
                       <Route path="/student/:studentId" element={<StudentDetail />} />
+                      <Route path="/test-analytics" element={<TestAnalytics />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </ErrorBoundary>
