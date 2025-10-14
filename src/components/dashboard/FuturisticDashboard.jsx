@@ -30,6 +30,7 @@ import {
   User,
   Bell,
   X,
+  Grid3x3,
 } from "lucide-react";
 import AdminPanel from "../AdminPanel";
 import EnhancedStudentDetail from "../EnhancedStudentDetail";
@@ -536,6 +537,7 @@ const FuturisticTeacherDashboard = () => {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
+  const [viewMode, setViewMode] = useState("list"); // "list" or "grouped"
 
   const theme = COLOR_THEMES[colorTheme];
 
@@ -948,6 +950,8 @@ const FuturisticTeacherDashboard = () => {
             darkMode={darkMode}
             theme={theme}
             onStudentClick={setSelectedStudent}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
           />
         )}
 
@@ -1454,7 +1458,7 @@ const StatCard = ({
 
   return (
     <div
-      className="group relative"
+      className="group relative z-10 hover:z-[100]"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
@@ -1516,10 +1520,15 @@ const StatCard = ({
         {/* Hover Tooltip */}
         {showTooltip && (
           <div
-            className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 p-4 rounded-xl backdrop-blur-xl ${
+            className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-2 p-4 rounded-xl backdrop-blur-xl ${
               darkMode ? "bg-gray-900/95" : "bg-white/95"
             } border border-white/20 shadow-2xl z-50 min-w-[280px] animate-fadeIn`}
           >
+            <div
+              className={`absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px] ${
+                darkMode ? "border-b-gray-900/95" : "border-b-white/95"
+              }`}
+            ></div>
             <div className="text-sm space-y-2">
               <p
                 className={`font-bold ${darkMode ? "text-white" : "text-gray-900"}`}
@@ -1555,11 +1564,6 @@ const StatCard = ({
                 </div>
               )}
             </div>
-            <div
-              className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] ${
-                darkMode ? "border-t-gray-900/95" : "border-t-white/95"
-              }`}
-            ></div>
           </div>
         )}
       </div>
@@ -1775,6 +1779,8 @@ const FuturisticStudents = ({
   darkMode,
   theme,
   onStudentClick,
+  viewMode,
+  setViewMode,
 }) => {
   // Separate students into analyzed and unanalyzed
   const analyzedStudents = students.filter((s) => !s.needsAnalysis);
@@ -1810,6 +1816,22 @@ const FuturisticStudents = ({
 
   const filteredAnalyzed = filterStudents(analyzedStudents);
   const filteredUnanalyzed = filterStudents(unanalyzedStudents);
+
+  // Group students by classroom
+  const groupByClassroom = (studentsList) => {
+    const grouped = {};
+    studentsList.forEach((student) => {
+      const classId = student.classId || 'ללא כיתה';
+      if (!grouped[classId]) {
+        grouped[classId] = [];
+      }
+      grouped[classId].push(student);
+    });
+    return grouped;
+  };
+
+  const groupedAnalyzed = groupByClassroom(filteredAnalyzed);
+  const groupedUnanalyzed = groupByClassroom(filteredUnanalyzed);
 
   return (
     <div className="space-y-6">
@@ -1856,6 +1878,44 @@ const FuturisticStudents = ({
               </option>
             ))}
           </select>
+
+          {/* View Mode Toggle */}
+          <div className="flex gap-2 bg-white/10 backdrop-blur-md rounded-2xl p-1 border border-white/20">
+            <button
+              onClick={() => setViewMode("list")}
+              className={`px-6 py-2 rounded-xl transition-all font-medium ${
+                viewMode === "list"
+                  ? darkMode
+                    ? "bg-white/20 text-white shadow-lg"
+                    : "bg-white text-gray-900 shadow-lg"
+                  : darkMode
+                    ? "text-gray-300 hover:text-white"
+                    : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Users size={18} />
+                <span>רשימה</span>
+              </div>
+            </button>
+            <button
+              onClick={() => setViewMode("grouped")}
+              className={`px-6 py-2 rounded-xl transition-all font-medium ${
+                viewMode === "grouped"
+                  ? darkMode
+                    ? "bg-white/20 text-white shadow-lg"
+                    : "bg-white text-gray-900 shadow-lg"
+                  : darkMode
+                    ? "text-gray-300 hover:text-white"
+                    : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Grid3x3 size={18} />
+                <span>לפי כיתות</span>
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* Stats Bar */}
@@ -1912,17 +1972,48 @@ const FuturisticStudents = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredUnanalyzed.map((student, index) => (
-              <StudentCard
-                key={`unanalyzed-${student.studentCode}-${index}`}
-                student={student}
-                darkMode={darkMode}
-                theme={theme}
-                onClick={() => onStudentClick(student)}
-              />
-            ))}
-          </div>
+          {viewMode === "list" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredUnanalyzed.map((student, index) => (
+                <StudentCard
+                  key={`unanalyzed-${student.studentCode}-${index}`}
+                  student={student}
+                  darkMode={darkMode}
+                  theme={theme}
+                  onClick={() => onStudentClick(student)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {Object.entries(groupedUnanalyzed).map(([classId, classStudents]) => (
+                <div key={`unanalyzed-${classId}`} className={`backdrop-blur-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} rounded-3xl p-6 border border-white/20`}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`px-4 py-2 rounded-xl ${darkMode ? 'bg-white/10' : 'bg-white/50'} border border-white/20`}>
+                      <div className="flex items-center gap-2">
+                        <BookOpen size={18} className={darkMode ? 'text-white' : 'text-gray-900'} />
+                        <span className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{classId}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${darkMode ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+                          {classStudents.length}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {classStudents.map((student, index) => (
+                      <StudentCard
+                        key={`unanalyzed-${classId}-${student.studentCode}-${index}`}
+                        student={student}
+                        darkMode={darkMode}
+                        theme={theme}
+                        onClick={() => onStudentClick(student)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -1951,17 +2042,48 @@ const FuturisticStudents = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAnalyzed.map((student, index) => (
-              <StudentCard
-                key={`analyzed-${student.studentCode}-${index}`}
-                student={student}
-                darkMode={darkMode}
-                theme={theme}
-                onClick={() => onStudentClick(student)}
-              />
-            ))}
-          </div>
+          {viewMode === "list" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredAnalyzed.map((student, index) => (
+                <StudentCard
+                  key={`analyzed-${student.studentCode}-${index}`}
+                  student={student}
+                  darkMode={darkMode}
+                  theme={theme}
+                  onClick={() => onStudentClick(student)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {Object.entries(groupedAnalyzed).map(([classId, classStudents]) => (
+                <div key={`analyzed-${classId}`} className={`backdrop-blur-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} rounded-3xl p-6 border border-white/20`}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`px-4 py-2 rounded-xl ${darkMode ? 'bg-white/10' : 'bg-white/50'} border border-white/20`}>
+                      <div className="flex items-center gap-2">
+                        <BookOpen size={18} className={darkMode ? 'text-white' : 'text-gray-900'} />
+                        <span className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{classId}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${darkMode ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+                          {classStudents.length}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {classStudents.map((student, index) => (
+                      <StudentCard
+                        key={`analyzed-${classId}-${student.studentCode}-${index}`}
+                        student={student}
+                        darkMode={darkMode}
+                        theme={theme}
+                        onClick={() => onStudentClick(student)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -2169,7 +2291,7 @@ const CircularProgress = ({
     <div
       className={`relative backdrop-blur-xl ${
         darkMode ? "bg-white/10" : "bg-white/40"
-      } rounded-2xl p-6 border border-white/20 shadow-xl hover:scale-105 transition-transform cursor-pointer`}
+      } rounded-2xl p-6 border border-white/20 shadow-xl hover:scale-105 transition-transform cursor-pointer z-10 hover:z-[100]`}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
@@ -2221,10 +2343,15 @@ const CircularProgress = ({
       {/* Tooltip */}
       {showTooltip && (description || details) && (
         <div
-          className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 p-3 rounded-xl backdrop-blur-xl ${
+          className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-2 p-3 rounded-xl backdrop-blur-xl ${
             darkMode ? "bg-gray-900/95" : "bg-white/95"
           } border border-white/20 shadow-2xl z-50 min-w-[200px] animate-fadeIn`}
         >
+          <div
+            className={`absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[6px] ${
+              darkMode ? "border-b-gray-900/95" : "border-b-white/95"
+            }`}
+          ></div>
           <div className="text-xs space-y-1">
             {description && (
               <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
@@ -2241,11 +2368,6 @@ const CircularProgress = ({
               </ul>
             )}
           </div>
-          <div
-            className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] ${
-              darkMode ? "border-t-gray-900/95" : "border-t-white/95"
-            }`}
-          ></div>
         </div>
       )}
     </div>

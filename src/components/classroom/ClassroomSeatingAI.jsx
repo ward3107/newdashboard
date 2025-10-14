@@ -40,8 +40,8 @@ const SEATING_SHAPES = {
     benefits: ['ריכוז גבוה', 'שקט בכיתה', 'מתאים למבחנים'],
     bestFor: 'למידה עצמאית, מבחנים, הרצאות',
     layout: 'grid',
-    rows: 4,
-    cols: 4,
+    rows: 6,
+    cols: 5,
     emoji: '📚'
   },
   uShape: {
@@ -211,21 +211,93 @@ const generateOptimalSeating = (students, shapeId) => {
 
   const shape = SEATING_SHAPES[shapeId];
   const arrangement = [];
-  const availableStudents = [...students];
 
-  // Shuffle for random starting point
-  for (let i = availableStudents.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [availableStudents[i], availableStudents[j]] = [availableStudents[j], availableStudents[i]];
-  }
+  // INTELLIGENT SORTING: Sort students by their needs for strategic placement
+  const sortedStudents = [...students].sort((a, b) => {
+    // Priority 1: Students with high challenges (>4) go to front
+    const aChallenges = a.challengesCount || 0;
+    const bChallenges = b.challengesCount || 0;
+
+    if (aChallenges > 4 && bChallenges <= 4) return -1;  // a goes first (front)
+    if (bChallenges > 4 && aChallenges <= 4) return 1;   // b goes first (front)
+
+    // Priority 2: High performers with leadership (strengths >4) also go to front or middle
+    const aStrengths = a.strengthsCount || 0;
+    const bStrengths = b.strengthsCount || 0;
+
+    // Priority 3: Very high performers (strengths >4) can go to back (independent)
+    if (aStrengths > 4 && aChallenges <= 2) return 1;   // a goes to back
+    if (bStrengths > 4 && bChallenges <= 2) return -1;  // b goes to back
+
+    // Priority 4: Balanced students (3-4 strengths/challenges) in middle
+    return 0; // Keep relative order for middle rows
+  });
 
   // Generate arrangement based on shape
   switch (shape.layout) {
-    case 'grid': // Rows
+    case 'grid': // Rows - Strategic placement
+      const totalSeats = shape.rows * shape.cols;
+      const frontRowStudents = [];
+      const middleRowStudents = [];
+      const backRowStudents = [];
+
+      // Categorize students by where they should sit
+      sortedStudents.forEach(student => {
+        const challenges = student.challengesCount || 0;
+        const strengths = student.strengthsCount || 0;
+
+        // Front row: High challenges OR students needing support
+        if (challenges > 4 || (challenges > 2 && strengths < 3)) {
+          frontRowStudents.push(student);
+        }
+        // Back row: High performers with independence
+        else if (strengths > 4 && challenges <= 2) {
+          backRowStudents.push(student);
+        }
+        // Middle row: Everyone else (balanced students)
+        else {
+          middleRowStudents.push(student);
+        }
+      });
+
+      // Place students row by row
+      let studentIndex = 0;
       for (let row = 0; row < shape.rows; row++) {
         for (let col = 0; col < shape.cols; col++) {
-          if (availableStudents.length > 0) {
-            const student = availableStudents.shift();
+          let student = null;
+
+          // Front rows get high-need students
+          if (row === 0 || row === 1) {
+            if (frontRowStudents.length > 0) {
+              student = frontRowStudents.shift();
+            } else if (middleRowStudents.length > 0) {
+              student = middleRowStudents.shift();
+            } else if (backRowStudents.length > 0) {
+              student = backRowStudents.shift();
+            }
+          }
+          // Back rows get independent high performers
+          else if (row === shape.rows - 1 || row === shape.rows - 2) {
+            if (backRowStudents.length > 0) {
+              student = backRowStudents.shift();
+            } else if (middleRowStudents.length > 0) {
+              student = middleRowStudents.shift();
+            } else if (frontRowStudents.length > 0) {
+              student = frontRowStudents.shift();
+            }
+          }
+          // Middle rows get balanced students
+          else {
+            if (middleRowStudents.length > 0) {
+              student = middleRowStudents.shift();
+            } else if (frontRowStudents.length > 0) {
+              student = frontRowStudents.shift();
+            } else if (backRowStudents.length > 0) {
+              student = backRowStudents.shift();
+            }
+          }
+
+          if (student) {
             arrangement.push({
               id: `${row}-${col}`,
               row,
@@ -239,11 +311,12 @@ const generateOptimalSeating = (students, shapeId) => {
       break;
 
     case 'clusters':
-      const studentsPerCluster = Math.ceil(students.length / shape.clusters);
+      const studentsPerCluster = Math.ceil(sortedStudents.length / shape.clusters);
+      const remainingStudents = [...sortedStudents];
       for (let cluster = 0; cluster < shape.clusters; cluster++) {
         const clusterStudents = [];
-        for (let i = 0; i < studentsPerCluster && availableStudents.length > 0; i++) {
-          const student = availableStudents.shift();
+        for (let i = 0; i < studentsPerCluster && remainingStudents.length > 0; i++) {
+          const student = remainingStudents.shift();
           clusterStudents.push(student);
         }
         arrangement.push({
@@ -258,9 +331,10 @@ const generateOptimalSeating = (students, shapeId) => {
 
     case 'pairs':
       let pairIndex = 0;
-      while (availableStudents.length >= 2) {
-        const student1 = availableStudents.shift();
-        const student2 = availableStudents.shift();
+      const pairStudents = [...sortedStudents];
+      while (pairStudents.length >= 2) {
+        const student1 = pairStudents.shift();
+        const student2 = pairStudents.shift();
         arrangement.push({
           id: `pair-${pairIndex}`,
           type: 'pair',
@@ -270,11 +344,11 @@ const generateOptimalSeating = (students, shapeId) => {
         pairIndex++;
       }
       // Handle odd student
-      if (availableStudents.length === 1) {
+      if (pairStudents.length === 1) {
         arrangement.push({
           id: `pair-${pairIndex}`,
           type: 'single',
-          students: [availableStudents[0]],
+          students: [pairStudents[0]],
           reasoning: 'תלמיד יחיד - יכול לעבוד עצמאית או להצטרף לצמד קיים'
         });
       }
@@ -283,23 +357,24 @@ const generateOptimalSeating = (students, shapeId) => {
     case 'uShape':
     case 'circle':
       // Arrange in circular/U pattern
-      students.forEach((student, index) => {
+      sortedStudents.forEach((student, index) => {
         arrangement.push({
           id: `pos-${index}`,
           position: index,
           student,
-          reasoning: getCircularReasoning(student, index, students.length)
+          reasoning: getCircularReasoning(student, index, sortedStudents.length)
         });
       });
       break;
 
     case 'flexible':
       // Divide into flexible stations
-      const stationSize = Math.ceil(students.length / shape.stations);
+      const stationSize = Math.ceil(sortedStudents.length / shape.stations);
+      const flexibleStudents = [...sortedStudents];
       for (let station = 0; station < shape.stations; station++) {
         const stationStudents = [];
-        for (let i = 0; i < stationSize && availableStudents.length > 0; i++) {
-          stationStudents.push(availableStudents.shift());
+        for (let i = 0; i < stationSize && flexibleStudents.length > 0; i++) {
+          stationStudents.push(flexibleStudents.shift());
         }
         arrangement.push({
           id: `station-${station}`,
@@ -323,7 +398,18 @@ const generateDetailedPlacementReason = (student, row, col, totalRows) => {
   const strengths = student.strengthsCount || 0;
   const challenges = student.challengesCount || 0;
   const studentName = student.name || `תלמיד ${student.studentCode}`;
-  const learningStyle = student.learningStyle || '';
+
+  // Extract rich analysis data from student object
+  const learningStyle = student.learningStyle || student.keyNotes || '';
+  const behaviorNotes = student.behaviorNotes || student.behaviorDescription || '';
+  const emotionalState = student.emotionalState || student.emotionalNotes || '';
+  const academicNeeds = student.academicNeeds || student.specialNeeds || '';
+  const socialSkills = student.socialSkills || student.socialBehavior || '';
+  const keyStrengths = student.keyStrengths || student.strengths || '';
+  const keyChallenges = student.keyChallenges || student.challenges || '';
+
+  // Extract specific traits from analysis
+  const analysisText = student.analysis || student.aiAnalysis || student.fullAnalysis || '';
 
   let mainReason = '';
   let details = [];
@@ -339,23 +425,64 @@ const generateDetailedPlacementReason = (student, row, col, totalRows) => {
   // Front row placement
   if (isFrontRow) {
     if (challenges > 4) {
-      mainReason = 'מיקום קדמי לתמיכה מיידית';
-      details.push('📌 קרבה למורה לניטור והדרכה מתמשכת');
+      // Extract specific behavioral challenges from analysis
+      const hasFocusIssues = analysisText.includes('ריכוז') || behaviorNotes.includes('ריכוז') || keyChallenges.includes('ריכוז');
+      const hasEmotionalNeeds = emotionalState.includes('חרדה') || emotionalState.includes('תמיכה') || analysisText.includes('רגשי');
+      const needsAttention = behaviorNotes.includes('תשומת לב') || analysisText.includes('זקוק לתמיכה');
+
+      if (hasEmotionalNeeds) {
+        mainReason = `מיקום קדמי מומלץ - ${studentName} זקוק לתמיכה רגשית ונוכחות מורה קרובה`;
+        details.push('💗 נמצא במצב רגשי הדורש תשומת לב מיוחדת');
+      } else if (hasFocusIssues) {
+        mainReason = `מיקום קדמי אופטימלי - ${studentName} מתמודד עם קשיי ריכוז`;
+        details.push('🎯 מרחק קרוב למורה יפחית הסחות דעת');
+      } else {
+        mainReason = `מיקום קדמי לתמיכה מיידית - ${studentName} דורש פיקוח צמוד`;
+        details.push('📌 קרבה למורה לניטור והדרכה מתמשכת');
+      }
+
       details.push('👁️ קשר עין ישיר עם המורה');
       details.push('🎯 הפחתת הסחות דעת מאחור');
-      basedOn.push(`${challenges} אתגרים התנהגותיים`);
-      basedOn.push('צורך בתמיכה מיידית');
+
+      if (behaviorNotes) basedOn.push(`התנהגות: ${behaviorNotes.substring(0, 40)}...`);
+      if (emotionalState) basedOn.push(`מצב רגשי: ${emotionalState.substring(0, 40)}...`);
+      basedOn.push(`${challenges} אתגרים מזוהים`);
     } else if (strengths > 4) {
-      mainReason = 'מיקום מוביל - דוגמה חיובית לכיתה';
-      details.push('⭐ תלמיד מצטיין המשמש מודל לחיקוי');
-      details.push('💡 יכול להשפיע חיובית על האווירה');
-      details.push('🎓 תשובות מהירות ומעודדות');
+      const isLeader = analysisText.includes('מנהיג') || keyStrengths.includes('מנהיגות') || socialSkills.includes('חברתי');
+      const isAcademicStrong = keyStrengths.includes('אקדמי') || analysisText.includes('מצטיין') || academicNeeds.includes('מתקדם');
+
+      if (isLeader) {
+        mainReason = `מיקום מוביל אסטרטגי - ${studentName} משמש מודל לחיקוי לכיתה`;
+        details.push('👑 תלמיד בעל יכולות מנהיגות מזוהות');
+        details.push('💡 יכול להשפיע חיובית על אקלים הכיתה');
+      } else if (isAcademicStrong) {
+        mainReason = `מיקום קדמי - ${studentName} תלמיד מצטיין שתורם לשיעור`;
+        details.push('🎓 הצטיינות אקדמית מזוהה בניתוח');
+        details.push('💡 תשובות מהירות ומעודדות לכיתה');
+      } else {
+        mainReason = `מיקום מוביל - ${studentName} דוגמה חיובית לכיתה`;
+        details.push('⭐ תלמיד מצטיין המשמש מודל לחיקוי');
+      }
+
+      details.push('🎯 מיקום קדמי מחזק את השפעתו החיובית');
+
+      if (keyStrengths) basedOn.push(`חוזקות: ${keyStrengths.substring(0, 40)}...`);
+      if (socialSkills) basedOn.push(`יכולות חברתיות: ${socialSkills.substring(0, 30)}...`);
       basedOn.push(`${strengths} חוזקות מזוהות`);
-      basedOn.push('ביצועים גבוהים');
     } else {
-      mainReason = 'מיקום קדמי לעידוד השתתפות';
-      details.push('✋ קירוב למורה לעידוד השתתפות');
+      const isQuiet = analysisText.includes('שקט') || behaviorNotes.includes('ביישן') || socialSkills.includes('מופנם');
+
+      if (isQuiet) {
+        mainReason = `מיקום קדמי תומך - ${studentName} זקוק לעידוד להשתתפות`;
+        details.push('🤝 תלמיד מופנם/שקט - מיקום קדמי יעודד אותו');
+      } else {
+        mainReason = `מיקום קדמי לעידוד השתתפות - ${studentName}`;
+      }
+
+      details.push('✋ קירוב למורה לעידוד והשתתפות');
       details.push('📚 גישה טובה ללוח והצגות');
+
+      if (learningStyle) basedOn.push(`סגנון למידה: ${learningStyle.substring(0, 35)}...`);
       basedOn.push('צורך בעידוד להשתתפות');
     }
   }
@@ -363,62 +490,144 @@ const generateDetailedPlacementReason = (student, row, col, totalRows) => {
   // Back row placement
   else if (isBackRow) {
     if (strengths > 4) {
-      mainReason = 'מיקום אחורי - עצמאות וביטחון';
-      details.push('🎯 תלמיד עצמאי שלא זקוק לפיקוח צמוד');
-      details.push('📖 מסוגל להתרכז ללא עזרה מתמדת');
-      details.push('💪 מיקום זה מאפשר לו לנהל את הלמידה בעצמו');
-      basedOn.push(`${strengths} חוזקות`);
+      const isIndependent = keyStrengths.includes('עצמאי') || learningStyle.includes('עצמאי') || analysisText.includes('עצמאות');
+      const isMature = analysisText.includes('בוגר') || behaviorNotes.includes('אחראי') || keyStrengths.includes('אחריות');
+
+      if (isIndependent) {
+        mainReason = `מיקום אחורי אופטימלי - ${studentName} לומד עצמאי ובוגר`;
+        details.push('🎯 זוהה כתלמיד עצמאי המסוגל לנהל את למידתו');
+        details.push('📖 לא זקוק לפיקוח צמוד - מתפקד מצוין באופן עצמאי');
+      } else if (isMature) {
+        mainReason = `מיקום אחורי - ${studentName} תלמיד בוגר ואחראי`;
+        details.push('💪 בגרות ואחריות מזוהות בניתוח');
+        details.push('🎯 מסוגל להתרכז ללא פיקוח צמוד');
+      } else {
+        mainReason = `מיקום אחורי - ${studentName} בעל ביצועים גבוהים`;
+        details.push('🎯 תלמיד עצמאי שלא זקוק לפיקוח צמוד');
+        details.push('📖 מסוגל להתרכז ללא עזרה מתמדת');
+      }
+
+      details.push('💪 מיקום זה מאפשר ניהול עצמי של הלמידה');
+
+      if (keyStrengths) basedOn.push(`חוזקות: ${keyStrengths.substring(0, 40)}...`);
+      if (learningStyle) basedOn.push(`סגנון: ${learningStyle.substring(0, 30)}...`);
       basedOn.push('עצמאות גבוהה');
     } else if (learningStyle.includes('עצמאי')) {
-      mainReason = 'מיקום אחורי - מתאים ללמידה עצמאית';
-      details.push('🤫 סביבה שקטה יותר');
+      mainReason = `מיקום אחורי מתאים - ${studentName} מעדיף למידה עצמאית`;
+      details.push('🤫 סביבה שקטה יותר מתאימה לסגנון הלמידה');
       details.push('📝 אפשרות לעבוד בקצב אישי');
-      basedOn.push('סגנון למידה עצמאי');
+
+      basedOn.push(`סגנון למידה: ${learningStyle.substring(0, 40)}...`);
+      basedOn.push('למידה עצמאית מועדפת');
     } else {
-      mainReason = 'מיקום אחורי - דורש מודעות עצמית';
-      details.push('⚠️ יש לעקוב ולוודא השתתפות פעילה');
-      details.push('👀 מומלץ בדיקות תכופות של המורה');
-      basedOn.push('ביצועים בינוניים');
+      const needsMonitoring = challenges > 2 || analysisText.includes('מעקב') || behaviorNotes.includes('הסחות');
+
+      if (needsMonitoring) {
+        mainReason = `מיקום אחורי - ${studentName} דורש מעקב והשגחה`;
+        details.push('⚠️ חשוב לעקוב ולוודא השתתפות פעילה');
+        details.push('👀 מומלצות בדיקות תכופות להבטחת ריכוז');
+
+        if (behaviorNotes) basedOn.push(`התנהגות: ${behaviorNotes.substring(0, 40)}...`);
+      } else {
+        mainReason = `מיקום אחורי - ${studentName} ביצועים בינוניים`;
+        details.push('⚠️ יש לעקוב ולוודא השתתפות פעילה');
+        details.push('👀 מומלץ מעקב של המורה');
+      }
+
+      basedOn.push('דורש מעקב והשגחה');
     }
   }
 
   // Middle row placement
   else {
     if (strengths >= 3 && challenges >= 3) {
-      mainReason = 'מיקום מאוזן - איזון בין תמיכה לעצמאות';
-      details.push('⚖️ מרחק אופטימלי מהמורה');
-      details.push('👥 קרבה לחברים לשיתוף פעולה');
-      details.push('🎵 לא קרוב מדי ולא רחוק מדי');
-      basedOn.push(`${strengths} חוזקות, ${challenges} אתגרים`);
+      const balancedProfile = analysisText.includes('מאוזן') || (keyStrengths && keyChallenges);
+
+      if (balancedProfile) {
+        mainReason = `מיקום מאוזן אופטימלי - ${studentName} בעל פרופיל מעורב של חוזקות ואתגרים`;
+        details.push('⚖️ מרחק מושלם מהמורה - לא צמוד מדי ולא רחוק מדי');
+        details.push('👥 יכול לקבל תמיכה במידת הצורך וגם לפעול עצמאית');
+      } else {
+        mainReason = `מיקום מאוזן - ${studentName} איזון בין תמיכה לעצמאות`;
+        details.push('⚖️ מרחק אופטימלי מהמורה');
+        details.push('👥 קרבה לחברים לשיתוף פעולה');
+      }
+
+      details.push('🎵 מיקום המאפשר גמישות פדגוגית');
+
+      if (keyStrengths) basedOn.push(`חוזקות: ${keyStrengths.substring(0, 35)}...`);
+      if (keyChallenges) basedOn.push(`אתגרים: ${keyChallenges.substring(0, 35)}...`);
       basedOn.push('פרופיל מאוזן');
     } else if (learningStyle.includes('חברתי')) {
-      mainReason = 'מיקום מרכזי - עידוד אינטראקציה חברתית';
-      details.push('👫 מיקום טוב לעבודה בקבוצות');
-      details.push('💬 קרבה לתלמידים רבים');
-      details.push('🤝 עידוד שיתוף פעולה');
-      basedOn.push('סגנון למידה חברתי');
+      const isSocialLearner = socialSkills.includes('חברתי') || analysisText.includes('עבודה בקבוצות') || keyStrengths.includes('שיתוף פעולה');
+
+      if (isSocialLearner) {
+        mainReason = `מיקום מרכזי מושלם - ${studentName} לומד חברתי שמצטיין בעבודת צוות`;
+        details.push('👫 זוהה כלומד חברתי - מיקום מרכזי מקסם אינטראקציות');
+        details.push('💬 קרבה לתלמידים רבים מעודדת שיתוף פעולה');
+        details.push('🤝 יכול להוביל ולהשתתף בפעילויות קבוצתיות');
+
+        basedOn.push(`יכולות חברתיות: ${socialSkills.substring(0, 35)}...`);
+      } else {
+        mainReason = `מיקום מרכזי - ${studentName} מעדיף אינטראקציה חברתית`;
+        details.push('👫 מיקום טוב לעבודה בקבוצות');
+        details.push('💬 קרבה לתלמידים רבים');
+        details.push('🤝 עידוד שיתוף פעולה');
+      }
+
+      basedOn.push(`סגנון למידה: ${learningStyle.substring(0, 40)}...`);
     } else {
-      mainReason = 'מיקום מרכזי - נגיש לכולם';
-      details.push('📍 מיקום מרכזי בכיתה');
-      details.push('👀 רואה את הלוח בבירור');
-      details.push('🎯 גישה טובה למורה ולחברים');
-      basedOn.push('מיקום סטנדרטי');
+      const hasSpecialNeeds = academicNeeds || analysisText.includes('צרכים מיוחדים');
+
+      if (hasSpecialNeeds && academicNeeds) {
+        mainReason = `מיקום מרכזי - ${studentName} עם התאמות למידה`;
+        details.push('📍 מיקום מרכזי מאפשר גישה נוחה למורה');
+        details.push('👀 רואה את הלוח בבירור');
+        details.push('🎯 קרבה למשאבי הכיתה');
+
+        basedOn.push(`צרכים: ${academicNeeds.substring(0, 40)}...`);
+      } else {
+        mainReason = `מיקום מרכזי סטנדרטי - ${studentName}`;
+        details.push('📍 מיקום מרכזי בכיתה');
+        details.push('👀 רואה את הלוח בבירור');
+        details.push('🎯 גישה טובה למורה ולחברים');
+
+        if (learningStyle) basedOn.push(`סגנון למידה: ${learningStyle.substring(0, 35)}...`);
+      }
+
+      basedOn.push('מיקום סטנדרטי מאוזן');
     }
   }
 
   // Additional considerations for window seat
   if (isNearWindow) {
     if (learningStyle.includes('ויזואלי') || learningStyle.includes('חזותי')) {
-      details.push('🪟 קרוב לחלון - אור טבעי מועיל ללומד חזותי');
-      basedOn.push('למידה חזותית');
+      details.push(`🪟 קרוב לחלון - ${studentName} לומד חזותי, אור טבעי יועיל ללמידתו`);
+      basedOn.push('למידה חזותית מזוהה');
     } else if (challenges > 3) {
-      details.push('⚠️ קרוב לחלון - יש להקפיד על ריכוז (הסחות אפשריות)');
+      const hasADHD = analysisText.includes('קשב') || behaviorNotes.includes('ADHD') || keyChallenges.includes('ריכוז');
+      if (hasADHD) {
+        details.push('⚠️ קרוב לחלון - חשוב לנטר ריכוז בשל קשיי קשב מזוהים');
+      } else {
+        details.push('⚠️ קרוב לחלון - יש להקפיד על ריכוז (הסחות אפשריות)');
+      }
+    } else {
+      details.push('🪟 מיקום ליד החלון - אור טבעי וסביבה נעימה');
     }
   }
 
   // Additional considerations for door seat
   if (isNearDoor) {
-    details.push('🚪 קרוב לדלת - יציאה מהירה במידת הצורך');
+    const needsFrequentBreaks = analysisText.includes('הפסקות') || emotionalState.includes('חרדה') || academicNeeds.includes('תנועה');
+
+    if (needsFrequentBreaks) {
+      details.push(`🚪 קרוב לדלת - ${studentName} זקוק להפסקות/תנועה - מיקום נוח`);
+      basedOn.push('צורך בהפסקות תכופות');
+    } else if (challenges > 3) {
+      details.push('🚪 קרוב לדלת - יציאה מהירה במידת הצורך להתערבות');
+    } else {
+      details.push('🚪 קרוב לדלת - גישה נוחה ויציאה מהירה');
+    }
   }
 
   return {
@@ -909,19 +1118,15 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                     </div>
                   </div>
 
-                  {/* Classroom with Windows on Left and Door on Right */}
+                  {/* Classroom with Door on Left and Windows on Right */}
                   <div className="flex gap-4">
-                    {/* 4 Windows on the Left Side */}
-                    <div className="flex flex-col gap-4 w-24">
-                      {[1, 2, 3, 4].map((windowNum) => (
-                        <div
-                          key={windowNum}
-                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
-                        >
-                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
-                        </div>
-                      ))}
+                    {/* Door on the Left Side */}
+                    <div className="w-20">
+                      <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
+                        <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
+                        <span className={`text-xs font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
+                        <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
+                      </div>
                     </div>
 
                     {/* Student Desks Grid in the middle */}
@@ -952,7 +1157,27 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       </div>
                     </div>
 
-                    {/* Door on the Right Side beside first row of students */}
+                    {/* 4 Windows on the Right Side */}
+                    <div className="flex flex-col gap-4 w-24">
+                      {[1, 2, 3, 4].map((windowNum) => (
+                        <div
+                          key={windowNum}
+                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
+                        >
+                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
+                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {currentShape.layout === 'clusters' && (
+                <div className="space-y-6">
+                  {/* Classroom with Door on Left and Windows on Right */}
+                  <div className="flex gap-4">
+                    {/* Door on the Left Side */}
                     <div className="w-20">
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
                         <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
@@ -960,71 +1185,115 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                         <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
                     </div>
+
+                    {/* Clusters Grid in the middle */}
+                    <div className="flex-1">
+                      <div className="grid grid-cols-2 gap-6">
+                        {arrangement.map((cluster, index) => (
+                          <div
+                            key={cluster.id}
+                            className={`p-6 rounded-2xl ${darkMode ? 'bg-gradient-to-br from-blue-900/30 to-purple-900/30' : 'bg-gradient-to-br from-blue-100/50 to-purple-100/50'} border ${darkMode ? 'border-blue-500/30' : 'border-blue-300'}`}
+                          >
+                            <h4 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              קבוצה {index + 1}
+                            </h4>
+
+                            <div className="grid grid-cols-2 gap-4 mb-3">
+                              {(cluster.students && cluster.students.length > 0) ? (
+                                cluster.students.map(student => (
+                                  <div key={student.studentCode} className="flex justify-center">
+                                    <DraggableStudent student={student} isDraggable={true} />
+                                  </div>
+                                ))
+                              ) : (
+                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center col-span-2`}>
+                                  אין תלמידים בקבוצה זו
+                                </p>
+                              )}
+                            </div>
+
+                            {showExplanations && cluster.reasoning && (
+                              <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                {cluster.reasoning}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 4 Windows on the Right Side */}
+                    <div className="flex flex-col gap-4 w-24">
+                      {[1, 2, 3, 4].map((windowNum) => (
+                        <div
+                          key={windowNum}
+                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
+                        >
+                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
+                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
 
-              {currentShape.layout === 'clusters' && (
-                <div className="grid grid-cols-2 gap-6">
-                  {arrangement.map((cluster, index) => (
-                    <div
-                      key={cluster.id}
-                      className={`p-6 rounded-2xl ${darkMode ? 'bg-gradient-to-br from-blue-900/30 to-purple-900/30' : 'bg-gradient-to-br from-blue-100/50 to-purple-100/50'} border ${darkMode ? 'border-blue-500/30' : 'border-blue-300'}`}
-                    >
-                      <h4 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        קבוצה {index + 1}
-                      </h4>
-
-                      <div className="grid grid-cols-2 gap-4 mb-3">
-                        {(cluster.students && cluster.students.length > 0) ? (
-                          cluster.students.map(student => (
-                            <div key={student.studentCode} className="flex justify-center">
-                              <DraggableStudent student={student} isDraggable={true} />
-                            </div>
-                          ))
-                        ) : (
-                          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center col-span-2`}>
-                            אין תלמידים בקבוצה זו
-                          </p>
-                        )}
-                      </div>
-
-                      {showExplanations && cluster.reasoning && (
-                        <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {cluster.reasoning}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
               {currentShape.layout === 'pairs' && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {arrangement.map((pair, index) => (
-                    <div
-                      key={pair.id}
-                      className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'}`}
-                    >
-                      <div className="flex items-center justify-center gap-3 mb-2">
-                        {(pair.students && pair.students.length > 0) ? (
-                          pair.students.map(student => (
-                            <DraggableStudent key={student.studentCode} student={student} isDraggable={true} />
-                          ))
-                        ) : (
-                          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center`}>
-                            אין תלמידים בזוג זה
-                          </p>
-                        )}
+                <div className="space-y-6">
+                  {/* Classroom with Door on Left and Windows on Right */}
+                  <div className="flex gap-4">
+                    {/* Door on the Left Side */}
+                    <div className="w-20">
+                      <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
+                        <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
+                        <span className={`text-xs font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
+                        <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
-
-                      {showExplanations && pair.reasoning && (
-                        <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {pair.reasoning}
-                        </p>
-                      )}
                     </div>
-                  ))}
+
+                    {/* Pairs Grid in the middle */}
+                    <div className="flex-1">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {arrangement.map((pair, index) => (
+                          <div
+                            key={pair.id}
+                            className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'}`}
+                          >
+                            <div className="flex items-center justify-center gap-3 mb-2">
+                              {(pair.students && pair.students.length > 0) ? (
+                                pair.students.map(student => (
+                                  <DraggableStudent key={student.studentCode} student={student} isDraggable={true} />
+                                ))
+                              ) : (
+                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center`}>
+                                  אין תלמידים בזוג זה
+                                </p>
+                              )}
+                            </div>
+
+                            {showExplanations && pair.reasoning && (
+                              <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                {pair.reasoning}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 4 Windows on the Right Side */}
+                    <div className="flex flex-col gap-4 w-24">
+                      {[1, 2, 3, 4].map((windowNum) => (
+                        <div
+                          key={windowNum}
+                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
+                        >
+                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
+                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -1052,22 +1321,16 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                     </>
                   )}
 
-                  {/* Classroom with Windows on Left and Door on Right for U-Shape/Circle */}
+                  {/* Classroom with Door on Left and Windows on Right for U-Shape/Circle */}
                   <div className="flex gap-4">
-                    {/* 4 Windows on the Left Side */}
-                    {currentShape.layout === 'uShape' && (
-                      <div className="flex flex-col gap-4 w-24">
-                        {[1, 2, 3, 4].map((windowNum) => (
-                          <div
-                            key={windowNum}
-                            className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
-                          >
-                            <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                            <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
-                          </div>
-                        ))}
+                    {/* Door on the Left Side */}
+                    <div className="w-20">
+                      <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
+                        <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
+                        <span className={`text-xs font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
+                        <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
-                    )}
+                    </div>
 
                     {/* U-Shape/Circle seating in the middle */}
                     <div className="relative mx-auto" style={{
@@ -1112,50 +1375,82 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       </div>
                     </div>
 
-                    {/* Door on the Right Side for U-Shape */}
-                    {currentShape.layout === 'uShape' && (
-                      <div className="w-20">
-                        <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
-                          <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
-                          <span className={`text-xs font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
-                          <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
+                    {/* 4 Windows on the Right Side */}
+                    <div className="flex flex-col gap-4 w-24">
+                      {[1, 2, 3, 4].map((windowNum) => (
+                        <div
+                          key={windowNum}
+                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
+                        >
+                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
+                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
                         </div>
-                      </div>
-                    )}
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
 
               {currentShape.layout === 'flexible' && (
-                <div className="grid grid-cols-2 gap-6">
-                  {arrangement.map((station, index) => (
-                    <div
-                      key={station.id}
-                      className={`p-6 rounded-2xl ${darkMode ? 'bg-gradient-to-br from-green-900/30 to-teal-900/30' : 'bg-gradient-to-br from-green-100/50 to-teal-100/50'} border ${darkMode ? 'border-green-500/30' : 'border-green-300'}`}
-                    >
-                      <h4 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        תחנה {index + 1}
-                      </h4>
-
-                      <div className="flex flex-wrap gap-3 justify-center mb-3">
-                        {(station.students && station.students.length > 0) ? (
-                          station.students.map(student => (
-                            <DraggableStudent key={student.studentCode} student={student} isDraggable={true} />
-                          ))
-                        ) : (
-                          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center w-full`}>
-                            אין תלמידים בתחנה זו
-                          </p>
-                        )}
+                <div className="space-y-6">
+                  {/* Classroom with Door on Left and Windows on Right */}
+                  <div className="flex gap-4">
+                    {/* Door on the Left Side */}
+                    <div className="w-20">
+                      <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
+                        <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
+                        <span className={`text-xs font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
+                        <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
-
-                      {showExplanations && station.reasoning && (
-                        <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {station.reasoning}
-                        </p>
-                      )}
                     </div>
-                  ))}
+
+                    {/* Flexible Stations Grid in the middle */}
+                    <div className="flex-1">
+                      <div className="grid grid-cols-2 gap-6">
+                        {arrangement.map((station, index) => (
+                          <div
+                            key={station.id}
+                            className={`p-6 rounded-2xl ${darkMode ? 'bg-gradient-to-br from-green-900/30 to-teal-900/30' : 'bg-gradient-to-br from-green-100/50 to-teal-100/50'} border ${darkMode ? 'border-green-500/30' : 'border-green-300'}`}
+                          >
+                            <h4 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              תחנה {index + 1}
+                            </h4>
+
+                            <div className="flex flex-wrap gap-3 justify-center mb-3">
+                              {(station.students && station.students.length > 0) ? (
+                                station.students.map(student => (
+                                  <DraggableStudent key={student.studentCode} student={student} isDraggable={true} />
+                                ))
+                              ) : (
+                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center w-full`}>
+                                  אין תלמידים בתחנה זו
+                                </p>
+                              )}
+                            </div>
+
+                            {showExplanations && station.reasoning && (
+                              <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                {station.reasoning}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 4 Windows on the Right Side */}
+                    <div className="flex flex-col gap-4 w-24">
+                      {[1, 2, 3, 4].map((windowNum) => (
+                        <div
+                          key={windowNum}
+                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
+                        >
+                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
+                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </SortableContext>
