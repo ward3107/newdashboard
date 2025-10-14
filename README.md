@@ -198,16 +198,19 @@ This dashboard is specifically designed for:
 
 This software is commercial property. Unauthorized copying, distribution, modification, or use is strictly prohibited without explicit written permission.
 
-For licensing inquiries, please contact: [Your Contact Information]
+For licensing inquiries, please contact: [your.email@example.com]
 
 ---
 
 ## 📞 Support & Contact
 
 For technical support, licensing, or sales inquiries:
-- **Email**: [Your Email]
-- **Website**: [Your Website]
-- **Phone**: [Your Phone Number]
+- **Company/Owner**: [YOUR COMPANY NAME OR FULL NAME]
+- **Email**: [your.email@example.com]
+- **Phone**: [+XX XXX-XXX-XXXX]
+- **Website**: [https://yourwebsite.com]
+- **Business Hours**: [Your Support Hours]
+- **Address**: [Your Business Address]
 
 ---
 
