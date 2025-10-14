@@ -1,0 +1,46 @@
+run = "npm run dev"
+modules = ["nodejs-20"]
+hidden = [".config", "package-lock.json"]
+entrypoint = "index.html"
+
+[nix]
+channel = "stable-24_05"
+
+[unitTest]
+language = "nodejs"
+
+[deployment]
+deploymentTarget = "static"
+build = ["npm", "run", "build"]
+publicDir = "dist"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[agent]
+expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Server"
+
+[[workflows.workflow]]
+name = "Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 3000
+
+[workflows.workflow.metadata]
+outputType = "webview"

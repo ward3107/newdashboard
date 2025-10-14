@@ -1,0 +1,50 @@
+{
+  "name": "ai-student-analysis-dashboard",
+  "version": "1.0.0",
+  "description": "AI-powered student analysis dashboard with Claude AI integration",
+  "private": true,
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@tanstack/react-query": "^5.90.2",
+    "axios": "^1.6.2",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.22",
+    "jspdf": "^3.0.3",
+    "lucide-react": "^0.544.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^6.20.0",
+    "recharts": "^3.2.1",
+    "xlsx": "^0.18.5"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:analyze": "vite build --mode production && node analyze-bundle.js",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/ui": "^3.2.4",
+    "autoprefixer": "^10.4.21",
+    "jsdom": "^27.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18",
+    "typescript": "^5.9.3",
+    "vite": "^5.0.8",
+    "vite-plugin-pwa": "^1.0.3",
+    "vitest": "^3.2.4",
+    "workbox-window": "^7.3.0"
+  }
+}

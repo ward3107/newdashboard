@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Read(//c/Users/Waseem/Downloads/informational-marketing-results-dashboard-template/**)",
+      "Bash(curl:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm test:*)",
+      "Read(//c/Users/Waseem/Downloads/**)",
+      "Bash(npx tailwindcss init:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(python:*)",
+      "Bash(dir)",
+      "Bash(test:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "WebFetch(domain:openai.com)",
+      "WebSearch",
+      "WebFetch(domain:forms.gle)",
+      "WebFetch(domain:docs.google.com)",
+      "Bash(move SETUP_SUMMARY.md docs/setup/)",
+      "Bash(move QUICK_SECURITY_SETUP.md docs/setup/)",
+      "Bash(move AUTOMATIC_FORM_ANALYSIS_SETUP.md docs/setup/)",
+      "Bash(move SECURE_ADMIN_API_SETUP.md docs/setup/)",
+      "Bash(move SETUP_SUMMARY.md docssetup )",
+      "Bash(move QUICK_SECURITY_SETUP.md docssetup )",
+      "Bash(move AUTOMATIC_FORM_ANALYSIS_SETUP.md docssetup )",
+      "Bash(move SECURE_ADMIN_API_SETUP.md docssetup)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

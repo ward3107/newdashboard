@@ -1,0 +1,134 @@
+/* CLS (Cumulative Layout Shift) Fixes */
+
+/* Reserve space for navigation bar */
+nav.fixed {
+  height: 72px;
+}
+
+/* Fixed heights for animated blobs to prevent reflow */
+.animate-blob {
+  width: 384px;
+  height: 384px;
+  contain: layout;
+}
+
+/* Reserve space for student cards */
+.student-card-container {
+  min-height: 280px;
+}
+
+/* Fixed dimensions for avatars */
+.avatar-container {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+/* Prevent button size changes on hover */
+button {
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* Reserve space for loading states */
+.loading-skeleton {
+  min-height: 200px;
+}
+
+/* Fixed dimensions for stat cards */
+.stat-card {
+  min-height: 180px;
+}
+
+/* Prevent modal layout shifts */
+.modal-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  contain: layout style;
+}
+
+/* Reserve space for charts */
+.chart-container {
+  min-height: 320px;
+  position: relative;
+}
+
+/* Stabilize icon sizes */
+svg {
+  flex-shrink: 0;
+}
+
+/* Prevent text reflow during font loading */
+body {
+  font-display: optional;
+}
+
+/* Reserve space for images and icons */
+img,
+.icon-wrapper {
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+/* Stabilize dropdown menus */
+.dropdown-menu {
+  position: absolute;
+  contain: layout;
+}
+
+/* Prevent layout shift from scrollbars */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+/* Reserve space for notifications */
+.notification-container {
+  min-height: 48px;
+  contain: layout;
+}
+
+/* Stabilize grid layouts */
+.grid {
+  contain: layout style;
+}
+
+/* Prevent shifts from dynamic content */
+[data-loading="true"] {
+  min-height: inherit;
+  contain: layout;
+}
+
+/* Smooth transitions without layout shifts */
+* {
+  transition-property: opacity, background-color, border-color, color, fill, stroke;
+  transition-duration: 200ms;
+}
+
+/* Exclude transform from global transition to prevent CLS */
+.hover\:scale-105 {
+  transition-property: transform;
+  transition-duration: 200ms;
+}
+
+/* Reserve consistent space for borders */
+.border {
+  border-width: 1px;
+}
+
+/* Stabilize font sizes */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Prevent layout shift from focus states */
+:focus {
+  outline-offset: -2px;
+}
+
+/* Reserve space for error messages */
+.error-message,
+.success-message {
+  min-height: 24px;
+}

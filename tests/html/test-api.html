@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Connection Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #667eea;
+        text-align: center;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+      button {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        margin: 10px 0;
+      }
+      button:hover {
+        background: #5568d3;
+      }
+      .result {
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+      .error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+      .info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧪 API Connection Test</h1>
+      <p class="api-test-description">
+        Test if the NEW API URL works with CORS
+      </p>
+
+      <div class="test-section">
+        <h3>📋 API Configuration</h3>
+        <div class="result info">
+          API URL (V6 - Final):
+          https://script.google.com/macros/s/AKfycbxSawbi4f370i94rPA2EpVZh3LlfMisq7uu6r3pS0Q3rQU8nW5qTk_Witm1FVd5kQtb/exec
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h3>🔬 Test 1: Basic Connection</h3>
+        <button type="button" onclick="testConnection()">Run Test</button>
+        <div id="test1-result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>📊 Test 2: Get All Students</h3>
+        <button type="button" onclick="testGetStudents()">Get Students</button>
+        <div id="test2-result"></div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL =
+        "https://script.google.com/macros/s/AKfycbxSawbi4f370i94rPA2EpVZh3LlfMisq7uu6r3pS0Q3rQU8nW5qTk_Witm1FVd5kQtb/exec";
+
+      async function testConnection() {
+        const resultDiv = document.getElementById("test1-result");
+        resultDiv.innerHTML = '<div class="result info">Testing...</div>';
+
+        try {
+          const response = await fetch(API_URL + "?action=test");
+          const data = await response.json();
+
+          resultDiv.innerHTML =
+            '<div class="result success">SUCCESS! Status: ' +
+            response.status +
+            "\n\n" +
+            JSON.stringify(data, null, 2) +
+            "</div>";
+        } catch (error) {
+          resultDiv.innerHTML =
+            '<div class="result error">FAILED!\n\nError: ' +
+            error.message +
+            "\n\nIf you see CORS policy error, the Google Apps Script needs CORS headers.</div>";
+        }
+      }
+
+      async function testGetStudents() {
+        const resultDiv = document.getElementById("test2-result");
+        resultDiv.innerHTML =
+          '<div class="result info">Getting students...</div>';
+
+        try {
+          const response = await fetch(API_URL + "?action=getAllStudents");
+          const data = await response.json();
+
+          resultDiv.innerHTML =
+            '<div class="result success">SUCCESS! Students found: ' +
+            (data.students?.length || 0) +
+            "\n\n" +
+            JSON.stringify(data, null, 2) +
+            "</div>";
+        } catch (error) {
+          resultDiv.innerHTML =
+            '<div class="result error">FAILED!\n\nError: ' +
+            error.message +
+            "</div>";
+        }
+      }
+    </script>
+  </body>
+</html>
