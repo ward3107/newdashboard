@@ -28,6 +28,7 @@ import {
   Star,
   UserCheck,
   User,
+  UserX,
   GraduationCap,
   Briefcase,
   MessageSquare,
@@ -55,14 +56,17 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Import mock data generator
-import { generateMockAnalytics } from '../../utils/mockAnalyticsData';
+// Import real analytics data aggregator
+import { aggregateRealAnalytics } from '../../utils/realAnalyticsData';
 
 // Import Core Stats Dashboard for Phase 1
 import CoreStatsDashboard from './CoreStatsDashboard';
 
 // Import Emotional-Behavioral-Cognitive Dashboard
 import EmotionalBehavioralDashboard from './EmotionalBehavioralDashboard';
+
+// Import Classroom Seating component (AI-powered version)
+import ClassroomSeatingAI from '../classroom/ClassroomSeatingAI';
 
 // Import extended sections
 import {
@@ -86,7 +90,10 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
   const [expandedMenus, setExpandedMenus] = useState({ ebc: true }); // EBC expanded by default
   const [viewMode, setViewMode] = useState('overview'); // overview, detailed, comparison
 
-  // Analytics categories with icons, Hebrew names, and submenus (NO ACADEMIC/GRADES)
+  // Filter to show only analyzed students (those who have completed deep analysis)
+  const analyzedStudents = students ? students.filter(s => !s.needsAnalysis) : [];
+
+  // Analytics categories - SHOWING ONLY CATEGORIES WITH REAL DATA
   const categories = [
     {
       id: 'ebc',
@@ -98,8 +105,19 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
         { id: 'overview', name: 'סקירה כללית', icon: Eye },
         { id: 'emotional', name: 'ניתוח רגשי', icon: Heart },
         { id: 'behavioral', name: 'ניתוח התנהגותי', icon: Activity },
-        { id: 'cognitive', name: 'ניתוח קוגניטיבי', icon: Brain },
-        { id: 'seating', name: 'המלצות ישיבה', icon: Grid3x3 }
+        { id: 'cognitive', name: 'ניתוח קוגניטיבי', icon: Brain }
+      ]
+    },
+    {
+      id: 'seating',
+      name: 'סידור ישיבה AI',
+      icon: Grid3x3,
+      color: 'from-cyan-600 to-blue-600',
+      priority: true,
+      subItems: [
+        { id: 'map', name: 'מפת כיתה', icon: Map },
+        { id: 'recommendations', name: 'המלצות', icon: Lightbulb },
+        { id: 'optimization', name: 'אופטימיזציה', icon: Target }
       ]
     },
     {
@@ -108,70 +126,19 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
       icon: ChartBar,
       color: 'from-blue-600 to-indigo-600',
       subItems: [
-        { id: 'risk', name: 'מדדי סיכון', icon: AlertTriangle },
-        { id: 'trends', name: 'מגמות', icon: TrendingUp },
-        { id: 'patterns', name: 'דפוסים', icon: Layers },
-        { id: 'metrics', name: 'מדדי מפתח', icon: PieChart }
-      ]
-    },
-    {
-      id: 'behavioral',
-      name: 'דפוסי התנהגות',
-      icon: Activity,
-      color: 'from-red-500 to-rose-500',
-      subItems: [
-        { id: 'frequency', name: 'תדירות התנהגויות', icon: BarChart3 },
-        { id: 'interactions', name: 'אינטראקציות', icon: Users },
-        { id: 'focus', name: 'ריכוז וקשב', icon: Target },
-        { id: 'regulation', name: 'ויסות עצמי', icon: Shield }
-      ]
-    },
-    {
-      id: 'cognitive',
-      name: 'ניתוח קוגניטיבי',
-      icon: Brain,
-      color: 'from-purple-500 to-pink-500',
-      subItems: [
-        { id: 'processing', name: 'עיבוד מידע', icon: Zap },
-        { id: 'memory', name: 'זיכרון', icon: BookOpen },
-        { id: 'attention', name: 'קשב', icon: Eye },
-        { id: 'flexibility', name: 'גמישות מחשבתית', icon: RefreshCw }
-      ]
-    },
-    {
-      id: 'social',
-      name: 'אינטראקציה חברתית',
-      icon: Users,
-      color: 'from-green-500 to-emerald-500',
-      subItems: [
-        { id: 'dynamics', name: 'דינמיקה חברתית', icon: Users },
-        { id: 'relationships', name: 'יחסים בין-אישיים', icon: Heart },
-        { id: 'communication', name: 'תקשורת', icon: MessageSquare },
-        { id: 'collaboration', name: 'שיתוף פעולה', icon: UserPlus }
-      ]
-    },
-    {
-      id: 'environmental',
-      name: 'סביבת למידה',
-      icon: Map,
-      color: 'from-orange-500 to-amber-500',
-      subItems: [
-        { id: 'preferences', name: 'העדפות סביבתיות', icon: Settings },
-        { id: 'optimal', name: 'תנאים מיטביים', icon: Star },
-        { id: 'adaptations', name: 'התאמות נדרשות', icon: Compass },
-        { id: 'classroom', name: 'סביבת הכיתה', icon: Home }
+        { id: 'summary', name: 'סיכום כללי', icon: FileText },
+        { id: 'comparative', name: 'השוואה בין כיתות', icon: BarChart3 }
       ]
     },
     {
       id: 'predictive',
       name: 'חיזוי וסיכונים',
       icon: AlertTriangle,
-      color: 'from-indigo-500 to-violet-500',
+      color: 'from-red-500 to-rose-500',
       subItems: [
         { id: 'risks', name: 'זיהוי סיכונים', icon: AlertTriangle },
-        { id: 'predictions', name: 'חיזוי מגמות', icon: TrendingUp },
-        { id: 'alerts', name: 'התראות', icon: Bell },
-        { id: 'prevention', name: 'מניעה', icon: Shield }
+        { id: 'at-risk', name: 'תלמידים בסיכון', icon: UserX },
+        { id: 'support-needed', name: 'זקוקים לתמיכה', icon: Shield }
       ]
     },
     {
@@ -180,33 +147,43 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
       icon: Shield,
       color: 'from-teal-500 to-cyan-500',
       subItems: [
-        { id: 'interventions', name: 'התערבויות', icon: Zap },
-        { id: 'resources', name: 'משאבים', icon: BookOpen },
-        { id: 'strategies', name: 'אסטרטגיות', icon: Target },
-        { id: 'tracking', name: 'מעקב', icon: Eye }
+        { id: 'interventions', name: 'התערבויות מומלצות', icon: Zap },
+        { id: 'response-times', name: 'עדיפויות זמן', icon: Clock },
+        { id: 'effectiveness', name: 'יעילות התערבויות', icon: Target }
       ]
     }
   ];
 
-  // Load analytics data
+  // Load analytics data from real ISHEBOT analyses
   useEffect(() => {
     const loadAnalytics = async () => {
       setLoading(true);
       try {
-        // In production, this would fetch real data from API
-        const data = generateMockAnalytics(students);
-        setAnalyticsData(data);
+        // Aggregate real analytics data from ISHEBOT-analyzed students
+        if (analyzedStudents.length > 0) {
+          console.log('📊 Aggregating real analytics from', analyzedStudents.length, 'analyzed students');
+          const data = aggregateRealAnalytics(analyzedStudents);
+
+          if (data) {
+            console.log('✅ Real analytics data aggregated successfully:', data);
+            setAnalyticsData(data);
+          } else {
+            console.warn('⚠️ No ISHEBOT analysis data found in students');
+            setAnalyticsData(null);
+          }
+        } else {
+          console.log('📭 No analyzed students available');
+          setAnalyticsData(null);
+        }
       } catch (error) {
-        console.error('Error loading analytics:', error);
+        console.error('❌ Error loading analytics:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    if (students && students.length > 0) {
-      loadAnalytics();
-    }
-  }, [students]);
+    loadAnalytics();
+  }, [analyzedStudents.length]);
 
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
@@ -217,6 +194,11 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
 
   if (loading) {
     return <LoadingState darkMode={darkMode} theme={theme} />;
+  }
+
+  // Show empty state if no analyzed students
+  if (analyzedStudents.length === 0) {
+    return <NoAnalyzedStudentsState darkMode={darkMode} theme={theme} />;
   }
 
   return (
@@ -240,7 +222,16 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
         <div className="space-y-6">
           {selectedCategory === 'ebc' && (
             <EmotionalBehavioralDashboard
-              students={students}
+              students={analyzedStudents}
+              darkMode={darkMode}
+              theme={theme}
+              selectedView={selectedSubCategory}
+            />
+          )}
+
+          {selectedCategory === 'seating' && (
+            <ClassroomSeatingAI
+              students={analyzedStudents}
               darkMode={darkMode}
               theme={theme}
               selectedView={selectedSubCategory}
@@ -249,7 +240,7 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
 
           {selectedCategory === 'core' && (
             <CoreStatsDashboard
-              students={students}
+              students={analyzedStudents}
               darkMode={darkMode}
               theme={theme}
               selectedSection={selectedSubCategory}
@@ -261,6 +252,7 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
               data={analyticsData?.behavioral}
               darkMode={darkMode}
               theme={theme}
+              selectedSubCategory={selectedSubCategory}
               expanded={expandedSections.behavioral}
               onToggle={() => toggleSection('behavioral')}
             />
@@ -271,6 +263,7 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
               data={analyticsData?.cognitive}
               darkMode={darkMode}
               theme={theme}
+              selectedSubCategory={selectedSubCategory}
               expanded={expandedSections.cognitive}
               onToggle={() => toggleSection('cognitive')}
             />
@@ -281,6 +274,7 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
               data={analyticsData?.social}
               darkMode={darkMode}
               theme={theme}
+              selectedSubCategory={selectedSubCategory}
               expanded={expandedSections.social}
               onToggle={() => toggleSection('social')}
             />
@@ -291,6 +285,7 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
               data={analyticsData?.environmental}
               darkMode={darkMode}
               theme={theme}
+              selectedSubCategory={selectedSubCategory}
               expanded={expandedSections.environmental}
               onToggle={() => toggleSection('environmental')}
             />
@@ -301,6 +296,7 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
               data={analyticsData?.predictive}
               darkMode={darkMode}
               theme={theme}
+              selectedSubCategory={selectedSubCategory}
               expanded={expandedSections.predictive}
               onToggle={() => toggleSection('predictive')}
             />
@@ -311,6 +307,7 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
               data={analyticsData?.support}
               darkMode={darkMode}
               theme={theme}
+              selectedSubCategory={selectedSubCategory}
               expanded={expandedSections.support}
               onToggle={() => toggleSection('support')}
             />
@@ -347,8 +344,12 @@ const CategorySidebar = ({
   const handleCategoryClick = (category) => {
     setSelectedCategory(category.id);
     if (category.subItems && category.subItems.length > 0) {
-      toggleMenu(category.id);
+      // Close all other menus and open only this one
+      setExpandedMenus({ [category.id]: true });
       setSelectedSubCategory(category.subItems[0].id);
+    } else {
+      // If no subitems, close all menus
+      setExpandedMenus({});
     }
   };
 
@@ -360,22 +361,30 @@ const CategorySidebar = ({
   return (
     <div className={`w-72 h-screen sticky top-0 ${
       darkMode ? 'bg-gray-900/95' : 'bg-white/95'
-    } backdrop-blur-xl border-r ${
-      darkMode ? 'border-gray-800' : 'border-gray-200'
-    } flex flex-col`}>
+    } backdrop-blur-xl border-r-4 ${
+      darkMode ? 'border-purple-500/50' : 'border-blue-500/50'
+    } shadow-2xl flex flex-col relative`}>
+      {/* Decorative vertical line */}
+      <div className={`absolute left-0 top-0 bottom-0 w-1 ${
+        darkMode ? 'bg-gradient-to-b from-purple-500 via-pink-500 to-blue-500' : 'bg-gradient-to-b from-blue-500 via-cyan-500 to-purple-500'
+      }`} />
 
       {/* Sidebar Header */}
-      <div className="p-6 border-b border-white/10">
+      <div className={`p-6 border-b-2 ${
+        darkMode ? 'border-purple-500/30 bg-gradient-to-r from-purple-900/20 to-pink-900/20' : 'border-blue-500/30 bg-gradient-to-r from-blue-50/50 to-cyan-50/50'
+      }`}>
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 bg-gradient-to-br ${theme.primary} rounded-xl flex items-center justify-center`}>
-            <ChartBar className="text-white" size={20} />
+          <div className={`w-12 h-12 bg-gradient-to-br ${theme.primary} rounded-xl flex items-center justify-center shadow-lg ring-2 ${
+            darkMode ? 'ring-purple-500/50' : 'ring-blue-500/50'
+          }`}>
+            <ChartBar className="text-white" size={22} />
           </div>
           <div>
-            <h2 className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <h2 className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               לוח בקרה
             </h2>
             <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              תפריט ראשי
+              תפריט ניווט ראשי
             </p>
           </div>
         </div>
@@ -395,10 +404,12 @@ const CategorySidebar = ({
                 onClick={() => handleCategoryClick(category)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                   isActive
-                    ? `bg-gradient-to-r ${category.color} text-white shadow-lg`
+                    ? `bg-gradient-to-r ${category.color} text-white shadow-lg ring-2 ${
+                        darkMode ? 'ring-purple-400/50' : 'ring-blue-400/50'
+                      } scale-[1.02]`
                     : darkMode
-                      ? 'text-gray-300 hover:bg-white/10'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? 'text-gray-300 hover:bg-white/10 border border-transparent hover:border-purple-500/30'
+                      : 'text-gray-700 hover:bg-gray-100 border border-transparent hover:border-blue-500/30'
                 }`}
               >
                 <Icon size={20} />
@@ -443,11 +454,11 @@ const CategorySidebar = ({
                               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
                                 isSubActive
                                   ? darkMode
-                                    ? 'bg-white/20 text-white'
-                                    : 'bg-gray-200 text-gray-900'
+                                    ? 'bg-white/20 text-white border-l-2 border-purple-400 shadow-md'
+                                    : 'bg-gray-200 text-gray-900 border-l-2 border-blue-500 shadow-md'
                                   : darkMode
-                                    ? 'text-gray-400 hover:bg-white/10 hover:text-gray-300'
-                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
+                                    ? 'text-gray-400 hover:bg-white/10 hover:text-gray-300 border-l-2 border-transparent hover:border-purple-500/30'
+                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800 border-l-2 border-transparent hover:border-blue-500/30'
                               }`}
                             >
                               <SubIcon size={14} />
@@ -473,9 +484,13 @@ const CategorySidebar = ({
       </nav>
 
       {/* Sidebar Footer */}
-      <div className={`p-4 border-t ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
-        <div className={`p-3 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-gray-100'}`}>
-          <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+      <div className={`p-4 border-t-2 ${
+        darkMode ? 'border-purple-500/30 bg-gradient-to-r from-purple-900/20 to-pink-900/20' : 'border-blue-500/30 bg-gradient-to-r from-blue-50/50 to-cyan-50/50'
+      }`}>
+        <div className={`p-3 rounded-xl ${
+          darkMode ? 'bg-white/10 border border-purple-500/30' : 'bg-white/50 border border-blue-500/30'
+        } shadow-lg`}>
+          <p className={`text-xs text-center font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             פלטפורמה לניתוח רגשי-התנהגותי
           </p>
         </div>
@@ -1180,39 +1195,124 @@ const KnowledgeGapsCard = ({ data, darkMode }) => {
 // 3. BEHAVIORAL & EMOTIONAL INSIGHTS SECTION
 // ============================================================================
 
-const BehavioralInsightsSection = ({ data, darkMode, theme }) => {
+const BehavioralInsightsSection = ({ data, darkMode, theme, selectedSubCategory }) => {
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          אין נתונים התנהגותיים זמינים
+        </p>
+      </div>
+    );
+  }
+
+  const getSubCategoryTitle = () => {
+    const titles = {
+      frequency: 'תדירות התנהגויות',
+      interactions: 'אינטראקציות',
+      focus: 'ריכוז וקשב',
+      regulation: 'ויסות עצמי'
+    };
+    return titles[selectedSubCategory] || 'דפוסי התנהגות';
+  };
+
+  const renderContent = () => {
+    const DataCard = ({ title, value, icon: Icon, color }) => (
+      <div className={`p-6 rounded-xl backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} border border-white/20`}>
+        <div className="flex items-center justify-between mb-4">
+          <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h4>
+          <Icon className={color} size={24} />
+        </div>
+        <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          {value}
+        </div>
+      </div>
+    );
+
+    switch(selectedSubCategory) {
+      case 'frequency':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <DataCard
+              title="תלמידים מעל הסף"
+              value={data.motivation?.studentsAboveThreshold || 0}
+              icon={TrendingUp}
+              color="text-green-500"
+            />
+            <DataCard
+              title="תלמידים מתחת לסף"
+              value={data.motivation?.studentsBelowThreshold || 0}
+              icon={TrendingDown}
+              color="text-red-500"
+            />
+            <PlaceholderCard title="תדירות שבועית" icon={BarChart3} />
+            <PlaceholderCard title="התנהגויות חיוביות" icon={CheckCircle} />
+            <PlaceholderCard title="התנהגויות לשיפור" icon={AlertTriangle} />
+            <PlaceholderCard title="מגמות לאורך זמן" icon={TrendingUp} />
+            <PlaceholderCard title="השוואה לכיתה" icon={Users} />
+          </div>
+        );
+      case 'interactions':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="אינטראקציות חברתיות" icon={Users} />
+            <PlaceholderCard title="שיתוף פעולה" icon={UserPlus} />
+            <PlaceholderCard title="תקשורת" icon={MessageSquare} />
+            <PlaceholderCard title="יחסים עם מורים" icon={User} />
+            <PlaceholderCard title="פתרון קונפליקטים" icon={Shield} />
+            <PlaceholderCard title="מיומנויות חברתיות" icon={Heart} />
+          </div>
+        );
+      case 'focus':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="יכולת ריכוז" icon={Target} />
+            <PlaceholderCard title="זמני קשב" icon={Clock} />
+            <PlaceholderCard title="הסחות דעת" icon={Eye} />
+            <PlaceholderCard title="שיפור קשב" icon={TrendingUp} />
+            <PlaceholderCard title="אסטרטגיות ריכוז" icon={Lightbulb} />
+            <PlaceholderCard title="ביצועים" icon={Award} />
+          </div>
+        );
+      case 'regulation':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="ויסות רגשי" icon={Heart} />
+            <PlaceholderCard title="שליטה עצמית" icon={Shield} />
+            <PlaceholderCard title="תגובות למצבי לחץ" icon={AlertTriangle} />
+            <PlaceholderCard title="ניהול כעסים" icon={Activity} />
+            <PlaceholderCard title="יציבות רגשית" icon={Target} />
+            <PlaceholderCard title="אסטרטגיות התמודדות" icon={Lightbulb} />
+          </div>
+        );
+      default:
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <MotivationCard data={data?.motivation} darkMode={darkMode} />
+            <StressLevelCard data={data?.stress} darkMode={darkMode} />
+            <ConfidenceCard data={data?.confidence} darkMode={darkMode} />
+            <CollaborationCard data={data?.collaboration} darkMode={darkMode} />
+            <PeakTimesCard data={data?.peakTimes} darkMode={darkMode} />
+            <EmotionalTrendCard data={data?.emotionalTrend} darkMode={darkMode} />
+          </div>
+        );
+    }
+  };
+
   return (
     <div className={`backdrop-blur-xl ${
       darkMode ? 'bg-white/10' : 'bg-white/40'
     } rounded-3xl p-6 border border-white/20 shadow-2xl`}>
       <div className="flex items-center gap-3 mb-6">
         <div className={`w-10 h-10 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl flex items-center justify-center`}>
-          <Heart className="text-white" size={20} />
+          <Activity className="text-white" size={20} />
         </div>
         <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          תובנות התנהגותיות ורגשיות
+          {getSubCategoryTitle()}
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Motivation Index */}
-        <MotivationCard data={data?.motivation} darkMode={darkMode} />
-
-        {/* Stress Level */}
-        <StressLevelCard data={data?.stress} darkMode={darkMode} />
-
-        {/* Confidence Score */}
-        <ConfidenceCard data={data?.confidence} darkMode={darkMode} />
-
-        {/* Collaboration Preference */}
-        <CollaborationCard data={data?.collaboration} darkMode={darkMode} />
-
-        {/* Peak Performance Times */}
-        <PeakTimesCard data={data?.peakTimes} darkMode={darkMode} />
-
-        {/* Emotional Trend */}
-        <EmotionalTrendCard data={data?.emotionalTrend} darkMode={darkMode} />
-      </div>
+      {renderContent()}
     </div>
   );
 };
@@ -1523,7 +1623,89 @@ const EmotionalTrendCard = ({ data, darkMode }) => {
 // COGNITIVE ANALYSIS SECTION
 // ============================================================================
 
-const CognitiveAnalysisSection = ({ data, darkMode, theme }) => {
+const CognitiveAnalysisSection = ({ data, darkMode, theme, selectedSubCategory }) => {
+  const getSubCategoryTitle = () => {
+    const titles = {
+      processing: 'עיבוד מידע',
+      memory: 'זיכרון',
+      attention: 'קשב',
+      flexibility: 'גמישות מחשבתית'
+    };
+    return titles[selectedSubCategory] || 'ניתוח קוגניטיבי';
+  };
+
+  const PlaceholderCard = ({ title, icon: Icon }) => (
+    <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <Icon className="text-purple-500" size={20} />
+        <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h4>
+      </div>
+      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        תוכן מפורט עבור {title}
+      </p>
+    </div>
+  );
+
+  const renderContent = () => {
+    switch(selectedSubCategory) {
+      case 'processing':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="מהירות עיבוד" icon={Zap} />
+            <PlaceholderCard title="דיוק במידע" icon={Target} />
+            <PlaceholderCard title="עיבוד ויזואלי" icon={Eye} />
+            <PlaceholderCard title="עיבוד שמיעתי" icon={MessageSquare} />
+            <PlaceholderCard title="עיבוד רב-חושי" icon={Activity} />
+            <PlaceholderCard title="שיפור עיבוד" icon={TrendingUp} />
+          </div>
+        );
+      case 'memory':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="זיכרון קצר מועד" icon={Clock} />
+            <PlaceholderCard title="זיכרון ארוך מועד" icon={BookOpen} />
+            <PlaceholderCard title="זיכרון עבודה" icon={Brain} />
+            <PlaceholderCard title="אסטרטגיות זכירה" icon={Lightbulb} />
+            <PlaceholderCard title="שיפור זיכרון" icon={TrendingUp} />
+            <PlaceholderCard title="ביצועים" icon={Award} />
+          </div>
+        );
+      case 'attention':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="קשב מרוכז" icon={Target} />
+            <PlaceholderCard title="קשב מתמשך" icon={Clock} />
+            <PlaceholderCard title="קשב חלוקה" icon={Users} />
+            <PlaceholderCard title="קשב בררני" icon={Filter} />
+            <PlaceholderCard title="שיפור קשב" icon={TrendingUp} />
+            <PlaceholderCard title="ביצועים" icon={Award} />
+          </div>
+        );
+      case 'flexibility':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="חשיבה יצירתית" icon={Sparkles} />
+            <PlaceholderCard title="פתרון בעיות" icon={Lightbulb} />
+            <PlaceholderCard title="הסתגלות" icon={RefreshCw} />
+            <PlaceholderCard title="חשיבה מופשטת" icon={Brain} />
+            <PlaceholderCard title="גמישות תפיסתית" icon={Eye} />
+            <PlaceholderCard title="שיפור גמישות" icon={TrendingUp} />
+          </div>
+        );
+      default:
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="עיבוד מידע" icon={Zap} />
+            <PlaceholderCard title="זיכרון" icon={BookOpen} />
+            <PlaceholderCard title="קשב" icon={Eye} />
+            <PlaceholderCard title="גמישות מחשבתית" icon={RefreshCw} />
+            <PlaceholderCard title="ביצועים כללים" icon={Award} />
+            <PlaceholderCard title="שיפור קוגניטיבי" icon={TrendingUp} />
+          </div>
+        );
+    }
+  };
+
   return (
     <div className={`backdrop-blur-xl ${
       darkMode ? 'bg-white/10' : 'bg-white/40'
@@ -1533,12 +1715,10 @@ const CognitiveAnalysisSection = ({ data, darkMode, theme }) => {
           <Brain className="text-white" size={20} />
         </div>
         <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          ניתוח קוגניטיבי
+          {getSubCategoryTitle()}
         </h2>
       </div>
-      <p className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        תוכן מפורט לניתוח קוגניטיבי - עיבוד מידע, זיכרון, קשב וריכוז
-      </p>
+      {renderContent()}
     </div>
   );
 };
@@ -1547,7 +1727,89 @@ const CognitiveAnalysisSection = ({ data, darkMode, theme }) => {
 // SOCIAL DYNAMICS SECTION
 // ============================================================================
 
-const SocialDynamicsSection = ({ data, darkMode, theme }) => {
+const SocialDynamicsSection = ({ data, darkMode, theme, selectedSubCategory }) => {
+  const getSubCategoryTitle = () => {
+    const titles = {
+      dynamics: 'דינמיקה חברתית',
+      relationships: 'יחסים בין-אישיים',
+      communication: 'תקשורת',
+      collaboration: 'שיתוף פעולה'
+    };
+    return titles[selectedSubCategory] || 'אינטראקציה חברתית';
+  };
+
+  const PlaceholderCard = ({ title, icon: Icon }) => (
+    <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <Icon className="text-green-500" size={20} />
+        <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h4>
+      </div>
+      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        תוכן מפורט עבור {title}
+      </p>
+    </div>
+  );
+
+  const renderContent = () => {
+    switch(selectedSubCategory) {
+      case 'dynamics':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="קבוצות חברתיות" icon={Users} />
+            <PlaceholderCard title="מעמד חברתי" icon={Award} />
+            <PlaceholderCard title="השפעה חברתית" icon={TrendingUp} />
+            <PlaceholderCard title="אינטראקציות" icon={UserPlus} />
+            <PlaceholderCard title="רשתות חברתיות" icon={Globe} />
+            <PlaceholderCard title="שינויים דינמיים" icon={RefreshCw} />
+          </div>
+        );
+      case 'relationships':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="חברויות" icon={Heart} />
+            <PlaceholderCard title="יחסי תלמיד-מורה" icon={User} />
+            <PlaceholderCard title="משפחה" icon={Home} />
+            <PlaceholderCard title="איכות יחסים" icon={Star} />
+            <PlaceholderCard title="קונפליקטים" icon={AlertTriangle} />
+            <PlaceholderCard title="פתרון בעיות" icon={Lightbulb} />
+          </div>
+        );
+      case 'communication':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="מיומנויות תקשורת" icon={MessageSquare} />
+            <PlaceholderCard title="הבעה מילולית" icon={MessageSquare} />
+            <PlaceholderCard title="הבעה לא-מילולית" icon={Eye} />
+            <PlaceholderCard title="הקשבה פעילה" icon={Users} />
+            <PlaceholderCard title="אמפתיה" icon={Heart} />
+            <PlaceholderCard title="משוב יעיל" icon={CheckCircle} />
+          </div>
+        );
+      case 'collaboration':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="עבודת צוות" icon={Users} />
+            <PlaceholderCard title="שיתוף פעולה" icon={UserPlus} />
+            <PlaceholderCard title="פתרון בעיות קבוצתי" icon={Lightbulb} />
+            <PlaceholderCard title="מנהיגות" icon={Award} />
+            <PlaceholderCard title="תרומה קבוצתית" icon={Star} />
+            <PlaceholderCard title="יעילות צוותית" icon={TrendingUp} />
+          </div>
+        );
+      default:
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="דינמיקה חברתית" icon={Users} />
+            <PlaceholderCard title="יחסים" icon={Heart} />
+            <PlaceholderCard title="תקשורת" icon={MessageSquare} />
+            <PlaceholderCard title="שיתוף פעולה" icon={UserPlus} />
+            <PlaceholderCard title="מיומנויות חברתיות" icon={Star} />
+            <PlaceholderCard title="שיפור חברתי" icon={TrendingUp} />
+          </div>
+        );
+    }
+  };
+
   return (
     <div className={`backdrop-blur-xl ${
       darkMode ? 'bg-white/10' : 'bg-white/40'
@@ -1557,12 +1819,10 @@ const SocialDynamicsSection = ({ data, darkMode, theme }) => {
           <Users className="text-white" size={20} />
         </div>
         <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          אינטראקציה חברתית
+          {getSubCategoryTitle()}
         </h2>
       </div>
-      <p className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        ניתוח דינמיקה חברתית, יחסים בין אישיים ותקשורת
-      </p>
+      {renderContent()}
     </div>
   );
 };
@@ -1571,7 +1831,89 @@ const SocialDynamicsSection = ({ data, darkMode, theme }) => {
 // ENVIRONMENTAL SECTION
 // ============================================================================
 
-const EnvironmentalSection = ({ data, darkMode, theme }) => {
+const EnvironmentalSection = ({ data, darkMode, theme, selectedSubCategory }) => {
+  const getSubCategoryTitle = () => {
+    const titles = {
+      preferences: 'העדפות סביבתיות',
+      optimal: 'תנאים מיטביים',
+      adaptations: 'התאמות נדרשות',
+      classroom: 'סביבת הכיתה'
+    };
+    return titles[selectedSubCategory] || 'סביבת למידה';
+  };
+
+  const PlaceholderCard = ({ title, icon: Icon }) => (
+    <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <Icon className="text-orange-500" size={20} />
+        <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h4>
+      </div>
+      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        תוכן מפורט עבור {title}
+      </p>
+    </div>
+  );
+
+  const renderContent = () => {
+    switch(selectedSubCategory) {
+      case 'preferences':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="אור" icon={Sun} />
+            <PlaceholderCard title="רעש" icon={Bell} />
+            <PlaceholderCard title="טמפרטורה" icon={Activity} />
+            <PlaceholderCard title="סידור ישיבה" icon={Grid3x3} />
+            <PlaceholderCard title="כלים טכנולוגיים" icon={Globe} />
+            <PlaceholderCard title="סגנון למידה" icon={Eye} />
+          </div>
+        );
+      case 'optimal':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="מקום אופטימלי" icon={Star} />
+            <PlaceholderCard title="זמן אופטימלי" icon={Clock} />
+            <PlaceholderCard title="גורמים סביבתיים" icon={Compass} />
+            <PlaceholderCard title="תנאי עבודה" icon={Settings} />
+            <PlaceholderCard title="משאבים זמינים" icon={BookOpen} />
+            <PlaceholderCard title="שיפור תנאים" icon={TrendingUp} />
+          </div>
+        );
+      case 'adaptations':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="התאמות פיזיות" icon={Settings} />
+            <PlaceholderCard title="התאמות למידה" icon={Brain} />
+            <PlaceholderCard title="התאמות טכנולוגיות" icon={Globe} />
+            <PlaceholderCard title="התאמות זמן" icon={Clock} />
+            <PlaceholderCard title="תמיכה נוספת" icon={Shield} />
+            <PlaceholderCard title="מעקב התאמות" icon={Eye} />
+          </div>
+        );
+      case 'classroom':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="עיצוב כיתה" icon={Home} />
+            <PlaceholderCard title="סידור מקומות" icon={Grid3x3} />
+            <PlaceholderCard title="חומרים זמינים" icon={BookOpen} />
+            <PlaceholderCard title="אזורי למידה" icon={Map} />
+            <PlaceholderCard title="אווירה כיתתית" icon={Heart} />
+            <PlaceholderCard title="שיפור סביבה" icon={TrendingUp} />
+          </div>
+        );
+      default:
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <PlaceholderCard title="העדפות" icon={Settings} />
+            <PlaceholderCard title="תנאים מיטביים" icon={Star} />
+            <PlaceholderCard title="התאמות" icon={Compass} />
+            <PlaceholderCard title="סביבת כיתה" icon={Home} />
+            <PlaceholderCard title="משאבים" icon={BookOpen} />
+            <PlaceholderCard title="שיפור סביבתי" icon={TrendingUp} />
+          </div>
+        );
+    }
+  };
+
   return (
     <div className={`backdrop-blur-xl ${
       darkMode ? 'bg-white/10' : 'bg-white/40'
@@ -1581,12 +1923,10 @@ const EnvironmentalSection = ({ data, darkMode, theme }) => {
           <Map className="text-white" size={20} />
         </div>
         <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          סביבת למידה אופטימלית
+          {getSubCategoryTitle()}
         </h2>
       </div>
-      <p className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        העדפות סביבתיות, תנאי למידה מיטביים והתאמות נדרשות
-      </p>
+      {renderContent()}
     </div>
   );
 };
@@ -1607,6 +1947,80 @@ const LoadingState = ({ darkMode, theme }) => {
           <p className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
             טוען ניתוחים...
           </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// NO ANALYZED STUDENTS STATE
+// ============================================================================
+
+const NoAnalyzedStudentsState = ({ darkMode, theme }) => {
+  return (
+    <div className="flex items-center justify-center min-h-screen p-8">
+      <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/90'} rounded-3xl p-12 border border-white/20 max-w-2xl w-full`}>
+        <div className="flex flex-col items-center gap-6 text-center">
+          {/* Icon */}
+          <div className={`w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-500 rounded-3xl flex items-center justify-center shadow-2xl`}>
+            <Brain className="text-white" size={48} />
+          </div>
+
+          {/* Title */}
+          <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            אין תלמידים מנותחים
+          </h2>
+
+          {/* Description */}
+          <div className={`space-y-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            <p className="text-lg">
+              לוח הבקרה מציג רק נתונים של תלמידים שעברו ניתוח מעמיק.
+            </p>
+            <p className="text-base">
+              כדי לצפות בנתונים כאן, עליך תחילה לנתח תלמידים באמצעות כפתור "AI חכם" בתפריט הראשי.
+            </p>
+          </div>
+
+          {/* Features List */}
+          <div className={`w-full mt-6 p-6 rounded-2xl ${darkMode ? 'bg-white/5' : 'bg-gray-100/50'} border ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
+            <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              מה מציג לוח הבקרה?
+            </h3>
+            <ul className={`space-y-3 text-right ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              <li className="flex items-start gap-3">
+                <CheckCircle className="text-green-500 flex-shrink-0" size={20} />
+                <span>ניתוח רגשי-התנהגותי-קוגניטיבי מפורט</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle className="text-green-500 flex-shrink-0" size={20} />
+                <span>סטטיסטיקות ליבה ומדדי סיכון</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle className="text-green-500 flex-shrink-0" size={20} />
+                <span>המלצות ישיבה ואינטראקציה חברתית</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle className="text-green-500 flex-shrink-0" size={20} />
+                <span>חיזוי מגמות והתערבויות מומלצות</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Action hint */}
+          <div className={`mt-4 p-4 rounded-xl ${darkMode ? 'bg-blue-500/10' : 'bg-blue-50'} border ${darkMode ? 'border-blue-500/20' : 'border-blue-200'}`}>
+            <div className="flex items-center gap-3">
+              <Sparkles className="text-blue-500" size={24} />
+              <div className="text-right">
+                <p className={`font-semibold ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>
+                  מוכן להתחיל?
+                </p>
+                <p className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+                  לחץ על "AI חכם" בתפריט העליון כדי לנתח תלמידים
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

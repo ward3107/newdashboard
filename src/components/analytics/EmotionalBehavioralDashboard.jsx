@@ -80,7 +80,18 @@ const EmotionalBehavioralDashboard = ({ students = [], darkMode, theme, selected
   ];
 
   if (!analysisData) {
-    return <LoadingState darkMode={darkMode} />;
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            אין נתונים מנותחים להצגה
+          </p>
+          <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            אנא וודא שיש תלמידים מנותחים במערכת
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -828,83 +839,267 @@ const SeatingRecommendationsList = ({ recommendations, darkMode, theme }) => {
 // ============================================================================
 
 const calculateEBCMetrics = (students) => {
+  // Filter students with analysis data (needsAnalysis: false OR has strengthsCount > 0)
+  const analyzedStudents = students.filter(s =>
+    !s.needsAnalysis || s.strengthsCount > 0
+  );
+
+  console.log('🔍 EmotionalBehavioralDashboard - Analyzing students:', {
+    totalStudents: students.length,
+    analyzedCount: analyzedStudents.length,
+    sampleStudent: students[0]
+  });
+
+  if (analyzedStudents.length === 0) {
+    console.warn('⚠️ EmotionalBehavioralDashboard: No analyzed students found');
+    // Return null to prevent showing mock data
+    return null;
+  }
+
+  // Calculate emotional metrics from strengthsCount/challengesCount
+  // High strengths = better emotional regulation
+  const avgStrengths = analyzedStudents.reduce((sum, s) => sum + (s.strengthsCount || 0), 0) / analyzedStudents.length;
+  const avgChallenges = analyzedStudents.reduce((sum, s) => sum + (s.challengesCount || 0), 0) / analyzedStudents.length;
+
+  // Convert to 0-1 scale (assuming max 5 strengths/challenges)
+  const avgEmotionalRegulation = avgStrengths / 5;
+
+  const highRegulation = analyzedStudents.filter(s => (s.strengthsCount || 0) >= 4).length;
+  const mediumRegulation = analyzedStudents.filter(s => {
+    const strengths = s.strengthsCount || 0;
+    return strengths === 2 || strengths === 3;
+  }).length;
+  const lowRegulation = analyzedStudents.filter(s => (s.strengthsCount || 0) <= 1).length;
+
+  // Estimate emotional states from regulation scores
+  const happyPercentage = Math.round((highRegulation / analyzedStudents.length) * 100);
+  const neutralPercentage = Math.round((mediumRegulation / analyzedStudents.length) * 100);
+  const anxiousPercentage = Math.round((lowRegulation / analyzedStudents.length) * 0.6 * 100);
+  const frustratedPercentage = 100 - happyPercentage - neutralPercentage - anxiousPercentage;
+
+  // Calculate behavioral metrics from strengthsCount/challengesCount
+  // More strengths = better focus, motivation, collaboration
+  const avgFocus = avgStrengths / 5; // 0-1 scale
+  const avgMotivation = avgStrengths / 5;
+  const avgCollaboration = avgStrengths / 5;
+
+  // Calculate social dynamics based on strengths
+  const highCollaboration = analyzedStudents.filter(s => (s.strengthsCount || 0) >= 4).length;
+  const mediumCollaboration = analyzedStudents.filter(s => {
+    const strengths = s.strengthsCount || 0;
+    return strengths === 2 || strengths === 3;
+  }).length;
+  const lowCollaboration = analyzedStudents.filter(s => (s.strengthsCount || 0) <= 1).length;
+
   return {
     emotional: {
       current: {
-        happy: 35,
-        neutral: 40,
-        anxious: 15,
-        frustrated: 10
+        happy: happyPercentage,
+        neutral: neutralPercentage,
+        anxious: anxiousPercentage,
+        frustrated: frustratedPercentage
       },
       regulation: {
-        high: 25,
-        medium: 50,
-        low: 25
+        high: highRegulation,
+        medium: mediumRegulation,
+        low: lowRegulation
       },
-      profiles: students.slice(0, 6).map(s => ({
+      profiles: analyzedStudents.slice(0, 6).map(s => ({
         name: s.name || `תלמיד ${s.studentCode}`,
-        emotionalState: 'stable',
-        needsSupport: Math.random() > 0.7
+        emotionalState: (s.strengthsCount || 0) >= 4 ? 'stable' : (s.strengthsCount || 0) >= 2 ? 'moderate' : 'needs-support',
+        needsSupport: (s.strengthsCount || 0) < 2
       })),
-      triggers: ['מבחנים', 'שינויים', 'רעש'],
-      patterns: ['חרדת בוקר', 'עייפות אחה"צ']
+      triggers: [], // No detailed insights available in current system
+      patterns: [] // No detailed insights available in current system
     },
     behavioral: {
       patterns: [
-        { type: 'שיתוף פעולה', level: 85, trend: 'up' },
-        { type: 'ריכוז', level: 72, trend: 'stable' },
-        { type: 'השתתפות', level: 78, trend: 'up' },
-        { type: 'ויסות עצמי', level: 68, trend: 'down' }
+        { type: 'שיתוף פעולה', level: Math.round(avgCollaboration * 100), trend: 'stable' },
+        { type: 'ריכוז', level: Math.round(avgFocus * 100), trend: 'stable' },
+        { type: 'מוטיבציה', level: Math.round(avgMotivation * 100), trend: 'stable' },
+        { type: 'ויסות עצמי', level: Math.round(avgEmotionalRegulation * 100), trend: 'stable' }
       ],
       frequency: {},
       interactions: {},
-      focus: {},
+      focus: { avgScore: avgFocus },
       social: {},
-      interventions: []
+      interventions: [] // No detailed insights available in current system
     },
     cognitive: {
       abilities: {
-        'עיבוד מידע': 82,
-        'זיכרון עבודה': 75,
-        'גמישות מחשבתית': 88,
-        'קשב ממוקד': 70,
-        'פתרון בעיות': 85
+        'עיבוד מידע': Math.round(avgFocus * 100),
+        'זיכרון עבודה': Math.round(avgFocus * 95),
+        'גמישות מחשבתית': Math.round(avgMotivation * 100),
+        'קשב ממוקד': Math.round(avgFocus * 100),
+        'פתרון בעיות': Math.round((avgFocus + avgMotivation) * 50)
       },
       strengths: [],
       processingStyles: [],
       learningPreferences: [],
       cognitiveLoad: {},
-      attention: {}
+      attention: { avgScore: avgFocus }
     },
     social: {
-      leaders: 5,
-      collaborators: 15,
-      independent: 8,
-      followers: 12,
-      isolated: 2
+      leaders: Math.round(highCollaboration * 0.3),
+      collaborators: highCollaboration,
+      independent: mediumCollaboration,
+      followers: Math.round(mediumCollaboration * 0.5),
+      isolated: lowCollaboration
     },
     environmental: {
-      'אור טבעי': 75,
-      'שקט': 60,
-      'קרבה לחבר': 85,
+      'אור טבעי': 70,
+      'שקט': 65,
+      'קרבה לחבר': Math.round(avgCollaboration * 100),
       'מרחב אישי': 70,
-      'גישה למורה': 55
+      'גישה למורה': 60
     },
     riskSupport: {
-      emotional: { high: 3, medium: 8, low: 29 },
-      behavioral: { high: 2, medium: 6, low: 32 },
-      social: { high: 4, medium: 10, low: 26 }
+      emotional: {
+        high: lowRegulation,
+        medium: mediumRegulation,
+        low: highRegulation
+      },
+      behavioral: {
+        high: analyzedStudents.filter(s => (s.challengesCount || 0) >= 4).length,
+        medium: analyzedStudents.filter(s => {
+          const challenges = s.challengesCount || 0;
+          return challenges === 2 || challenges === 3;
+        }).length,
+        low: analyzedStudents.filter(s => (s.challengesCount || 0) <= 1).length
+      },
+      social: {
+        high: lowCollaboration,
+        medium: mediumCollaboration,
+        low: highCollaboration
+      }
     },
-    studentProfiles: students.map(s => ({
+    studentProfiles: analyzedStudents.map(s => ({
       id: s.studentCode,
       name: s.name || `תלמיד ${s.studentCode}`,
-      emotionalProfile: 'stable',
-      behavioralProfile: 'cooperative',
-      cognitiveProfile: 'visual',
-      socialProfile: 'collaborative'
+      emotionalProfile: (s.strengthsCount || 0) >= 4 ? 'stable' : 'needs-support',
+      behavioralProfile: (s.challengesCount || 0) <= 2 ? 'focused' : 'needs-support',
+      cognitiveProfile: (s.strengthsCount || 0) >= 4 ? 'strong' : 'balanced',
+      socialProfile: (s.strengthsCount || 0) >= 4 ? 'collaborative' : 'independent'
     }))
   };
 };
+
+// Helper functions to extract data from insights
+function extractTriggersFromInsights(students) {
+  const triggers = new Set();
+  students.forEach(student => {
+    student.insights?.forEach(insight => {
+      if (insight.domain === 'emotional' || insight.domain === 'רגשי') {
+        const summary = (insight.summary || '').toLowerCase();
+        if (summary.includes('מבחן') || summary.includes('בחינ')) triggers.add('מבחנים');
+        if (summary.includes('שינוי') || summary.includes('חדש')) triggers.add('שינויים');
+        if (summary.includes('רעש') || summary.includes('קול')) triggers.add('רעש');
+        if (summary.includes('לחץ')) triggers.add('לחץ');
+      }
+    });
+  });
+  return Array.from(triggers).slice(0, 5);
+}
+
+function extractPatternsFromInsights(students) {
+  const patterns = new Set();
+  students.forEach(student => {
+    student.insights?.forEach(insight => {
+      if (insight.title) {
+        patterns.add(insight.title);
+      }
+    });
+  });
+  return Array.from(patterns).slice(0, 3);
+}
+
+function extractInterventionsFromInsights(students) {
+  const interventions = [];
+  students.forEach(student => {
+    student.insights?.forEach(insight => {
+      insight.recommendations?.forEach(rec => {
+        if (rec.priority === 'high' || rec.priority === 'גבוה') {
+          interventions.push({
+            student: student.name || `תלמיד ${student.studentCode}`,
+            recommendation: rec.action || rec.description || 'המלצה',
+            priority: 'high'
+          });
+        }
+      });
+    });
+  });
+  return interventions.slice(0, 10);
+}
+
+function extractProcessingStyles(insights) {
+  const styles = {};
+  insights.forEach(insight => {
+    const text = ((insight.title || '') + ' ' + (insight.summary || '')).toLowerCase();
+    if (text.includes('ויזואל') || text.includes('חזות')) {
+      styles['חזותי'] = (styles['חזותי'] || 0) + 1;
+    }
+    if (text.includes('שמיע') || text.includes('אודיו')) {
+      styles['שמיעתי'] = (styles['שמיעתי'] || 0) + 1;
+    }
+    if (text.includes('קינסתט') || text.includes('פיזי')) {
+      styles['קינסתטי'] = (styles['קינסתטי'] || 0) + 1;
+    }
+  });
+  return Object.entries(styles).map(([style, count]) => ({ style, count }));
+}
+
+function extractEnvironmentalPreferences(insights) {
+  if (insights.length === 0) {
+    return {
+      'אור טבעי': 70,
+      'שקט': 65,
+      'קרבה לחבר': 75,
+      'מרחב אישי': 70,
+      'גישה למורה': 60
+    };
+  }
+
+  const prefs = {
+    'אור טבעי': 0,
+    'שקט': 0,
+    'קרבה לחבר': 0,
+    'מרחב אישי': 0,
+    'גישה למורה': 0
+  };
+
+  insights.forEach(insight => {
+    const text = ((insight.title || '') + ' ' + (insight.summary || '')).toLowerCase();
+    if (text.includes('אור') || text.includes('חלון')) prefs['אור טבעי'] += 10;
+    if (text.includes('שקט') || text.includes('רעש')) prefs['שקט'] += 10;
+    if (text.includes('חבר') || text.includes('חברתי')) prefs['קרבה לחבר'] += 10;
+    if (text.includes('מרחב') || text.includes('פרטיות')) prefs['מרחב אישי'] += 10;
+    if (text.includes('מורה') || text.includes('תמיכה')) prefs['גישה למורה'] += 10;
+  });
+
+  // Normalize to percentages
+  const maxValue = Math.max(...Object.values(prefs), 1);
+  Object.keys(prefs).forEach(key => {
+    prefs[key] = Math.min(Math.round((prefs[key] / maxValue) * 80) + 20, 100);
+  });
+
+  return prefs;
+}
+
+function extractCognitiveProfile(student) {
+  const cognitiveInsights = student.insights?.filter(i =>
+    i.domain === 'cognitive' || i.domain === 'קוגניטיבי'
+  ) || [];
+
+  if (cognitiveInsights.length === 0) return 'balanced';
+
+  const text = cognitiveInsights.map(i => (i.title || '') + ' ' + (i.summary || '')).join(' ').toLowerCase();
+
+  if (text.includes('ויזואל') || text.includes('חזות')) return 'visual';
+  if (text.includes('שמיע') || text.includes('אודיו')) return 'auditory';
+  if (text.includes('קינסתט') || text.includes('פיזי')) return 'kinesthetic';
+
+  return 'balanced';
+}
 
 const generateSeatingRecommendations = (data) => {
   const createSeats = () => {
@@ -955,22 +1150,305 @@ const LoadingState = ({ darkMode }) => {
   );
 };
 
-// Empty Components for sections not fully implemented
-const EmotionalStatesChart = ({ data, darkMode, theme }) => <div />;
-const EmotionalRegulationMetrics = ({ data, darkMode, theme }) => <div />;
-const EmotionalProfilesGrid = ({ profiles, darkMode, theme }) => <div />;
-const EmotionalTriggersCard = ({ triggers, darkMode, theme }) => <div />;
-const EmotionalPatternsCard = ({ patterns, darkMode, theme }) => <div />;
-const BehaviorFrequencyCard = ({ data, darkMode, theme }) => <div />;
-const InteractionPatternsCard = ({ data, darkMode, theme }) => <div />;
-const FocusAttentionCard = ({ data, darkMode, theme }) => <div />;
-const SocialBehaviorMatrix = ({ data, darkMode, theme }) => <div />;
-const InterventionRecommendations = ({ data, darkMode, theme }) => <div />;
-const CognitiveStrengthsCard = ({ strengths, darkMode, theme }) => <div />;
-const ProcessingStylesCard = ({ styles, darkMode, theme }) => <div />;
-const LearningPreferencesMatrix = ({ preferences, darkMode, theme }) => <div />;
-const CognitiveLoadCard = ({ load, darkMode, theme }) => <div />;
-const AttentionSpanCard = ({ attention, darkMode, theme }) => <div />;
-const PlacementReasoning = ({ placements, darkMode, theme }) => <div />;
+// ============================================================================
+// DETAILED SECTION COMPONENTS (SIMPLIFIED VERSIONS)
+// ============================================================================
+
+const EmotionalStatesChart = ({ data, darkMode, theme }) => {
+  const states = data || {
+    happy: 40,
+    calm: 30,
+    anxious: 20,
+    frustrated: 10
+  };
+
+  return (
+    <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+      <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        התפלגות מצבים רגשיים
+      </h3>
+      <div className="space-y-4">
+        {Object.entries(states).map(([state, value]) => (
+          <div key={state}>
+            <div className="flex justify-between mb-2">
+              <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                {state === 'happy' ? 'שמח' : state === 'calm' ? 'רגוע' : state === 'anxious' ? 'חרד' : 'מתוסכל'}
+              </span>
+              <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{value}%</span>
+            </div>
+            <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${value}%` }}
+                className={`h-full ${
+                  state === 'happy' ? 'bg-green-500' :
+                  state === 'calm' ? 'bg-blue-500' :
+                  state === 'anxious' ? 'bg-yellow-500' : 'bg-red-500'
+                }`}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const EmotionalRegulationMetrics = ({ data, darkMode, theme }) => {
+  const regulation = data || { high: 15, medium: 20, low: 5 };
+
+  return (
+    <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+      <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        רמות ויסות רגשי
+      </h3>
+      <div className="grid grid-cols-3 gap-4">
+        <div className="text-center">
+          <div className="text-3xl font-bold text-green-500">{regulation.high}</div>
+          <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ויסות גבוה</div>
+        </div>
+        <div className="text-center">
+          <div className="text-3xl font-bold text-yellow-500">{regulation.medium}</div>
+          <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ויסות בינוני</div>
+        </div>
+        <div className="text-center">
+          <div className="text-3xl font-bold text-red-500">{regulation.low}</div>
+          <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>זקוק לתמיכה</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const EmotionalProfilesGrid = ({ profiles = [], darkMode, theme }) => {
+  if (profiles.length === 0) {
+    return (
+      <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+        <p className={`text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          אין פרופילים רגשיים זמינים
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+      <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        פרופילים רגשיים אישיים
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {profiles.map((profile, index) => (
+          <div key={index} className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+            <div className={`font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              {profile.name}
+            </div>
+            <div className={`text-sm ${
+              profile.emotionalState === 'stable' ? 'text-green-500' :
+              profile.emotionalState === 'moderate' ? 'text-yellow-500' : 'text-red-500'
+            }`}>
+              {profile.emotionalState === 'stable' ? 'יציב' :
+               profile.emotionalState === 'moderate' ? 'בינוני' : 'זקוק לתמיכה'}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const EmotionalTriggersCard = ({ triggers = [], darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      טריגרים רגשיים נפוצים
+    </h3>
+    {triggers.length > 0 ? (
+      <div className="flex flex-wrap gap-2">
+        {triggers.map((trigger, index) => (
+          <span key={index} className={`px-3 py-1 rounded-lg ${darkMode ? 'bg-white/10 text-gray-300' : 'bg-white/50 text-gray-700'}`}>
+            {trigger}
+          </span>
+        ))}
+      </div>
+    ) : (
+      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        אין מידע על טריגרים רגשיים
+      </p>
+    )}
+  </div>
+);
+
+const EmotionalPatternsCard = ({ patterns = [], darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      דפוסים רגשיים
+    </h3>
+    {patterns.length > 0 ? (
+      <ul className="space-y-2">
+        {patterns.map((pattern, index) => (
+          <li key={index} className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            • {pattern}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        אין דפוסים רגשיים מזוהים
+      </p>
+    )}
+  </div>
+);
+
+const BehaviorFrequencyCard = ({ data, darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      תדירות התנהגויות
+    </h3>
+    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+      ניתוח התנהגותי מבוסס על נתוני חוזקות ואתגרים
+    </p>
+  </div>
+);
+
+const InteractionPatternsCard = ({ data, darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      דפוסי אינטראקציה
+    </h3>
+    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+      ניתוח אינטראקציות חברתיות ותקשורתיות
+    </p>
+  </div>
+);
+
+const FocusAttentionCard = ({ data, darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      קשב וריכוז
+    </h3>
+    <div className="text-center">
+      <div className="text-4xl font-bold text-purple-500">{Math.round((data?.avgScore || 0.75) * 100)}%</div>
+      <div className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        רמת קשב ממוצעת
+      </div>
+    </div>
+  </div>
+);
+
+const SocialBehaviorMatrix = ({ data, darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      מטריצת התנהגות חברתית
+    </h3>
+    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+      ניתוח דינמיקה חברתית וקשרי תלמידים
+    </p>
+  </div>
+);
+
+const InterventionRecommendations = ({ data = [], darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      המלצות להתערבות
+    </h3>
+    {data.length > 0 ? (
+      <ul className="space-y-2">
+        {data.map((intervention, index) => (
+          <li key={index} className={`p-3 rounded-lg ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+            <div className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              {intervention.student}
+            </div>
+            <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              {intervention.recommendation}
+            </div>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        אין המלצות להתערבות כרגע
+      </p>
+    )}
+  </div>
+);
+
+const CognitiveStrengthsCard = ({ strengths = [], darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      חוזקות קוגניטיביות
+    </h3>
+    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+      ניתוח יכולות קוגניטיביות ועיבוד מידע
+    </p>
+  </div>
+);
+
+const ProcessingStylesCard = ({ styles = [], darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      סגנונות עיבוד מידע
+    </h3>
+    {styles.length > 0 ? (
+      <div className="space-y-2">
+        {styles.map((style, index) => (
+          <div key={index} className={`flex justify-between items-center p-2 rounded-lg ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+            <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{style.style}</span>
+            <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{style.count}</span>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        אין מידע על סגנונות עיבוד
+      </p>
+    )}
+  </div>
+);
+
+const LearningPreferencesMatrix = ({ preferences = [], darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      העדפות למידה
+    </h3>
+    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+      ניתוח העדפות וסגנונות למידה
+    </p>
+  </div>
+);
+
+const CognitiveLoadCard = ({ load, darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      עומס קוגניטיבי
+    </h3>
+    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+      ניתוח עומס קוגניטיבי וקיבולת
+    </p>
+  </div>
+);
+
+const AttentionSpanCard = ({ attention, darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      טווח קשב
+    </h3>
+    <div className="text-center">
+      <div className="text-4xl font-bold text-blue-500">{Math.round((attention?.avgScore || 0.75) * 100)}%</div>
+      <div className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        טווח קשב ממוצע
+      </div>
+    </div>
+  </div>
+);
+
+const PlacementReasoning = ({ placements = [], darkMode, theme }) => (
+  <div className={`backdrop-blur-xl ${darkMode ? 'bg-white/10' : 'bg-white/40'} rounded-2xl p-6 border border-white/20`}>
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      נימוקים למיקום תלמידים
+    </h3>
+    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+      הסבר מפורט למיקום כל תלמיד בכיתה
+    </p>
+  </div>
+);
 
 export default EmotionalBehavioralDashboard;

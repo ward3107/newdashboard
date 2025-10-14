@@ -31,6 +31,7 @@ import { exportStudentDetailToPDF, generatePrintHTML } from '../../utils/exportU
 
 // Components
 import InsightCard from './InsightCard';
+import ISHEBOTReportDisplay from './ISHEBOTReportDisplay';
 
 const StudentDetail = () => {
   const { studentId } = useParams();
@@ -42,6 +43,7 @@ const StudentDetail = () => {
   const [error, setError] = useState(null);
   const [expandedSections, setExpandedSections] = useState({
     summary: true,
+    ishebotReport: true,
     insights: true,
     actions: true,
     seating: true
@@ -371,6 +373,47 @@ const StudentDetail = () => {
                         </p>
                       </div>
                     )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+
+        {/* ISHEBOT Analysis Report Section */}
+        {student.analysis_engine === 'ISHEBOT' && student.insights && student.insights.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-lg border-2 border-indigo-200 mb-6"
+          >
+            <button
+              onClick={() => toggleSection('ishebotReport')}
+              className="w-full p-6 flex items-center justify-between hover:bg-white/50 transition-colors rounded-t-xl"
+            >
+              <div className="flex items-center space-x-3 space-x-reverse">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Brain className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-indigo-900">דוח ניתוח ISHEBOT מלא</h2>
+                  <p className="text-sm text-indigo-700">ניתוח פדגוגי מקיף מבוסס בינה מלאכותית</p>
+                </div>
+              </div>
+              {expandedSections.ishebotReport ? <ChevronUp className="w-5 h-5 text-indigo-600" /> : <ChevronDown className="w-5 h-5 text-indigo-600" />}
+            </button>
+
+            <AnimatePresence>
+              {expandedSections.ishebotReport && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-6 pb-6">
+                    <ISHEBOTReportDisplay report={student} />
                   </div>
                 </motion.div>
               )}

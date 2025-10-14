@@ -8,11 +8,11 @@ import { motion } from 'framer-motion';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { Loading } from './components/common/Loading';
 
-// Lazy load components for code splitting
-const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
-const FuturisticDashboard = lazy(() => import('./components/dashboard/FuturisticDashboard'));
-const StudentDetail = lazy(() => import('./components/student/StudentDetail'));
-const TestAnalytics = lazy(() => import('./components/analytics/TestAnalytics'));
+// Lazy load components for code splitting with preload hints
+const Dashboard = lazy(() => import(/* webpackChunkName: "dashboard" */ './components/dashboard/Dashboard'));
+const FuturisticDashboard = lazy(() => import(/* webpackChunkName: "futuristic-dashboard" */ './components/dashboard/FuturisticDashboard'));
+const StudentDetail = lazy(() => import(/* webpackChunkName: "student-detail" */ './components/student/StudentDetail'));
+const TestAnalytics = lazy(() => import(/* webpackChunkName: "test-analytics" */ './components/analytics/TestAnalytics'));
 
 // Styles
 import './styles/global.css';

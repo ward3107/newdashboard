@@ -1041,7 +1041,84 @@ const FuturePerformanceCard = ({ data, darkMode }) => {
 // 7. TEACHER SUPPORT METRICS SECTION
 // ============================================================================
 
-export const TeacherSupportSection = ({ data, darkMode, theme }) => {
+export const TeacherSupportSection = ({ data, darkMode, theme, selectedSubCategory }) => {
+  // Render different content based on selected subcategory
+  const renderContent = () => {
+    switch(selectedSubCategory) {
+      case 'interventions':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <InterventionSuccessCard data={data?.interventions} darkMode={darkMode} />
+            <InterventionTypesCard darkMode={darkMode} />
+            <InterventionTimelineCard darkMode={darkMode} />
+            <InterventionImpactCard darkMode={darkMode} />
+            <StudentSupportCard darkMode={darkMode} />
+            <InterventionChallengesCard darkMode={darkMode} />
+          </div>
+        );
+
+      case 'resources':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <ResourceUtilizationCard data={data?.resources} darkMode={darkMode} />
+            <DigitalResourcesCard darkMode={darkMode} />
+            <TeachingMaterialsCard darkMode={darkMode} />
+            <SupportToolsCard darkMode={darkMode} />
+            <ResourceAccessCard darkMode={darkMode} />
+            <ResourceEffectivenessCard darkMode={darkMode} />
+          </div>
+        );
+
+      case 'strategies':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <TeachingEffectivenessCard data={data?.effectiveness} darkMode={darkMode} />
+            <PersonalizationCard data={data?.personalization} darkMode={darkMode} />
+            <DifferentiationStrategiesCard darkMode={darkMode} />
+            <AssessmentStrategiesCard darkMode={darkMode} />
+            <EngagementTacticsCard darkMode={darkMode} />
+            <FeedbackMethodsCard darkMode={darkMode} />
+          </div>
+        );
+
+      case 'tracking':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <ResponseTimesCard data={data?.responseTimes} darkMode={darkMode} />
+            <ParentEngagementCard data={data?.parentEngagement} darkMode={darkMode} />
+            <ProgressMonitoringCard darkMode={darkMode} />
+            <AttendanceTrackingCard darkMode={darkMode} />
+            <BehaviorMonitoringCard darkMode={darkMode} />
+            <DataCollectionCard darkMode={darkMode} />
+          </div>
+        );
+
+      default:
+        // Show overview when no subcategory selected
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <InterventionSuccessCard data={data?.interventions} darkMode={darkMode} />
+            <ResponseTimesCard data={data?.responseTimes} darkMode={darkMode} />
+            <PersonalizationCard data={data?.personalization} darkMode={darkMode} />
+            <ParentEngagementCard data={data?.parentEngagement} darkMode={darkMode} />
+            <ResourceUtilizationCard data={data?.resources} darkMode={darkMode} />
+            <TeachingEffectivenessCard data={data?.effectiveness} darkMode={darkMode} />
+          </div>
+        );
+    }
+  };
+
+  // Get subcategory title
+  const getSubCategoryTitle = () => {
+    const titles = {
+      interventions: 'התערבויות',
+      resources: 'משאבים',
+      strategies: 'אסטרטגיות',
+      tracking: 'מעקב'
+    };
+    return titles[selectedSubCategory] || 'מדדי תמיכת מורים';
+  };
+
   return (
     <div className={`backdrop-blur-xl ${
       darkMode ? 'bg-white/10' : 'bg-white/40'
@@ -1051,29 +1128,11 @@ export const TeacherSupportSection = ({ data, darkMode, theme }) => {
           <Shield className="text-white" size={20} />
         </div>
         <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          מדדי תמיכת מורים
+          {getSubCategoryTitle()}
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Intervention Success */}
-        <InterventionSuccessCard data={data?.interventions} darkMode={darkMode} />
-
-        {/* Response Times */}
-        <ResponseTimesCard data={data?.responseTimes} darkMode={darkMode} />
-
-        {/* Personalization Index */}
-        <PersonalizationCard data={data?.personalization} darkMode={darkMode} />
-
-        {/* Parent Engagement */}
-        <ParentEngagementCard data={data?.parentEngagement} darkMode={darkMode} />
-
-        {/* Resource Utilization */}
-        <ResourceUtilizationCard data={data?.resources} darkMode={darkMode} />
-
-        {/* Teaching Effectiveness */}
-        <TeachingEffectivenessCard data={data?.effectiveness} darkMode={darkMode} />
-      </div>
+      {renderContent()}
     </div>
   );
 };
@@ -1412,3 +1471,136 @@ const TeachingEffectivenessCard = ({ data, darkMode }) => {
     </div>
   );
 };
+// ==================================================================
+// PLACEHOLDER CARDS FOR SUBCATEGORIES
+// ==================================================================
+
+// Interventions Subcategory Cards
+const InterventionTypesCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>סוגי התערבות</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>פירוט סוגי התערבויות מוצלחות</div>
+  </div>
+);
+
+const InterventionTimelineCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>ציר זמן</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>מעקב אחר התערבויות לפי זמן</div>
+  </div>
+);
+
+const InterventionImpactCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>השפעה</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>השפעת ההתערבויות על ביצועי תלמידים</div>
+  </div>
+);
+
+const StudentSupportCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>תמיכה בתלמידים</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>סיכום תמיכה ברמת התלמיד</div>
+  </div>
+);
+
+const InterventionChallengesCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>אתגרים</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>אתגרים בהטמעת התערבויות</div>
+  </div>
+);
+
+// Resources Subcategory Cards
+const DigitalResourcesCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>משאבים דיגיטליים</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>שימוש במשאבים דיגיטליים</div>
+  </div>
+);
+
+const TeachingMaterialsCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>חומרי הוראה</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>יעילות חומרי הוראה</div>
+  </div>
+);
+
+const SupportToolsCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>כלי תמיכה</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>כלי תמיכה זמינים</div>
+  </div>
+);
+
+const ResourceAccessCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>נגישות משאבים</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>רמת גישה למשאבים</div>
+  </div>
+);
+
+const ResourceEffectivenessCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>יעילות משאבים</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>מדדי יעילות למשאבים</div>
+  </div>
+);
+
+// Strategies Subcategory Cards
+const DifferentiationStrategiesCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>אסטרטגיות התאמה</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>התאמה לצרכי תלמידים</div>
+  </div>
+);
+
+const AssessmentStrategiesCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>אסטרטגיות הערכה</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>שיטות הערכה מגוונות</div>
+  </div>
+);
+
+const EngagementTacticsCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>טקטיקות מעורבות</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>שיטות לעידוד מעורבות</div>
+  </div>
+);
+
+const FeedbackMethodsCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>שיטות משוב</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>מתן משוב אפקטיבי</div>
+  </div>
+);
+
+// Tracking Subcategory Cards
+const ProgressMonitoringCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>מעקב התקדמות</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>מעקב אחר התקדמות תלמידים</div>
+  </div>
+);
+
+const AttendanceTrackingCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>מעקב נוכחות</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>דפוסי נוכחות</div>
+  </div>
+);
+
+const BehaviorMonitoringCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>מעקב התנהגות</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>מעקב אחר דפוסי התנהגות</div>
+  </div>
+);
+
+const DataCollectionCard = ({ darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <h4 className={`font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>איסוף נתונים</h4>
+    <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>שיטות איסוף נתונים</div>
+  </div>
+);

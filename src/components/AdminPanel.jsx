@@ -17,10 +17,11 @@ import {
   Zap,
   Clock,
   Archive,
-  Shield
+  Shield,
+  Sparkles
 } from 'lucide-react';
 
-const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate }) => {
+const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis }) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('core');
   const [results, setResults] = useState('');
@@ -193,6 +194,26 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate }) => {
                 <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   Analysis Functions
                 </h3>
+
+                {/* AI Smart Analysis Button - Prominent */}
+                <div
+                  onClick={onSmartAnalysis}
+                  className={`p-6 rounded-xl border-2 transition-all cursor-pointer bg-gradient-to-r ${theme.secondary} hover:opacity-90 shadow-lg mb-6`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-lg bg-white/20">
+                      <Sparkles className="text-white" size={24} />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-white text-lg mb-1">
+                        ניתוח חכם AI
+                      </h4>
+                      <p className="text-white/90 text-sm">
+                        הפעל ניתוח אוטומטי לכל התלמידים שממתינים לניתוח
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
                 <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} mb-4`}>
                   <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>

@@ -228,6 +228,26 @@ npx gh-pages -d dist
 }
 ```
 
+## 📚 Documentation
+
+**All documentation has been organized in the `/docs` folder for easy navigation!**
+
+### Quick Links:
+- **[📖 Documentation Index](./docs/INDEX.md)** - Complete guide to all documentation
+- **[📊 Analytics Dashboard Guide](./docs/analytics/ANALYTICS_DASHBOARD_HOW_IT_WORKS.md)** - How analytics serve teachers
+- **[🚀 Setup Guide](./docs/setup/SETUP_SUMMARY.md)** - Initial setup instructions
+- **[🔧 Troubleshooting](./docs/troubleshooting/TROUBLESHOOTING_CONNECTION.md)** - Common issues and solutions
+
+### Documentation Categories:
+- **`/docs/setup/`** - Setup and configuration guides
+- **`/docs/guides/`** - User guides and how-to documents
+- **`/docs/analytics/`** - Analytics dashboard documentation
+- **`/docs/troubleshooting/`** - Debugging and problem-solving
+- **`/docs/comparisons/`** - AI model comparisons
+- **`/docs/archive/`** - Older documentation (for reference)
+
+---
+
 ## 🎯 מדריך שימוש
 
 ### 1. דשבורד ראשי

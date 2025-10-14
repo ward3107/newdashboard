@@ -62,18 +62,61 @@ export default defineConfig({
     allowedHosts: ['.replit.dev', '.pike.replit.dev']
   },
   build: {
+    // Target modern browsers for smaller bundle
+    target: 'es2015',
+    // Minify with terser for better compression
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.logs in production
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+    },
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Split vendor code into separate chunks to reduce bundle size
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'query-vendor': ['@tanstack/react-query'],
-          'ui-vendor': ['framer-motion', 'react-hot-toast', 'lucide-react'],
-          'chart-vendor': ['recharts'],
-          'export-vendor': ['jspdf', 'xlsx'],
-        }
+        // Advanced chunking strategy
+        manualChunks: (id) => {
+          // React core
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'react-core';
+          }
+          // Router
+          if (id.includes('node_modules/react-router')) {
+            return 'react-router';
+          }
+          // Animations
+          if (id.includes('node_modules/framer-motion')) {
+            return 'framer-motion';
+          }
+          // Icons (split separately - large library)
+          if (id.includes('node_modules/lucide-react')) {
+            return 'lucide-icons';
+          }
+          // Charts (split separately - large library)
+          if (id.includes('node_modules/recharts')) {
+            return 'recharts';
+          }
+          // Export libraries (lazy load these)
+          if (id.includes('node_modules/jspdf') || id.includes('node_modules/xlsx')) {
+            return 'export-libs';
+          }
+          // Other vendors
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
+        // Optimize chunk file names
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
       }
     },
-    chunkSizeWarningLimit: 600,
+    // Optimize chunk size
+    chunkSizeWarningLimit: 500,
+    // Enable CSS code splitting
+    cssCodeSplit: true,
+    // Source maps for debugging (disable in production for smaller size)
+    sourcemap: false,
   }
 });
