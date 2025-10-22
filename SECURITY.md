@@ -1,148 +1,82 @@
-# Security Policy
+# 🔒 SECURITY POLICY
 
-## 🔒 Overview
+## 🎯 Overview
+ISHEBOT is a commercial educational software product that handles sensitive student data. Security is our top priority.
 
-The Student Analytics & Classroom Management Dashboard takes security seriously. This document outlines our security policies and procedures for reporting vulnerabilities.
+## ⚠️ NEVER COMMIT TO REPOSITORY
 
----
+The following items must NEVER be committed to version control:
 
-## 🛡️ Supported Versions
+### 🔴 Critical - Never Commit:
+- Real API keys (OpenAI, Google, etc.)
+- Database credentials
+- Production `.env` files
+- Private keys (`.pem`, `.key`, `.p12`)
+- Authentication tokens
+- SSL certificates
 
-Currently supported versions for security updates:
+### 🟠 Sensitive Data - Never Commit:
+- Student names, IDs, grades, or personal information
+- School contact information
+- Customer lists or contracts
+- Real ISHEBOT analysis results
+- Actual usage data or analytics
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.0.x   | ✅ Yes             |
-| < 1.0   | ❌ No              |
+### 🟡 Business Information - Never Commit:
+- Pricing strategies or license keys
+- Sales documents or proposals
+- Client communications
+- Internal business processes
+- Financial information
 
----
+## ✅ Safe to Commit
 
-## 🚨 Reporting a Vulnerability
+- Source code (UI, logic, algorithms)
+- Configuration templates (`.env.example`)
+- Documentation
+- Build scripts
+- Tests (without real data)
 
-If you discover a security vulnerability in this software, please report it responsibly:
+## 🛡️ Data Protection Compliance
 
-### **DO NOT** create a public GitHub issue for security vulnerabilities.
+ISHEBOT complies with:
+- ✅ Israeli Privacy Protection Law, 5741-1981
+- ✅ Amendment 13 (Privacy Protection Regulations)
+- ✅ Israeli Ministry of Education requirements
+- ✅ GDPR (where applicable)
 
-### Instead, please contact us directly:
+## 🔐 Best Practices
 
-- **Email**: [your.email@example.com]
-- **Subject Line**: "SECURITY VULNERABILITY - Student Dashboard"
-- **Response Time**: We aim to respond within 48 hours
+### For Developers:
+1. **Always** use `.env` files for secrets (never commit them)
+2. **Always** check `.gitignore` before committing
+3. **Never** hardcode API keys in source code
+4. **Always** use environment variables
+5. **Never** commit real student or school data
 
-### What to Include in Your Report:
+### For Deployment:
+1. Use secure environment variable management
+2. Rotate API keys regularly
+3. Use HTTPS only
+4. Implement proper access controls
+5. Monitor for unauthorized access
 
-1. **Description** of the vulnerability
-2. **Steps to reproduce** the issue
-3. **Potential impact** of the vulnerability
-4. **Suggested fix** (if you have one)
-5. **Your contact information** for follow-up
+## 🚨 Security Issues
 
----
+If you discover a security vulnerability:
+1. **DO NOT** create a public GitHub issue
+2. Email: [YOUR_SECURITY_EMAIL]
+3. Include detailed description
+4. We will respond within 48 hours
 
-## 🔐 Security Best Practices for Users
+## 📞 Contact
 
-### Environment Variables
-- Never commit `.env` files to version control
-- Use strong, unique passwords for admin access
-- Rotate API keys regularly
-- Store sensitive credentials securely
-
-### API Keys
-- Keep OpenAI API keys private
-- Use environment variables, never hardcode keys
-- Implement rate limiting on API endpoints
-- Monitor API usage for unusual activity
-
-### Admin Panel
-- Use strong passwords (minimum 12 characters)
-- Change default passwords immediately
-- Limit admin access to authorized personnel only
-- Enable two-factor authentication when available
-
-### Data Protection
-- Regularly backup student data
-- Encrypt sensitive student information
-- Comply with educational data privacy laws (FERPA, GDPR, etc.)
-- Limit data retention to necessary periods
-
-### Network Security
-- Use HTTPS in production environments
-- Implement CORS policies appropriately
-- Use secure WebSocket connections
-- Keep all dependencies updated
-
----
-
-## 🔄 Security Updates
-
-Security updates will be released as patch versions (e.g., 1.0.1, 1.0.2) and documented in the [CHANGELOG](CHANGELOG.md).
-
-To update to the latest secure version:
-
-```bash
-git pull origin main
-npm install
-npm run build
-```
+For security concerns or questions:
+- Email: [YOUR_SECURITY_EMAIL]
+- Emergency: [YOUR_EMERGENCY_CONTACT]
 
 ---
 
-## 📋 Security Checklist for Deployment
+**Remember**: When in doubt, DON'T commit it. Ask first.
 
-Before deploying to production:
-
-- [ ] All environment variables are properly configured
-- [ ] Admin passwords are strong and unique
-- [ ] HTTPS is enabled
-- [ ] API keys are secured and not exposed
-- [ ] CORS policies are configured
-- [ ] Database access is restricted
-- [ ] Error messages don't expose sensitive information
-- [ ] Dependencies are up to date
-- [ ] Security headers are configured
-- [ ] Backup systems are in place
-
----
-
-## 🚫 Out of Scope
-
-The following are explicitly **not** considered security vulnerabilities:
-
-- Issues in dependencies (report directly to the dependency maintainers)
-- Social engineering attacks
-- Physical access attacks
-- Denial of Service (DoS) attacks requiring significant resources
-- Issues requiring physical access to user devices
-
----
-
-## 🏆 Recognition
-
-We appreciate security researchers who help keep our software safe. With your permission, we will:
-
-- Credit you in security advisories (if you wish)
-- Keep you informed about the fix progress
-- Notify you when the vulnerability is resolved
-
----
-
-## 📜 Disclosure Policy
-
-- We request a **90-day disclosure timeline** to fix reported vulnerabilities
-- We will keep you updated on fix progress
-- We will publicly acknowledge your responsible disclosure (with your permission)
-- We will release security patches as soon as possible
-
----
-
-## 🔗 Additional Resources
-
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [React Security Best Practices](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml)
-- [Node.js Security Best Practices](https://nodejs.org/en/docs/guides/security/)
-
----
-
-**Last Updated**: October 14, 2025
-
-**Contact**: [your.email@example.com]
+Last Updated: October 2025
