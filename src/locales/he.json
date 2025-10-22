@@ -1,0 +1,427 @@
+{
+  "common": {
+    "loading": "טוען...",
+    "error": "שגיאה",
+    "success": "הצלחה",
+    "save": "שמור",
+    "cancel": "בטל",
+    "close": "סגור",
+    "edit": "ערוך",
+    "delete": "מחק",
+    "search": "חפש",
+    "filter": "סנן",
+    "export": "ייצא",
+    "import": "ייבא",
+    "settings": "הגדרות",
+    "yes": "כן",
+    "no": "לא"
+  },
+  "nav": {
+    "dashboard": "דשבורד",
+    "students": "תלמידים",
+    "analytics": "אנליטיקה",
+    "reports": "דוחות",
+    "settings": "הגדרות"
+  },
+  "dashboard": {
+    "title": "דשבורד ניתוח תלמידים",
+    "subtitle": "מערכת ניתוח מבוססת בינה מלאכותית",
+    "welcomeBack": "ברוך שובך",
+    "overview": "סקירה כללית",
+    "recentActivity": "פעילות אחרונה",
+    "totalStudents": "סה\"כ תלמידים",
+    "activeTests": "מבחנים פעילים",
+    "averageScore": "ציון ממוצע",
+    "completionRate": "אחוז השלמה",
+    "tabs": {
+      "overview": "סקירה",
+      "students": "תלמידים",
+      "analytics": "לוח בקרה"
+    },
+    "themes": {
+      "selectTheme": "בחר ערכת צבעים",
+      "colorThemes": "ערכות צבעים",
+      "lightThemes": "ערכות בהירות",
+      "darkThemes": "ערכות כהות",
+      "corporate": "תאגידי",
+      "professional": "מקצועי",
+      "minimalist": "מינימליסטי",
+      "earth": "אדמה",
+      "darkBlue": "כחול כהה",
+      "sage": "מרווה",
+      "softRose": "ורד עדין",
+      "midnight": "חצות",
+      "ocean": "אוקיינוס",
+      "forest": "יער",
+      "volcanic": "געשי",
+      "space": "חלל",
+      "cleanWhite": "נקי לבן",
+      "lightBlue": "כחול בהיר",
+      "pastel": "פסטל",
+      "mint": "מנטה",
+      "peach": "אפרסק",
+      "lavender": "לבנדר",
+      "sky": "שמיים",
+      "coral": "אלמוג",
+      "sand": "חול"
+    },
+    "stats": {
+      "totalStudentsTitle": "סה״כ תלמידים",
+      "totalStudentsDescription": "מספר התלמידים הכולל במערכת",
+      "totalStudentsDetails": "כולל תלמידים מנותחים ולא מנותחים",
+      "waitingAnalysisTitle": "ממתינים לניתוח",
+      "waitingAnalysisDescription": "תלמידים שטרם נותחו",
+      "waitingAnalysisDetails": [
+        "תלמידים שממתינים לניתוח ISHEBOT",
+        "לחץ על AI חכם לניתוח אוטומטי",
+        "הניתוח מתבצע אוטומטית במילוי הטופס"
+      ],
+      "averageStrengthsTitle": "ממוצע חוזקות",
+      "averageStrengthsDescription": "ממוצע החוזקות לתלמיד",
+      "averageStrengthsDetails": [
+        "מבוסס על ניתוח AI",
+        "כולל חוזקות אקדמיות ואישיות"
+      ],
+      "upToDateTitle": "מעודכנים",
+      "upToDateDescription": "תלמידים עם ניתוח עדכני",
+      "upToDateDetails": [
+        "ניתוח הושלם בחודש האחרון",
+        "מוכנים להמלצות למידה"
+      ],
+      "completionPercentTitle": "אחוז השלמה",
+      "completionPercentDescription": "אחוז התלמידים עם ניתוח מלא",
+      "engagementTitle": "מעורבות",
+      "engagementDescription": "רמת המעורבות הכללית",
+      "engagementDetails": [
+        "מבוסס על פעילות שבועית",
+        "כולל השתתפות והתקדמות"
+      ],
+      "overallImprovementTitle": "שיפור כללי",
+      "overallImprovementDescription": "אחוז השיפור הממוצע",
+      "overallImprovementDetails": [
+        "השוואה לחודש קודם",
+        "מבוסס על ניתוחי AI"
+      ],
+      "strengthsScoreTitle": "ציון חוזקות",
+      "strengthsScoreDescription": "ממוצע החוזקות מתוך 5",
+      "strengthsScoreDetails": "כולל חוזקות אקדמיות ואישיות",
+      "topPerformersTitle": "תלמידים מצטיינים",
+      "topPerformersTrendLabel": "השבוע",
+      "needsSupportTitle": "דורשים תמיכה",
+      "needsSupportSubtitle": "זקוקים לניתוח",
+      "needsSupportTrendLabel": "השבוע",
+      "avgAnalysisTimeTitle": "זמן ממוצע לניתוח",
+      "avgAnalysisTimeSubtitle": "ימים",
+      "avgAnalysisTimeTrendLabel": "ללא שינוי",
+      "studentsAnalyzedCount": "{{count}} תלמידים מנותחים",
+      "studentsNeedAnalysisCount": "{{count}} דורשים ניתוח",
+      "outOfFive": "{{value}} מתוך 5",
+      "percentOfClass": "{{percent}}% מהכיתה"
+    },
+    "charts": {
+      "learningStylesTitle": "סגנונות למידה",
+      "learningStylesSubtitle": "התפלגות לפי סוג",
+      "visualLearning": "למידה חזותית",
+      "auditoryLearning": "למידה שמיעתית",
+      "kinestheticLearning": "למידה קינסתטית",
+      "socialLearning": "למידה חברתית",
+      "classDistributionTitle": "התפלגות כיתות",
+      "classDistributionSubtitle": "תלמידים לפי כיתה"
+    },
+    "search": {
+      "placeholder": "חפש לפי שם או קוד תלמיד..."
+    },
+    "status": {
+      "waitingAnalysis": "ממתין לניתוח",
+      "excellentPerformance": "ביצועים מצוינים",
+      "goodPerformance": "ביצועים טובים",
+      "needsAttention": "דורש תשומת לב",
+      "standardPerformance": "ביצועים סטנדרטיים"
+    },
+    "weekDays": ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"]
+  },
+  "students": {
+    "title": "תלמידים",
+    "addStudent": "הוסף תלמיד",
+    "studentDetails": "פרטי תלמיד",
+    "studentName": "שם תלמיד",
+    "studentId": "מזהה תלמיד",
+    "grade": "כיתה",
+    "class": "מחלקה",
+    "performance": "ביצועים",
+    "attendance": "נוכחות",
+    "tests": "מבחנים",
+    "noStudents": "אין תלמידים",
+    "tryChangingFilters": "נסה לשנות את מסנני החיפוש",
+    "studentsAnalyzed": "תלמידים מנותחים",
+    "requireAnalysis": "דורשים ניתוח",
+    "outOf": "מתוך"
+  },
+  "tests": {
+    "title": "מבחנים",
+    "createTest": "צור מבחן",
+    "testName": "שם מבחן",
+    "testDate": "תאריך מבחן",
+    "testScore": "ציון",
+    "testResults": "תוצאות מבחן",
+    "averageScore": "ציון ממוצע",
+    "highestScore": "ציון גבוה ביותר",
+    "lowestScore": "ציון נמוך ביותר",
+    "passRate": "אחוז עוברים"
+  },
+  "analytics": {
+    "title": "ניתוח נתונים מתקדם",
+    "subtitle": "ניתוח מקיף של נתוני התלמידים",
+    "students": "תלמידים",
+    "export": "ייצוא דוח",
+    "performanceTrends": "מגמות ביצועים",
+    "studentProgress": "התקדמות תלמידים",
+    "classComparison": "השוואת כיתות",
+    "tabs": {
+      "overview": "סקירה כללית",
+      "academic": "אקדמי",
+      "behavioral": "התנהגותי",
+      "emotional": "רגשי",
+      "risk": "תלמידים בסיכון",
+      "advanced": "מתקדם"
+    },
+    "filters": {
+      "all": "כל התלמידים",
+      "analyzed": "מנותחים",
+      "unanalyzed": "ממתינים לניתוח",
+      "atRisk": "בסיכון גבוה"
+    },
+    "metrics": {
+      "completionRate": "אחוז ניתוחים שהושלמו",
+      "averageGrade": "ציון ממוצע",
+      "wellbeing": "מדד רווחה",
+      "atRisk": "תלמידים בסיכון"
+    },
+    "charts": {
+      "performance": "התפלגות ביצועים",
+      "classPerformance": "ביצועי כיתות",
+      "participation": "רמות השתתפות",
+      "performanceTrends": "מגמות התפתחות",
+      "strengths": "התפלגות חוזקות",
+      "emotionalHealth": "בריאות נפשית",
+      "wellbeingFactors": "גורמי רווחה",
+      "riskDistribution": "התפלגות סיכונים",
+      "atRiskStudents": "תלמידים בסיכון",
+      "advancedMetrics": "מדדים מתקדמים"
+    },
+    "insights": {
+      "title": "תובנות מרכזיות",
+      "recommendations": "המלצות לפעולה"
+    },
+    "actionCards": {
+      "urgentAttention": "דורשים תשומת לב מיידית",
+      "clickToView": "לחץ לצפייה",
+      "needsConversation": "דורשים שיחה",
+      "showingProgress": "מראים התקדמות",
+      "students": "תלמידים"
+    },
+    "weeklySummary": {
+      "title": "סיכום שבועי",
+      "improved": "השתפרו",
+      "declined": "ירדו בביצועים",
+      "needsFollowup": "דורשים מעקב",
+      "newAnalyses": "ניתוחים חדשים",
+      "thisWeek": "השבוע"
+    },
+    "quickActions": {
+      "viewStudents": "צפה בתלמידים",
+      "scheduleConversation": "קבע שיחה",
+      "exportReport": "ייצא דוח",
+      "sendReminder": "שלח תזכורת"
+    },
+    "export": {
+      "title": "ייצוא דוח ניתוח",
+      "generatePDF": "יצירת PDF",
+      "generating": "מייצר דוח...",
+      "success": "הדוח יוצא בהצלחה!",
+      "error": "שגיאה ביצירת הדוח",
+      "filename": "דוח_ניתוח_תלמידים",
+      "reportTitle": "דוח ניתוח תלמידים מתקדם",
+      "generatedOn": "נוצר בתאריך",
+      "sections": {
+        "overview": "סקירה כללית",
+        "statistics": "סטטיסטיקות",
+        "insights": "תובנות מרכזיות",
+        "recommendations": "המלצות"
+      }
+    },
+    "tooltips": {
+      "hoverToSeeStudents": "העבר עכבר לראות רשימת תלמידים",
+      "students": "תלמידים",
+      "clickForDetails": "לחץ לפרטים מלאים",
+      "noStudents": "אין תלמידים בקטגוריה זו"
+    }
+  },
+  "charts": {
+    "learningStyles": {
+      "title": "סגנונות למידה",
+      "visual": "חזותי",
+      "auditory": "שמיעתי",
+      "kinesthetic": "קינסטטי",
+      "readingWriting": "קריאה וכתיבה"
+    },
+    "performance": {
+      "title": "התפלגות ביצועים",
+      "excellent": "מצוין (90+)",
+      "good": "טוב (80-89)",
+      "average": "ממוצע (70-79)",
+      "needsSupport": "דורש תמיכה (<70)"
+    },
+    "emotional": {
+      "positive": "חיובי",
+      "neutral": "נייטרלי",
+      "concerning": "מדאיג"
+    },
+    "classPerformance": {
+      "averageGrade": "ציון ממוצע"
+    },
+    "trends": {
+      "improving": "משתפר",
+      "stable": "יציב",
+      "declining": "יורד"
+    },
+    "strengths": {
+      "title": "חוזקות מובילות"
+    },
+    "risk": {
+      "low": "סיכון נמוך",
+      "medium": "סיכון בינוני",
+      "high": "סיכון גבוה"
+    },
+    "participation": {
+      "title": "רמות השתתפות",
+      "high": "גבוהה",
+      "medium": "בינונית",
+      "low": "נמוכה"
+    },
+    "metrics": {
+      "engagement": "מעורבות",
+      "wellbeing": "רווחה",
+      "academic": "מוכנות אקדמית",
+      "social": "השתלבות חברתית",
+      "currentLevel": "רמה נוכחית",
+      "target": "יעד"
+    }
+  },
+  "cookies": {
+    "title": "אנחנו משתמשים בעוגיות (Cookies)",
+    "description": "אנחנו משתמשים בעוגיות כדי לשפר את חוויית המשתמש שלך, לשמור על העדפות, לנתח שימוש במערכת ולספק תוכן רלוונטי. העוגיות עוזרות לנו לספק לך שירות טוב יותר ומותאם אישית.",
+    "acceptAll": "אישור לכל העוגיות",
+    "customize": "התאמה אישית",
+    "decline": "דחיה",
+    "savePreferences": "שמירת העדפות",
+    "settingsTitle": "הגדרות עוגיות מפורטות",
+    "categories": {
+      "necessary": {
+        "title": "עוגיות הכרחיות",
+        "description": "עוגיות אלו נדרשות לתפקוד בסיסי של המערכת ואינן ניתנות לכיבוי. הן כוללות: שמירת מצב התחברות, העדפות שפה, והגדרות אבטחה.",
+        "label": "הכרחיות",
+        "shortDesc": "תפקוד בסיסי"
+      },
+      "functional": {
+        "title": "עוגיות פונקציונליות",
+        "description": "עוגיות אלו שומרות את ההעדפות שלך (כגון מצב כהה/בהיר, גודל גופן, פילטרים). ללא עוגיות אלו, תצטרך להגדיר את ההעדפות שלך בכל פעם מחדש.",
+        "label": "פונקציונליות",
+        "shortDesc": "שמירת העדפות"
+      },
+      "analytics": {
+        "title": "עוגיות ניתוח",
+        "description": "עוגיות אלו עוזרות לנו להבין כיצד אתה משתמש במערכת, אילו תכונות שימושיות, ואיפה אפשר לשפר. המידע הוא אנונימי ומשמש רק לשיפור השירות.",
+        "label": "ניתוח",
+        "shortDesc": "שיפור מערכת"
+      },
+      "marketing": {
+        "title": "עוגיות שיווק",
+        "description": "עוגיות אלו עוזרות לנו להציג תוכן רלוונטי ומותאם לצרכי בית הספר שלך. הן מאפשרות לנו להציע תכונות והדרכות שימושיות במיוחד עבורכם.",
+        "label": "שיווק",
+        "shortDesc": "תוכן רלוונטי"
+      },
+      "advertising": {
+        "title": "עוגיות פרסום",
+        "description": "עוגיות אלו מאפשרות להציג מודעות רלוונטיות על מוצרים ושירותים חינוכיים שעשויים לעניין אותך. המודעות מותאמות אישית לפי תחומי העניין שלך.",
+        "label": "פרסום",
+        "shortDesc": "מודעות מותאמות"
+      }
+    },
+    "footer": "למידע נוסף, קרא את מדיניות הפרטיות שלנו",
+    "announcements": {
+      "opened": "תפריט הסכמה לעוגיות נפתח. אנא בחר את העדפות העוגיות שלך.",
+      "closed": "תפריט עוגיות נסגר.",
+      "allAccepted": "כל העוגיות אושרו. העדפותיך נשמרו.",
+      "onlyNecessary": "רק עוגיות הכרחיות אושרו. העדפותיך נשמרו.",
+      "saved": "העדפות העוגיות שלך נשמרו בהצלחה.",
+      "settingsOpened": "הגדרות עוגיות מפורטות נפתחו.",
+      "settingsClosed": "הגדרות עוגיות נסגרו. חזרה לתפריט הראשי.",
+      "cancelled": "ביטול שינויים. חזרה לתפריט הראשי."
+    }
+  },
+  "language": {
+    "title": "בחר שפה / Select Language",
+    "current": "שפה נוכחית",
+    "change": "החלף שפה",
+    "languages": {
+      "he": "עברית",
+      "en": "English",
+      "ar": "العربية",
+      "ru": "Русский"
+    },
+    "announcements": {
+      "opened": "תפריט שפות נפתח.",
+      "closed": "תפריט שפות נסגר.",
+      "changed": "שפה שונתה ל-{{language}}"
+    },
+    "footer": "השפה תשתנה בכל האתר"
+  },
+  "accessibility": {
+    "title": "נגישות",
+    "fontSize": "גודל גופן",
+    "highContrast": "ניגודיות גבוהה",
+    "darkMode": "מצב כהה",
+    "reducedMotion": "הפחתת תנועה",
+    "keyboardNav": "ניווט מקלדת",
+    "reset": "איפוס",
+    "tooltips": {
+      "fontSize": "שנה את גודל הטקסט באתר. טווח: 80% - 150%",
+      "highContrast": "הגבר את הניגודיות לשיפור הקריאות. מומלץ לאנשים עם קשיי ראייה.",
+      "darkMode": "החלף בין מצב בהיר לכהה. מצב כהה מפחית עייפות עיניים.",
+      "reducedMotion": "הפחת או בטל אנימציות. מומלץ לאנשים עם רגישות לתנועה.",
+      "keyboardNav": "הדגש אלמנטים בעת שימוש במקלדת. מאפשר ניווט ב-Tab."
+    },
+    "announcements": {
+      "opened": "תפריט נגישות נפתח.",
+      "closed": "תפריט נגישות נסגר.",
+      "fontSizeChanged": "גודל גופן שונה ל-{{size}}%",
+      "highContrastEnabled": "ניגודיות גבוהה הופעלה",
+      "highContrastDisabled": "ניגודיות גבוהה כובתה",
+      "darkModeEnabled": "מצב כהה הופעל",
+      "darkModeDisabled": "מצב כהה כובה",
+      "reducedMotionEnabled": "הפחתת תנועה הופעלה",
+      "reducedMotionDisabled": "הפחתת תנועה כובתה",
+      "keyboardNavEnabled": "ניווט מקלדת הופעל",
+      "keyboardNavDisabled": "ניווט מקלדת כובה",
+      "reset": "כל הגדרות הנגישות אופסו"
+    }
+  },
+  "footer": {
+    "company": "ISHEBOT - מערכת ניתוח תלמידים",
+    "tagline": "מערכת ניתוח מבוססת בינה מלאכותית לבתי ספר",
+    "rights": "כל הזכויות שמורות",
+    "links": {
+      "privacy": "מדיניות פרטיות",
+      "terms": "תנאי שימוש",
+      "dataProcessing": "עיבוד נתונים",
+      "security": "אבטחת מידע"
+    },
+    "social": "עקוב אחרינו"
+  },
+  "notFound": {
+    "title": "עמוד לא נמצא",
+    "description": "הכתובת שביקשת אינה קיימת במערכת",
+    "backHome": "חזור לדף הראשי"
+  }
+}

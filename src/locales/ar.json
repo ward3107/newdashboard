@@ -1,0 +1,296 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "success": "نجح",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "search": "بحث",
+    "filter": "تصفية",
+    "export": "تصدير",
+    "import": "استيراد",
+    "settings": "إعدادات",
+    "yes": "نعم",
+    "no": "لا"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "students": "الطلاب",
+    "analytics": "التحليلات",
+    "reports": "التقارير",
+    "settings": "الإعدادات"
+  },
+  "dashboard": {
+    "title": "لوحة تحليل الطلاب",
+    "subtitle": "نظام تحليل مدعوم بالذكاء الاصطناعي",
+    "welcomeBack": "مرحباً بعودتك",
+    "overview": "نظرة عامة",
+    "recentActivity": "النشاط الأخير",
+    "totalStudents": "إجمالي الطلاب",
+    "activeTests": "الاختبارات النشطة",
+    "averageScore": "المعدل",
+    "completionRate": "معدل الإنجاز",
+    "tabs": {
+      "overview": "نظرة عامة",
+      "students": "الطلاب",
+      "analytics": "لوحة التحكم"
+    },
+    "themes": {
+      "selectTheme": "اختر موضوع الألوان",
+      "colorThemes": "مواضيع الألوان",
+      "lightThemes": "مواضيع فاتحة",
+      "darkThemes": "مواضيع داكنة",
+      "corporate": "الشركات",
+      "professional": "محترف",
+      "minimalist": "بسيط",
+      "earth": "الأرض",
+      "darkBlue": "أزرق داكن",
+      "sage": "المريمية",
+      "softRose": "وردي ناعم",
+      "midnight": "منتصف الليل",
+      "ocean": "المحيط",
+      "forest": "الغابة",
+      "volcanic": "بركاني",
+      "space": "الفضاء",
+      "cleanWhite": "أبيض نظيف",
+      "lightBlue": "أزرق فاتح",
+      "pastel": "الباستيل",
+      "mint": "النعناع",
+      "peach": "الخوخ",
+      "lavender": "اللافندر",
+      "sky": "السماء",
+      "coral": "المرجان",
+      "sand": "الرمل"
+    },
+    "stats": {
+      "totalStudentsTitle": "إجمالي الطلاب",
+      "totalStudentsDescription": "إجمالي عدد الطلاب في النظام",
+      "totalStudentsDetails": "بما في ذلك الطلاب المحللين وغير المحللين",
+      "waitingAnalysisTitle": "في انتظار التحليل",
+      "waitingAnalysisDescription": "الطلاب الذين لم يتم تحليلهم بعد",
+      "waitingAnalysisDetails": [
+        "الطلاب في انتظار تحليل ISHEBOT",
+        "انقر على الذكاء الاصطناعي الذكي للتحليل التلقائي",
+        "يتم التحليل تلقائياً عند تقديم النموذج"
+      ],
+      "averageStrengthsTitle": "متوسط نقاط القوة",
+      "averageStrengthsDescription": "متوسط نقاط القوة لكل طالب",
+      "averageStrengthsDetails": [
+        "بناءً على تحليل الذكاء الاصطناعي",
+        "يشمل نقاط القوة الأكاديمية والشخصية"
+      ],
+      "upToDateTitle": "محدث",
+      "upToDateDescription": "الطلاب الذين لديهم تحليل حالي",
+      "upToDateDetails": [
+        "تم إكمال التحليل في الشهر الماضي",
+        "جاهز لتوصيات التعلم"
+      ],
+      "completionPercentTitle": "نسبة الإنجاز",
+      "completionPercentDescription": "نسبة الطلاب الذين لديهم تحليل كامل",
+      "engagementTitle": "المشاركة",
+      "engagementDescription": "مستوى المشاركة العام",
+      "engagementDetails": [
+        "بناءً على النشاط الأسبوعي",
+        "يشمل المشاركة والتقدم"
+      ],
+      "overallImprovementTitle": "التحسن العام",
+      "overallImprovementDescription": "نسبة التحسن المتوسطة",
+      "overallImprovementDetails": [
+        "مقارنة بالشهر السابق",
+        "بناءً على تحليل الذكاء الاصطناعي"
+      ],
+      "strengthsScoreTitle": "درجة نقاط القوة",
+      "strengthsScoreDescription": "متوسط نقاط القوة من 5",
+      "strengthsScoreDetails": "يشمل نقاط القوة الأكاديمية والشخصية",
+      "topPerformersTitle": "الأفضل أداءً",
+      "topPerformersTrendLabel": "هذا الأسبوع",
+      "needsSupportTitle": "يحتاجون إلى الدعم",
+      "needsSupportSubtitle": "يتطلب التحليل",
+      "needsSupportTrendLabel": "هذا الأسبوع",
+      "avgAnalysisTimeTitle": "متوسط وقت التحليل",
+      "avgAnalysisTimeSubtitle": "أيام",
+      "avgAnalysisTimeTrendLabel": "لا تغيير",
+      "studentsAnalyzedCount": "{{count}} طالب تم تحليله",
+      "studentsNeedAnalysisCount": "{{count}} يحتاج إلى تحليل",
+      "outOfFive": "{{value}} من 5",
+      "percentOfClass": "{{percent}}% من الصف"
+    },
+    "charts": {
+      "learningStylesTitle": "أساليب التعلم",
+      "learningStylesSubtitle": "التوزيع حسب النوع",
+      "visualLearning": "التعلم البصري",
+      "auditoryLearning": "التعلم السمعي",
+      "kinestheticLearning": "التعلم الحركي",
+      "socialLearning": "التعلم الاجتماعي",
+      "classDistributionTitle": "توزيع الفصول",
+      "classDistributionSubtitle": "الطلاب حسب الفصل"
+    },
+    "search": {
+      "placeholder": "ابحث باسم أو رمز الطالب..."
+    },
+    "status": {
+      "waitingAnalysis": "في انتظار التحليل",
+      "excellentPerformance": "أداء ممتاز",
+      "goodPerformance": "أداء جيد",
+      "needsAttention": "يحتاج إلى اهتمام",
+      "standardPerformance": "أداء قياسي"
+    },
+    "weekDays": ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"]
+  },
+  "students": {
+    "title": "الطلاب",
+    "addStudent": "إضافة طالب",
+    "studentDetails": "تفاصيل الطالب",
+    "studentName": "اسم الطالب",
+    "studentId": "رقم الطالب",
+    "grade": "الصف",
+    "class": "الفصل",
+    "performance": "الأداء",
+    "attendance": "الحضور",
+    "tests": "الاختبارات",
+    "noStudents": "لا يوجد طلاب",
+    "tryChangingFilters": "حاول تغيير معايير البحث",
+    "studentsAnalyzed": "الطلاب المحللون",
+    "requireAnalysis": "يحتاجون للتحليل",
+    "outOf": "من"
+  },
+  "tests": {
+    "title": "الاختبارات",
+    "createTest": "إنشاء اختبار",
+    "testName": "اسم الاختبار",
+    "testDate": "تاريخ الاختبار",
+    "testScore": "الدرجة",
+    "testResults": "نتائج الاختبار",
+    "averageScore": "المعدل",
+    "highestScore": "أعلى درجة",
+    "lowestScore": "أدنى درجة",
+    "passRate": "معدل النجاح"
+  },
+  "analytics": {
+    "title": "التحليلات",
+    "performanceTrends": "اتجاهات الأداء",
+    "studentProgress": "تقدم الطلاب",
+    "classComparison": "مقارنة الفصول",
+    "insights": "رؤى",
+    "recommendations": "توصيات"
+  },
+  "cookies": {
+    "title": "نستخدم ملفات تعريف الارتباط",
+    "description": "نستخدم ملفات تعريف الارتباط لتحسين تجربة المستخدم، وحفظ التفضيلات، وتحليل استخدام النظام، وتوفير محتوى ذي صلة. تساعدنا ملفات تعريف الارتباط في تقديم خدمة أفضل ومخصصة لك.",
+    "acceptAll": "قبول جميع ملفات تعريف الارتباط",
+    "customize": "تخصيص",
+    "decline": "رفض",
+    "savePreferences": "حفظ التفضيلات",
+    "settingsTitle": "إعدادات ملفات تعريف الارتباط التفصيلية",
+    "categories": {
+      "necessary": {
+        "title": "ملفات تعريف الارتباط الضرورية",
+        "description": "ملفات تعريف الارتباط هذه مطلوبة للوظائف الأساسية للنظام ولا يمكن تعطيلها. وهي تشمل: الحفاظ على حالة تسجيل الدخول، وتفضيلات اللغة، وإعدادات الأمان.",
+        "label": "ضرورية",
+        "shortDesc": "وظائف أساسية"
+      },
+      "functional": {
+        "title": "ملفات تعريف الارتباط الوظيفية",
+        "description": "تحفظ ملفات تعريف الارتباط هذه تفضيلاتك (مثل الوضع الداكن/الفاتح، وحجم الخط، والمرشحات). بدون ملفات تعريف الارتباط هذه، ستحتاج إلى تعيين تفضيلاتك في كل مرة.",
+        "label": "وظيفية",
+        "shortDesc": "حفظ التفضيلات"
+      },
+      "analytics": {
+        "title": "ملفات تعريف الارتباط للتحليلات",
+        "description": "تساعدنا ملفات تعريف الارتباط هذه على فهم كيفية استخدامك للنظام، والميزات المفيدة، وأين يمكننا التحسين. المعلومات مجهولة المصدر وتستخدم فقط لتحسين الخدمة.",
+        "label": "تحليلات",
+        "shortDesc": "تحسين النظام"
+      },
+      "marketing": {
+        "title": "ملفات تعريف الارتباط التسويقية",
+        "description": "تساعدنا ملفات تعريف الارتباط هذه على عرض محتوى ذي صلة ومخصص لاحتياجات مدرستك. إنها تسمح لنا بتقديم ميزات وتدريبات مفيدة بشكل خاص لك.",
+        "label": "تسويق",
+        "shortDesc": "محتوى ذو صلة"
+      },
+      "advertising": {
+        "title": "ملفات تعريف الارتباط الإعلانية",
+        "description": "تتيح ملفات تعريف الارتباط هذه عرض إعلانات ذات صلة حول المنتجات والخدمات التعليمية التي قد تهمك. يتم تخصيص الإعلانات بناءً على اهتماماتك.",
+        "label": "إعلانات",
+        "shortDesc": "إعلانات مخصصة"
+      }
+    },
+    "footer": "لمزيد من المعلومات، اقرأ سياسة الخصوصية الخاصة بنا",
+    "announcements": {
+      "opened": "تم فتح قائمة الموافقة على ملفات تعريف الارتباط. يرجى تحديد تفضيلات ملفات تعريف الارتباط الخاصة بك.",
+      "closed": "تم إغلاق قائمة ملفات تعريف الارتباط.",
+      "allAccepted": "تم قبول جميع ملفات تعريف الارتباط. تم حفظ تفضيلاتك.",
+      "onlyNecessary": "تم قبول ملفات تعريف الارتباط الضرورية فقط. تم حفظ تفضيلاتك.",
+      "saved": "تم حفظ تفضيلات ملفات تعريف الارتباط الخاصة بك بنجاح.",
+      "settingsOpened": "تم فتح إعدادات ملفات تعريف الارتباط التفصيلية.",
+      "settingsClosed": "تم إغلاق إعدادات ملفات تعريف الارتباط. العودة إلى القائمة الرئيسية.",
+      "cancelled": "تم إلغاء التغييرات. العودة إلى القائمة الرئيسية."
+    }
+  },
+  "language": {
+    "title": "اختر اللغة / Select Language",
+    "current": "اللغة الحالية",
+    "change": "تغيير اللغة",
+    "languages": {
+      "he": "العبرية",
+      "en": "الإنجليزية",
+      "ar": "العربية",
+      "ru": "الروسية"
+    },
+    "announcements": {
+      "opened": "تم فتح قائمة اللغة.",
+      "closed": "تم إغلاق قائمة اللغة.",
+      "changed": "تم تغيير اللغة إلى {{language}}"
+    },
+    "footer": "ستتغير اللغة في جميع أنحاء الموقع"
+  },
+  "accessibility": {
+    "title": "إمكانية الوصول",
+    "fontSize": "حجم الخط",
+    "highContrast": "تباين عالي",
+    "darkMode": "الوضع الداكن",
+    "reducedMotion": "تقليل الحركة",
+    "keyboardNav": "التنقل بلوحة المفاتيح",
+    "reset": "إعادة تعيين",
+    "tooltips": {
+      "fontSize": "تغيير حجم النص على الموقع. النطاق: 80٪ - 150٪",
+      "highContrast": "زيادة التباين لتحسين القراءة. موصى به للأشخاص ذوي الإعاقات البصرية.",
+      "darkMode": "التبديل بين الوضع الفاتح والداكن. يقلل الوضع الداكن من إجهاد العين.",
+      "reducedMotion": "تقليل أو تعطيل الرسوم المتحركة. موصى به للأشخاص الذين يعانون من حساسية الحركة.",
+      "keyboardNav": "تسليط الضوء على العناصر عند استخدام لوحة المفاتيح. يمكّن التنقل باستخدام Tab."
+    },
+    "announcements": {
+      "opened": "تم فتح قائمة إمكانية الوصول.",
+      "closed": "تم إغلاق قائمة إمكانية الوصول.",
+      "fontSizeChanged": "تم تغيير حجم الخط إلى {{size}}٪",
+      "highContrastEnabled": "تم تمكين التباين العالي",
+      "highContrastDisabled": "تم تعطيل التباين العالي",
+      "darkModeEnabled": "تم تمكين الوضع الداكن",
+      "darkModeDisabled": "تم تعطيل الوضع الداكن",
+      "reducedMotionEnabled": "تم تمكين تقليل الحركة",
+      "reducedMotionDisabled": "تم تعطيل تقليل الحركة",
+      "keyboardNavEnabled": "تم تمكين التنقل بلوحة المفاتيح",
+      "keyboardNavDisabled": "تم تعطيل التنقل بلوحة المفاتيح",
+      "reset": "تمت إعادة تعيين جميع إعدادات إمكانية الوصول"
+    }
+  },
+  "footer": {
+    "company": "ISHEBOT - نظام تحليل الطلاب",
+    "tagline": "نظام تحليل مدعوم بالذكاء الاصطناعي للمدارس",
+    "rights": "جميع الحقوق محفوظة",
+    "links": {
+      "privacy": "سياسة الخصوصية",
+      "terms": "شروط الخدمة",
+      "dataProcessing": "معالجة البيانات",
+      "security": "الأمان"
+    },
+    "social": "تابعنا"
+  },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "description": "الصفحة التي طلبتها غير موجودة",
+    "backHome": "العودة إلى الصفحة الرئيسية"
+  }
+}

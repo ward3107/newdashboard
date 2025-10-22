@@ -1,0 +1,388 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "settings": "Settings",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "students": "Students",
+    "analytics": "Analytics",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "title": "Student Analysis Dashboard",
+    "subtitle": "AI-Powered Analysis System",
+    "welcomeBack": "Welcome Back",
+    "overview": "Overview",
+    "recentActivity": "Recent Activity",
+    "totalStudents": "Total Students",
+    "activeTests": "Active Tests",
+    "averageScore": "Average Score",
+    "completionRate": "Completion Rate",
+    "tabs": {
+      "overview": "Overview",
+      "students": "Students",
+      "analytics": "Dashboard"
+    },
+    "themes": {
+      "selectTheme": "Select Color Theme",
+      "colorThemes": "Color Themes",
+      "lightThemes": "Light Themes",
+      "darkThemes": "Dark Themes",
+      "corporate": "Corporate",
+      "professional": "Professional",
+      "minimalist": "Minimalist",
+      "earth": "Earth",
+      "darkBlue": "Dark Blue",
+      "sage": "Sage",
+      "softRose": "Soft Rose",
+      "midnight": "Midnight",
+      "ocean": "Ocean",
+      "forest": "Forest",
+      "volcanic": "Volcanic",
+      "space": "Space",
+      "cleanWhite": "Clean White",
+      "lightBlue": "Light Blue",
+      "pastel": "Pastel",
+      "mint": "Mint",
+      "peach": "Peach",
+      "lavender": "Lavender",
+      "sky": "Sky",
+      "coral": "Coral",
+      "sand": "Sand"
+    },
+    "stats": {
+      "totalStudentsTitle": "Total Students",
+      "totalStudentsDescription": "Total number of students in the system",
+      "totalStudentsDetails": "Including analyzed and unanalyzed students",
+      "waitingAnalysisTitle": "Waiting for Analysis",
+      "waitingAnalysisDescription": "Students not yet analyzed",
+      "waitingAnalysisDetails": [
+        "Students waiting for ISHEBOT analysis",
+        "Click Smart AI for automatic analysis",
+        "Analysis is performed automatically upon form submission"
+      ],
+      "averageStrengthsTitle": "Average Strengths",
+      "averageStrengthsDescription": "Average strengths per student",
+      "averageStrengthsDetails": [
+        "Based on AI analysis",
+        "Includes academic and personal strengths"
+      ],
+      "upToDateTitle": "Up to Date",
+      "upToDateDescription": "Students with current analysis",
+      "upToDateDetails": [
+        "Analysis completed in the last month",
+        "Ready for learning recommendations"
+      ],
+      "completionPercentTitle": "Completion Percentage",
+      "completionPercentDescription": "Percentage of students with full analysis",
+      "engagementTitle": "Engagement",
+      "engagementDescription": "Overall engagement level",
+      "engagementDetails": [
+        "Based on weekly activity",
+        "Includes participation and progress"
+      ],
+      "overallImprovementTitle": "Overall Improvement",
+      "overallImprovementDescription": "Average improvement percentage",
+      "overallImprovementDetails": [
+        "Comparison to previous month",
+        "Based on AI analysis"
+      ],
+      "strengthsScoreTitle": "Strengths Score",
+      "strengthsScoreDescription": "Average strengths out of 5",
+      "strengthsScoreDetails": "Includes academic and personal strengths",
+      "topPerformersTitle": "Top Performers",
+      "topPerformersTrendLabel": "This week",
+      "needsSupportTitle": "Need Support",
+      "needsSupportSubtitle": "Require analysis",
+      "needsSupportTrendLabel": "This week",
+      "avgAnalysisTimeTitle": "Average Analysis Time",
+      "avgAnalysisTimeSubtitle": "days",
+      "avgAnalysisTimeTrendLabel": "No change",
+      "studentsAnalyzedCount": "{{count}} students analyzed",
+      "studentsNeedAnalysisCount": "{{count}} require analysis",
+      "outOfFive": "{{value}} out of 5",
+      "percentOfClass": "{{percent}}% of class"
+    },
+    "charts": {
+      "learningStylesTitle": "Learning Styles",
+      "learningStylesSubtitle": "Distribution by type",
+      "visualLearning": "Visual Learning",
+      "auditoryLearning": "Auditory Learning",
+      "kinestheticLearning": "Kinesthetic Learning",
+      "socialLearning": "Social Learning",
+      "classDistributionTitle": "Class Distribution",
+      "classDistributionSubtitle": "Students by class"
+    },
+    "search": {
+      "placeholder": "Search by name or student code..."
+    },
+    "status": {
+      "waitingAnalysis": "Waiting for analysis",
+      "excellentPerformance": "Excellent performance",
+      "goodPerformance": "Good performance",
+      "needsAttention": "Needs attention",
+      "standardPerformance": "Standard performance"
+    },
+    "weekDays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  },
+  "students": {
+    "title": "Students",
+    "addStudent": "Add Student",
+    "studentDetails": "Student Details",
+    "studentName": "Student Name",
+    "studentId": "Student ID",
+    "grade": "Grade",
+    "class": "Class",
+    "performance": "Performance",
+    "attendance": "Attendance",
+    "tests": "Tests",
+    "noStudents": "No Students",
+    "tryChangingFilters": "Try changing the search filters",
+    "studentsAnalyzed": "Students analyzed",
+    "requireAnalysis": "Require analysis",
+    "outOf": "out of"
+  },
+  "tests": {
+    "title": "Tests",
+    "createTest": "Create Test",
+    "testName": "Test Name",
+    "testDate": "Test Date",
+    "testScore": "Score",
+    "testResults": "Test Results",
+    "averageScore": "Average Score",
+    "highestScore": "Highest Score",
+    "lowestScore": "Lowest Score",
+    "passRate": "Pass Rate"
+  },
+  "analytics": {
+    "title": "Analytics Dashboard",
+    "subtitle": "Comprehensive Analysis Insights",
+    "students": "students",
+    "export": "Export Report",
+    "performanceTrends": "Performance Trends",
+    "studentProgress": "Student Progress",
+    "classComparison": "Class Comparison",
+    "insights": {
+      "title": "Key Insights",
+      "recommendations": "Recommendations"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "academic": "Academic",
+      "behavioral": "Behavioral",
+      "emotional": "Emotional",
+      "risk": "Risk Assessment",
+      "advanced": "Advanced Metrics"
+    },
+    "filters": {
+      "all": "All Students",
+      "analyzed": "Analyzed Only",
+      "unanalyzed": "Unanalyzed",
+      "atRisk": "At Risk"
+    },
+    "metrics": {
+      "completionRate": "Analysis Completion",
+      "averageGrade": "Average Grade",
+      "wellbeing": "Wellbeing Index",
+      "atRisk": "High Risk Students",
+      "engagement": "Engagement",
+      "academicReadiness": "Academic Readiness",
+      "socialIntegration": "Social Integration"
+    },
+    "charts": {
+      "learningStyles": "Learning Style Distribution",
+      "performance": "Academic Performance",
+      "classPerformance": "Class Performance Comparison",
+      "participation": "Participation Levels",
+      "emotionalHealth": "Emotional Wellbeing",
+      "performanceTrends": "Performance Trends",
+      "strengths": "Top Strengths",
+      "riskDistribution": "Risk Assessment Distribution",
+      "atRiskStudents": "Students Requiring Attention",
+      "advancedMetrics": "Comprehensive Metrics Overview",
+      "wellbeingFactors": "Wellbeing Factors"
+    }
+  },
+  "charts": {
+    "learningStyles": {
+      "title": "Learning Styles",
+      "visual": "Visual",
+      "auditory": "Auditory",
+      "kinesthetic": "Kinesthetic",
+      "readingWriting": "Reading/Writing"
+    },
+    "performance": {
+      "title": "Performance Distribution",
+      "excellent": "Excellent",
+      "good": "Good",
+      "average": "Average",
+      "needsSupport": "Needs Support"
+    },
+    "emotional": {
+      "positive": "Positive",
+      "neutral": "Neutral",
+      "concerning": "Concerning"
+    },
+    "classPerformance": {
+      "averageGrade": "Average Grade"
+    },
+    "trends": {
+      "improving": "Improving",
+      "stable": "Stable",
+      "declining": "Declining"
+    },
+    "risk": {
+      "low": "Low Risk",
+      "medium": "Medium Risk",
+      "high": "High Risk"
+    },
+    "participation": {
+      "title": "Participation Levels",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "strengths": {
+      "title": "Top Strengths"
+    },
+    "metrics": {
+      "engagement": "Engagement Score",
+      "wellbeing": "Wellbeing Index",
+      "academic": "Academic Readiness",
+      "social": "Social Integration",
+      "currentLevel": "Current Level",
+      "target": "Target Level"
+    }
+  },
+  "cookies": {
+    "title": "We Use Cookies",
+    "description": "We use cookies to improve your user experience, save preferences, analyze system usage and provide relevant content. Cookies help us provide you with better, personalized service.",
+    "acceptAll": "Accept All Cookies",
+    "customize": "Customize",
+    "decline": "Decline",
+    "savePreferences": "Save Preferences",
+    "settingsTitle": "Detailed Cookie Settings",
+    "categories": {
+      "necessary": {
+        "title": "Necessary Cookies",
+        "description": "These cookies are required for basic system functionality and cannot be disabled. They include: maintaining login status, language preferences, and security settings.",
+        "label": "Necessary",
+        "shortDesc": "Basic functionality"
+      },
+      "functional": {
+        "title": "Functional Cookies",
+        "description": "These cookies save your preferences (such as dark/light mode, font size, filters). Without these cookies, you will need to set your preferences each time.",
+        "label": "Functional",
+        "shortDesc": "Save preferences"
+      },
+      "analytics": {
+        "title": "Analytics Cookies",
+        "description": "These cookies help us understand how you use the system, which features are useful, and where we can improve. The information is anonymous and used only to improve the service.",
+        "label": "Analytics",
+        "shortDesc": "Improve system"
+      },
+      "marketing": {
+        "title": "Marketing Cookies",
+        "description": "These cookies help us display relevant content tailored to your school's needs. They allow us to offer features and training especially useful for you.",
+        "label": "Marketing",
+        "shortDesc": "Relevant content"
+      },
+      "advertising": {
+        "title": "Advertising Cookies",
+        "description": "These cookies enable displaying relevant advertisements about educational products and services that may interest you. Ads are personalized based on your interests.",
+        "label": "Advertising",
+        "shortDesc": "Personalized ads"
+      }
+    },
+    "footer": "For more information, read our privacy policy",
+    "announcements": {
+      "opened": "Cookie consent menu opened. Please select your cookie preferences.",
+      "closed": "Cookie menu closed.",
+      "allAccepted": "All cookies accepted. Your preferences have been saved.",
+      "onlyNecessary": "Only necessary cookies accepted. Your preferences have been saved.",
+      "saved": "Your cookie preferences have been saved successfully.",
+      "settingsOpened": "Detailed cookie settings opened.",
+      "settingsClosed": "Cookie settings closed. Returning to main menu.",
+      "cancelled": "Changes cancelled. Returning to main menu."
+    }
+  },
+  "language": {
+    "title": "Select Language / בחר שפה",
+    "current": "Current Language",
+    "change": "Change Language",
+    "languages": {
+      "he": "Hebrew",
+      "en": "English",
+      "ar": "Arabic",
+      "ru": "Russian"
+    },
+    "announcements": {
+      "opened": "Language menu opened.",
+      "closed": "Language menu closed.",
+      "changed": "Language changed to {{language}}"
+    },
+    "footer": "Language will change site-wide"
+  },
+  "accessibility": {
+    "title": "Accessibility",
+    "fontSize": "Font Size",
+    "highContrast": "High Contrast",
+    "darkMode": "Dark Mode",
+    "reducedMotion": "Reduced Motion",
+    "keyboardNav": "Keyboard Navigation",
+    "reset": "Reset",
+    "tooltips": {
+      "fontSize": "Change the text size on the site. Range: 80% - 150%",
+      "highContrast": "Increase contrast to improve readability. Recommended for people with visual impairments.",
+      "darkMode": "Switch between light and dark mode. Dark mode reduces eye strain.",
+      "reducedMotion": "Reduce or disable animations. Recommended for people with motion sensitivity.",
+      "keyboardNav": "Highlight elements when using keyboard. Enables Tab navigation."
+    },
+    "announcements": {
+      "opened": "Accessibility menu opened.",
+      "closed": "Accessibility menu closed.",
+      "fontSizeChanged": "Font size changed to {{size}}%",
+      "highContrastEnabled": "High contrast enabled",
+      "highContrastDisabled": "High contrast disabled",
+      "darkModeEnabled": "Dark mode enabled",
+      "darkModeDisabled": "Dark mode disabled",
+      "reducedMotionEnabled": "Reduced motion enabled",
+      "reducedMotionDisabled": "Reduced motion disabled",
+      "keyboardNavEnabled": "Keyboard navigation enabled",
+      "keyboardNavDisabled": "Keyboard navigation disabled",
+      "reset": "All accessibility settings reset"
+    }
+  },
+  "footer": {
+    "company": "ISHEBOT - Student Analysis System",
+    "tagline": "AI-Powered Analysis System for Schools",
+    "rights": "All Rights Reserved",
+    "links": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "dataProcessing": "Data Processing",
+      "security": "Security"
+    },
+    "social": "Follow Us"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you requested does not exist",
+    "backHome": "Back to Home"
+  }
+}

@@ -21,7 +21,16 @@ import {
   GripVertical,
   Armchair,
   DoorOpen,
-  Wind
+  Wind,
+  X,
+  TrendingUp,
+  TrendingDown,
+  Award,
+  Target,
+  Brain,
+  Heart,
+  BookOpen,
+  Zap
 } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable';
@@ -686,10 +695,234 @@ const getCircularReasoning = (student, index, total) => {
 };
 
 // ============================================================================
+// STUDENT ANALYSIS POPUP COMPONENT
+// ============================================================================
+
+const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
+  if (!student) return null;
+
+  const challenges = student.challengesCount || 0;
+  const strengths = student.strengthsCount || 0;
+  const grade = student.grade || 0;
+
+  // Parse strengths and challenges from analysis
+  const getTopItems = (text, count = 3) => {
+    if (!text) return [];
+    const lines = text.split('\n').filter(line => line.trim().length > 0);
+    return lines.slice(0, count);
+  };
+
+  const topStrengths = getTopItems(student.keyStrengths, 3);
+  const topChallenges = getTopItems(student.keyChallenges, 3);
+
+  // Determine color scheme
+  const getColorScheme = () => {
+    if (challenges > 4 || (grade > 0 && grade < 60)) {
+      return { bg: 'from-red-500 to-red-600', text: 'סיכון גבוה', emoji: '🔴', icon: AlertCircle };
+    }
+    if (challenges > 2 || (grade > 0 && grade < 75)) {
+      return { bg: 'from-yellow-400 to-orange-500', text: 'דורש תמיכה', emoji: '🟡', icon: Target };
+    }
+    if (strengths > 4 && challenges <= 2) {
+      return { bg: 'from-green-500 to-emerald-600', text: 'מצטיין', emoji: '🟢', icon: Award };
+    }
+    return { bg: 'from-blue-500 to-purple-500', text: 'מאוזן', emoji: '🔵', icon: CheckCircle };
+  };
+
+  const colorScheme = getColorScheme();
+  const StatusIcon = colorScheme.icon;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 20 }}
+          onClick={(e) => e.stopPropagation()}
+          className={`${
+            darkMode ? 'bg-gray-900' : 'bg-white'
+          } rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto`}
+        >
+          {/* Header */}
+          <div className={`bg-gradient-to-r ${colorScheme.bg} p-6 relative`}>
+            <button
+              onClick={onClose}
+              className="absolute top-4 left-4 w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all"
+            >
+              <X className="text-white" size={18} />
+            </button>
+
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl">
+                {colorScheme.emoji}
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-white mb-1">
+                  {student.name || `תלמיד ${student.studentCode}`}
+                </h2>
+                <p className="text-white/80 text-sm mb-2">קוד: {student.studentCode}</p>
+                <div className="flex items-center gap-2">
+                  <StatusIcon className="text-white" size={16} />
+                  <span className="text-white font-semibold">{colorScheme.text}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 space-y-6">
+            {/* Quick Stats */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4 text-center`}>
+                <Award className={`mx-auto mb-2 ${darkMode ? 'text-green-400' : 'text-green-600'}`} size={24} />
+                <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {strengths}
+                </div>
+                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>חוזקות</div>
+              </div>
+              <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4 text-center`}>
+                <Target className={`mx-auto mb-2 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} size={24} />
+                <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {challenges}
+                </div>
+                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אתגרים</div>
+              </div>
+              <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4 text-center`}>
+                <TrendingUp className={`mx-auto mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} size={24} />
+                <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {grade > 0 ? `${grade}%` : 'N/A'}
+                </div>
+                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון</div>
+              </div>
+            </div>
+
+            {/* Top 3 Strengths */}
+            {topStrengths.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap className="text-green-500" size={20} />
+                  <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    חוזקות מרכזיות
+                  </h3>
+                </div>
+                <div className="space-y-2">
+                  {topStrengths.map((strength, index) => (
+                    <div
+                      key={index}
+                      className={`${
+                        darkMode ? 'bg-green-500/10 border-green-500/30' : 'bg-green-50 border-green-200'
+                      } border rounded-xl p-3 flex items-start gap-3`}
+                    >
+                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        {index + 1}
+                      </div>
+                      <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right flex-1`}>
+                        {strength}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Top 3 Challenges */}
+            {topChallenges.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Target className="text-orange-500" size={20} />
+                  <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    אתגרים מרכזיים
+                  </h3>
+                </div>
+                <div className="space-y-2">
+                  {topChallenges.map((challenge, index) => (
+                    <div
+                      key={index}
+                      className={`${
+                        darkMode ? 'bg-orange-500/10 border-orange-500/30' : 'bg-orange-50 border-orange-200'
+                      } border rounded-xl p-3 flex items-start gap-3`}
+                    >
+                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        {index + 1}
+                      </div>
+                      <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right flex-1`}>
+                        {challenge}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Seating Strategy */}
+            <div className={`${darkMode ? 'bg-purple-500/10 border-purple-500/30' : 'bg-purple-50 border-purple-200'} border rounded-xl p-4`}>
+              <div className="flex items-center gap-2 mb-3">
+                <Brain className="text-purple-500" size={20} />
+                <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  אסטרטגיית ישיבה מומלצת
+                </h3>
+              </div>
+              <div className="space-y-2 text-sm">
+                {challenges > 4 && (
+                  <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                    ✓ מיקום בשורה קדמית לניטור קרוב
+                  </p>
+                )}
+                {challenges > 4 && (
+                  <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                    ✓ ליד תלמיד חזק לחונכות עמיתים
+                  </p>
+                )}
+                {strengths > 4 && (
+                  <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                    ✓ יכול לשבת בשורות אחוריות (עצמאי)
+                  </p>
+                )}
+                {strengths > 4 && (
+                  <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                    ✓ מומלץ לשיבוץ כמנטור לתלמידים אחרים
+                  </p>
+                )}
+                {challenges <= 4 && strengths <= 4 && (
+                  <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                    ✓ מיקום מרכזי מאוזן
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* View Full Analysis Button */}
+            <button
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+              onClick={() => {
+                // This would navigate to full analysis - placeholder for now
+                console.log('View full analysis for', student.studentCode);
+              }}
+            >
+              <BookOpen size={18} />
+              <span>צפה בניתוח מלא</span>
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+// ============================================================================
 // DRAGGABLE STUDENT COMPONENT
 // ============================================================================
 
-const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 0, totalRows = 4 }) => {
+const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 0, totalRows = 4, darkMode = false }) => {
+  const [showPopup, setShowPopup] = useState(false);
+
   // Safety check - if student is undefined, return null
   if (!student || !student.studentCode) {
     return null;
@@ -716,33 +949,115 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
   // Debug: Log to verify different positions generate different reasons
   console.log(`Student ${student.studentCode} at row ${row}, col ${col} | Strengths: ${student.strengthsCount || 0}, Challenges: ${student.challengesCount || 0}:`, placementReason.mainReason);
 
+  // Determine student color based on needs and performance
+  const getStudentColor = () => {
+    const challenges = student.challengesCount || 0;
+    const strengths = student.strengthsCount || 0;
+    const grade = student.grade || 0;
+    const riskLevel = student.riskLevel;
+
+    // Red: At-risk/high challenges/low performance
+    if (riskLevel === 'high' || challenges > 4 || (grade > 0 && grade < 60)) {
+      return {
+        gradient: 'from-red-500 to-red-600',
+        border: 'border-red-300',
+        shadow: 'shadow-red-500/50',
+        label: 'סיכון גבוה',
+        emoji: '🔴'
+      };
+    }
+
+    // Yellow: Moderate support needed
+    if (challenges > 2 || (grade > 0 && grade < 75) || riskLevel === 'medium') {
+      return {
+        gradient: 'from-yellow-400 to-orange-500',
+        border: 'border-yellow-300',
+        shadow: 'shadow-yellow-500/50',
+        label: 'דורש תמיכה',
+        emoji: '🟡'
+      };
+    }
+
+    // Green: High performer/independent learner
+    if (strengths > 4 && challenges <= 2 && (grade === 0 || grade >= 85)) {
+      return {
+        gradient: 'from-green-500 to-emerald-600',
+        border: 'border-green-300',
+        shadow: 'shadow-green-500/50',
+        label: 'מצטיין',
+        emoji: '🟢'
+      };
+    }
+
+    // Gray: Not yet analyzed or balanced
+    if (student.needsAnalysis || (!strengths && !challenges)) {
+      return {
+        gradient: 'from-gray-400 to-gray-500',
+        border: 'border-gray-300',
+        shadow: 'shadow-gray-500/50',
+        label: 'לא נותח',
+        emoji: '⚪'
+      };
+    }
+
+    // Blue: Balanced/average student (default)
+    return {
+      gradient: 'from-blue-500 to-purple-500',
+      border: 'border-blue-300',
+      shadow: 'shadow-blue-500/50',
+      label: 'מאוזן',
+      emoji: '🔵'
+    };
+  };
+
+  const colorScheme = getStudentColor();
+
   return (
-    <motion.div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...(isDraggable ? listeners : {})}
-      whileHover={{ scale: 1.05 }}
-      className="relative group cursor-move"
-    >
-      <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-[10px] shadow-lg border-2 border-white">
-        <div className="text-center leading-tight">
-          {student.studentCode.toString()}
-        </div>
-        {isDraggable && (
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
-            <GripVertical className="text-gray-600" size={10} />
+    <>
+      <motion.div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...(isDraggable ? listeners : {})}
+        whileHover={{ scale: 1.05 }}
+        className="relative group cursor-move"
+      >
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowPopup(true);
+          }}
+          className={`w-16 h-16 rounded-lg bg-gradient-to-br ${colorScheme.gradient} flex items-center justify-center text-white font-bold text-[10px] shadow-lg ${colorScheme.shadow} border-2 ${colorScheme.border} cursor-pointer hover:ring-2 hover:ring-white transition-all`}
+        >
+          <div className="text-center leading-tight pointer-events-none">
+            {student.studentCode.toString()}
           </div>
-        )}
-      </div>
+          {isDraggable && (
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center pointer-events-none">
+              <GripVertical className="text-gray-600" size={10} />
+            </div>
+          )}
+          {/* Color indicator badge */}
+          <div className="absolute -bottom-1 -left-1 w-5 h-5 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200 shadow-sm pointer-events-none">
+            {colorScheme.emoji}
+          </div>
+        </div>
 
       {/* Enhanced AI-powered tooltip */}
       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50">
         <div className="bg-gray-900 text-white text-xs rounded-xl shadow-2xl overflow-hidden max-w-sm" style={{ width: '320px' }}>
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 border-b border-white/20">
-            <div className="font-bold text-sm">{student.name || `תלמיד ${student.studentCode}`}</div>
-            <div className="text-[10px] text-blue-200 mt-1">קוד: {student.studentCode}</div>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex-1">
+                <div className="font-bold text-sm">{student.name || `תלמיד ${student.studentCode}`}</div>
+                <div className="text-[10px] text-blue-200 mt-1">קוד: {student.studentCode}</div>
+              </div>
+              <div className="text-right">
+                <div className="text-lg">{colorScheme.emoji}</div>
+                <div className="text-[9px] text-blue-200 mt-0.5">{colorScheme.label}</div>
+              </div>
+            </div>
           </div>
 
           {/* Main Reason */}
@@ -794,6 +1109,16 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
         </div>
       </div>
     </motion.div>
+
+      {/* Analysis Popup */}
+      {showPopup && (
+        <StudentAnalysisPopup
+          student={student}
+          onClose={() => setShowPopup(false)}
+          darkMode={darkMode}
+        />
+      )}
+    </>
   );
 };
 
@@ -808,6 +1133,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   const [showRecommendations, setShowRecommendations] = useState(true);
   const [showExplanations, setShowExplanations] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [swapFeedback, setSwapFeedback] = useState(null);
 
   // Filter analyzed students only
   const analyzedStudents = students.filter(s => !s.needsAnalysis);
@@ -843,6 +1169,14 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     setTimeout(() => {
       setSelectedShape(shapeId);
       setIsGenerating(false);
+
+      // Scroll to the seating arrangement visualization
+      setTimeout(() => {
+        const arrangementSection = document.getElementById('seating-arrangement-visualization');
+        if (arrangementSection) {
+          arrangementSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }, 300);
   };
 
@@ -855,13 +1189,165 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     }, 500);
   };
 
+  /**
+   * Evaluate a student swap using AI
+   */
+  const evaluateSwap = (student1, student2, pos1, pos2) => {
+    const challenges1 = student1.challengesCount || 0;
+    const challenges2 = student2.challengesCount || 0;
+    const strengths1 = student1.strengthsCount || 0;
+    const strengths2 = student2.strengthsCount || 0;
+
+    let score = 50; // Neutral score
+    let feedback = [];
+    let type = 'neutral'; // 'good', 'warning', 'bad'
+    let suggestions = [];
+
+    // Evaluate based on student needs and positioning
+    const isFrontRow1 = pos1.row < 2;
+    const isFrontRow2 = pos2.row < 2;
+    const isBackRow1 = pos1.row >= pos1.totalRows - 2;
+    const isBackRow2 = pos2.row >= pos2.totalRows - 2;
+
+    // High-challenge students should be in front
+    if (challenges1 > 4) {
+      if (isFrontRow2) {
+        score += 20;
+        feedback.push(`✅ מעולה! ${student1.name || student1.studentCode} זקוק לתמיכה קרובה - מיקום קדמי מושלם`);
+      } else if (isBackRow2) {
+        score -= 30;
+        type = 'warning';
+        feedback.push(`⚠️ אזהרה: ${student1.name || student1.studentCode} זקוק לניטור קרוב - מיקום אחורי לא מומלץ`);
+        suggestions.push(`מומלץ למקם את ${student1.name || student1.studentCode} בשורות הקדמיות`);
+      }
+    }
+
+    if (challenges2 > 4) {
+      if (isFrontRow1) {
+        score += 20;
+        feedback.push(`✅ מעולה! ${student2.name || student2.studentCode} זקוק לתמיכה קרובה - מיקום קדמי מושלם`);
+      } else if (isBackRow1) {
+        score -= 30;
+        type = 'warning';
+        feedback.push(`⚠️ אזהרה: ${student2.name || student2.studentCode} זקוק לניטור קרוב - מיקום אחורי לא מומלץ`);
+        suggestions.push(`מומלץ למקם את ${student2.name || student2.studentCode} בשורות הקדמיות`);
+      }
+    }
+
+    // High performers can be in back
+    if (strengths1 > 4 && challenges1 <= 2) {
+      if (isBackRow2) {
+        score += 15;
+        feedback.push(`✅ טוב! ${student1.name || student1.studentCode} עצמאי ויכול לשבת בשורה אחורית`);
+      } else if (isFrontRow2) {
+        score -= 5;
+        feedback.push(`💡 ${student1.name || student1.studentCode} חזק ועצמאי - יכול לשבת גם בשורות אחוריות`);
+      }
+    }
+
+    if (strengths2 > 4 && challenges2 <= 2) {
+      if (isBackRow1) {
+        score += 15;
+        feedback.push(`✅ טוב! ${student2.name || student2.studentCode} עצמאי ויכול לשבת בשורה אחורית`);
+      } else if (isFrontRow1) {
+        score -= 5;
+        feedback.push(`💡 ${student2.name || student2.studentCode} חזק ועצמאי - יכול לשבת גם בשורות אחוריות`);
+      }
+    }
+
+    // Peer mentoring opportunity
+    const strongWeak1 = strengths1 > 4 && challenges2 > 4;
+    const strongWeak2 = strengths2 > 4 && challenges1 > 4;
+
+    if (strongWeak1 || strongWeak2) {
+      score += 25;
+      type = 'good';
+      const mentor = strongWeak1 ? student1.name || student1.studentCode : student2.name || student2.studentCode;
+      const mentee = strongWeak1 ? student2.name || student2.studentCode : student1.name || student1.studentCode;
+      feedback.push(`🌟 מצוין! הזדמנות לחונכות עמיתים: ${mentor} יכול לתמוך ב-${mentee}`);
+    }
+
+    // Two high-challenge students together (warning)
+    if (challenges1 > 3 && challenges2 > 3) {
+      score -= 20;
+      type = 'warning';
+      feedback.push(`⚠️ שני תלמידים עם אתגרים גבוהים ליד אחד - ייתכן צורך בפיזור`);
+      suggestions.push('שקול למקם תלמיד חזק אחד באמצע');
+    }
+
+    // Two high performers together (good for challenges)
+    if (strengths1 > 4 && strengths2 > 4 && challenges1 <= 2 && challenges2 <= 2) {
+      score += 10;
+      feedback.push(`✅ שני תלמידים מצטיינים - יכולים לאתגר אחד את השני`);
+    }
+
+    // Determine final type based on score
+    if (score >= 70) {
+      type = 'good';
+    } else if (score >= 40) {
+      type = 'neutral';
+    } else {
+      type = 'warning';
+    }
+
+    // Add default feedback if none
+    if (feedback.length === 0) {
+      feedback.push('החלפה נייטרלית - לא נמצאו בעיות משמעותיות');
+    }
+
+    return {
+      score: Math.max(0, Math.min(100, score)),
+      type,
+      feedback,
+      suggestions,
+      student1: student1.name || student1.studentCode,
+      student2: student2.name || student2.studentCode
+    };
+  };
+
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      // Handle drag and drop logic here
-      // For now, we'll keep the arrangement as is
-      console.log('Dragged:', active.id, 'to:', over.id);
+      // Find the students being swapped
+      const student1 = analyzedStudents.find(s => s.studentCode === active.id);
+      const student2 = analyzedStudents.find(s => s.studentCode === over.id);
+
+      if (student1 && student2) {
+        // Find their positions in the arrangement
+        let pos1, pos2;
+        arrangement.forEach((item, index) => {
+          if (item.student.studentCode === active.id) {
+            pos1 = { row: item.row || 0, col: item.col || 0, totalRows: arrangement.length };
+          }
+          if (item.student.studentCode === over.id) {
+            pos2 = { row: item.row || 0, col: item.col || 0, totalRows: arrangement.length };
+          }
+        });
+
+        // Evaluate the swap
+        const evaluation = evaluateSwap(student1, student2, pos1 || { row: 0, col: 0, totalRows: 4 }, pos2 || { row: 0, col: 0, totalRows: 4 });
+
+        // Show feedback
+        setSwapFeedback(evaluation);
+
+        // Auto-hide feedback after 8 seconds
+        setTimeout(() => setSwapFeedback(null), 8000);
+
+        // Perform the swap in arrangement
+        const newArrangement = [...arrangement];
+        const index1 = newArrangement.findIndex(item => item.student.studentCode === active.id);
+        const index2 = newArrangement.findIndex(item => item.student.studentCode === over.id);
+
+        if (index1 !== -1 && index2 !== -1) {
+          const temp = newArrangement[index1].student;
+          newArrangement[index1] = { ...newArrangement[index1], student: newArrangement[index2].student };
+          newArrangement[index2] = { ...newArrangement[index2], student: temp };
+          setArrangement(newArrangement);
+        }
+
+        console.log('Swap evaluated:', evaluation);
+      }
     }
   };
 
@@ -888,20 +1374,21 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Combined Header with AI Recommendation */}
       <div className={`backdrop-blur-xl ${
-        darkMode ? 'bg-white/10' : 'bg-white/40'
-      } rounded-3xl p-6 border border-white/20 shadow-2xl`}>
-        <div className="flex items-center justify-between">
+        darkMode ? 'bg-gradient-to-r from-purple-900/40 to-pink-900/40' : 'bg-gradient-to-r from-purple-100/80 to-pink-100/80'
+      } rounded-3xl p-5 border border-purple-300/30 shadow-2xl`}>
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className={`w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center`}>
-              <Grid3x3 className="text-white" size={24} />
+            <div className={`w-11 h-11 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center`}>
+              <Grid3x3 className="text-white" size={22} />
             </div>
             <div>
-              <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 סידור ישיבה חכם מבוסס AI
               </h2>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 {analyzedStudents.length} תלמידים מנותחים
               </p>
             </div>
@@ -910,104 +1397,104 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowExplanations(!showExplanations)}
-              className={`px-4 py-2 rounded-xl transition-all ${
+              className={`px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
                 showExplanations
                   ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
                   : darkMode ? 'bg-white/10 text-gray-300' : 'bg-white/30 text-gray-700'
               }`}
             >
-              {showExplanations ? <EyeOff size={18} /> : <Eye size={18} />}
-              <span className="mr-2 text-sm">הסברים</span>
+              {showExplanations ? <EyeOff size={16} /> : <Eye size={16} />}
+              <span className="text-sm">הסברים</span>
             </button>
 
             <button
               onClick={handleRegenerateArrangement}
               disabled={isGenerating}
-              className={`px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white transition-all ${
+              className={`px-3 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white transition-all flex items-center gap-1.5 ${
                 isGenerating ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg'
               }`}
             >
-              <RefreshCw size={18} className={isGenerating ? 'animate-spin' : ''} />
-              <span className="mr-2 text-sm">צור מחדש</span>
+              <RefreshCw size={16} className={isGenerating ? 'animate-spin' : ''} />
+              <span className="text-sm">צור מחדש</span>
             </button>
           </div>
         </div>
-      </div>
 
-      {/* AI Recommendation Card */}
-      {aiRecommendation && showRecommendations && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`backdrop-blur-xl ${
-            darkMode ? 'bg-gradient-to-r from-purple-900/40 to-pink-900/40' : 'bg-gradient-to-r from-purple-100/80 to-pink-100/80'
-          } rounded-3xl p-6 border border-purple-300/30 shadow-2xl`}
-        >
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Sparkles className="text-white" size={24} />
-            </div>
-
-            <div className="flex-1">
-              <h3 className={`text-xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                המלצת AI - {SEATING_SHAPES[aiRecommendation.recommendedShape].name}
-              </h3>
-
-              <p className={`mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                {aiRecommendation.reasoning}
-              </p>
-
-              <div className="flex items-center gap-2 mb-4">
-                <span className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  ציון התאמה:
-                </span>
-                <div className="flex-1 h-3 bg-white/30 rounded-full overflow-hidden max-w-xs">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${aiRecommendation.score}%` }}
-                    transition={{ duration: 1 }}
-                    className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
-                  />
-                </div>
-                <span className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {aiRecommendation.score}%
-                </span>
+        {/* AI Recommendation Section */}
+        {aiRecommendation && showRecommendations && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`${
+              darkMode ? 'bg-white/5' : 'bg-white/40'
+            } rounded-2xl p-4 border ${darkMode ? 'border-white/10' : 'border-white/30'}`}
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Sparkles className="text-white" size={20} />
               </div>
 
-              {aiRecommendation.alternatives.length > 0 && (
-                <div>
-                  <p className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    חלופות מומלצות:
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {aiRecommendation.alternatives.map((alt, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleShapeChange(alt.shape)}
-                        className={`px-3 py-1 rounded-lg text-sm ${
-                          darkMode ? 'bg-white/10 hover:bg-white/20 text-gray-300' : 'bg-white/50 hover:bg-white/70 text-gray-700'
-                        } transition-all`}
-                      >
-                        {SEATING_SHAPES[alt.shape].name} ({alt.score}%)
-                      </button>
-                    ))}
+              <div className="flex-1">
+                <h3 className={`text-lg font-bold mb-1.5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  המלצת AI - {SEATING_SHAPES[aiRecommendation.recommendedShape].name}
+                </h3>
+
+                <p className={`mb-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {aiRecommendation.reasoning}
+                </p>
+
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    ציון התאמה:
+                  </span>
+                  <div className="flex-1 h-2.5 bg-white/30 rounded-full overflow-hidden max-w-xs">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${aiRecommendation.score}%` }}
+                      transition={{ duration: 1 }}
+                      className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
+                    />
                   </div>
+                  <span className={`text-base font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {aiRecommendation.score}%
+                  </span>
                 </div>
-              )}
+
+                {aiRecommendation.alternatives.length > 0 && (
+                  <div>
+                    <p className={`text-xs font-medium mb-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      חלופות מומלצות:
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {aiRecommendation.alternatives.map((alt, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleShapeChange(alt.shape)}
+                          className={`px-2.5 py-1 rounded-lg text-xs ${
+                            darkMode ? 'bg-white/10 hover:bg-white/20 text-gray-300' : 'bg-white/50 hover:bg-white/70 text-gray-700'
+                          } transition-all`}
+                        >
+                          {SEATING_SHAPES[alt.shape].name} ({alt.score}%)
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+      </div>
 
       {/* Shape Selector */}
       <div className={`backdrop-blur-xl ${
         darkMode ? 'bg-white/10' : 'bg-white/40'
-      } rounded-3xl p-6 border border-white/20 shadow-2xl`}>
-        <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      } rounded-3xl p-4 border border-white/20 shadow-2xl`}>
+        <h3 className={`text-base font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           בחר צורת ישיבה
         </h3>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {Object.values(SEATING_SHAPES).map((shape) => {
             const Icon = shape.icon;
             const isSelected = selectedShape === shape.id;
@@ -1019,7 +1506,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                 onClick={() => handleShapeChange(shape.id)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`relative p-4 rounded-2xl transition-all ${
+                className={`relative p-3 rounded-xl transition-all ${
                   isSelected
                     ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
                     : darkMode
@@ -1028,15 +1515,15 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                 }`}
               >
                 {isRecommended && (
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                    <Sparkles className="text-white" size={14} />
+                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+                    <Sparkles className="text-white" size={12} />
                   </div>
                 )}
 
-                <div className="flex flex-col items-center gap-2">
-                  <span className="text-2xl">{shape.emoji}</span>
-                  <Icon size={20} />
-                  <span className="text-xs font-medium text-center">{shape.name}</span>
+                <div className="flex flex-col items-center gap-1.5">
+                  <span className="text-xl">{shape.emoji}</span>
+                  <Icon size={18} />
+                  <span className="text-[10px] font-medium text-center leading-tight">{shape.name}</span>
                 </div>
               </motion.button>
             );
@@ -1049,20 +1536,20 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
             key={selectedShape}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`mt-4 p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}
+            className={`mt-3 p-3 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}
           >
-            <h4 className={`font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <h4 className={`font-bold mb-1.5 text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               {currentShape.name}
             </h4>
-            <p className={`text-sm mb-3 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-xs mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               {currentShape.description}
             </p>
 
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-1.5 mb-2">
               {currentShape.benefits.map((benefit, index) => (
                 <span
                   key={index}
-                  className={`px-2 py-1 rounded-lg text-xs ${
+                  className={`px-2 py-0.5 rounded-md text-[10px] ${
                     darkMode ? 'bg-green-500/20 text-green-300' : 'bg-green-100 text-green-700'
                   }`}
                 >
@@ -1071,16 +1558,99 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
               ))}
             </div>
 
-            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               <strong>מומלץ עבור:</strong> {currentShape.bestFor}
             </p>
           </motion.div>
         )}
       </div>
 
+      {/* Color Legend */}
+      <div className={`backdrop-blur-xl ${
+        darkMode ? 'bg-white/10' : 'bg-white/40'
+      } rounded-3xl p-4 border border-white/20 shadow-2xl`}>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className={`text-base font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            מקרא צבעים
+          </h3>
+          <Info className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`} size={18} />
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {/* Red: At-risk */}
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/50 border-2 border-red-300 relative">
+              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200">
+                🔴
+              </div>
+            </div>
+            <div>
+              <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>סיכון גבוה</p>
+              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ אתגרים</p>
+            </div>
+          </div>
+
+          {/* Yellow: Moderate support */}
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/50 border-2 border-yellow-300 relative">
+              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200">
+                🟡
+              </div>
+            </div>
+            <div>
+              <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>דורש תמיכה</p>
+              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>2-4 אתגרים</p>
+            </div>
+          </div>
+
+          {/* Green: High performer */}
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/50 border-2 border-green-300 relative">
+              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200">
+                🟢
+              </div>
+            </div>
+            <div>
+              <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מצטיין</p>
+              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ חוזקות</p>
+            </div>
+          </div>
+
+          {/* Blue: Balanced */}
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/50 border-2 border-blue-300 relative">
+              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200">
+                🔵
+              </div>
+            </div>
+            <div>
+              <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מאוזן</p>
+              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ביניים</p>
+            </div>
+          </div>
+
+          {/* Gray: Not analyzed */}
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center shadow-lg shadow-gray-500/50 border-2 border-gray-300 relative">
+              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200">
+                ⚪
+              </div>
+            </div>
+            <div>
+              <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>לא נותח</p>
+              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אין נתונים</p>
+            </div>
+          </div>
+        </div>
+
+        <p className={`mt-3 text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center`}>
+          העבר עכבר מעל תלמיד לראות פרטים מלאים • הצבעים מבוססים על ניתוח ISHEBOT AI
+        </p>
+      </div>
+
       {/* Seating Arrangement Visualization */}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <div className={`backdrop-blur-xl ${
+        <div id="seating-arrangement-visualization" className={`backdrop-blur-xl ${
           darkMode ? 'bg-white/10' : 'bg-white/40'
         } rounded-3xl p-8 border border-white/20 shadow-2xl min-h-[600px]`}>
           {isGenerating ? (
@@ -1145,6 +1715,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                               row={item.row}
                               col={item.col}
                               totalRows={currentShape.rows}
+                              darkMode={darkMode}
                             />
 
                             {showExplanations && item.reasoning && (
@@ -1202,7 +1773,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                               {(cluster.students && cluster.students.length > 0) ? (
                                 cluster.students.map(student => (
                                   <div key={student.studentCode} className="flex justify-center">
-                                    <DraggableStudent student={student} isDraggable={true} />
+                                    <DraggableStudent student={student} isDraggable={true} darkMode={darkMode} />
                                   </div>
                                 ))
                               ) : (
@@ -1262,7 +1833,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                             <div className="flex items-center justify-center gap-3 mb-2">
                               {(pair.students && pair.students.length > 0) ? (
                                 pair.students.map(student => (
-                                  <DraggableStudent key={student.studentCode} student={student} isDraggable={true} />
+                                  <DraggableStudent key={student.studentCode} student={student} isDraggable={true} darkMode={darkMode} />
                                 ))
                               ) : (
                                 <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center`}>
@@ -1356,7 +1927,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                               transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`
                             }}
                           >
-                            <DraggableStudent student={item.student} isDraggable={true} />
+                            <DraggableStudent student={item.student} isDraggable={true} darkMode={darkMode} />
 
                             {showExplanations && item.reasoning && (
                               <div className={`absolute top-full mt-2 left-1/2 transform -translate-x-1/2 whitespace-nowrap text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -1419,7 +1990,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                             <div className="flex flex-wrap gap-3 justify-center mb-3">
                               {(station.students && station.students.length > 0) ? (
                                 station.students.map(student => (
-                                  <DraggableStudent key={student.studentCode} student={student} isDraggable={true} />
+                                  <DraggableStudent key={student.studentCode} student={student} isDraggable={true} darkMode={darkMode} />
                                 ))
                               ) : (
                                 <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center w-full`}>
@@ -1457,6 +2028,91 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           )}
         </div>
       </DndContext>
+
+      {/* Swap Feedback Notification */}
+      <AnimatePresence>
+        {swapFeedback && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[90] max-w-2xl w-full px-4"
+          >
+            <div className={`${
+              swapFeedback.type === 'good'
+                ? 'bg-gradient-to-r from-green-500 to-emerald-600'
+                : swapFeedback.type === 'warning'
+                  ? 'bg-gradient-to-r from-orange-500 to-red-500'
+                  : 'bg-gradient-to-r from-blue-500 to-purple-500'
+            } rounded-2xl shadow-2xl p-6 text-white`}>
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl">
+                    {swapFeedback.type === 'good' ? '✅' : swapFeedback.type === 'warning' ? '⚠️' : '💡'}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold">הערכת החלפה</h3>
+                    <p className="text-sm text-white/80">
+                      {swapFeedback.student1} ↔️ {swapFeedback.student2}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSwapFeedback(null)}
+                  className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Score Bar */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">ציון התאמה</span>
+                  <span className="text-lg font-bold">{swapFeedback.score}%</span>
+                </div>
+                <div className="h-3 bg-white/20 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${swapFeedback.score}%` }}
+                    transition={{ duration: 0.8, ease: 'easeOut' }}
+                    className="h-full bg-white rounded-full"
+                  />
+                </div>
+              </div>
+
+              {/* Feedback Messages */}
+              <div className="space-y-2 mb-4">
+                {swapFeedback.feedback.map((msg, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-white/10 rounded-lg p-3 text-sm text-right"
+                  >
+                    {msg}
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Suggestions */}
+              {swapFeedback.suggestions.length > 0 && (
+                <div className="border-t border-white/20 pt-4">
+                  <p className="text-sm font-semibold mb-2">💡 הצעות לשיפור:</p>
+                  <div className="space-y-1">
+                    {swapFeedback.suggestions.map((suggestion, index) => (
+                      <p key={index} className="text-sm text-white/90 text-right">
+                        • {suggestion}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Action Buttons */}
       <div className="flex justify-center gap-4">
