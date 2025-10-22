@@ -178,8 +178,8 @@ export function useDashboardState() {
   );
 
   const toggleSidebar = useCallback(() => {
-    updateState('sidebarCollapsed', !state.sidebarCollapsed);
-  }, [state.sidebarCollapsed, updateState]);
+    updateState('sidebarCollapsed', !(state?.sidebarCollapsed ?? false));
+  }, [state?.sidebarCollapsed, updateState]);
 
   const setActiveFilters = useCallback((filters: Record<string, any>) => {
     updateState('activeFilters', filters);
@@ -190,12 +190,15 @@ export function useDashboardState() {
   }, [updateState]);
 
   const toggleStudentSelection = useCallback((studentId: string) => {
-    setState(prev => ({
-      ...prev,
-      selectedStudents: prev.selectedStudents.includes(studentId)
-        ? prev.selectedStudents.filter(id => id !== studentId)
-        : [...prev.selectedStudents, studentId]
-    }));
+    setState(prev => {
+      const prevValue = prev ?? defaultDashboardState;
+      return {
+        ...prevValue,
+        selectedStudents: prevValue.selectedStudents.includes(studentId)
+          ? prevValue.selectedStudents.filter(id => id !== studentId)
+          : [...prevValue.selectedStudents, studentId]
+      };
+    });
   }, [setState]);
 
   const clearSelectedStudents = useCallback(() => {
@@ -203,13 +206,16 @@ export function useDashboardState() {
   }, [updateState]);
 
   const toggleSection = useCallback((sectionId: string) => {
-    setState(prev => ({
-      ...prev,
-      expandedSections: {
-        ...prev.expandedSections,
-        [sectionId]: !prev.expandedSections[sectionId]
-      }
-    }));
+    setState(prev => {
+      const prevValue = prev ?? defaultDashboardState;
+      return {
+        ...prevValue,
+        expandedSections: {
+          ...prevValue.expandedSections,
+          [sectionId]: !prevValue.expandedSections[sectionId]
+        }
+      };
+    });
   }, [setState]);
 
   const resetState = useCallback(() => {
@@ -239,7 +245,8 @@ export function useRecentItems<T>(key: string, maxItems: number = 10) {
 
   const addItem = useCallback((item: T) => {
     setItems(prev => {
-      const filtered = prev.filter(existing =>
+      const prevItems = prev ?? [];
+      const filtered = prevItems.filter(existing =>
         JSON.stringify(existing) !== JSON.stringify(item)
       );
       return [item, ...filtered].slice(0, maxItems);
@@ -248,11 +255,12 @@ export function useRecentItems<T>(key: string, maxItems: number = 10) {
   }, [setItems, maxItems, key]);
 
   const removeItem = useCallback((item: T) => {
-    setItems(prev =>
-      prev.filter(existing =>
+    setItems(prev => {
+      const prevItems = prev ?? [];
+      return prevItems.filter(existing =>
         JSON.stringify(existing) !== JSON.stringify(item)
-      )
-    );
+      );
+    });
     trackEvent('recent_item_removed', { key });
   }, [setItems, key]);
 
@@ -285,7 +293,8 @@ export function usePersistedForm<T extends Record<string, any>>(
 
   const updateField = useCallback(
     <K extends keyof T>(field: K, value: T[K]) => {
-      const newData = { ...formData, [field]: value };
+      const currentData = formData ?? initialValues;
+      const newData = { ...currentData, [field]: value };
       setFormData(newData);
 
       if (autoSave) {
@@ -300,7 +309,7 @@ export function usePersistedForm<T extends Record<string, any>>(
         setSaveTimer(timer);
       }
     },
-    [formData, setFormData, autoSave, saveTimer, saveDelay, formKey]
+    [formData, setFormData, autoSave, saveTimer, saveDelay, formKey, initialValues]
   );
 
   const resetForm = useCallback(() => {

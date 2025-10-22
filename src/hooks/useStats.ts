@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { Stats, Student, UseStatsHook, ChartData } from '../types';
 import { getStats, calculateStats } from '../api/studentAPI';
@@ -31,25 +31,33 @@ export const useStats = (): UseStatsHook & {
     isLoading: loading,
     error,
     refetch
-  } = useQuery({
+  } = useQuery<Stats>({
     queryKey: [QUERY_KEY],
     queryFn: getStats,
     staleTime: STALE_TIME,
     gcTime: CACHE_TIME,
     retry: 2,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    onError: (error: Error) => {
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
+  });
+
+  // Handle error with useEffect
+  React.useEffect(() => {
+    if (error) {
       toast.error(`שגיאה בטעינת הסטטיסטיקות: ${error.message}`);
       trackEvent('stats_fetch_error', { error: error.message });
-    },
-    onSuccess: (data) => {
+    }
+  }, [error]);
+
+  // Handle success with useEffect
+  React.useEffect(() => {
+    if (stats) {
       trackEvent('stats_fetch_success', {
-        totalStudents: data.totalStudents,
-        classCount: Object.keys(data.byClass).length,
-        learningStyleCount: Object.keys(data.byLearningStyle).length
+        totalStudents: stats.totalStudents,
+        classCount: Object.keys(stats.byClass || {}).length,
+        learningStyleCount: Object.keys(stats.byLearningStyle || {}).length
       });
     }
-  });
+  }, [stats]);
 
   // Generate chart data
   const chartData = useMemo(() => {
@@ -61,16 +69,16 @@ export const useStats = (): UseStatsHook & {
       };
     }
 
-    const classDistribution: ChartData[] = Object.entries(stats.byClass).map(([name, value]) => ({
+    const classDistribution: ChartData[] = Object.entries(stats.byClass || {}).map(([name, value]) => ({
       name,
-      value,
-      percentage: formatPercentage(value, stats.totalStudents)
+      value: value as number,
+      percentage: formatPercentage(value as number, stats.totalStudents)
     }));
 
-    const learningStyleDistribution: ChartData[] = Object.entries(stats.byLearningStyle).map(([name, value]) => ({
+    const learningStyleDistribution: ChartData[] = Object.entries(stats.byLearningStyle || {}).map(([name, value]) => ({
       name,
-      value,
-      percentage: formatPercentage(value, stats.totalStudents)
+      value: value as number,
+      percentage: formatPercentage(value as number, stats.totalStudents)
     }));
 
     // For strengths vs challenges, we'll use the average values
@@ -147,7 +155,7 @@ export const useStats = (): UseStatsHook & {
   }, [refetch]);
 
   return {
-    stats,
+    stats: stats ?? null,
     loading,
     error: error?.message || null,
     refetch: refreshStats,
@@ -183,8 +191,8 @@ export const useStatsComparison = (filteredStudents: Student[]) => {
     if (!globalStats || !filteredStats) return null;
 
     const totalDiff = filteredStats.totalStudents - globalStats.totalStudents;
-    const strengthsDiff = parseFloat(filteredStats.averageStrengths) - parseFloat(globalStats.averageStrengths?.toString() || '0');
-    const challengesDiff = parseFloat(filteredStats.averageChallenges) - parseFloat(globalStats.averageChallenges?.toString() || '0');
+    const strengthsDiff = parseFloat(filteredStats.averageStrengths.toString()) - parseFloat(globalStats.averageStrengths?.toString() || '0');
+    const challengesDiff = parseFloat(filteredStats.averageChallenges?.toString() || '0') - parseFloat(globalStats.averageChallenges?.toString() || '0');
 
     return {
       totalDiff,

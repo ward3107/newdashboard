@@ -13,6 +13,14 @@ export class EnhancedAnalysisService {
    * @returns {Object} Detailed analysis with insights and recommendations
    */
   generateEnhancedAnalysis(studentData) {
+    // Check if we have real AI insights from Google Sheets
+    if (studentData.insights && Array.isArray(studentData.insights) && studentData.insights.length > 0) {
+      console.log('📊 Using REAL AI insights from analysis');
+      return this.useRealAIInsights(studentData);
+    }
+
+    // Fallback to pattern-based insights if no AI analysis available
+    console.log('⚠️ No AI insights found, using pattern-based fallback');
     const analysis = {
       insights: [],
       recommendations: [],
@@ -41,6 +49,208 @@ export class EnhancedAnalysisService {
     analysis.interventionPlan = this.createInterventionPlan(analysis);
 
     return analysis;
+  }
+
+  /**
+   * Use real AI insights from ISHEBOT analysis
+   * @param {Object} studentData - Student data with AI insights
+   * @returns {Object} Formatted analysis
+   */
+  useRealAIInsights(studentData) {
+    const aiInsights = studentData.insights || [];
+    const aiStats = studentData.stats || {};
+    const aiSeating = studentData.seating || {};
+
+    // Transform AI insights to our display format
+    const formattedInsights = aiInsights.map(insight => ({
+      id: insight.id || `insight_${Math.random()}`,
+      category: this.translateDomain(insight.domain),
+      title: insight.title,
+      description: insight.summary,
+      severity: this.calculateSeverityFromConfidence(insight.confidence),
+      scientificBasis: this.getScientificBasis(insight.domain),
+      israeliContext: this.getIsraeliContext(insight.domain),
+      dataPoints: insight.evidence || {},
+      confidence: insight.confidence,
+      recommendations: insight.recommendations || []
+    }));
+
+    // Extract recommendations grouped by insight
+    const recommendationsByInsight = aiInsights.map(insight => ({
+      insightId: insight.id,
+      category: this.translateDomain(insight.domain),
+      recommendations: (insight.recommendations || []).map(rec => ({
+        text: rec.action,
+        priority: rec.priority,
+        implementation: rec.when || rec.duration || 'מיידי',
+        tools: rec.materials || [],
+        expectedOutcome: rec.follow_up_metric,
+        howTo: rec.how_to,
+        confidence_score: rec.confidence_score
+      }))
+    }));
+
+    // Create profiles from AI data
+    const academicProfile = this.createProfileFromAIData(aiInsights, 'cognitive', studentData);
+    const socialEmotionalProfile = this.createProfileFromAIData(aiInsights, 'emotional', studentData);
+    const learningProfile = this.createProfileFromAIData(aiInsights, 'environmental', studentData);
+
+    // Extract developmental needs from risk flags
+    const developmentalNeeds = (aiStats.risk_flags || []).map(flag => ({
+      area: flag.flag,
+      priority: flag.severity,
+      description: flag.immediate_action,
+      escalation: flag.escalation_protocol,
+      parentNotification: flag.parent_notification
+    }));
+
+    // Create intervention plan from AI recommendations
+    const interventionPlan = this.createInterventionPlanFromAI(aiInsights, developmentalNeeds);
+
+    return {
+      insights: formattedInsights,
+      recommendations: recommendationsByInsight,
+      academicProfile,
+      socialEmotionalProfile,
+      learningProfile,
+      developmentalNeeds,
+      interventionPlan,
+      aiStats,
+      aiSeating
+    };
+  }
+
+  /**
+   * Translate AI domain to Hebrew category
+   */
+  translateDomain(domain) {
+    const translations = {
+      'cognitive': 'דפוסי עיבוד קוגניטיבי',
+      'emotional': 'התפתחות חברתית-רגשית',
+      'environmental': 'סביבת למידה',
+      'social': 'יחסים חברתיים',
+      'motivation': 'מוטיבציה ומעורבות',
+      'self-regulation': 'ויסות עצמי'
+    };
+    return translations[domain] || domain;
+  }
+
+  /**
+   * Calculate severity from confidence score
+   */
+  calculateSeverityFromConfidence(confidence) {
+    if (confidence >= 0.8) return 'high';
+    if (confidence >= 0.6) return 'moderate';
+    return 'low';
+  }
+
+  /**
+   * Get scientific basis for domain
+   */
+  getScientificBasis(domain) {
+    const basis = {
+      'cognitive': 'מבוסס על תיאוריית העומס הקוגניטיבי (Sweller) ומודל עיבוד המידע',
+      'emotional': 'מבוסס על מודל CASEL לאינטליגנציה רגשית-חברתית ותיאוריית ההתקשרות',
+      'motivation': 'מבוסס על תיאוריית הזרימה (Flow) של Csikszentmihalyi ומודל SDT',
+      'environmental': 'מבוסס על עקרונות ה-UDL (Universal Design for Learning)',
+      'social': 'מבוסס על תיאוריית הלמידה החברתית של Bandura'
+    };
+    return basis[domain] || 'מבוסס על מחקרים פדגוגיים עדכניים';
+  }
+
+  /**
+   * Get Israeli context for domain
+   */
+  getIsraeliContext(domain) {
+    const context = {
+      'cognitive': 'מותאם לדרישות החשיבה מסדר גבוה בבחינות הבגרות',
+      'emotional': 'בהתאם לתכנית כישורי חיים ותכנית מיטיבה של משרד החינוך',
+      'motivation': 'בהתאם לעקרונות הפדגוגיה החדשנית במערכת החינוך הישראלית',
+      'environmental': 'תואם את מדיניות השילוב והכלה של משרד החינוך הישראלי',
+      'social': 'בהתאם לתכנית החברתית-רגשית במערכת החינוך'
+    };
+    return context[domain] || 'מותאם לתכנית הלימודים הישראלית';
+  }
+
+  /**
+   * Create profile from AI insights filtered by domain
+   */
+  createProfileFromAIData(insights, domain, studentData) {
+    const relevantInsights = insights.filter(i => i.domain === domain);
+
+    if (relevantInsights.length === 0) {
+      return this.getDefaultProfile(domain, studentData);
+    }
+
+    const profile = {};
+    relevantInsights.forEach(insight => {
+      if (insight.evidence && insight.evidence.patterns) {
+        insight.evidence.patterns.forEach((pattern, idx) => {
+          profile[`תובנה ${idx + 1}`] = pattern;
+        });
+      }
+    });
+
+    return Object.keys(profile).length > 0 ? profile : this.getDefaultProfile(domain, studentData);
+  }
+
+  /**
+   * Get default profile if no AI data
+   */
+  getDefaultProfile(domain, studentData) {
+    if (domain === 'cognitive') return this.analyzeAcademicProfile(studentData);
+    if (domain === 'emotional') return this.analyzeSocialEmotional(studentData);
+    return this.analyzeLearningStyle(studentData);
+  }
+
+  /**
+   * Create intervention plan from AI recommendations
+   */
+  createInterventionPlanFromAI(insights, developmentalNeeds) {
+    const allRecommendations = insights.flatMap(i => i.recommendations || []);
+
+    const immediateActions = allRecommendations
+      .filter(r => r.priority === 'high' || r.priority === 'critical')
+      .map(r => r.action || r.text);
+
+    const shortTermGoals = allRecommendations
+      .filter(r => r.priority === 'medium')
+      .map(r => r.action || r.text);
+
+    const longTermGoals = allRecommendations
+      .filter(r => r.priority === 'low')
+      .map(r => r.action || r.text);
+
+    return {
+      immediateActions: immediateActions.slice(0, 5),
+      shortTermGoals: shortTermGoals.slice(0, 5),
+      longTermGoals: longTermGoals.slice(0, 5),
+      supportTeam: ['מורה הכיתה', 'יועץ/ת', 'הורים', 'צוות חינוך מיוחד'],
+      monitoringSchedule: {
+        daily: ['מעקב מעורבות'],
+        weekly: ['סקירת התקדמות'],
+        monthly: ['הערכה מקיפה']
+      },
+      successMetrics: this.extractSuccessMetrics(allRecommendations)
+    };
+  }
+
+  /**
+   * Extract success metrics from recommendations
+   */
+  extractSuccessMetrics(recommendations) {
+    const metrics = {};
+    recommendations.forEach(rec => {
+      if (rec.follow_up_metric) {
+        metrics[rec.category || 'כללי'] = rec.follow_up_metric;
+      }
+    });
+    return Object.keys(metrics).length > 0 ? metrics : {
+      academic: 'שיפור של 10% בציונים',
+      behavioral: 'הפחתת אתגרים ב-50%',
+      social: 'שיפור ביחסים עם עמיתים',
+      emotional: 'ויסות עצמי טוב יותר'
+    };
   }
 
   /**
@@ -808,10 +1018,10 @@ export class EnhancedAnalysisService {
     const challenges = studentData.challengesCount || 0;
     const ratio = strengths / (challenges + 1); // Avoid division by zero
 
-    if (ratio > 2) return 'excellent';
-    if (ratio > 1) return 'good';
-    if (ratio > 0.5) return 'satisfactory';
-    return 'needs improvement';
+    if (ratio > 2) return 'מצוין';
+    if (ratio > 1) return 'טוב';
+    if (ratio > 0.5) return 'סביר';
+    return 'דורש שיפור';
   }
 
   identifySubjectStrengths(studentData) {
@@ -819,67 +1029,67 @@ export class EnhancedAnalysisService {
     const strengths = studentData.strengths || '';
     const subjects = [];
 
-    if (strengths.includes('מתמטיקה')) subjects.push('Mathematics');
-    if (strengths.includes('שפה') || strengths.includes('עברית')) subjects.push('Language Arts');
-    if (strengths.includes('מדע')) subjects.push('Sciences');
-    if (strengths.includes('היסטוריה')) subjects.push('History');
+    if (strengths.includes('מתמטיקה')) subjects.push('מתמטיקה');
+    if (strengths.includes('שפה') || strengths.includes('עברית')) subjects.push('אומנויות השפה');
+    if (strengths.includes('מדע')) subjects.push('מדעים');
+    if (strengths.includes('היסטוריה')) subjects.push('היסטוריה');
 
-    return subjects;
+    return subjects.length > 0 ? subjects : ['לא זוהו'];
   }
 
   identifySubjectChallenges(studentData) {
     const challenges = studentData.challenges || '';
     const subjects = [];
 
-    if (challenges.includes('מתמטיקה')) subjects.push('Mathematics');
-    if (challenges.includes('קריאה') || challenges.includes('כתיבה')) subjects.push('Language Arts');
-    if (challenges.includes('מדע')) subjects.push('Sciences');
+    if (challenges.includes('מתמטיקה')) subjects.push('מתמטיקה');
+    if (challenges.includes('קריאה') || challenges.includes('כתיבה')) subjects.push('אומנויות השפה');
+    if (challenges.includes('מדע')) subjects.push('מדעים');
 
-    return subjects;
+    return subjects.length > 0 ? subjects : ['לא זוהו'];
   }
 
   identifyLearningGaps(studentData) {
-    return ['Foundation skills', 'Critical thinking', 'Application skills'];
+    return ['כישורי יסוד', 'חשיבה ביקורתית', 'כישורי יישום'];
   }
 
   calculateProgressTrajectory(studentData) {
-    return studentData.needsAnalysis ? 'needs acceleration' : 'on track';
+    return studentData.needsAnalysis ? 'דורש האצה' : 'על המסלול';
   }
 
   assessEmotionalIntelligence(studentData) {
-    return 'developing';
+    return 'מתפתח';
   }
 
   assessSocialCompetence(studentData) {
-    return 'moderate';
+    return 'בינוני';
   }
 
   assessSelfAwareness(studentData) {
-    return 'emerging';
+    return 'מתעורר';
   }
 
   assessRelationshipSkills(studentData) {
-    return 'developing';
+    return 'מתפתח';
   }
 
   assessDecisionMaking(studentData) {
-    return 'developing';
+    return 'מתפתח';
   }
 
   identifySecondaryStyle(studentData) {
-    return 'mixed';
+    return 'מעורב';
   }
 
   identifyPreferredModalities(studentData) {
-    return ['visual', 'interactive'];
+    return ['חזותי', 'אינטראקטיבי'];
   }
 
   identifyOptimalConditions(studentData) {
-    return ['quiet environment', 'structured tasks', 'clear instructions'];
+    return ['סביבה שקטה', 'משימות מובנות', 'הוראות ברורות'];
   }
 
   identifyChallengingConditions(studentData) {
-    return ['noise', 'time pressure', 'ambiguous instructions'];
+    return ['רעש', 'לחץ זמן', 'הוראות מעורפלות'];
   }
 
   defineImmediateActions(analysis) {

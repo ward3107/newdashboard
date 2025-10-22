@@ -84,13 +84,39 @@ export const getAllStudents = async () => {
     );
 
     console.log('✅ API Response:', response.data);
+    console.log('🔍 Response structure:', {
+      hasStudents: !!response.data?.students,
+      hasData: !!response.data?.data,
+      isArray: Array.isArray(response.data),
+      keys: Object.keys(response.data || {})
+    });
+
+    // Handle different API response formats
+    let studentsArray = null;
 
     if (response.data?.students) {
-      // Normalize the data from Google Forms format
-      return response.data.students.map(normalizeStudentData);
+      // Format 1: { students: [...] }
+      studentsArray = response.data.students;
+    } else if (response.data?.data) {
+      // Format 2: { data: [...] }
+      studentsArray = response.data.data;
+    } else if (Array.isArray(response.data)) {
+      // Format 3: Direct array
+      studentsArray = response.data;
+    } else if (response.data?.success && response.data?.students) {
+      // Format 4: { success: true, students: [...] }
+      studentsArray = response.data.students;
     }
 
-    throw new Error('פורמט נתונים לא תקין');
+    if (studentsArray && Array.isArray(studentsArray)) {
+      console.log(`📊 Found ${studentsArray.length} students`);
+      // Normalize the data from Google Forms format
+      return studentsArray.map(normalizeStudentData);
+    }
+
+    console.error('❌ No students array found in response. Response:', response.data);
+    // Return empty array instead of throwing error when there are 0 students
+    return [];
   });
 };
 

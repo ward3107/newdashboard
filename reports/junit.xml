@@ -1,0 +1,158 @@
+<testsuites id="" name="" tests="72" failures="0" skipped="0" errors="0" time="52.81170899999999">
+<testsuite name="dashboard.spec.ts" timestamp="2025-10-18T20:41:40.172Z" hostname="chromium" tests="12" failures="0" skipped="0" time="60.309" errors="0">
+<testcase name="Dashboard Functionality › should load the dashboard" classname="dashboard.spec.ts" time="5.214">
+</testcase>
+<testcase name="Dashboard Functionality › should display student list" classname="dashboard.spec.ts" time="7.104">
+</testcase>
+<testcase name="Dashboard Functionality › should have working navigation" classname="dashboard.spec.ts" time="5.596">
+</testcase>
+<testcase name="Dashboard Functionality › should support RTL layout" classname="dashboard.spec.ts" time="5.053">
+</testcase>
+<testcase name="Dashboard Functionality › should have language switcher" classname="dashboard.spec.ts" time="6.331">
+</testcase>
+<testcase name="Dashboard Functionality › should load charts or visualizations" classname="dashboard.spec.ts" time="6.115">
+</testcase>
+<testcase name="Dashboard Functionality › should have search functionality" classname="dashboard.spec.ts" time="5.734">
+</testcase>
+<testcase name="Dashboard Functionality › should have responsive design" classname="dashboard.spec.ts" time="6.369">
+</testcase>
+<testcase name="Dashboard Functionality › should handle errors gracefully" classname="dashboard.spec.ts" time="1.543">
+</testcase>
+<testcase name="Dashboard Functionality › should have accessibility features" classname="dashboard.spec.ts" time="3.398">
+</testcase>
+<testcase name="Data Display › should display statistics" classname="dashboard.spec.ts" time="3.566">
+</testcase>
+<testcase name="Data Display › should handle data loading states" classname="dashboard.spec.ts" time="4.286">
+</testcase>
+</testsuite>
+<testsuite name="dashboard.spec.ts" timestamp="2025-10-18T20:41:40.172Z" hostname="firefox" tests="12" failures="0" skipped="0" time="51.497" errors="0">
+<testcase name="Dashboard Functionality › should load the dashboard" classname="dashboard.spec.ts" time="2.227">
+</testcase>
+<testcase name="Dashboard Functionality › should display student list" classname="dashboard.spec.ts" time="6.009">
+</testcase>
+<testcase name="Dashboard Functionality › should have working navigation" classname="dashboard.spec.ts" time="2.996">
+</testcase>
+<testcase name="Dashboard Functionality › should support RTL layout" classname="dashboard.spec.ts" time="2.493">
+</testcase>
+<testcase name="Dashboard Functionality › should have language switcher" classname="dashboard.spec.ts" time="5.885">
+</testcase>
+<testcase name="Dashboard Functionality › should load charts or visualizations" classname="dashboard.spec.ts" time="5.786">
+</testcase>
+<testcase name="Dashboard Functionality › should have search functionality" classname="dashboard.spec.ts" time="5.021">
+</testcase>
+<testcase name="Dashboard Functionality › should have responsive design" classname="dashboard.spec.ts" time="6.208">
+</testcase>
+<testcase name="Dashboard Functionality › should handle errors gracefully" classname="dashboard.spec.ts" time="2.083">
+</testcase>
+<testcase name="Dashboard Functionality › should have accessibility features" classname="dashboard.spec.ts" time="3.96">
+</testcase>
+<testcase name="Data Display › should display statistics" classname="dashboard.spec.ts" time="4.187">
+</testcase>
+<testcase name="Data Display › should handle data loading states" classname="dashboard.spec.ts" time="4.642">
+</testcase>
+</testsuite>
+<testsuite name="dashboard.spec.ts" timestamp="2025-10-18T20:41:40.172Z" hostname="webkit" tests="12" failures="0" skipped="0" time="48.533" errors="0">
+<testcase name="Dashboard Functionality › should load the dashboard" classname="dashboard.spec.ts" time="2.787">
+</testcase>
+<testcase name="Dashboard Functionality › should display student list" classname="dashboard.spec.ts" time="6.29">
+</testcase>
+<testcase name="Dashboard Functionality › should have working navigation" classname="dashboard.spec.ts" time="3.598">
+</testcase>
+<testcase name="Dashboard Functionality › should support RTL layout" classname="dashboard.spec.ts" time="2.498">
+</testcase>
+<testcase name="Dashboard Functionality › should have language switcher" classname="dashboard.spec.ts" time="4.34">
+</testcase>
+<testcase name="Dashboard Functionality › should load charts or visualizations" classname="dashboard.spec.ts" time="4.765">
+</testcase>
+<testcase name="Dashboard Functionality › should have search functionality" classname="dashboard.spec.ts" time="1.963">
+</testcase>
+<testcase name="Dashboard Functionality › should have responsive design" classname="dashboard.spec.ts" time="4.933">
+</testcase>
+<testcase name="Dashboard Functionality › should handle errors gracefully" classname="dashboard.spec.ts" time="2.204">
+</testcase>
+<testcase name="Dashboard Functionality › should have accessibility features" classname="dashboard.spec.ts" time="4.488">
+</testcase>
+<testcase name="Data Display › should display statistics" classname="dashboard.spec.ts" time="4.538">
+</testcase>
+<testcase name="Data Display › should handle data loading states" classname="dashboard.spec.ts" time="6.129">
+</testcase>
+</testsuite>
+<testsuite name="dashboard.spec.ts" timestamp="2025-10-18T20:41:40.172Z" hostname="Mobile Chrome" tests="12" failures="0" skipped="0" time="62.849" errors="0">
+<testcase name="Dashboard Functionality › should load the dashboard" classname="dashboard.spec.ts" time="2.907">
+</testcase>
+<testcase name="Dashboard Functionality › should display student list" classname="dashboard.spec.ts" time="5.743">
+</testcase>
+<testcase name="Dashboard Functionality › should have working navigation" classname="dashboard.spec.ts" time="3.448">
+</testcase>
+<testcase name="Dashboard Functionality › should support RTL layout" classname="dashboard.spec.ts" time="3.441">
+</testcase>
+<testcase name="Dashboard Functionality › should have language switcher" classname="dashboard.spec.ts" time="6.703">
+</testcase>
+<testcase name="Dashboard Functionality › should load charts or visualizations" classname="dashboard.spec.ts" time="6.82">
+</testcase>
+<testcase name="Dashboard Functionality › should have search functionality" classname="dashboard.spec.ts" time="4.506">
+</testcase>
+<testcase name="Dashboard Functionality › should have responsive design" classname="dashboard.spec.ts" time="7.943">
+</testcase>
+<testcase name="Dashboard Functionality › should handle errors gracefully" classname="dashboard.spec.ts" time="2.638">
+</testcase>
+<testcase name="Dashboard Functionality › should have accessibility features" classname="dashboard.spec.ts" time="5.592">
+</testcase>
+<testcase name="Data Display › should display statistics" classname="dashboard.spec.ts" time="6.088">
+</testcase>
+<testcase name="Data Display › should handle data loading states" classname="dashboard.spec.ts" time="7.02">
+</testcase>
+</testsuite>
+<testsuite name="dashboard.spec.ts" timestamp="2025-10-18T20:41:40.172Z" hostname="Mobile Safari" tests="12" failures="0" skipped="0" time="48.049" errors="0">
+<testcase name="Dashboard Functionality › should load the dashboard" classname="dashboard.spec.ts" time="1.776">
+</testcase>
+<testcase name="Dashboard Functionality › should display student list" classname="dashboard.spec.ts" time="5.65">
+</testcase>
+<testcase name="Dashboard Functionality › should have working navigation" classname="dashboard.spec.ts" time="2.93">
+</testcase>
+<testcase name="Dashboard Functionality › should support RTL layout" classname="dashboard.spec.ts" time="2.978">
+</testcase>
+<testcase name="Dashboard Functionality › should have language switcher" classname="dashboard.spec.ts" time="4.837">
+</testcase>
+<testcase name="Dashboard Functionality › should load charts or visualizations" classname="dashboard.spec.ts" time="4.841">
+</testcase>
+<testcase name="Dashboard Functionality › should have search functionality" classname="dashboard.spec.ts" time="1.939">
+</testcase>
+<testcase name="Dashboard Functionality › should have responsive design" classname="dashboard.spec.ts" time="6.686">
+</testcase>
+<testcase name="Dashboard Functionality › should handle errors gracefully" classname="dashboard.spec.ts" time="2.036">
+</testcase>
+<testcase name="Dashboard Functionality › should have accessibility features" classname="dashboard.spec.ts" time="4.218">
+</testcase>
+<testcase name="Data Display › should display statistics" classname="dashboard.spec.ts" time="4.225">
+</testcase>
+<testcase name="Data Display › should handle data loading states" classname="dashboard.spec.ts" time="5.933">
+</testcase>
+</testsuite>
+<testsuite name="dashboard.spec.ts" timestamp="2025-10-18T20:41:40.172Z" hostname="accessibility" tests="12" failures="0" skipped="0" time="30.338" errors="0">
+<testcase name="Dashboard Functionality › should load the dashboard" classname="dashboard.spec.ts" time="1.203">
+</testcase>
+<testcase name="Dashboard Functionality › should display student list" classname="dashboard.spec.ts" time="4.271">
+</testcase>
+<testcase name="Dashboard Functionality › should have working navigation" classname="dashboard.spec.ts" time="1.275">
+</testcase>
+<testcase name="Dashboard Functionality › should support RTL layout" classname="dashboard.spec.ts" time="1.367">
+</testcase>
+<testcase name="Dashboard Functionality › should have language switcher" classname="dashboard.spec.ts" time="2.986">
+</testcase>
+<testcase name="Dashboard Functionality › should load charts or visualizations" classname="dashboard.spec.ts" time="3.169">
+</testcase>
+<testcase name="Dashboard Functionality › should have search functionality" classname="dashboard.spec.ts" time="1.401">
+</testcase>
+<testcase name="Dashboard Functionality › should have responsive design" classname="dashboard.spec.ts" time="3.386">
+</testcase>
+<testcase name="Dashboard Functionality › should handle errors gracefully" classname="dashboard.spec.ts" time="1.028">
+</testcase>
+<testcase name="Dashboard Functionality › should have accessibility features" classname="dashboard.spec.ts" time="2.932">
+</testcase>
+<testcase name="Data Display › should display statistics" classname="dashboard.spec.ts" time="3.326">
+</testcase>
+<testcase name="Data Display › should handle data loading states" classname="dashboard.spec.ts" time="3.994">
+</testcase>
+</testsuite>
+</testsuites>

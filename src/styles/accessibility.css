@@ -1,0 +1,228 @@
+/* Accessibility Improvements for WCAG 2.1 AA Compliance */
+
+/*
+ * Color Contrast Fixes
+ * WCAG 2.1 AA requires:
+ * - Normal text: 4.5:1 contrast ratio
+ * - Large text (18pt+ or 14pt+ bold): 3:1 contrast ratio
+ */
+
+/* Replace light gray text with darker alternatives for better contrast */
+.text-gray-400 { color: #6B7280 !important; } /* gray-500 */
+.text-gray-500 { color: #4B5563 !important; } /* gray-600 */
+.text-gray-600 { color: #374151 !important; } /* gray-700 */
+
+.text-slate-400 { color: #64748B !important; } /* slate-500 */
+.text-slate-500 { color: #475569 !important; } /* slate-600 */
+.text-slate-600 { color: #334155 !important; } /* slate-700 */
+
+.text-zinc-400 { color: #71717A !important; } /* zinc-500 */
+.text-zinc-500 { color: #52525B !important; } /* zinc-600 */
+.text-zinc-600 { color: #3F3F46 !important; } /* zinc-700 */
+
+/* Ensure sufficient contrast for placeholder text */
+input::placeholder,
+textarea::placeholder {
+  color: #6B7280 !important; /* gray-500 */
+  opacity: 1 !important;
+}
+
+/* Improve contrast for disabled elements */
+:disabled,
+[disabled] {
+  opacity: 0.7 !important;
+  color: #4B5563 !important; /* gray-600 */
+}
+
+/* Ensure link contrast */
+a {
+  color: #2563EB !important; /* blue-600 */
+}
+
+a:hover {
+  color: #1D4ED8 !important; /* blue-700 */
+  text-decoration: underline !important;
+}
+
+/* Dark mode specific fixes */
+.dark .text-gray-400 { color: #D1D5DB !important; } /* gray-300 */
+.dark .text-gray-500 { color: #E5E7EB !important; } /* gray-200 */
+.dark .text-gray-600 { color: #F3F4F6 !important; } /* gray-100 */
+
+.dark .text-slate-400 { color: #CBD5E1 !important; } /* slate-300 */
+.dark .text-slate-500 { color: #E2E8F0 !important; } /* slate-200 */
+.dark .text-slate-600 { color: #F1F5F9 !important; } /* slate-100 */
+
+.dark .text-zinc-400 { color: #D4D4D8 !important; } /* zinc-300 */
+.dark .text-zinc-500 { color: #E4E4E7 !important; } /* zinc-200 */
+.dark .text-zinc-600 { color: #F4F4F5 !important; } /* zinc-100 */
+
+/* Ensure buttons have sufficient contrast */
+button {
+  min-height: 44px; /* Touch target size */
+  min-width: 44px;
+}
+
+/* Focus indicators */
+*:focus {
+  outline: 2px solid #2563EB !important;
+  outline-offset: 2px !important;
+}
+
+/* Skip to main content link */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 0.5rem 1rem;
+  background-color: #1F2937;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.skip-to-main:focus {
+  left: 50%;
+  transform: translateX(-50%);
+  top: 1rem;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    border-color: currentColor !important;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    border: 1px solid currentColor !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Ensure sufficient contrast for error messages */
+.text-red-400,
+.text-red-500 {
+  color: #DC2626 !important; /* red-600 */
+}
+
+.dark .text-red-400,
+.dark .text-red-500 {
+  color: #FCA5A5 !important; /* red-300 */
+}
+
+/* Ensure sufficient contrast for success messages */
+.text-green-400,
+.text-green-500 {
+  color: #059669 !important; /* green-600 */
+}
+
+.dark .text-green-400,
+.dark .text-green-500 {
+  color: #86EFAC !important; /* green-300 */
+}
+
+/* Ensure sufficient contrast for warning messages */
+.text-yellow-400,
+.text-yellow-500 {
+  color: #D97706 !important; /* amber-600 */
+}
+
+.dark .text-yellow-400,
+.dark .text-yellow-500 {
+  color: #FDE047 !important; /* yellow-300 */
+}
+
+/* Improve form label contrast */
+label {
+  color: #1F2937 !important; /* gray-800 */
+  font-weight: 500 !important;
+}
+
+.dark label {
+  color: #F3F4F6 !important; /* gray-100 */
+}
+
+/* Ensure table headers have sufficient contrast */
+th {
+  background-color: #F3F4F6 !important; /* gray-100 */
+  color: #111827 !important; /* gray-900 */
+  font-weight: 600 !important;
+}
+
+.dark th {
+  background-color: #1F2937 !important; /* gray-800 */
+  color: #F9FAFB !important; /* gray-50 */
+}
+
+/* Improve card and modal contrast */
+.bg-white {
+  background-color: #FFFFFF !important;
+}
+
+.dark .bg-gray-800 {
+  background-color: #1F2937 !important;
+}
+
+/* Ensure icons have sufficient contrast */
+svg {
+  fill: currentColor;
+}
+
+.text-gray-400 svg,
+.text-gray-500 svg {
+  fill: #4B5563 !important; /* gray-600 */
+}
+
+.dark .text-gray-400 svg,
+.dark .text-gray-500 svg {
+  fill: #E5E7EB !important; /* gray-200 */
+}
+
+/* Improve contrast for badges and tags */
+.bg-gray-100 {
+  background-color: #F3F4F6 !important;
+  color: #1F2937 !important; /* gray-800 */
+}
+
+.dark .bg-gray-700 {
+  background-color: #374151 !important;
+  color: #F9FAFB !important; /* gray-50 */
+}
+
+/* Ensure sufficient spacing for touch targets */
+.clickable,
+[role="button"],
+[role="link"] {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}

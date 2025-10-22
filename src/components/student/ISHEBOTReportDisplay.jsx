@@ -101,8 +101,8 @@ const ISHEBOTReportDisplay = ({ report }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header: Overall Stats */}
-      {report.stats && (
+      {/* Header: Overall Stats with Hybrid Scoring */}
+      {(report.stats || report.scores) && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -112,22 +112,35 @@ const ISHEBOTReportDisplay = ({ report }) => {
             <TrendingUp className="w-6 h-6 ml-2" />
             ציונים כלליים
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard label="ריכוז" value={report.stats.focus} color="blue" />
-            <StatCard label="מוטיבציה" value={report.stats.motivation} color="yellow" />
-            <StatCard label="שיתוף פעולה" value={report.stats.collaboration} color="purple" />
-            <StatCard label="ויסות רגשי" value={report.stats.emotional_regulation} color="pink" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {report.scores ? (
+              <>
+                <HybridStatCard label="ריכוז" score={report.scores.focus} color="blue" />
+                <HybridStatCard label="מוטיבציה" score={report.scores.motivation} color="yellow" />
+                <HybridStatCard label="שיתוף פעולה" score={report.scores.collaboration} color="purple" />
+                <HybridStatCard label="ויסות רגשי" score={report.scores.emotional} color="pink" />
+                <HybridStatCard label="מסוגלות עצמית" score={report.scores.self_efficacy} color="green" />
+                <HybridStatCard label="ניהול זמן" score={report.scores.time_management} color="indigo" />
+              </>
+            ) : report.stats && (
+              <>
+                <StatCard label="ריכוז" value={report.stats.focus} color="blue" />
+                <StatCard label="מוטיבציה" value={report.stats.motivation} color="yellow" />
+                <StatCard label="שיתוף פעולה" value={report.stats.collaboration} color="purple" />
+                <StatCard label="ויסות רגשי" value={report.stats.emotional_regulation} color="pink" />
+              </>
+            )}
           </div>
 
           {/* Risk Flags */}
-          {report.stats.risk_flags && report.stats.risk_flags.length > 0 && (
+          {((report.stats?.risk_flags && report.stats.risk_flags.length > 0) || report.risk_flags) && (
             <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
               <h4 className="text-sm font-semibold text-red-800 mb-2 flex items-center">
                 <AlertCircle className="w-4 h-4 ml-1" />
                 אזורי התראה
               </h4>
               <div className="flex flex-wrap gap-2">
-                {report.stats.risk_flags.map((flag, i) => (
+                {(report.stats?.risk_flags || [report.risk_flags]).filter(Boolean).map((flag, i) => (
                   <span key={i} className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
                     {flag}
                   </span>
@@ -348,7 +361,72 @@ const ISHEBOTReportDisplay = ({ report }) => {
   );
 };
 
-// Helper component for stat display
+// Helper component for hybrid stat display (stars + label + percentage)
+const HybridStatCard = ({ label, score, color }) => {
+  if (!score) return null;
+
+  const bgColors = {
+    blue: 'bg-blue-50',
+    yellow: 'bg-yellow-50',
+    purple: 'bg-purple-50',
+    pink: 'bg-pink-50',
+    green: 'bg-green-50',
+    indigo: 'bg-indigo-50'
+  };
+
+  const textColors = {
+    blue: 'text-blue-800',
+    yellow: 'text-yellow-800',
+    purple: 'text-purple-800',
+    pink: 'text-pink-800',
+    green: 'text-green-800',
+    indigo: 'text-indigo-800'
+  };
+
+  const borderColors = {
+    blue: 'border-blue-200',
+    yellow: 'border-yellow-200',
+    purple: 'border-purple-200',
+    pink: 'border-pink-200',
+    green: 'border-green-200',
+    indigo: 'border-indigo-200'
+  };
+
+  return (
+    <div className={`${bgColors[color]} rounded-xl p-4 border-2 ${borderColors[color]} text-center`}>
+      <div className="text-sm font-semibold text-gray-700 mb-3">{label}</div>
+
+      {/* Stars Display */}
+      <div className="text-3xl mb-2" title={`${score.stars} מתוך 5 כוכבים`}>
+        {score.label}
+      </div>
+
+      {/* Percentage */}
+      <div className={`text-2xl font-bold ${textColors[color]} mb-1`}>
+        {score.percentage}%
+      </div>
+
+      {/* Star Rating Bar */}
+      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden mt-2">
+        <div
+          className={`h-full ${bgColors[color].replace('50', '500')} transition-all duration-500`}
+          style={{ width: `${(score.stars / 5) * 100}%` }}
+        />
+      </div>
+
+      {/* Text Label */}
+      <div className={`text-xs font-medium ${textColors[color]} mt-2`}>
+        {score.stars === 1 && 'זקוק לתמיכה מיידית'}
+        {score.stars === 2 && 'מתפתח'}
+        {score.stars === 3 && 'מתקדם'}
+        {score.stars === 4 && 'טוב מאוד'}
+        {score.stars === 5 && 'מצוין'}
+      </div>
+    </div>
+  );
+};
+
+// Helper component for legacy stat display (for backward compatibility)
 const StatCard = ({ label, value, color }) => {
   const percentage = Math.round(value * 100);
   const colorClasses = {

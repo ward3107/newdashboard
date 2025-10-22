@@ -25,7 +25,9 @@ import {
   BarChart3,
   PieChart,
   Microscope,
-  Sparkles
+  Sparkles,
+  Plus,
+  Bell
 } from 'lucide-react';
 import enhancedAnalysisService from '../services/enhancedAnalysisService';
 
@@ -34,6 +36,15 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
   const [expandedInsights, setExpandedInsights] = useState({});
   const [activeTab, setActiveTab] = useState('insights');
   const [loading, setLoading] = useState(true);
+  const [assignments, setAssignments] = useState([]);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [rating, setRating] = useState({
+    successLevel: 0,
+    observedChanges: '',
+    nextSteps: '',
+    continueAssignment: true
+  });
 
   useEffect(() => {
     // Generate enhanced analysis when component mounts
@@ -42,6 +53,10 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
       try {
         const enhancedAnalysis = enhancedAnalysisService.generateEnhancedAnalysis(studentData);
         setAnalysis(enhancedAnalysis);
+
+        // Load assignments from localStorage
+        const savedAssignments = JSON.parse(localStorage.getItem(`assignments_${studentData.studentCode}`) || '[]');
+        setAssignments(savedAssignments);
       } catch (error) {
         console.error('Error generating enhanced analysis:', error);
       } finally {
@@ -57,6 +72,74 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
       ...prev,
       [insightId]: !prev[insightId]
     }));
+  };
+
+  const createAssignment = (recommendation, recIndex, categoryName) => {
+    const oneWeekFromNow = new Date();
+    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+
+    const newAssignment = {
+      id: Date.now(),
+      studentCode: studentData.studentCode,
+      recommendation: recommendation.text,
+      category: categoryName,
+      priority: recommendation.priority,
+      createdAt: new Date().toISOString(),
+      reminderDate: oneWeekFromNow.toISOString(),
+      status: 'active',
+      implementation: recommendation.implementation,
+      expectedOutcome: recommendation.expectedOutcome
+    };
+
+    // Save to state
+    const updatedAssignments = [...assignments, newAssignment];
+    setAssignments(updatedAssignments);
+
+    // Save to localStorage
+    localStorage.setItem(`assignments_${studentData.studentCode}`, JSON.stringify(updatedAssignments));
+
+    // Show confirmation
+    alert(`✅ המלצה נוצרה כמשימה!\n\n📅 תזכורת להגשת דוח התקדמות: ${oneWeekFromNow.toLocaleDateString('he-IL')}\n\nבעוד שבוע תקבל תזכורת לכתוב דוח על השינויים שחלו בתלמיד.`);
+  };
+
+  const openRatingModal = (assignment) => {
+    setSelectedAssignment(assignment);
+    setShowRatingModal(true);
+    setRating({
+      successLevel: 0,
+      observedChanges: '',
+      nextSteps: '',
+      continueAssignment: true
+    });
+  };
+
+  const submitRating = () => {
+    if (!selectedAssignment) return;
+
+    const updatedAssignments = assignments.map(assignment =>
+      assignment.id === selectedAssignment.id
+        ? {
+            ...assignment,
+            status: 'completed',
+            rating: rating,
+            completedAt: new Date().toISOString()
+          }
+        : assignment
+    );
+
+    setAssignments(updatedAssignments);
+
+    // Save to localStorage
+    localStorage.setItem(`assignments_${studentData.studentCode}`, JSON.stringify(updatedAssignments));
+
+    setShowRatingModal(false);
+    setSelectedAssignment(null);
+  };
+
+  const isAssignmentDue = (assignment) => {
+    const reminderDate = new Date(assignment.reminderDate);
+    const now = new Date();
+    return now >= reminderDate;
   };
 
   const getSeverityColor = (severity) => {
@@ -79,6 +162,42 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
       case 'important': return Flag;
       default: return Info;
     }
+  };
+
+  const getInsightEmoji = (insight) => {
+    const category = insight.category?.toLowerCase() || '';
+    const title = insight.title?.toLowerCase() || '';
+
+    if (category.includes('קוגניטיבי') || category.includes('cognitive')) return '🧠';
+    if (category.includes('רגש') || category.includes('emotional')) return '❤️';
+    if (category.includes('חברת') || category.includes('social')) return '👥';
+    if (category.includes('מוטיב') || category.includes('motivation')) return '⚡';
+    if (category.includes('ויסות') || category.includes('regulation')) return '🎯';
+    if (category.includes('סביבת') || category.includes('environmental')) return '🌟';
+    if (category.includes('חוזק') || title.includes('חוזק')) return '💪';
+    if (category.includes('אתגר') || title.includes('אתגר')) return '🎢';
+    if (category.includes('למידה') || title.includes('למידה')) return '📚';
+
+    return '💡';
+  };
+
+  const getRecommendationEmoji = (recommendation) => {
+    const text = recommendation.text?.toLowerCase() || '';
+    const action = recommendation.action?.toLowerCase() || '';
+    const combined = text + ' ' + action;
+
+    if (combined.includes('פגישה') || combined.includes('meeting')) return '👤';
+    if (combined.includes('חומר') || combined.includes('material')) return '📝';
+    if (combined.includes('אתגר') || combined.includes('challenge')) return '🎯';
+    if (combined.includes('משחק') || combined.includes('game')) return '🎮';
+    if (combined.includes('קבוצ') || combined.includes('group')) return '👥';
+    if (combined.includes('הורים') || combined.includes('parent')) return '👨‍👩‍👧';
+    if (combined.includes('עזר') || combined.includes('help') || combined.includes('תמיכה')) return '🤝';
+    if (combined.includes('משוב') || combined.includes('feedback')) return '💬';
+    if (combined.includes('תרגול') || combined.includes('practice')) return '💪';
+    if (combined.includes('חיזוק') || combined.includes('reinforce')) return '⭐';
+
+    return '✅';
   };
 
   const getPriorityBadge = (priority) => {
@@ -184,18 +303,29 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
                   darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                 } shadow-lg hover:shadow-xl transition-shadow`}
               >
-                {/* Insight Header */}
+                {/* Insight Header - Simplified with minimal coloring */}
                 <div
-                  className={`p-6 cursor-pointer bg-gradient-to-r ${getSeverityColor(insight.severity)} bg-opacity-10`}
+                  className={`p-6 cursor-pointer hover:bg-gray-50 transition-colors ${darkMode ? 'hover:bg-gray-700/30' : ''}`}
                   onClick={() => toggleInsight(insight.id)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4">
-                      <div className={`p-3 rounded-xl bg-gradient-to-br ${getSeverityColor(insight.severity)} shadow-lg`}>
-                        <Icon className="text-white" size={24} />
+                      <div className={`p-3 rounded-xl ${
+                        insight.severity === 'critical' ? 'bg-red-100' :
+                        insight.severity === 'high' ? 'bg-orange-100' :
+                        insight.severity === 'positive' ? 'bg-blue-100' :
+                        'bg-gray-100'
+                      } ${darkMode ? 'bg-opacity-20' : ''}`}>
+                        <Icon className={`${
+                          insight.severity === 'critical' ? 'text-red-600' :
+                          insight.severity === 'high' ? 'text-orange-600' :
+                          insight.severity === 'positive' ? 'text-blue-600' :
+                          'text-gray-600'
+                        }`} size={24} />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xl">{getInsightEmoji(insight)}</span>
                           <span className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                             תובנה {index + 1} • {insight.category}
                           </span>
@@ -203,7 +333,7 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
                         <h3 className={`text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                           {insight.title}
                         </h3>
-                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} leading-relaxed`}>
                           {insight.description}
                         </p>
                       </div>
@@ -221,31 +351,63 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
                 {/* Expanded Content */}
                 {isExpanded && (
                   <div className={`p-6 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                    {/* Scientific Basis */}
-                    <div className="mb-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <BookOpen className="text-purple-500" size={16} />
-                        <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          בסיס מדעי
-                        </h4>
+                    {/* PATTERNS Section - Enhanced with more details */}
+                    {insight.patterns && (
+                      <div className="mb-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Activity className="text-indigo-500" size={18} />
+                          <h4 className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            PATTERNS - דפוסים שזוהו
+                          </h4>
+                        </div>
+                        <div className={`p-4 rounded-lg ${darkMode ? 'bg-indigo-900/20 border border-indigo-700' : 'bg-indigo-50 border border-indigo-200'}`}>
+                          {Array.isArray(insight.patterns) ? (
+                            <ul className="space-y-2">
+                              {insight.patterns.map((pattern, idx) => (
+                                <li key={idx} className={`flex items-start gap-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  <ChevronRight className="text-indigo-500 flex-shrink-0 mt-1" size={16} />
+                                  <span className="text-sm leading-relaxed">{pattern}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                              {insight.patterns}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {insight.scientificBasis}
-                      </p>
-                    </div>
+                    )}
+
+                    {/* Scientific Basis */}
+                    {insight.scientificBasis && (
+                      <div className="mb-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <BookOpen className="text-purple-500" size={16} />
+                          <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            בסיס מדעי
+                          </h4>
+                        </div>
+                        <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                          {insight.scientificBasis}
+                        </p>
+                      </div>
+                    )}
 
                     {/* Israeli Context */}
-                    <div className="mb-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Flag className="text-blue-500" size={16} />
-                        <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          הקשר ישראלי
-                        </h4>
+                    {insight.israeliContext && (
+                      <div className="mb-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Flag className="text-blue-500" size={16} />
+                          <h4 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            הקשר ישראלי
+                          </h4>
+                        </div>
+                        <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                          {insight.israeliContext}
+                        </p>
                       </div>
-                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {insight.israeliContext}
-                      </p>
-                    </div>
+                    )}
 
                     {/* Data Points */}
                     {insight.dataPoints && (
@@ -278,21 +440,16 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
 
                     {/* Quick Actions */}
                     <div className="flex gap-2">
-                      <button className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
-                        darkMode
-                          ? 'bg-blue-500/20 text-blue-300 hover:bg-blue-500/30'
-                          : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                      } transition-colors`}>
+                      <button
+                        onClick={() => setActiveTab('recommendations')}
+                        className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+                          darkMode
+                            ? 'bg-blue-500/20 text-blue-300 hover:bg-blue-500/30'
+                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                        } transition-colors`}
+                      >
                         <Target size={16} />
                         ראה המלצות
-                      </button>
-                      <button className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
-                        darkMode
-                          ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      } transition-colors`}>
-                        <Sparkles size={16} />
-                        צור משימות
                       </button>
                     </div>
                   </div>
@@ -306,6 +463,80 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
       {/* Recommendations Tab */}
       {activeTab === 'recommendations' && (
         <div className="space-y-6">
+          {/* Active Assignments Section */}
+          {assignments.filter(a => a.status === 'active').length > 0 && (
+            <div className={`rounded-xl p-6 border-2 ${
+              darkMode ? 'bg-blue-900/20 border-blue-700' : 'bg-blue-50 border-blue-300'
+            }`}>
+              <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${
+                darkMode ? 'text-white' : 'text-gray-900'
+              }`}>
+                <Bell className="text-blue-500" size={20} />
+                משימות פעילות ({assignments.filter(a => a.status === 'active').length})
+              </h3>
+              <div className="space-y-3">
+                {assignments.filter(a => a.status === 'active').map(assignment => {
+                  const isDue = isAssignmentDue(assignment);
+                  return (
+                    <div
+                      key={assignment.id}
+                      className={`p-4 rounded-lg border-2 ${
+                        isDue
+                          ? darkMode ? 'bg-yellow-900/20 border-yellow-600' : 'bg-yellow-50 border-yellow-400'
+                          : darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          {isDue && (
+                            <div className="mb-2 flex items-center gap-2">
+                              <Bell className="text-yellow-600 animate-pulse" size={16} />
+                              <span className={`text-sm font-bold ${
+                                darkMode ? 'text-yellow-400' : 'text-yellow-700'
+                              }`}>
+                                זמן להערכת התקדמות!
+                              </span>
+                            </div>
+                          )}
+                          <p className={`font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {assignment.recommendation}
+                          </p>
+                          <div className="flex flex-wrap gap-2 text-xs">
+                            {getPriorityBadge(assignment.priority)}
+                            <span className={`px-2 py-1 rounded-full ${
+                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                            }`}>
+                              📅 תזכורת: {new Date(assignment.reminderDate).toLocaleDateString('he-IL')}
+                            </span>
+                            <span className={`px-2 py-1 rounded-full ${
+                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                            }`}>
+                              📂 {assignment.category}
+                            </span>
+                          </div>
+                        </div>
+                        {isDue && (
+                          <button
+                            onClick={() => openRatingModal(assignment)}
+                            className={`px-4 py-2 rounded-lg flex items-center gap-2 flex-shrink-0 ${
+                              darkMode
+                                ? 'bg-yellow-600 text-white hover:bg-yellow-700'
+                                : 'bg-yellow-500 text-white hover:bg-yellow-600'
+                            } transition-colors font-medium`}
+                          >
+                            <Star size={16} />
+                            דרג התקדמות
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Recommendations List */}
           {analysis.recommendations?.map(rec => (
             <div
               key={rec.insightId}
@@ -333,19 +564,27 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
                     }`}
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-start gap-3">
-                        <div className={`p-2 rounded-lg bg-gradient-to-br ${
-                          item.priority === 'critical' ? 'from-red-500 to-red-600' :
-                          item.priority === 'high' ? 'from-orange-500 to-orange-600' :
-                          item.priority === 'medium' ? 'from-yellow-500 to-yellow-600' :
-                          'from-green-500 to-green-600'
+                      <div className="flex items-start gap-3 flex-1">
+                        <div className={`p-2 rounded-lg ${
+                          item.priority === 'critical' ? 'bg-red-100' :
+                          item.priority === 'high' ? 'bg-orange-100' :
+                          item.priority === 'medium' ? 'bg-yellow-100' :
+                          'bg-green-100'
                         }`}>
-                          <CheckCircle className="text-white" size={16} />
+                          <CheckCircle className={`${
+                            item.priority === 'critical' ? 'text-red-600' :
+                            item.priority === 'high' ? 'text-orange-600' :
+                            item.priority === 'medium' ? 'text-yellow-600' :
+                            'text-green-600'
+                          }`} size={16} />
                         </div>
                         <div className="flex-1">
-                          <p className={`font-medium mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {item.text}
-                          </p>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-lg">{getRecommendationEmoji(item)}</span>
+                            <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {item.text}
+                            </p>
+                          </div>
                           <div className="flex flex-wrap gap-2 mt-2">
                             {getPriorityBadge(item.priority)}
                             <span className={`text-xs px-2 py-1 rounded-full ${
@@ -358,6 +597,18 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
                           </div>
                         </div>
                       </div>
+                      <button
+                        onClick={() => createAssignment(item, idx, rec.category)}
+                        className={`ml-3 px-3 py-2 rounded-lg flex items-center gap-2 flex-shrink-0 ${
+                          darkMode
+                            ? 'bg-green-500/20 text-green-300 hover:bg-green-500/30'
+                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                        } transition-colors`}
+                        title="צור משימה עם תזכורת שבועית"
+                      >
+                        <Plus size={16} />
+                        צור משימה
+                      </button>
                     </div>
 
                     {/* Recommendation Details */}
@@ -429,6 +680,137 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
           />
         </div>
       )}
+
+      {/* Rating Modal */}
+      {showRatingModal && selectedAssignment && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className={`w-full max-w-2xl rounded-2xl shadow-2xl ${
+            darkMode ? 'bg-gray-800' : 'bg-white'
+          }`}>
+            <div className="p-6">
+              <h2 className={`text-2xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                דוח התקדמות והערכה
+              </h2>
+
+              <div className={`p-4 rounded-lg mb-6 ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {selectedAssignment.recommendation}
+                </p>
+              </div>
+
+              {/* Success Rating */}
+              <div className="mb-6">
+                <label className={`block text-sm font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  מדד הצלחה (1-5) *
+                </label>
+                <div className="flex gap-2 justify-center">
+                  {[1, 2, 3, 4, 5].map(level => (
+                    <button
+                      key={level}
+                      onClick={() => setRating(prev => ({ ...prev, successLevel: level }))}
+                      className={`w-16 h-16 rounded-xl flex items-center justify-center text-2xl transition-all ${
+                        rating.successLevel === level
+                          ? 'bg-yellow-500 text-white scale-110 shadow-lg'
+                          : darkMode
+                            ? 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                            : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                      }`}
+                    >
+                      {level === 1 && '😟'}
+                      {level === 2 && '😐'}
+                      {level === 3 && '🙂'}
+                      {level === 4 && '😊'}
+                      {level === 5 && '🎉'}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex justify-between text-xs mt-2 px-2">
+                  <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>לא הצליח</span>
+                  <span className={darkMode ? 'text-gray-400' : 'text-gray-500'}>הצליח מאוד</span>
+                </div>
+              </div>
+
+              {/* Observed Changes */}
+              <div className="mb-6">
+                <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  שינויים שנצפו בתלמיד *
+                </label>
+                <textarea
+                  value={rating.observedChanges}
+                  onChange={(e) => setRating(prev => ({ ...prev, observedChanges: e.target.value }))}
+                  className={`w-full p-3 rounded-lg border ${
+                    darkMode
+                      ? 'bg-gray-700 border-gray-600 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  rows={4}
+                  placeholder="תאר את השינויים שחלו בתלמיד..."
+                  dir="rtl"
+                />
+              </div>
+
+              {/* Next Steps */}
+              <div className="mb-6">
+                <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  צעדים הבאים
+                </label>
+                <textarea
+                  value={rating.nextSteps}
+                  onChange={(e) => setRating(prev => ({ ...prev, nextSteps: e.target.value }))}
+                  className={`w-full p-3 rounded-lg border ${
+                    darkMode
+                      ? 'bg-gray-700 border-gray-600 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  rows={3}
+                  placeholder="מה יש לעשות בהמשך?"
+                  dir="rtl"
+                />
+              </div>
+
+              {/* Continue Assignment */}
+              <div className="mb-6">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={rating.continueAssignment}
+                    onChange={(e) => setRating(prev => ({ ...prev, continueAssignment: e.target.checked }))}
+                    className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    המשך לעקוב אחרי משימה זו בשבוע הבא
+                  </span>
+                </label>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={submitRating}
+                  disabled={!rating.successLevel || !rating.observedChanges}
+                  className={`flex-1 px-6 py-3 rounded-lg font-bold transition-colors ${
+                    !rating.successLevel || !rating.observedChanges
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  }`}
+                >
+                  שמור דוח
+                </button>
+                <button
+                  onClick={() => setShowRatingModal(false)}
+                  className={`px-6 py-3 rounded-lg font-bold transition-colors ${
+                    darkMode
+                      ? 'bg-gray-700 text-white hover:bg-gray-600'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  ביטול
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -439,6 +821,45 @@ const ProfileCard = ({ title, icon: Icon, color, profile, darkMode }) => {
     blue: 'from-blue-500 to-blue-600',
     pink: 'from-pink-500 to-pink-600',
     purple: 'from-purple-500 to-purple-600'
+  };
+
+  // Hebrew translation map for profile field keys
+  const translateKey = (key) => {
+    const translations = {
+      // Academic Profile
+      'overallPerformance': 'ביצועים כלליים',
+      'subjectStrengths': 'נקודות חוזק במקצועות',
+      'subjectChallenges': 'אתגרים במקצועות',
+      'learningGaps': 'פערי למידה',
+      'progressTrajectory': 'מסלול התקדמות',
+
+      // Social-Emotional Profile
+      'emotionalIntelligence': 'אינטליגנציה רגשית',
+      'socialCompetence': 'יכולת חברתית',
+      'selfAwareness': 'מודעות עצמית',
+      'relationshipSkills': 'כישורים בין-אישיים',
+      'responsibleDecisionMaking': 'קבלת החלטות אחראית',
+
+      // Learning Profile
+      'primaryStyle': 'סגנון למידה עיקרי',
+      'secondaryStyle': 'סגנון למידה משני',
+      'preferredModalities': 'אופני למידה מועדפים',
+      'optimalConditions': 'תנאים אופטימליים',
+      'challengingConditions': 'תנאים מאתגרים'
+    };
+
+    // If key already starts with Hebrew character, return as is
+    if (/[\u0590-\u05FF]/.test(key[0])) {
+      return key;
+    }
+
+    // Try exact match first
+    if (translations[key]) {
+      return translations[key];
+    }
+
+    // Fallback to formatted English (convert camelCase to spaces)
+    return key.replace(/([A-Z])/g, ' $1').trim();
   };
 
   return (
@@ -459,8 +880,8 @@ const ProfileCard = ({ title, icon: Icon, color, profile, darkMode }) => {
           <div key={key} className={`p-3 rounded-lg ${
             darkMode ? 'bg-gray-700/50' : 'bg-gray-50'
           }`}>
-            <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {key.replace(/([A-Z])/g, ' $1').trim()}
+            <span className={`text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {translateKey(key)}
             </span>
             <p className={`font-medium mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               {Array.isArray(value) ? value.join(', ') : value}

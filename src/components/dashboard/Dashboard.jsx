@@ -64,6 +64,36 @@ const Dashboard = () => {
     loadData();
   }, []);
 
+  // Listen for dashboard refresh trigger from AdminControlPanel
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      // Check if the dashboardRefreshTrigger was updated
+      if (e.key === 'dashboardRefreshTrigger' || e.storageArea === localStorage) {
+        console.log('Dashboard refresh triggered by admin panel');
+        toast.success('נתוח תלמיד חדש! מרענן את הנתונים...');
+        loadData();
+      }
+    };
+
+    // Listen for storage events (cross-tab communication)
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also check for changes in the same tab using custom event
+    const handleCustomRefresh = () => {
+      console.log('Dashboard refresh triggered (same tab)');
+      toast.success('נתוח תלמיד חדש! מרענן את הנתונים...');
+      loadData();
+    };
+
+    window.addEventListener('dashboardRefresh', handleCustomRefresh);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('dashboardRefresh', handleCustomRefresh);
+    };
+  }, []);
+
   // Check connection status
   const checkConnection = () => {
     const connected = isConnectedToRealData();

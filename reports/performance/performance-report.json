@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-10-18T21:13:28.442Z",
+  "routes": {
+    "/": {
+      "error": "lighthouse is not a function"
+    },
+    "/students": {
+      "error": "lighthouse is not a function"
+    },
+    "/analytics": {
+      "error": "lighthouse is not a function"
+    }
+  },
+  "summary": {
+    "passedRoutes": 0,
+    "failedRoutes": 3,
+    "avgPerformance": 0,
+    "avgLCP": 0,
+    "avgCLS": 0,
+    "avgTBT": 0
+  },
+  "api": {
+    "p50": 3,
+    "p95": 3,
+    "p99": 26,
+    "min": 2,
+    "max": 86
+  }
+}

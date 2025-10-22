@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ISHEBOT - AI חכם לניהול כיתה. חוסך 10 שעות שבועיות עם ניתוח תלמידים וסידור ישיבה אוטומטי">
+    <meta name="keywords" content="ניהול כיתה, AI, תלמידים, סידור ישיבה, משרד החינוך, תיקון 13">
+    <title>ISHEBOT - העתיד של ניהול כיתה</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --secondary: #8B5CF6;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --dark: #1F2937;
+            --light: #F9FAFB;
+            --white: #FFFFFF;
+            --gray: #6B7280;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--white);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Problem Section */
+        .problem {
+            padding: 5rem 0;
+            background: var(--light);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--dark);
+        }
+
+        .problems-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .problem-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .problem-card .icon {
+            font-size: 2rem;
+            color: var(--danger);
+        }
+
+        .problem-card p {
+            font-size: 1.1rem;
+            color: var(--gray);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .feature-card ul {
+            text-align: right;
+            list-style: none;
+            color: var(--gray);
+        }
+
+        .feature-card li {
+            margin-bottom: 0.5rem;
+            padding-right: 1.5rem;
+            position: relative;
+        }
+
+        .feature-card li::before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Benefits Section */
+        .benefits {
+            padding: 5rem 0;
+            background: var(--light);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .benefit-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .benefit-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .benefit-card ul {
+            list-style: none;
+        }
+
+        .benefit-card li {
+            margin-bottom: 1rem;
+            padding-right: 2rem;
+            position: relative;
+            color: var(--gray);
+        }
+
+        .benefit-card li::before {
+            content: "✅";
+            position: absolute;
+            right: 0;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 5rem 0;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: var(--white);
+            border: 2px solid #E5E7EB;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            border-width: 3px;
+            position: relative;
+        }
+
+        .pricing-card.featured::before {
+            content: "מומלץ";
+            position: absolute;
+            top: -15px;
+            right: 50%;
+            transform: translateX(50%);
+            background: var(--primary);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card .period {
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin-bottom: 2rem;
+            text-align: right;
+        }
+
+        .pricing-card li {
+            margin-bottom: 1rem;
+            color: var(--gray);
+        }
+
+        /* Guarantee Section */
+        .guarantee {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: var(--white);
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .guarantee h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Form */
+        .demo-form {
+            max-width: 500px;
+            margin: 2rem auto;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Rubik', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .demo-form .btn-primary {
+            width: 100%;
+            background: var(--primary);
+            color: var(--white);
+            font-size: 1.2rem;
+        }
+
+        .demo-form .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .footer-section a:hover {
+            opacity: 1;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero h2 {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="container">
+            <div class="logo">ISHEBOT</div>
+            <ul class="nav-links">
+                <li><a href="#features">תכונות</a></li>
+                <li><a href="#benefits">יתרונות</a></li>
+                <li><a href="#pricing">מחירים</a></li>
+                <li><a href="#contact">צור קשר</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="fade-in-up">ISHEBOT - העתיד של ניהול כיתה כבר כאן</h1>
+            <h2 class="fade-in-up">AI חכם שמשנה את אופן ניתוח התלמידים וסידור הכיתה</h2>
+
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="icon">⏱️</div>
+                    <h3>חוסך 10 שעות שבועיות</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">📊</div>
+                    <h3>ROI של 760%+</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">🎯</div>
+                    <h3>מדויק ב-100%</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">🇮🇱</div>
+                    <h3>תואם תיקון 13</h3>
+                </div>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="#contact" class="btn btn-primary">קבל הדגמה חינמית</a>
+                <a href="#features" class="btn btn-secondary">למד עוד</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem">
+        <div class="container">
+            <h2 class="section-title">האתגרים של מורים היום</h2>
+            <div class="problems-list">
+                <div class="problem-card">
+                    <div class="icon">❌</div>
+                    <p>שעות על ניתוח תלמידים ידנית</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">❌</div>
+                    <p>קושי לעקוב אחר 30+ תלמידים</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">❌</div>
+                    <p>סידור ישיבה בניסוי וטעייה</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">❌</div>
+                    <p>מידע מפוזר בדפים ואקסל</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">❌</div>
+                    <p>החלטות אינטואיטיביות ללא נתונים</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">ISHEBOT - הפתרון החכם</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>מערכת צבעים חכמה</h3>
+                    <ul>
+                        <li>אדום: תלמיד בסיכון</li>
+                        <li>צהוב: זקוק לתמיכה</li>
+                        <li>ירוק: מצטיין</li>
+                        <li>זיהוי מיידי של צרכים</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🪑</div>
+                    <h3>סידור ישיבה אוטומטי</h3>
+                    <ul>
+                        <li>6 מבנים שונים</li>
+                        <li>אופטימיזציה מבוססת AI</li>
+                        <li>התאמה לפרופיל כל תלמיד</li>
+                        <li>זיווג חכם של תלמידים</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>לוח בקרה מקיף</h3>
+                    <ul>
+                        <li>תובנות בזמן אמת</li>
+                        <li>גרפים ויזואליים</li>
+                        <li>דוחות מקצועיים</li>
+                        <li>מעקב אחר התקדמות</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>החלפה חכמה עם משוב</h3>
+                    <ul>
+                        <li>גרור ושחרר תלמידים</li>
+                        <li>הערכת AI מיידית</li>
+                        <li>המלצות לשיפור</li>
+                        <li>מניעת טעויות</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="benefits">
+        <div class="container">
+            <h2 class="section-title">היתרונות</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3>למורים</h3>
+                    <ul>
+                        <li>חיסכון של 10 שעות שבועיות</li>
+                        <li>החלטות מבוססות נתונים</li>
+                        <li>תשומת לב אישית לכל תלמיד</li>
+                        <li>הפחתת לחץ</li>
+                    </ul>
+                </div>
+
+                <div class="benefit-card">
+                    <h3>לתלמידים</h3>
+                    <ul>
+                        <li>מיקום אופטימלי בכיתה</li>
+                        <li>תמיכה מותאמת אישית</li>
+                        <li>שיפור בתוצאות למידה</li>
+                        <li>סביבה תומכת יותר</li>
+                    </ul>
+                </div>
+
+                <div class="benefit-card">
+                    <h3>לבית הספר</h3>
+                    <ul>
+                        <li>שיפור ניהול כיתה</li>
+                        <li>עמידה בתקנים</li>
+                        <li>תיעוד מקצועי</li>
+                        <li>ROI מוכח</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">מחירים שקופים ומשתלמים</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>📦 חבילה בסיסית</h3>
+                    <div class="price">₪2,500</div>
+                    <div class="period">לשנה</div>
+                    <ul>
+                        <li>עד 200 תלמידים</li>
+                        <li>עד 10 מורים</li>
+                        <li>תמיכה במייל</li>
+                        <li>הדרכה בסיסית</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary">התחל עכשיו</a>
+                </div>
+
+                <div class="pricing-card featured">
+                    <h3>📦 חבילה מקצועית</h3>
+                    <div class="price">₪4,000</div>
+                    <div class="period">לשנה</div>
+                    <ul>
+                        <li>200-500 תלמידים</li>
+                        <li>עד 25 מורים</li>
+                        <li>תמיכה מהירה</li>
+                        <li>הדרכה אישית</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary">התחל עכשיו</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>📦 חבילה ארגונית</h3>
+                    <div class="price">₪6,000</div>
+                    <div class="period">לשנה</div>
+                    <ul>
+                        <li>500+ תלמידים</li>
+                        <li>מורים ללא הגבלה</li>
+                        <li>תמיכה פרימיום</li>
+                        <li>מנהל חשבון ייעודי</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary">התחל עכשיו</a>
+                </div>
+            </div>
+
+            <div class="guarantee">
+                <h3>💰 ערבות החזר כספי</h3>
+                <p>החזר מלא תוך 30 יום אם לא מרוצים - ללא שאלות!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="contact" class="cta-section">
+        <div class="container">
+            <h2>מוכנים לשדרג את בית הספר שלכם?</h2>
+            <p>הצטרפו למורים שכבר חוסכים 10 שעות שבועיות</p>
+
+            <form class="demo-form" id="demoForm">
+                <div class="form-group">
+                    <label for="name">שם מלא</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="school">בית ספר</label>
+                    <input type="text" id="school" name="school" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="role">תפקיד</label>
+                    <input type="text" id="role" name="role" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">טלפון</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">אימייל</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">קבל הדגמה חינמית עכשיו</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>ISHEBOT</h4>
+                    <p>AI חכם לניהול כיתה מתקדם</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>קישורים מהירים</h4>
+                    <ul>
+                        <li><a href="#features">תכונות</a></li>
+                        <li><a href="#benefits">יתרונות</a></li>
+                        <li><a href="#pricing">מחירים</a></li>
+                        <li><a href="#contact">צור קשר</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>משפטי</h4>
+                    <ul>
+                        <li><a href="#">מדיניות פרטיות</a></li>
+                        <li><a href="#">תנאי שימוש</a></li>
+                        <li><a href="#">תיקון 13</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>צור קשר</h4>
+                    <ul>
+                        <li>📧 info@ishebot.co.il</li>
+                        <li>📱 050-123-4567</li>
+                        <li>🌐 www.ishebot.co.il</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2025 ISHEBOT Ltd. כל הזכויות שמורות</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Form submission handler
+        document.getElementById('demoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                school: document.getElementById('school').value,
+                role: document.getElementById('role').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value
+            };
+
+            console.log('Demo request:', formData);
+
+            // Here you would typically send the data to your backend
+            alert('תודה! ניצור איתך קשר בקרוב להדגמה.');
+
+            // Reset form
+            this.reset();
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-up');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.problem-card, .feature-card, .benefit-card, .pricing-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

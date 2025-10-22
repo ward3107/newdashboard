@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 
@@ -57,15 +57,23 @@ export const useStudents = (): UseStudentsHook & {
     staleTime: STALE_TIME,
     gcTime: CACHE_TIME,
     retry: 2,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    onError: (error: Error) => {
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
+  });
+
+  // Handle error
+  React.useEffect(() => {
+    if (error) {
       toast.error(`שגיאה בטעינת רשימת התלמידים: ${error.message}`);
       trackEvent('students_fetch_error', { error: error.message });
-    },
-    onSuccess: () => {
+    }
+  }, [error]);
+
+  // Handle success
+  React.useEffect(() => {
+    if (students && students.length > 0) {
       trackEvent('students_fetch_success', { count: students.length });
     }
-  });
+  }, [students]);
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -196,15 +204,23 @@ export const useStudent = (studentId: string) => {
     enabled: !!studentId,
     staleTime: STALE_TIME,
     gcTime: CACHE_TIME,
-    retry: 2,
-    onError: (error: Error) => {
+    retry: 2
+  });
+
+  // Handle error
+  React.useEffect(() => {
+    if (error) {
       toast.error(`שגיאה בטעינת נתוני התלמיד: ${error.message}`);
       trackEvent('student_fetch_error', { studentId, error: error.message });
-    },
-    onSuccess: () => {
+    }
+  }, [error, studentId]);
+
+  // Handle success
+  React.useEffect(() => {
+    if (student) {
       trackEvent('student_fetch_success', { studentId });
     }
-  });
+  }, [student, studentId]);
 
   const handleRefetch = useCallback(async () => {
     try {

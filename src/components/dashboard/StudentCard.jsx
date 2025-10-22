@@ -210,24 +210,63 @@ const StudentCard = ({ student, index = 0 }) => {
         <p style={descriptionStyles}>{student.keyNotes}</p>
       )}
 
-      {/* Stats */}
-      <div style={statsContainerStyles}>
-        <div style={statBoxStyles('strengths')}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-            <Award size={14} color="var(--color-success)" />
-            <p style={statValueStyles('strengths')}>{student.strengthsCount || 0}</p>
-          </div>
-          <p style={statLabelStyles}>חוזקות</p>
-        </div>
+      {/* Stats - Hybrid Scores or Legacy Counts */}
+      {student.scores ? (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 'var(--space-2)',
+          marginBottom: 'var(--space-4)'
+        }}>
+          {/* Focus Score */}
+          {student.scores.focus && (
+            <div style={{ textAlign: 'center', padding: '8px', backgroundColor: '#f0f9ff', borderRadius: '8px' }}>
+              <div style={{ fontSize: '1.2rem', marginBottom: '2px' }}>
+                {'⭐'.repeat(student.scores.focus.stars)}
+              </div>
+              <div style={{ fontSize: '0.65rem', color: '#0369a1', fontWeight: '600' }}>ריכוז</div>
+            </div>
+          )}
 
-        <div style={statBoxStyles('challenges')}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-            <Target size={14} color="var(--color-warning)" />
-            <p style={statValueStyles('challenges')}>{student.challengesCount || 0}</p>
-          </div>
-          <p style={statLabelStyles}>אתגרים</p>
+          {/* Motivation Score */}
+          {student.scores.motivation && (
+            <div style={{ textAlign: 'center', padding: '8px', backgroundColor: '#fef9c3', borderRadius: '8px' }}>
+              <div style={{ fontSize: '1.2rem', marginBottom: '2px' }}>
+                {'⭐'.repeat(student.scores.motivation.stars)}
+              </div>
+              <div style={{ fontSize: '0.65rem', color: '#a16207', fontWeight: '600' }}>מוטיבציה</div>
+            </div>
+          )}
+
+          {/* Collaboration Score */}
+          {student.scores.collaboration && (
+            <div style={{ textAlign: 'center', padding: '8px', backgroundColor: '#f3e8ff', borderRadius: '8px' }}>
+              <div style={{ fontSize: '1.2rem', marginBottom: '2px' }}>
+                {'⭐'.repeat(student.scores.collaboration.stars)}
+              </div>
+              <div style={{ fontSize: '0.65rem', color: '#6b21a8', fontWeight: '600' }}>שיתוף</div>
+            </div>
+          )}
         </div>
-      </div>
+      ) : (
+        <div style={statsContainerStyles}>
+          <div style={statBoxStyles('strengths')}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+              <Award size={14} color="var(--color-success)" />
+              <p style={statValueStyles('strengths')}>{student.strengthsCount || 0}</p>
+            </div>
+            <p style={statLabelStyles}>חוזקות</p>
+          </div>
+
+          <div style={statBoxStyles('challenges')}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+              <Target size={14} color="var(--color-warning)" />
+              <p style={statValueStyles('challenges')}>{student.challengesCount || 0}</p>
+            </div>
+            <p style={statLabelStyles}>אתגרים</p>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <div style={footerStyles}>

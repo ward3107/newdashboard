@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Cookie Consent</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #f0f0f0;
+        }
+        .status {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍪 ISHEBOT Cookie Manager</h1>
+        <p>Use these buttons to test the cookie consent banner</p>
+        
+        <button onclick="clearConsent()">Clear Cookie Consent</button>
+        <button onclick="clearAll()">Clear All Settings</button>
+        <button onclick="goToDashboard()">Go to Dashboard</button>
+        
+        <div class="status" id="status"></div>
+        
+        <h3 style="margin-top: 30px;">Current Status:</h3>
+        <div id="current-status" style="text-align: left; margin-top: 10px;"></div>
+    </div>
+
+    <script>
+        function showStatus(message) {
+            document.getElementById('status').innerHTML = message;
+            setTimeout(() => {
+                document.getElementById('status').innerHTML = '';
+            }, 3000);
+        }
+
+        function updateStatus() {
+            const consent = localStorage.getItem('ishebot-cookie-consent');
+            const preferences = localStorage.getItem('ishebot-cookie-preferences');
+            const language = localStorage.getItem('ishebot-language');
+            const accessibility = localStorage.getItem('ishebot-accessibility-settings');
+            
+            let html = '<ul style="list-style: none; padding: 0;">';
+            html += `<li>🍪 Cookie Consent: ${consent ? '✅ Set' : '❌ Not Set'}</li>`;
+            html += `<li>⚙️ Cookie Preferences: ${preferences ? '✅ Saved' : '❌ None'}</li>`;
+            html += `<li>🌐 Language: ${language || '❌ Not Set'}</li>`;
+            html += `<li>♿ Accessibility: ${accessibility ? '✅ Saved' : '❌ Default'}</li>`;
+            html += '</ul>';
+            
+            document.getElementById('current-status').innerHTML = html;
+        }
+
+        function clearConsent() {
+            localStorage.removeItem('ishebot-cookie-consent');
+            localStorage.removeItem('ishebot-cookie-preferences');
+            showStatus('✅ Cookie consent cleared! Refresh dashboard to see banner.');
+            updateStatus();
+        }
+
+        function clearAll() {
+            localStorage.removeItem('ishebot-cookie-consent');
+            localStorage.removeItem('ishebot-cookie-preferences');
+            localStorage.removeItem('ishebot-language');
+            localStorage.removeItem('ishebot-accessibility-settings');
+            showStatus('✅ All settings cleared!');
+            updateStatus();
+        }
+
+        function goToDashboard() {
+            window.location.href = '/';
+        }
+
+        // Update status on load
+        updateStatus();
+    </script>
+</body>
+</html>

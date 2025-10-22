@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Test Report</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .summary { background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .route { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .metric { display: inline-block; margin: 10px 20px 10px 0; }
+        .pass { color: #28a745; }
+        .fail { color: #dc3545; }
+        .score-high { background: #d4edda; padding: 5px 10px; border-radius: 3px; }
+        .score-medium { background: #fff3cd; padding: 5px 10px; border-radius: 3px; }
+        .score-low { background: #f8d7da; padding: 5px 10px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Performance Test Report</h1>
+    <div class="summary">
+        <h2>Summary</h2>
+        <p>Generated: 2025-10-18T21:13:28.442Z</p>
+        <p>Routes Tested: 3</p>
+        <p>Passed: 0 | Failed: 3</p>
+        <div>
+            <div class="metric">Avg Performance: <span class="fail">0</span></div>
+            <div class="metric">Avg LCP: <span class="pass">0ms</span></div>
+            <div class="metric">Avg CLS: <span class="pass">0</span></div>
+            <div class="metric">Avg TBT: <span class="pass">0ms</span></div>
+        </div>
+    </div>
+
+    <div class="summary">
+        <h2>API Performance</h2>
+        <div>
+            <div class="metric">p50: 3ms</div>
+            <div class="metric">p95: <span class="pass">3ms</span></div>
+            <div class="metric">p99: 26ms</div>
+        </div>
+    </div>
+
+    
+        <div class="route">
+            <h3>Route: /</h3>
+            <p class="fail">Error: lighthouse is not a function</p>
+        </div>
+    
+        <div class="route">
+            <h3>Route: /students</h3>
+            <p class="fail">Error: lighthouse is not a function</p>
+        </div>
+    
+        <div class="route">
+            <h3>Route: /analytics</h3>
+            <p class="fail">Error: lighthouse is not a function</p>
+        </div>
+    
+</body>
+</html>

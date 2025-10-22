@@ -51,11 +51,27 @@ export const getAllStudents = async () => {
 
 export const getStudent = async (studentCode) => {
   try {
-    const response = await fetch(`${API_URL}?action=getStudent&studentCode=${studentCode}`);
+    // NOTE: Using 'studentId' instead of 'studentCode' because the deployed Google Apps Script
+    // expects 'studentId' parameter. Update this to 'studentCode' after redeploying the script.
+    const url = `${API_URL}?action=getStudent&studentId=${studentCode}`;
+    console.log(`📡 Calling API: ${url}`);
+
+    const response = await fetch(url);
     const data = await response.json();
+
+    console.log("📦 Raw API response:", data);
+
+    // Check if the API returned an error
+    if (data.error) {
+      console.error("❌ API returned error:", data.error);
+      return { success: false, error: data.error };
+    }
+
+    console.log("✅ API returned student data successfully");
+    console.log("🔍 Has insights?", data.insights ? `YES (${data.insights.length})` : "NO");
     return { success: true, student: data };
   } catch (error) {
-    console.error("Error fetching student:", error);
+    console.error("❌ Error fetching student:", error);
     return { success: false, error: error.message };
   }
 };
@@ -73,7 +89,8 @@ export const getStats = async () => {
 
 export const analyzeOneStudent = async (studentCode) => {
   try {
-    const response = await fetch(`${API_URL}?action=analyzeOneStudent&studentCode=${studentCode}`);
+    // NOTE: Using 'studentId' for compatibility with deployed Google Apps Script
+    const response = await fetch(`${API_URL}?action=analyzeOneStudent&studentId=${studentCode}`);
     const data = await response.json();
     return data;
   } catch (error) {
@@ -303,6 +320,76 @@ export const testConnection = async () => {
     return data;
   } catch (error) {
     console.error("Error testing connection:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// ============================================================================
+// NEW ADMIN FUNCTIONS
+// ============================================================================
+
+export const analyzeAllUnanalyzed = async () => {
+  try {
+    const response = await fetch(`${API_URL}?action=analyzeAllUnanalyzed`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error analyzing all unanalyzed:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const listBackups = async () => {
+  try {
+    const response = await fetch(`${API_URL}?action=listBackups`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error listing backups:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const exportAnalyses = async (format = 'json') => {
+  try {
+    const response = await fetch(`${API_URL}?action=exportAnalyses&format=${format}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error exporting analyses:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const healthCheck = async () => {
+  try {
+    const response = await fetch(`${API_URL}?action=healthCheck`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error checking health:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const deleteAllAnalysesWithToken = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}?action=deleteAllAnalyses&token=${token}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error deleting all analyses:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const restoreFromBackupWithToken = async (backupId, token) => {
+  try {
+    const response = await fetch(`${API_URL}?action=restoreFromBackup&backupId=${backupId}&token=${token}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error restoring backup:", error);
     return { success: false, error: error.message };
   }
 };

@@ -57,7 +57,7 @@ const CONFIG = {
 
   // OpenAI Model Configuration
   OPENAI_MODEL: "gpt-4o-mini", // Cheaper and faster model
-  MAX_TOKENS: 4000,
+  MAX_TOKENS: 8000, // Increased for deeper analysis with more detailed recommendations
   TEMPERATURE: 0.7,
 
   // Security settings
@@ -776,6 +776,7 @@ function analyzeOneStudent(studentCode) {
 /**
  * Build ISHEBOT Analyzer prompt for OpenAI
  * Structured JSON output with evidence-based insights
+ * Enhanced with: Question Categories, Risk Flags, and Confidence Scores
  */
 function buildISHEBOTPrompt(studentCode, responses) {
   const studentInfo = getStudentInfo(studentCode);
@@ -783,6 +784,16 @@ function buildISHEBOTPrompt(studentCode, responses) {
   // Format answers for prompt
   const answersArray = formatAnswersForISHEBOT(responses);
   const answersJSON = JSON.stringify(answersArray, null, 2);
+
+  // Question categories mapping - helps AI understand which questions inform which domains
+  const questionCategories = {
+    cognitive: "Questions 1-3, 11, 19 relate to learning methods, difficulty levels, and memory",
+    emotional: "Questions 10, 14, 22, 25 relate to frustration, criticism response, and pride",
+    social: "Questions 9, 13, 20, 24 relate to group work, collaboration, and social preferences",
+    executive_function: "Questions 4, 7, 15, 18, 23, 27 relate to focus, task management, time management",
+    motivation: "Questions 5, 13, 17, 26 relate to test motivation, general motivation, and study habits",
+    environment: "Questions 8, 16, 21, 24, 28 relate to preferred lesson types, activities, and environment"
+  };
 
   const prompt = `You are ISHEBOT Analyzer — an advanced pedagogical analysis engine for K-12 education.
 
@@ -798,6 +809,11 @@ The analysis must be based *only* on the student's answers and reflect patterns,
 
 📝 STUDENT ANSWERS:
 ${answersJSON}
+
+🗂️ QUESTION CATEGORIES MAPPING:
+${JSON.stringify(questionCategories, null, 2)}
+
+Use this mapping to understand which questions inform which domains. Base your insights on the appropriate question categories.
 
 📊 REQUIRED OUTPUT STRUCTURE (JSON ONLY):
 
@@ -829,7 +845,13 @@ ${answersJSON}
           "materials": ["רשימה אופציונלית של חומרים או כלים נדרשים"],
           "follow_up_metric": "כיצד למדוד שיפור או הצלחה.",
           "priority": "low | medium | high",
-          "rationale": "הסבר קצר מדוע המלצה זו מטפלת בתובנה ובראיות."
+          "rationale": "הסבר קצר מדוע המלצה זו מטפלת בתובנה ובראיות.",
+          "confidence_score": {
+            "value": 0.85,
+            "impact": "high | medium | low",
+            "effort": "high | medium | low",
+            "explanation": "הסבר קצר מדוע רמת הביטחון היא כזו"
+          }
         }
         // MUST BE 3–6 recommendations per insight
       ]
@@ -843,7 +865,17 @@ ${answersJSON}
       "collaboration": 0.6,
       "emotional_regulation": 0.75
     },
-    "risk_flags": ["רשימה אופציונלית של תחומי סיכון עיקריים"],
+    "risk_flags": [
+      {
+        "severity": "high | medium | low",
+        "flag": "תיאור תחום הסיכון (למשל: סימני בידוד חברתי, קושי בוויסות רגשי)",
+        "evidence": ["שאלה 9: העדפה לעבודה לבד", "שאלה 13: מעורבות נמוכה עם עמיתים"],
+        "immediate_action": "פעולה מיידית שיש לבצע תוך 48 שעות",
+        "escalation_protocol": "מה לעשות אם אין שיפור תוך שבועיים",
+        "parent_notification": true,
+        "monitoring_frequency": "כמה פעמים בשבוע לבדוק שיפור"
+      }
+    ],
     "comparison_to_class": {
       "focus_percentile": 65,
       "motivation_percentile": 78
@@ -866,6 +898,23 @@ ${answersJSON}
 - Prioritize pedagogy, SEL, and classroom applicability over generic advice.
 - Base scores (0.0-1.0) on actual answer patterns, not assumptions.
 - Evidence must cite specific question numbers from the answers_used array.
+
+🚨 RISK FLAGS SYSTEM:
+- Include risk_flags array ONLY when you detect serious concerns (severity: high/medium)
+- Low severity = minor areas for improvement (not urgent)
+- Medium severity = concerning patterns requiring teacher attention within 1 week
+- High severity = urgent issues requiring immediate intervention within 48 hours
+- Each risk flag MUST include: specific evidence from questionnaire, immediate action, escalation protocol
+- Set parent_notification to true for medium/high severity flags
+- If no risk flags detected, use empty array: "risk_flags": []
+
+💡 CONFIDENCE SCORES:
+- Each recommendation must include confidence_score with value, impact, effort, and explanation
+- Confidence value (0.0-1.0): How certain you are this recommendation will help this specific student
+- Impact (high/medium/low): Expected effect if implemented correctly
+- Effort (high/medium/low): Time and resources required from teacher
+- High confidence + high impact + low effort = top priority recommendations
+- Explain why you assigned this confidence level based on student's specific answers
 
 **IMPORTANT**: Return ONLY the JSON object, with no additional text before or after.`;
 

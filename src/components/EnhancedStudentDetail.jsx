@@ -35,7 +35,7 @@ import {
 import * as API from '../services/googleAppsScriptAPI';
 import EnhancedAnalysisDisplay from './EnhancedAnalysisDisplay';
 
-const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
+const EnhancedStudentDetail = ({ student, onClose, darkMode, theme, assignments = [] }) => {
   const [fullData, setFullData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -48,16 +48,24 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
     const fetchStudentDetails = async () => {
       try {
         const result = await API.getStudent(student.studentCode);
+        console.log('📊 API Response for student:', student.studentCode, result);
+
         if (result.success) {
+          console.log('✅ Student data received:', result.student);
+          console.log('🔍 Has insights?', result.student?.insights ? 'YES' : 'NO');
+          if (result.student?.insights) {
+            console.log('📋 Insights count:', result.student.insights.length);
+          }
           setFullData(result.student);
           // Generate AI tasks based on analysis
           generateAITasks(result.student);
         } else {
+          console.log('⚠️ API returned unsuccessful, using basic student data');
           setFullData(student);
           generateAITasks(student);
         }
       } catch (error) {
-        console.error('Error fetching student details:', error);
+        console.error('❌ Error fetching student details:', error);
         setFullData(student);
         generateAITasks(student);
       } finally {
@@ -157,13 +165,6 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
     });
   };
 
-  const sendToWhatsApp = () => {
-    const tasksList = tasks.map(t => `${t.completed ? '✅' : '⬜'} ${t.text}`).join('\n');
-    const message = `משימות עבור תלמיד ${student.studentCode}:\n\n${tasksList}`;
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-  };
-
   const handlePrint = () => {
     window.print();
   };
@@ -250,7 +251,7 @@ ${tasks.map(t => `${t.completed ? '✅' : '⬜'} ${t.text}`).join('\n')}
 
   return (
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
       onClick={onClose}
     >
       <div
@@ -310,14 +311,14 @@ ${tasks.map(t => `${t.completed ? '✅' : '⬜'} ${t.text}`).join('\n')}
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-3 transition-all ${
+              className={`flex items-center gap-1.5 px-4 py-2 transition-all ${
                 activeTab === tab.id
                   ? `${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} border-b-2 border-blue-500`
                   : `${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`
               }`}
             >
-              <tab.icon size={18} />
-              <span className="font-medium">{tab.label}</span>
+              <tab.icon size={16} />
+              <span className="font-medium text-sm">{tab.label}</span>
             </button>
           ))}
         </div>
@@ -366,14 +367,14 @@ ${tasks.map(t => `${t.completed ? '✅' : '⬜'} ${t.text}`).join('\n')}
                     </div>
                   </div>
 
-                  {/* Summary */}
+                  {/* Summary - Display ISHEBOT summary if available */}
                   <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
                     <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       <Sparkles className="text-yellow-500" size={20} />
                       סיכום כללי
                     </h3>
-                    <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} leading-relaxed`}>
-                      {student.keyNotes || fullData?.summary || 'טרם בוצע ניתוח מלא עבור תלמיד זה'}
+                    <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} leading-relaxed text-right`} dir="rtl">
+                      {fullData?.ishebotReport?.summary || fullData?.summary || student.keyNotes || 'טרם בוצע ניתוח מלא עבור תלמיד זה'}
                     </p>
                   </div>
                 </div>
@@ -391,6 +392,85 @@ ${tasks.map(t => `${t.completed ? '✅' : '⬜'} ${t.text}`).join('\n')}
               {/* Tasks Tab */}
               {activeTab === 'tasks' && (
                 <div className="space-y-6">
+                  {/* Recommendation Assignments - Show assignments from the recommendations tab */}
+                  {(() => {
+                    const studentAssignments = JSON.parse(localStorage.getItem(`assignments_${student.studentCode}`) || '[]');
+                    return studentAssignments.length > 0 && (
+                      <div className={`p-6 rounded-xl ${darkMode ? 'bg-blue-900/20 border-2 border-blue-700' : 'bg-blue-50 border-2 border-blue-300'}`}>
+                        <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          <Target className="text-blue-500" size={20} />
+                          משימות מהמלצות ({studentAssignments.length})
+                        </h3>
+
+                        <div className="space-y-3">
+                          {studentAssignments.map((assignment) => (
+                            <div
+                              key={assignment.id}
+                              className={`p-4 rounded-lg border ${
+                                assignment.status === 'completed'
+                                  ? darkMode ? 'bg-green-900/20 border-green-700' : 'bg-green-50 border-green-300'
+                                  : darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'
+                              }`}
+                            >
+                              <div className="flex items-start gap-3">
+                                {assignment.status === 'completed' ? (
+                                  <CheckCircle className="text-green-500 flex-shrink-0 mt-1" size={20} />
+                                ) : (
+                                  <Clock className="text-blue-500 flex-shrink-0 mt-1" size={20} />
+                                )}
+
+                                <div className="flex-1">
+                                  <p className={`font-medium mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {assignment.recommendation}
+                                  </p>
+                                  <div className="flex flex-wrap gap-2 text-xs">
+                                    <span className={`px-2 py-1 rounded-full ${
+                                      assignment.priority === 'high'
+                                        ? 'bg-red-100 text-red-700'
+                                        : assignment.priority === 'medium'
+                                        ? 'bg-yellow-100 text-yellow-700'
+                                        : 'bg-green-100 text-green-700'
+                                    }`}>
+                                      {assignment.priority === 'high' ? 'דחוף' : assignment.priority === 'medium' ? 'בינוני' : 'נמוך'}
+                                    </span>
+                                    <span className={`px-2 py-1 rounded-full ${
+                                      darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                                    }`}>
+                                      📅 {new Date(assignment.reminderDate).toLocaleDateString('he-IL')}
+                                    </span>
+                                    <span className={`px-2 py-1 rounded-full ${
+                                      darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                                    }`}>
+                                      📂 {assignment.category}
+                                    </span>
+                                    {assignment.status === 'completed' && (
+                                      <span className="px-2 py-1 rounded-full bg-green-100 text-green-700">
+                                        ✅ הושלם
+                                      </span>
+                                    )}
+                                  </div>
+                                  {assignment.rating && (
+                                    <div className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-white'}`}>
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <Star className="text-yellow-500" size={16} />
+                                        <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                          דירוג: {assignment.rating.successLevel}/5
+                                        </span>
+                                      </div>
+                                      <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                        {assignment.rating.observedChanges}
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   {/* AI Suggested Tasks */}
                   <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
                     <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -494,23 +574,6 @@ ${tasks.map(t => `${t.completed ? '✅' : '⬜'} ${t.text}`).join('\n')}
                     </div>
                   </div>
 
-                  {/* Share Actions */}
-                  <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                    <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      <Send className="text-green-500" size={20} />
-                      שיתוף משימות
-                    </h3>
-
-                    <div className="flex gap-3">
-                      <button
-                        onClick={sendToWhatsApp}
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 flex items-center gap-2"
-                      >
-                        <MessageCircle size={18} />
-                        שלח ל-WhatsApp
-                      </button>
-                    </div>
-                  </div>
                 </div>
               )}
 

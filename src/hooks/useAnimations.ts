@@ -132,8 +132,8 @@ export function useHoverEffect(
   leaveDelay: number = 0
 ) {
   const [isHovered, setIsHovered] = useState(false);
-  const enterTimeoutRef = useRef<NodeJS.Timeout>();
-  const leaveTimeoutRef = useRef<NodeJS.Timeout>();
+  const enterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = useCallback(() => {
     if (leaveTimeoutRef.current) {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Brain,
   Users,
@@ -31,11 +32,16 @@ import {
   Bell,
   X,
   Grid3x3,
+  Lightbulb,
 } from "lucide-react";
 import AdminPanel from "../AdminPanel";
 import EnhancedStudentDetail from "../EnhancedStudentDetail";
 import * as API from "../../services/googleAppsScriptAPI";
-import AnalyticsDashboard from "../analytics/AnalyticsDashboard";
+import * as StudentAPI from "../../api/studentAPI";
+import EnhancedAnalyticsDashboard from "../analytics/EnhancedAnalyticsDashboard";
+import { AnalysisAggregator } from "../../services/analysisAggregator";
+import ClassroomSeatingAI from "../classroom/ClassroomSeatingAI";
+import Footer from "../ui/Footer";
 
 // Use environment variable or config file for API URL
 // UPDATED 2025-10-10 - V5 WITH CORS HEADERS FIXED!
@@ -47,73 +53,53 @@ const API_URL =
 // API FUNCTIONS
 // ============================================================================
 
-// Fetch all students from backend
+// Fetch all students from backend (now supports mock data)
 const fetchStudents = async () => {
   try {
-    console.log("Fetching students from:", `${API_URL}?action=getAllStudents`);
-    const response = await fetch(`${API_URL}?action=getAllStudents`);
-    const data = await response.json();
-    console.log("Students data received:", data);
+    console.log("🔍 Fetching students (with mock data support)...");
+    const students = await StudentAPI.getAllStudents();
+    console.log("✅ Students data received:", students);
 
-    // 🔍 DEBUG: Check needsAnalysis field in raw API response
-    console.log('🔍 DEBUG - API Response Analysis:', {
-      totalFromAPI: data.students?.length || 0,
-      sampleStudents: data.students?.slice(0, 5).map(s => ({
+    // 🔍 DEBUG: Check needsAnalysis field
+    console.log('🔍 DEBUG - Student Analysis:', {
+      total: students?.length || 0,
+      sampleStudents: students?.slice(0, 5).map(s => ({
         code: s.studentCode,
         needsAnalysis: s.needsAnalysis,
         strengthsCount: s.strengthsCount,
         hasAnalysisData: s.strengthsCount > 0
       })),
-      analyzedInAPI: data.students?.filter(s => !s.needsAnalysis).length || 0,
-      unanalyzedInAPI: data.students?.filter(s => s.needsAnalysis).length || 0
+      analyzed: students?.filter(s => !s.needsAnalysis).length || 0,
+      unanalyzed: students?.filter(s => s.needsAnalysis).length || 0
     });
 
-    // Remove duplicates based on studentCode
-    const uniqueStudentsMap = new Map();
+    // Ensure students have avatar property
+    const studentsWithAvatars = (students || []).map((student) => ({
+      ...student,
+      name:
+        typeof student.name === "number"
+          ? `Student ${student.studentCode}`
+          : student.name || `Student ${student.studentCode}`,
+      // Add avatar number for display (consistent per student)
+      avatar: student.avatar || (parseInt(student.studentCode) % 4) + 1,
+    }));
 
-    (data.students || []).forEach((student) => {
-      // Only add if we haven't seen this studentCode before, or if this one has more data
-      const existingStudent = uniqueStudentsMap.get(student.studentCode);
+    console.log(`📊 Returning ${studentsWithAvatars.length} students`);
 
-      if (
-        !existingStudent ||
-        (student.strengthsCount > 0 && existingStudent.strengthsCount === 0) ||
-        (student.keyNotes && !existingStudent.keyNotes)
-      ) {
-        uniqueStudentsMap.set(student.studentCode, {
-          ...student,
-          name:
-            typeof student.name === "number"
-              ? `Student ${student.studentCode}`
-              : student.name || `Student ${student.studentCode}`,
-          // Add avatar number for display (consistent per student)
-          avatar: (parseInt(student.studentCode) % 4) + 1,
-        });
-      }
-    });
-
-    // Convert map back to array
-    const students = Array.from(uniqueStudentsMap.values());
-
-    console.log(
-      `Fetched ${data.students?.length || 0} students, ${students.length} unique students after deduplication`,
-    );
-
-    return students;
+    return studentsWithAvatars;
   } catch (error) {
     console.error("Error fetching students:", error);
     return [];
   }
 };
 
-// Fetch stats from backend
+// Fetch stats from backend (now supports mock data)
 const fetchStats = async () => {
   try {
-    console.log("Fetching stats from:", `${API_URL}?action=getStats`);
-    const response = await fetch(`${API_URL}?action=getStats`);
-    const data = await response.json();
-    console.log("Stats received:", data);
-    return data;
+    console.log("🔍 Fetching stats (with mock data support)...");
+    const stats = await StudentAPI.getStats();
+    console.log("✅ Stats received:", stats);
+    return stats;
   } catch (error) {
     console.error("Error fetching stats:", error);
     return null;
@@ -155,7 +141,7 @@ const runSmartAnalysis = async () => {
 const COLOR_THEMES = {
   // ========== PROFESSIONAL THEMES (Muted & Subtle) ==========
   corporate: {
-    name: "תאגידי",
+    name: "corporate",
     background: "from-slate-800 via-gray-800 to-zinc-800",
     blob1: "bg-slate-600",
     blob2: "bg-gray-600",
@@ -171,7 +157,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   professional: {
-    name: "מקצועי",
+    name: "professional",
     background: "from-blue-800 via-slate-800 to-gray-800",
     blob1: "bg-blue-600",
     blob2: "bg-slate-600",
@@ -187,7 +173,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   minimal: {
-    name: "מינימליסטי",
+    name: "minimal",
     background: "from-neutral-800 via-stone-800 to-gray-800",
     blob1: "bg-neutral-600",
     blob2: "bg-stone-600",
@@ -203,7 +189,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   earth: {
-    name: "אדמה",
+    name: "earth",
     background: "from-amber-900 via-stone-900 to-neutral-900",
     blob1: "bg-amber-700",
     blob2: "bg-stone-700",
@@ -219,7 +205,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   navy: {
-    name: "כחול כהה",
+    name: "darkBlue",
     background: "from-blue-900 via-slate-900 to-gray-900",
     blob1: "bg-blue-700",
     blob2: "bg-slate-700",
@@ -235,7 +221,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   sage: {
-    name: "מרווה",
+    name: "sage",
     background: "from-green-900 via-slate-900 to-gray-900",
     blob1: "bg-green-700",
     blob2: "bg-slate-700",
@@ -251,7 +237,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   rose: {
-    name: "ורד עדין",
+    name: "softRose",
     background: "from-rose-900 via-slate-900 to-gray-900",
     blob1: "bg-rose-700",
     blob2: "bg-slate-700",
@@ -267,7 +253,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   midnight: {
-    name: "חצות",
+    name: "midnight",
     background: "from-indigo-950 via-slate-950 to-gray-950",
     blob1: "bg-indigo-800",
     blob2: "bg-slate-800",
@@ -283,7 +269,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   ocean: {
-    name: "אוקיינוס",
+    name: "ocean",
     background: "from-cyan-950 via-teal-950 to-blue-950",
     blob1: "bg-cyan-800",
     blob2: "bg-teal-800",
@@ -299,7 +285,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   forest: {
-    name: "יער",
+    name: "forest",
     background: "from-green-950 via-emerald-950 to-teal-950",
     blob1: "bg-green-800",
     blob2: "bg-emerald-800",
@@ -315,7 +301,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   volcanic: {
-    name: "געשי",
+    name: "volcanic",
     background: "from-red-950 via-orange-950 to-amber-950",
     blob1: "bg-red-800",
     blob2: "bg-orange-800",
@@ -331,7 +317,7 @@ const COLOR_THEMES = {
     type: "dark",
   },
   space: {
-    name: "חלל",
+    name: "space",
     background: "from-black via-gray-950 to-violet-950",
     blob1: "bg-purple-900",
     blob2: "bg-violet-900",
@@ -349,7 +335,7 @@ const COLOR_THEMES = {
 
   // ========== LIGHT/WHITE THEMES (Clean & Simple) ==========
   clean: {
-    name: "נקי לבן",
+    name: "cleanWhite",
     background: "from-gray-50 via-white to-gray-100",
     blob1: "bg-blue-200",
     blob2: "bg-purple-200",
@@ -365,7 +351,7 @@ const COLOR_THEMES = {
     type: "light",
   },
   lightBlue: {
-    name: "כחול בהיר",
+    name: "lightBlue",
     background: "from-blue-50 via-cyan-50 to-teal-50",
     blob1: "bg-blue-300",
     blob2: "bg-cyan-300",
@@ -381,7 +367,7 @@ const COLOR_THEMES = {
     type: "light",
   },
   pastel: {
-    name: "פסטל",
+    name: "pastel",
     background: "from-pink-50 via-purple-50 to-blue-50",
     blob1: "bg-pink-200",
     blob2: "bg-purple-200",
@@ -397,7 +383,7 @@ const COLOR_THEMES = {
     type: "light",
   },
   mint: {
-    name: "מנטה",
+    name: "mint",
     background: "from-emerald-50 via-teal-50 to-cyan-50",
     blob1: "bg-emerald-200",
     blob2: "bg-teal-200",
@@ -413,7 +399,7 @@ const COLOR_THEMES = {
     type: "light",
   },
   peach: {
-    name: "אפרסק",
+    name: "peach",
     background: "from-orange-50 via-amber-50 to-yellow-50",
     blob1: "bg-orange-200",
     blob2: "bg-amber-200",
@@ -429,7 +415,7 @@ const COLOR_THEMES = {
     type: "light",
   },
   lavender: {
-    name: "לבנדר",
+    name: "lavender",
     background: "from-purple-50 via-violet-50 to-indigo-50",
     blob1: "bg-purple-200",
     blob2: "bg-violet-200",
@@ -445,7 +431,7 @@ const COLOR_THEMES = {
     type: "light",
   },
   sky: {
-    name: "שמיים",
+    name: "sky",
     background: "from-sky-50 via-blue-50 to-indigo-50",
     blob1: "bg-sky-200",
     blob2: "bg-blue-200",
@@ -461,7 +447,7 @@ const COLOR_THEMES = {
     type: "light",
   },
   coral: {
-    name: "אלמוג",
+    name: "coral",
     background: "from-red-50 via-pink-50 to-rose-50",
     blob1: "bg-red-200",
     blob2: "bg-pink-200",
@@ -477,7 +463,7 @@ const COLOR_THEMES = {
     type: "light",
   },
   sand: {
-    name: "חול",
+    name: "sand",
     background: "from-stone-50 via-amber-50 to-yellow-50",
     blob1: "bg-stone-200",
     blob2: "bg-amber-200",
@@ -499,8 +485,11 @@ const COLOR_THEMES = {
 // ============================================================================
 
 const FuturisticTeacherDashboard = () => {
+  // i18n translation hook
+  const { t } = useTranslation();
+
   // State Management
-  const [activeView, setActiveView] = useState("overview");
+  const [activeView, setActiveView] = useState("dashboard");
   const [colorTheme, setColorTheme] = useState("clean");
   // Set darkMode based on initial theme type
   const [darkMode, setDarkMode] = useState(
@@ -510,24 +499,14 @@ const FuturisticTeacherDashboard = () => {
   const [themeTabActive, setThemeTabActive] = useState("light"); // "light" or "dark"
   const [students, setStudents] = useState([]);
   const [analysisReport, setAnalysisReport] = useState(null);
+  const [aggregatedData, setAggregatedData] = useState(null);
   const [stats, setStats] = useState({
-    totalStudents: 156,
-    analyzedThisWeek: 23,
-    averageStrengths: 4.2,
-    upToDate: 133,
-    learningStyles: {
-      "למידה חזותית": 45,
-      "למידה שמיעתית": 38,
-      "למידה קינסתטית": 42,
-      "למידה חברתית": 31,
-    },
-    classSizes: {
-      י1: 28,
-      י2: 32,
-      י3: 30,
-      י4: 34,
-      י5: 32,
-    },
+    totalStudents: 0,
+    analyzedThisWeek: 0,
+    averageStrengths: 0,
+    upToDate: 0,
+    learningStyles: {},
+    classSizes: {},
   });
   const [selectedClass, setSelectedClass] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -583,15 +562,18 @@ const FuturisticTeacherDashboard = () => {
         ]);
         setStudents(studentsData);
 
-        // Always use the actual deduplicated student count
+        // Use the AnalysisAggregator to process all student data
+        const aggregated = AnalysisAggregator.aggregateStudentData(studentsData);
+        setAggregatedData(aggregated);
+
+        // Update stats with real aggregated data
         setStats({
-          totalStudents: studentsData.length, // Use actual deduplicated count
-          analyzedThisWeek:
-            studentsData.filter((s) => s.needsAnalysis).length || 0,
-          averageStrengths: parseFloat(statsData?.averageStrengths) || 0,
-          upToDate: studentsData.filter((s) => !s.needsAnalysis).length || 0,
-          learningStyles: statsData?.byLearningStyle || {},
-          classSizes: statsData?.byClass || {},
+          totalStudents: aggregated.totalStudents,
+          analyzedThisWeek: aggregated.recentAnalyses,
+          averageStrengths: Math.round(aggregated.averageGrade / 20) || 0, // Convert grade to 0-5 scale
+          upToDate: aggregated.analyzedStudents,
+          learningStyles: aggregated.learningStyles,
+          classSizes: aggregated.classSizes,
         });
 
         setAnalysisReport({
@@ -625,15 +607,18 @@ const FuturisticTeacherDashboard = () => {
 
         setStudents(studentsData);
 
-        // Always use the actual deduplicated student count, not backend stats
+        // Use the AnalysisAggregator to process all student data
+        const aggregated = AnalysisAggregator.aggregateStudentData(studentsData);
+        setAggregatedData(aggregated);
+
+        // Update stats with real aggregated data
         setStats({
-          totalStudents: studentsData.length, // Use actual deduplicated count
-          analyzedThisWeek:
-            studentsData.filter((s) => s.needsAnalysis).length || 0,
-          averageStrengths: parseFloat(statsData?.averageStrengths) || 0,
-          upToDate: studentsData.filter((s) => !s.needsAnalysis).length || 0,
-          learningStyles: statsData?.byLearningStyle || {},
-          classSizes: statsData?.byClass || {},
+          totalStudents: aggregated.totalStudents,
+          analyzedThisWeek: aggregated.recentAnalyses,
+          averageStrengths: Math.round(aggregated.averageGrade / 20) || 0, // Convert grade to 0-5 scale
+          upToDate: aggregated.analyzedStudents,
+          learningStyles: aggregated.learningStyles,
+          classSizes: aggregated.classSizes,
         });
 
         // Also set analysis report for compatibility
@@ -680,10 +665,10 @@ const FuturisticTeacherDashboard = () => {
         className="fixed top-0 left-0 right-0 z-[100] backdrop-blur-xl bg-white/10 border-b border-white/20 shadow-2xl"
         style={{ minHeight: "120px" }}
       >
-        <div className="w-full h-full px-8 lg:px-12 xl:px-16 2xl:px-20 py-10">
-          <div className="flex items-center justify-between gap-8">
+        <div className="w-full h-full px-6 lg:px-8 xl:px-10 2xl:px-12 py-6">
+          <div className="flex items-center justify-between gap-4">
             {/* Logo */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div className="relative">
                 <div
                   className={`absolute inset-0 bg-gradient-to-r ${theme.primary} rounded-2xl blur-lg opacity-75 animate-pulse`}
@@ -709,16 +694,16 @@ const FuturisticTeacherDashboard = () => {
             </div>
 
             {/* Center Navigation */}
-            <div className="flex items-center gap-2 backdrop-blur-md bg-white/5 rounded-2xl p-1.5 border border-white/10">
+            <div className="flex items-center gap-1.5 backdrop-blur-md bg-white/5 rounded-2xl p-1 border border-white/10">
               {[
-                { id: "overview", icon: Home, label: "סקירה" },
-                { id: "students", icon: Users, label: "תלמידים" },
-                { id: "analytics", icon: BarChart3, label: "לוח בקרה" },
+                { id: "dashboard", icon: Home, label: "לוח בקרה" },
+                { id: "analytics", icon: BarChart3, label: "ניתוח נתונים" },
+                { id: "seating", icon: Grid3x3, label: "סידור ישיבה" },
               ].map((item) => (
                 <button
                   key={item.id}
                   onClick={() => setActiveView(item.id)}
-                  className={`px-6 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2 ${
+                  className={`px-4 py-2 rounded-xl transition-all duration-300 flex items-center gap-1.5 ${
                     activeView === item.id
                       ? `bg-gradient-to-r ${theme.primary} text-white shadow-lg`
                       : darkMode
@@ -756,7 +741,7 @@ const FuturisticTeacherDashboard = () => {
                       ? "bg-white/10 hover:bg-white/20"
                       : "bg-white/30 hover:bg-white/50"
                   } transition-all duration-300`}
-                  title="בחר ערכת צבעים"
+                  title={t('dashboard.themes.selectTheme')}
                 >
                   <Palette
                     size={18}
@@ -780,7 +765,7 @@ const FuturisticTeacherDashboard = () => {
                         }`}
                       >
                         <Palette size={18} />
-                        ערכות צבעים
+                        {t('dashboard.themes.colorThemes')}
                       </h3>
                       {/* Tab buttons */}
                       <div className="flex gap-2 mb-3">
@@ -797,7 +782,7 @@ const FuturisticTeacherDashboard = () => {
                           }`}
                         >
                           <Sun size={16} />
-                          <span>ערכות בהירות</span>
+                          <span>{t('dashboard.themes.lightThemes')}</span>
                         </button>
                         <button
                           onClick={() => setThemeTabActive("dark")}
@@ -812,7 +797,7 @@ const FuturisticTeacherDashboard = () => {
                           }`}
                         >
                           <Moon size={16} />
-                          <span>ערכות כהות</span>
+                          <span>{t('dashboard.themes.darkThemes')}</span>
                         </button>
                       </div>
                     </div>
@@ -820,18 +805,18 @@ const FuturisticTeacherDashboard = () => {
                     <div className="p-4 pt-0">
                       <div className="grid grid-cols-2 gap-3 overflow-y-auto pr-2 max-h-[450px] custom-scrollbar">
                         {Object.entries(COLOR_THEMES)
-                          .filter(([_, t]) =>
+                          .filter(([_, themeObj]) =>
                             themeTabActive === "light"
-                              ? t.type === "light"
-                              : t.type === "dark",
+                              ? themeObj.type === "light"
+                              : themeObj.type === "dark",
                           )
-                          .map(([key, t]) => (
+                          .map(([key, themeObj]) => (
                             <button
                               key={key}
                               onClick={() => {
                                 setColorTheme(key);
                                 // Automatically set darkMode based on theme type
-                                setDarkMode(t.type !== "light");
+                                setDarkMode(themeObj.type !== "light");
                                 setShowThemeSelector(false);
                               }}
                               className={`p-3 rounded-xl border-2 transition-all ${
@@ -845,7 +830,7 @@ const FuturisticTeacherDashboard = () => {
                               }`}
                             >
                               <div
-                                className={`h-8 bg-gradient-to-r ${t.primary} rounded-lg mb-2`}
+                                className={`h-8 bg-gradient-to-r ${themeObj.primary} rounded-lg mb-2`}
                               ></div>
                               <div className="flex items-center justify-between">
                                 <span
@@ -853,9 +838,9 @@ const FuturisticTeacherDashboard = () => {
                                     darkMode ? "text-white" : "text-gray-900"
                                   }`}
                                 >
-                                  {t.name}
+                                  {t(`dashboard.themes.${themeObj.name}`)}
                                 </span>
-                                <span className="text-2xl">{t.icon}</span>
+                                <span className="text-2xl">{themeObj.icon}</span>
                               </div>
                             </button>
                           ))}
@@ -928,38 +913,53 @@ const FuturisticTeacherDashboard = () => {
       </nav>
 
       {/* Main Content - Proper spacing from extra tall navbar */}
-      <main className="px-8 pb-8 relative z-10" style={{ paddingTop: "150px" }}>
-        {activeView === "overview" && (
-          <FuturisticOverview
-            stats={stats}
-            analysisReport={analysisReport}
-            darkMode={darkMode}
-            theme={theme}
-            onSmartAnalysis={handleSmartAnalysis}
-          />
-        )}
+      <main className="px-5 pb-5 relative z-10" style={{ paddingTop: "130px" }}>
+        {activeView === "dashboard" && (
+          <>
+            {/* Overview Stats Section */}
+            <FuturisticOverview
+              stats={stats}
+              analysisReport={analysisReport}
+              darkMode={darkMode}
+              theme={theme}
+              onSmartAnalysis={handleSmartAnalysis}
+            />
 
-        {activeView === "students" && (
-          <FuturisticStudents
-            students={students}
-            classes={classes}
-            selectedClass={selectedClass}
-            setSelectedClass={setSelectedClass}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            darkMode={darkMode}
-            theme={theme}
-            onStudentClick={setSelectedStudent}
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-          />
+            {/* Students List Section */}
+            <div id="students-section" className="mt-4">
+              <FuturisticStudents
+                students={students}
+                classes={classes}
+                selectedClass={selectedClass}
+                setSelectedClass={setSelectedClass}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                darkMode={darkMode}
+                theme={theme}
+                onStudentClick={setSelectedStudent}
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+              />
+            </div>
+          </>
         )}
 
         {activeView === "analytics" && (
-          <AnalyticsDashboard
+          <EnhancedAnalyticsDashboard
             students={students}
             darkMode={darkMode}
-            theme={theme}
+            onRefresh={async () => {
+              setLoading(true);
+              await loadData();
+              setLoading(false);
+            }}
+          />
+        )}
+
+        {activeView === "seating" && (
+          <ClassroomSeatingAI
+            students={students}
+            darkMode={darkMode}
           />
         )}
       </main>
@@ -1004,7 +1004,7 @@ const FuturisticTeacherDashboard = () => {
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div>
                 <label
                   className={`block text-sm font-medium mb-2 ${
@@ -1014,6 +1014,8 @@ const FuturisticTeacherDashboard = () => {
                   Enter Admin Code
                 </label>
                 <input
+                  id="admin-password"
+                  name="adminPassword"
                   type="password"
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
@@ -1029,6 +1031,7 @@ const FuturisticTeacherDashboard = () => {
                         : "border-gray-300 bg-white text-gray-900"
                   } focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors`}
                   autoFocus
+                  autoComplete="current-password"
                 />
                 {passwordError && (
                   <p className="text-red-500 text-sm mt-2">
@@ -1094,6 +1097,9 @@ const FuturisticTeacherDashboard = () => {
           }}
         />
       )}
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
@@ -1109,6 +1115,9 @@ const FuturisticOverview = ({
   theme,
   onSmartAnalysis,
 }) => {
+  // i18n translation hook
+  const { t } = useTranslation();
+
   const [activeSection, setActiveSection] = useState('general');
 
   // Calculate additional statistics
@@ -1145,88 +1154,84 @@ const FuturisticOverview = ({
       description: 'תובנות מפורטות'
     },
     {
-      id: 'charts',
-      name: 'גרפים',
-      icon: PieChart,
-      description: 'ויזואליזציות'
+      id: 'students',
+      name: 'תלמידים',
+      icon: Users,
+      description: 'רשימת תלמידים'
     }
   ];
 
   const statCards = [
     {
-      title: "סה״כ תלמידים",
+      title: t('dashboard.stats.totalStudentsTitle'),
       value: stats?.totalStudents || 0,
       icon: Users,
       gradient: theme.stat1,
       trend: "+5%",
       trendUp: true,
-      description: "מספר התלמידים הכולל במערכת",
+      description: t('dashboard.stats.totalStudentsDescription'),
       details: [
         `${Object.keys(stats?.classSizes || {}).length} כיתות פעילות`,
         `ממוצע של ${Math.round((stats?.totalStudents || 0) / Object.keys(stats?.classSizes || {}).length)} תלמידים לכיתה`,
-        "כולל תלמידים מנותחים ולא מנותחים",
+        t('dashboard.stats.totalStudentsDetails'),
       ],
     },
     {
-      title: "ממתינים לניתוח",
+      title: t('dashboard.stats.waitingAnalysisTitle'),
       value: analysisReport?.summary?.needAnalysis || 0,
       icon: AlertCircle,
       gradient: theme.stat2,
       trend: "-12%",
       trendUp: false,
-      description: "תלמידים שטרם נותחו",
-      details: [
-        "תלמידים שממתינים לניתוח ISHEBOT",
-        "לחץ על AI חכם לניתוח אוטומטי",
-        "הניתוח מתבצע אוטומטית במילוי הטופס",
-      ],
+      description: t('dashboard.stats.waitingAnalysisDescription'),
+      details: t('dashboard.stats.waitingAnalysisDetails'),
     },
     {
-      title: "ממוצע חוזקות",
+      title: t('dashboard.stats.averageStrengthsTitle'),
       value: stats?.averageStrengths || 0,
       icon: Award,
       gradient: theme.stat3,
       trend: "+8%",
       trendUp: true,
-      description: "ממוצע החוזקות לתלמיד",
+      description: t('dashboard.stats.averageStrengthsDescription'),
       details: [
-        "מבוסס על ניתוח AI",
+        t('dashboard.stats.averageStrengthsDetails.0'),
         `מתוך ${stats?.totalStudents || 0} תלמידים`,
-        "כולל חוזקות אקדמיות ואישיות",
+        t('dashboard.stats.averageStrengthsDetails.1'),
       ],
     },
     {
-      title: "מעודכנים",
+      title: t('dashboard.stats.upToDateTitle'),
       value: analysisReport?.summary?.upToDate || 0,
       icon: CheckCircle,
       gradient: theme.stat4,
       trend: "+15%",
       trendUp: true,
-      description: "תלמידים עם ניתוח עדכני",
+      description: t('dashboard.stats.upToDateDescription'),
       details: [
-        "ניתוח הושלם בחודש האחרון",
+        t('dashboard.stats.upToDateDetails.0'),
         `${Math.round(((analysisReport?.summary?.upToDate || 0) / (stats?.totalStudents || 1)) * 100)}% מסך התלמידים`,
-        "מוכנים להמלצות למידה",
+        t('dashboard.stats.upToDateDetails.1'),
       ],
     },
   ];
 
   return (
-    <div className="flex gap-6">
+    <div className="flex gap-3">
       {/* Sidebar Navigation */}
       <div className={`w-72 flex-shrink-0 sticky top-0 h-screen`}>
         <div className={`backdrop-blur-xl ${
           darkMode ? 'bg-gray-900/95' : 'bg-white/95'
-        } rounded-3xl p-6 border ${
+        } rounded-3xl p-4 border ${
           darkMode ? 'border-gray-700' : 'border-white/20'
         } shadow-2xl border-r-4 ${
           darkMode ? 'border-r-purple-500/50' : 'border-r-blue-500/50'
         }`}>
           {/* Sidebar Header */}
-          <div className={`mb-6 pb-6 border-b-2 ${
+          <div className={`mb-3 pb-3 border-b-2 ${
             darkMode ? 'border-purple-500/30 bg-gradient-to-r from-purple-900/20 to-pink-900/20' : 'border-blue-500/30 bg-gradient-to-r from-blue-50/50 to-cyan-50/50'
-          } -m-6 p-6 rounded-t-3xl`}>
-            <div className="flex items-center gap-3">
+          } -m-4 p-4 rounded-t-3xl`}>
+            <div className="flex items-center gap-2">
               <div className={`w-12 h-12 bg-gradient-to-br ${theme.primary} rounded-xl flex items-center justify-center shadow-lg ring-2 ${
                 darkMode ? 'ring-purple-500/50' : 'ring-blue-500/50'
               }`}>
@@ -1244,7 +1249,7 @@ const FuturisticOverview = ({
           </div>
 
           {/* Section Buttons */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             {sections.map((section) => {
               const SectionIcon = section.icon;
               const isActive = activeSection === section.id;
@@ -1252,8 +1257,17 @@ const FuturisticOverview = ({
               return (
                 <button
                   key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                  onClick={() => {
+                    if (section.id === 'students') {
+                      // Scroll to students section
+                      const studentsSection = document.getElementById('students-section');
+                      if (studentsSection) {
+                        studentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }
+                    setActiveSection(section.id);
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
                     isActive
                       ? `bg-gradient-to-r ${theme.primary} text-white shadow-lg ring-2 ${
                           darkMode ? 'ring-purple-400/50' : 'ring-blue-400/50'
@@ -1284,10 +1298,10 @@ const FuturisticOverview = ({
           </div>
 
           {/* Footer */}
-          <div className={`mt-6 pt-6 border-t-2 ${
+          <div className={`mt-1 pt-1 border-t-2 ${
             darkMode ? 'border-purple-500/30' : 'border-blue-500/30'
           }`}>
-            <div className={`p-4 rounded-xl ${
+            <div className={`p-3 rounded-xl ${
               darkMode ? 'bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-500/30' : 'bg-gradient-to-r from-blue-50/50 to-cyan-50/50 border border-blue-200'
             }`}>
               <p className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -1302,11 +1316,11 @@ const FuturisticOverview = ({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 space-y-8">
+      <div className="flex-1 space-y-2">
         {/* General Statistics Section */}
         {activeSection === 'general' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
               {statCards.map((card, index) => (
                 <StatCard key={index} {...card} darkMode={darkMode} />
               ))}
@@ -1316,48 +1330,48 @@ const FuturisticOverview = ({
 
         {/* Performance Metrics Section */}
         {activeSection === 'performance' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <CircularProgress
                 value={completionRate}
-                title="אחוז השלמה"
+                title={t('dashboard.stats.completionPercentTitle')}
                 icon={Percent}
                 color="blue"
                 darkMode={darkMode}
-                description="אחוז התלמידים עם ניתוח מלא"
+                description={t('dashboard.stats.completionPercentDescription')}
                 details={[
-                  `${analysisReport?.summary?.upToDate || 0} תלמידים מנותחים`,
-                  `${analysisReport?.summary?.needAnalysis || 0} דורשים ניתוח`,
+                  t('dashboard.stats.studentsAnalyzedCount', { count: analysisReport?.summary?.upToDate || 0 }),
+                  t('dashboard.stats.studentsNeedAnalysisCount', { count: analysisReport?.summary?.needAnalysis || 0 }),
                 ]}
               />
               <CircularProgress
                 value={engagementScore}
-                title="מעורבות"
+                title={t('dashboard.stats.engagementTitle')}
                 icon={Activity}
                 color="green"
                 darkMode={darkMode}
-                description="רמת המעורבות הכללית"
-                details={["מבוסס על פעילות שבועית", "כולל השתתפות והתקדמות"]}
+                description={t('dashboard.stats.engagementDescription')}
+                details={t('dashboard.stats.engagementDetails')}
               />
               <CircularProgress
                 value={improvementRate}
-                title="שיפור כללי"
+                title={t('dashboard.stats.overallImprovementTitle')}
                 icon={TrendingUp}
                 color="purple"
                 darkMode={darkMode}
-                description="אחוז השיפור הממוצע"
-                details={["השוואה לחודש קודם", "מבוסס על ניתוחי AI"]}
+                description={t('dashboard.stats.overallImprovementDescription')}
+                details={t('dashboard.stats.overallImprovementDetails')}
               />
               <CircularProgress
                 value={Math.round((stats?.averageStrengths / 5) * 100) || 0}
-                title="ציון חוזקות"
+                title={t('dashboard.stats.strengthsScoreTitle')}
                 icon={Star}
                 color="yellow"
                 darkMode={darkMode}
-                description="ממוצע החוזקות מתוך 5"
+                description={t('dashboard.stats.strengthsScoreDescription')}
                 details={[
-                  `${stats?.averageStrengths?.toFixed(1) || 0} מתוך 5`,
-                  "כולל חוזקות אקדמיות ואישיות",
+                  t('dashboard.stats.outOfFive', { value: stats?.averageStrengths?.toFixed(1) || 0 }),
+                  t('dashboard.stats.strengthsScoreDetails'),
                 ]}
               />
             </div>
@@ -1366,35 +1380,35 @@ const FuturisticOverview = ({
 
         {/* Analysis Section */}
         {activeSection === 'analysis' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <MetricCard
-                title="תלמידים מצטיינים"
+                title={t('dashboard.stats.topPerformersTitle')}
                 value={Math.round((stats?.totalStudents || 0) * 0.3)}
-                subtitle="30% מהכיתה"
+                subtitle={t('dashboard.stats.percentOfClass', { percent: 30 })}
                 icon={UserCheck}
                 trend="+8"
-                trendLabel="השבוע"
+                trendLabel={t('dashboard.stats.topPerformersTrendLabel')}
                 color="green"
                 darkMode={darkMode}
               />
               <MetricCard
-                title="דורשים תמיכה"
+                title={t('dashboard.stats.needsSupportTitle')}
                 value={analysisNeeded}
-                subtitle="זקוקים לניתוח"
+                subtitle={t('dashboard.stats.needsSupportSubtitle')}
                 icon={UserX}
                 trend="-3"
-                trendLabel="השבוע"
+                trendLabel={t('dashboard.stats.needsSupportTrendLabel')}
                 color="red"
                 darkMode={darkMode}
               />
               <MetricCard
-                title="זמן ממוצע לניתוח"
+                title={t('dashboard.stats.avgAnalysisTimeTitle')}
                 value="2.5"
-                subtitle="ימים"
+                subtitle={t('dashboard.stats.avgAnalysisTimeSubtitle')}
                 icon={Timer}
                 trend="0"
-                trendLabel="ללא שינוי"
+                trendLabel={t('dashboard.stats.avgAnalysisTimeTrendLabel')}
                 color="blue"
                 darkMode={darkMode}
               />
@@ -1402,38 +1416,6 @@ const FuturisticOverview = ({
           </div>
         )}
 
-        {/* Charts Section */}
-        {activeSection === 'charts' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Learning Styles */}
-              <ChartCard
-                title="סגנונות למידה"
-                subtitle="התפלגות לפי סוג"
-                icon={PieChart}
-                gradient={theme.primary}
-                darkMode={darkMode}
-              >
-                <LearningStylesChart stats={stats} darkMode={darkMode} />
-              </ChartCard>
-
-              {/* Class Distribution */}
-              <ChartCard
-                title="התפלגות כיתות"
-                subtitle="תלמידים לפי כיתה"
-                icon={BarChart3}
-                gradient={theme.secondary}
-                darkMode={darkMode}
-              >
-                <ClassDistributionChart
-                  stats={stats}
-                  theme={theme}
-                  darkMode={darkMode}
-                />
-              </ChartCard>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -1468,10 +1450,10 @@ const StatCard = ({
       <div
         className={`relative backdrop-blur-xl ${
           darkMode ? "bg-white/10" : "bg-white/40"
-        } rounded-3xl p-6 border border-white/20 shadow-2xl hover:scale-105 transition-transform duration-300`}
+        } rounded-3xl p-4 border border-white/20 shadow-2xl hover:scale-105 transition-transform duration-300`}
         style={{ minHeight: "180px" }}
       >
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-2">
           <div
             className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center shadow-lg`}
           >
@@ -1493,16 +1475,16 @@ const StatCard = ({
         </div>
         <div>
           <p
-            className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-600"} mb-1`}
+            className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-600"} mb-0.5`}
           >
             {title}
           </p>
           <p
-            className={`text-4xl font-bold ${darkMode ? "text-white" : "text-gray-900"} mb-2`}
+            className={`text-4xl font-bold ${darkMode ? "text-white" : "text-gray-900"} mb-1`}
           >
             {value}
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
               <div
                 className={`h-full bg-gradient-to-r ${gradient} rounded-full`}
@@ -1554,12 +1536,19 @@ const StatCard = ({
                   <ul
                     className={`text-xs ${darkMode ? "text-gray-300" : "text-gray-600"} space-y-1`}
                   >
-                    {details.map((detail, idx) => (
-                      <li key={idx} className="flex items-center gap-1">
+                    {Array.isArray(details) ? (
+                      details.map((detail, idx) => (
+                        <li key={idx} className="flex items-center gap-1">
+                          <span className="text-blue-500">•</span>
+                          {detail}
+                        </li>
+                      ))
+                    ) : (
+                      <li className="flex items-center gap-1">
                         <span className="text-blue-500">•</span>
-                        {detail}
+                        {details}
                       </li>
-                    ))}
+                    )}
                   </ul>
                 </div>
               )}
@@ -1637,6 +1626,7 @@ const ChartCard = ({
 // ============================================================================
 
 const LearningStylesChart = ({ stats, darkMode }) => {
+  const { t } = useTranslation();
   const colors = [
     "from-blue-500 to-cyan-500",
     "from-purple-500 to-pink-500",
@@ -1644,40 +1634,20 @@ const LearningStylesChart = ({ stats, darkMode }) => {
     "from-orange-500 to-red-500",
   ];
 
-  // Translation dictionary for learning styles
-  const hebrewTranslations = {
-    'cognitive': 'קוגניטיבי',
-    'emotional': 'רגשי',
-    'behavioral': 'התנהגותי',
-    'social': 'חברתי',
-    'visual': 'ויזואלי',
-    'auditory': 'שמיעתי',
-    'kinesthetic': 'קינסתטי',
-    'reading': 'קריאה',
-    'writing': 'כתיבה'
+  // Translation mapping for learning style keys
+  const learningStyleTranslations = {
+    visual: 'dashboard.charts.visualLearning',
+    auditory: 'dashboard.charts.auditoryLearning',
+    kinesthetic: 'dashboard.charts.kinestheticLearning',
+    social: 'dashboard.charts.socialLearning',
   };
 
-  // Function to translate style to Hebrew
+  // Function to translate style
   const translateStyle = (style) => {
-    const lowerStyle = (style || '').toLowerCase().trim();
-
-    // Check if the style is already in Hebrew
-    if (/[\u0590-\u05FF]/.test(style)) {
-      return style;
+    // Check if we have a translation key for this style
+    if (learningStyleTranslations[style]) {
+      return t(learningStyleTranslations[style]);
     }
-
-    // Try to translate from dictionary
-    if (hebrewTranslations[lowerStyle]) {
-      return hebrewTranslations[lowerStyle];
-    }
-
-    // If contains comma, translate each part
-    if (style.includes(',')) {
-      return style.split(',')
-        .map(s => hebrewTranslations[s.trim().toLowerCase()] || s.trim())
-        .join(', ');
-    }
-
     // Return original if no translation found
     return style;
   };
@@ -1782,6 +1752,9 @@ const FuturisticStudents = ({
   viewMode,
   setViewMode,
 }) => {
+  // i18n translation hook
+  const { t } = useTranslation();
+
   // Separate students into analyzed and unanalyzed
   const analyzedStudents = students.filter((s) => !s.needsAnalysis);
   const unanalyzedStudents = students.filter((s) => s.needsAnalysis);
@@ -1834,14 +1807,14 @@ const FuturisticStudents = ({
   const groupedUnanalyzed = groupByClassroom(filteredUnanalyzed);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Search Bar */}
       <div
         className={`backdrop-blur-xl ${
           darkMode ? "bg-white/10" : "bg-white/40"
-        } rounded-3xl p-6 border border-white/20 shadow-2xl`}
+        } rounded-3xl p-4 border border-white/20 shadow-2xl`}
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <div className="relative flex-1">
             <Search
               className={`absolute right-4 top-1/2 transform -translate-y-1/2 ${
@@ -1850,22 +1823,25 @@ const FuturisticStudents = ({
               size={20}
             />
             <input
+              id="student-search"
+              name="search"
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="חפש לפי שם או קוד תלמיד..."
-              className={`w-full pr-12 pl-4 py-3 rounded-2xl backdrop-blur-md ${
+              placeholder={t('dashboard.search.placeholder')}
+              className={`w-full pr-12 pl-4 py-2 rounded-2xl backdrop-blur-md ${
                 darkMode
                   ? "bg-white/10 text-white placeholder-gray-400 border-white/20"
                   : "bg-white/50 text-gray-900 placeholder-gray-500 border-gray-200"
               } border focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}
+              autoComplete="off"
             />
           </div>
 
           <select
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
-            className={`px-6 py-3 rounded-2xl backdrop-blur-md ${
+            className={`px-4 py-2 rounded-2xl backdrop-blur-md ${
               darkMode
                 ? "bg-white/10 text-white border-white/20"
                 : "bg-white/50 text-gray-900 border-gray-200"
@@ -1880,10 +1856,10 @@ const FuturisticStudents = ({
           </select>
 
           {/* View Mode Toggle */}
-          <div className="flex gap-2 bg-white/10 backdrop-blur-md rounded-2xl p-1 border border-white/20">
+          <div className="flex gap-1 bg-white/10 backdrop-blur-md rounded-2xl p-0.5 border border-white/20">
             <button
               onClick={() => setViewMode("list")}
-              className={`px-6 py-2 rounded-xl transition-all font-medium ${
+              className={`px-4 py-1.5 rounded-xl transition-all font-medium ${
                 viewMode === "list"
                   ? darkMode
                     ? "bg-white/20 text-white shadow-lg"
@@ -1893,14 +1869,14 @@ const FuturisticStudents = ({
                     : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Users size={18} />
                 <span>רשימה</span>
               </div>
             </button>
             <button
               onClick={() => setViewMode("grouped")}
-              className={`px-6 py-2 rounded-xl transition-all font-medium ${
+              className={`px-4 py-1.5 rounded-xl transition-all font-medium ${
                 viewMode === "grouped"
                   ? darkMode
                     ? "bg-white/20 text-white shadow-lg"
@@ -1910,7 +1886,7 @@ const FuturisticStudents = ({
                     : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Grid3x3 size={18} />
                 <span>לפי כיתות</span>
               </div>
@@ -1919,8 +1895,8 @@ const FuturisticStudents = ({
         </div>
 
         {/* Stats Bar */}
-        <div className="flex items-center gap-4 mt-4">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
             <span
               className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-700"}`}
@@ -1947,79 +1923,9 @@ const FuturisticStudents = ({
         </div>
       </div>
 
-      {/* Unanalyzed Students Section */}
-      {filteredUnanalyzed.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div
-                className={`px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold shadow-lg`}
-              >
-                <div className="flex items-center gap-2">
-                  <AlertCircle size={20} />
-                  <span>תלמידים הדורשים ניתוח</span>
-                  <span className="px-2 py-0.5 bg-white/20 rounded-full text-sm">
-                    {filteredUnanalyzed.length}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div
-              className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"} flex items-center gap-2`}
-            >
-              <Sparkles size={16} />
-              <span>לחץ על כרטיס לצפייה מלאה</span>
-            </div>
-          </div>
-
-          {viewMode === "list" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredUnanalyzed.map((student, index) => (
-                <StudentCard
-                  key={`unanalyzed-${student.studentCode}-${index}`}
-                  student={student}
-                  darkMode={darkMode}
-                  theme={theme}
-                  onClick={() => onStudentClick(student)}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {Object.entries(groupedUnanalyzed).map(([classId, classStudents]) => (
-                <div key={`unanalyzed-${classId}`} className={`backdrop-blur-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} rounded-3xl p-6 border border-white/20`}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`px-4 py-2 rounded-xl ${darkMode ? 'bg-white/10' : 'bg-white/50'} border border-white/20`}>
-                      <div className="flex items-center gap-2">
-                        <BookOpen size={18} className={darkMode ? 'text-white' : 'text-gray-900'} />
-                        <span className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{classId}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${darkMode ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
-                          {classStudents.length}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {classStudents.map((student, index) => (
-                      <StudentCard
-                        key={`unanalyzed-${classId}-${student.studentCode}-${index}`}
-                        student={student}
-                        darkMode={darkMode}
-                        theme={theme}
-                        onClick={() => onStudentClick(student)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Analyzed Students Section */}
+      {/* Analyzed Students Section - Now shown FIRST */}
       {filteredAnalyzed.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div
@@ -2043,7 +1949,7 @@ const FuturisticStudents = ({
           </div>
 
           {viewMode === "list" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
               {filteredAnalyzed.map((student, index) => (
                 <StudentCard
                   key={`analyzed-${student.studentCode}-${index}`}
@@ -2055,12 +1961,12 @@ const FuturisticStudents = ({
               ))}
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-2">
               {Object.entries(groupedAnalyzed).map(([classId, classStudents]) => (
-                <div key={`analyzed-${classId}`} className={`backdrop-blur-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} rounded-3xl p-6 border border-white/20`}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`px-4 py-2 rounded-xl ${darkMode ? 'bg-white/10' : 'bg-white/50'} border border-white/20`}>
-                      <div className="flex items-center gap-2">
+                <div key={`analyzed-${classId}`} className={`backdrop-blur-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} rounded-3xl p-4 border border-white/20`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`px-3 py-1.5 rounded-xl ${darkMode ? 'bg-white/10' : 'bg-white/50'} border border-white/20`}>
+                      <div className="flex items-center gap-1.5">
                         <BookOpen size={18} className={darkMode ? 'text-white' : 'text-gray-900'} />
                         <span className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{classId}</span>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${darkMode ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
@@ -2069,10 +1975,80 @@ const FuturisticStudents = ({
                       </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
                     {classStudents.map((student, index) => (
                       <StudentCard
                         key={`analyzed-${classId}-${student.studentCode}-${index}`}
+                        student={student}
+                        darkMode={darkMode}
+                        theme={theme}
+                        onClick={() => onStudentClick(student)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Unanalyzed Students Section - Now shown SECOND */}
+      {filteredUnanalyzed.length > 0 && (
+        <div className="space-y-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div
+                className={`px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold shadow-lg`}
+              >
+                <div className="flex items-center gap-2">
+                  <AlertCircle size={20} />
+                  <span>תלמידים הדורשים ניתוח</span>
+                  <span className="px-2 py-0.5 bg-white/20 rounded-full text-sm">
+                    {filteredUnanalyzed.length}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div
+              className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"} flex items-center gap-2`}
+            >
+              <Sparkles size={16} />
+              <span>לחץ על כרטיס לצפייה מלאה</span>
+            </div>
+          </div>
+
+          {viewMode === "list" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+              {filteredUnanalyzed.map((student, index) => (
+                <StudentCard
+                  key={`unanalyzed-${student.studentCode}-${index}`}
+                  student={student}
+                  darkMode={darkMode}
+                  theme={theme}
+                  onClick={() => onStudentClick(student)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {Object.entries(groupedUnanalyzed).map(([classId, classStudents]) => (
+                <div key={`unanalyzed-${classId}`} className={`backdrop-blur-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} rounded-3xl p-4 border border-white/20`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`px-3 py-1.5 rounded-xl ${darkMode ? 'bg-white/10' : 'bg-white/50'} border border-white/20`}>
+                      <div className="flex items-center gap-1.5">
+                        <BookOpen size={18} className={darkMode ? 'text-white' : 'text-gray-900'} />
+                        <span className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{classId}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${darkMode ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+                          {classStudents.length}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                    {classStudents.map((student, index) => (
+                      <StudentCard
+                        key={`unanalyzed-${classId}-${student.studentCode}-${index}`}
                         student={student}
                         darkMode={darkMode}
                         theme={theme}
@@ -2101,12 +2077,12 @@ const FuturisticStudents = ({
           <p
             className={`text-lg font-medium ${darkMode ? "text-gray-300" : "text-gray-700"}`}
           >
-            לא נמצאו תלמידים
+            {t('students.noStudents')}
           </p>
           <p
             className={`text-sm mt-2 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
           >
-            נסה לשנות את מסנני החיפוש
+            {t('students.tryChangingFilters', 'נסה לשנות את מסנני החיפוש')}
           </p>
         </div>
       )}
@@ -2119,6 +2095,9 @@ const FuturisticStudents = ({
 // ============================================================================
 
 const StudentCard = ({ student, darkMode, theme, onClick }) => {
+  // i18n translation hook
+  const { t } = useTranslation();
+
   const avatarGradients = [theme.stat1, theme.stat2, theme.stat3, theme.stat4];
   const gradient = avatarGradients[student.avatar - 1] || theme.stat1;
 
@@ -2133,11 +2112,11 @@ const StudentCard = ({ student, darkMode, theme, onClick }) => {
 
   // Get status text for tooltip
   const getStatusText = () => {
-    if (student.needsAnalysis) return "ממתין לניתוח";
-    if (student.strengthsCount >= 5) return "ביצועים מצוינים";
-    if (student.strengthsCount >= 3) return "ביצועים טובים";
-    if (student.challengesCount >= 5) return "דורש תשומת לב";
-    return "ביצועים סטנדרטיים";
+    if (student.needsAnalysis) return t('dashboard.status.waitingAnalysis');
+    if (student.strengthsCount >= 5) return t('dashboard.status.excellentPerformance');
+    if (student.strengthsCount >= 3) return t('dashboard.status.goodPerformance');
+    if (student.challengesCount >= 5) return t('dashboard.status.needsAttention');
+    return t('dashboard.status.standardPerformance');
   };
 
   // Use graduation cap emoji for all students (university student with cap)
@@ -2152,8 +2131,8 @@ const StudentCard = ({ student, darkMode, theme, onClick }) => {
       <div
         className={`relative backdrop-blur-xl ${
           darkMode ? "bg-white/10" : "bg-white/40"
-        } rounded-2xl p-5 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]`}
-        style={{ minHeight: "200px" }}
+        } rounded-2xl p-2 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]`}
+        style={{ minHeight: "160px" }}
       >
         {/* Status indicator */}
         {student.needsAnalysis && (
@@ -2163,16 +2142,16 @@ const StudentCard = ({ student, darkMode, theme, onClick }) => {
         {/* Card content with student icon */}
         <div className="flex flex-col h-full">
           {/* Top section with avatar and basic info */}
-          <div className="flex items-start justify-between mb-4">
+          <div className="flex items-start justify-between mb-2">
             {/* Student Avatar with gradient background */}
             <div className="relative">
               <div
                 className={`absolute inset-0 bg-gradient-to-br ${gradient} rounded-xl blur-md opacity-50`}
               ></div>
               <div
-                className={`relative w-14 h-14 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center shadow-lg`}
+                className={`relative w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center shadow-lg`}
               >
-                <span className="text-2xl">{studentAvatar}</span>
+                <span className="text-xl">{studentAvatar}</span>
               </div>
               {/* Status badge */}
               <div
@@ -2194,14 +2173,14 @@ const StudentCard = ({ student, darkMode, theme, onClick }) => {
           <div className="flex-1">
             {/* Name display with better styling */}
             <h3
-              className={`text-lg font-bold mb-2 ${darkMode ? "text-white" : "text-gray-900"}`}
+              className={`text-base font-bold mb-1 ${darkMode ? "text-white" : "text-gray-900"}`}
             >
               {student.name || `תלמיד ${student.studentCode}`}
             </h3>
 
             {/* Metadata row */}
             <div
-              className={`flex items-center gap-2 text-sm mb-3 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+              className={`flex items-center gap-1.5 text-sm mb-2 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
               <div className="flex items-center gap-1">
                 <User size={13} />
@@ -2222,9 +2201,9 @@ const StudentCard = ({ student, darkMode, theme, onClick }) => {
             {/* Performance indicators */}
             {student.strengthsCount > 0 && (
               <div
-                className={`flex items-center gap-4 pt-3 border-t ${darkMode ? "border-white/10" : "border-gray-200"}`}
+                className={`flex items-center gap-2 pt-2 border-t ${darkMode ? "border-white/10" : "border-gray-200"}`}
               >
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
                     <Award size={14} className="text-green-500" />
                   </div>
@@ -2238,7 +2217,7 @@ const StudentCard = ({ student, darkMode, theme, onClick }) => {
                   </div>
                 </div>
                 {student.challengesCount > 0 && (
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
                       <Target size={14} className="text-orange-500" />
                     </div>
@@ -2291,7 +2270,7 @@ const CircularProgress = ({
     <div
       className={`relative backdrop-blur-xl ${
         darkMode ? "bg-white/10" : "bg-white/40"
-      } rounded-2xl p-6 border border-white/20 shadow-xl hover:scale-105 transition-transform cursor-pointer z-10 hover:z-[100]`}
+      } rounded-2xl p-4 border border-white/20 shadow-xl hover:scale-105 transition-transform cursor-pointer z-10 hover:z-[100]`}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
@@ -2334,7 +2313,7 @@ const CircularProgress = ({
           </div>
         </div>
         <p
-          className={`mt-4 text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-700"}`}
+          className={`mt-2 text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-700"}`}
         >
           {title}
         </p>
@@ -2343,7 +2322,7 @@ const CircularProgress = ({
       {/* Tooltip */}
       {showTooltip && (description || details) && (
         <div
-          className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-2 p-3 rounded-xl backdrop-blur-xl ${
+          className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-1 p-2 rounded-xl backdrop-blur-xl ${
             darkMode ? "bg-gray-900/95" : "bg-white/95"
           } border border-white/20 shadow-2xl z-50 min-w-[200px] animate-fadeIn`}
         >
@@ -2399,9 +2378,9 @@ const MetricCard = ({
     <div
       className={`relative backdrop-blur-xl ${
         darkMode ? "bg-white/10" : "bg-white/40"
-      } rounded-2xl p-6 border border-white/20 shadow-xl hover:scale-105 transition-transform`}
+      } rounded-2xl p-4 border border-white/20 shadow-xl hover:scale-105 transition-transform`}
     >
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-2">
         <div
           className={`w-12 h-12 bg-gradient-to-br ${colorMap[color]} rounded-xl flex items-center justify-center`}
         >
@@ -2422,17 +2401,17 @@ const MetricCard = ({
         {value}
       </h3>
       <p
-        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"} mt-1`}
+        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"} mt-0.5`}
       >
         {subtitle}
       </p>
       <p
-        className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-500"} mt-2`}
+        className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-500"} mt-1`}
       >
         {trendLabel}
       </p>
       <h4
-        className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-700"} mt-3`}
+        className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-700"} mt-2`}
       >
         {title}
       </h4>

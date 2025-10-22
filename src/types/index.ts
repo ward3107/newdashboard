@@ -325,16 +325,4 @@ export interface AppConfig {
   };
 }
 
-export default {
-  Student,
-  StudentDetail,
-  Stats,
-  Filters,
-  FilterOptions,
-  ChartData,
-  APIResponse,
-  StatsCardsProps,
-  StudentCardProps,
-  SearchAndFiltersProps,
-  ChartsSectionProps
-};
+// Types are already exported individually as type declarations above
