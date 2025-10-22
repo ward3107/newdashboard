@@ -86,11 +86,16 @@ workbox-*.js
 *.xlsx
 *.xls
 
-# Business & Proprietary
+# Business & Proprietary (but allow marketing templates)
 *pricing*
 *contract*
 *sales*
 *client-list*
+
+# Exception: Allow marketing templates/outlines (not actual customer data)
+!marketing/**/SALES_PRESENTATION_OUTLINE.md
+!marketing/**/OUTREACH_EMAIL_TEMPLATES.md
+!marketing/**/LANDING_PAGE_CONTENT.md
 
 # API Keys & Tokens (NEVER COMMIT)
 *api-key*
