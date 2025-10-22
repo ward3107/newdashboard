@@ -55,7 +55,10 @@
       "WebFetch(domain:script.google.com)",
       "WebFetch(domain:script.googleusercontent.com)",
       "Bash(git push:*)",
-      "Bash(gh repo edit:*)"
+      "Bash(gh repo edit:*)",
+      "Bash(git ls-remote:*)",
+      "Read(//c/**)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
