@@ -1,0 +1,42 @@
+# Google Apps Scripts (not part of main application)
+google-apps-scripts/
+*.js
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Test outputs
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+
+# Config files
+*.config.js
+*.config.ts
+vite.config.*.ts
+vitest.config.d.ts
+
+# Utility scripts
+analyze-bundle.js
+TEST_POPULATE_DATA.js
+
+# Marketing and documentation
+marketing/
+docs/
+ishebot-landing/
+
+# Reports
+reports/
+
+# Public assets
+public/
