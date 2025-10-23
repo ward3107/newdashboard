@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Desk assignments data
@@ -91,8 +91,8 @@ const Desk = ({ assignment, isEmpty, onStudentClick }) => {
         background: getCompatibilityColor(score),
       }}
       whileHover={{
-        scale: 1.15,
-        boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+        scale: 1.05,
+        boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
         zIndex: 100,
       }}
       transition={{ duration: 0.3 }}
@@ -131,6 +131,20 @@ const Desk = ({ assignment, isEmpty, onStudentClick }) => {
 // Main ClassroomSeating component
 const ClassroomSeating = () => {
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const containerRef = useRef(null);
+
+  // Scroll to center when component mounts
+  useEffect(() => {
+    if (containerRef.current) {
+      setTimeout(() => {
+        containerRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center'
+        });
+      }, 100);
+    }
+  }, []);
 
   const handleStudentClick = (studentId) => {
     setSelectedStudent(studentId);
@@ -146,12 +160,12 @@ const ClassroomSeating = () => {
   const deskPositions = [...deskAssignments, ...Array(16 - deskAssignments.length).fill(null)];
 
   return (
-    <div className="classroom-seating-container">
+    <div ref={containerRef} className="classroom-seating-container">
       {/* Header Card */}
       <div className="classroom-header">
-        <div className="flex items-center gap-3">
-          <span className="text-3xl">🪑</span>
-          <h2 className="text-2xl font-bold text-gray-800">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">🪑</span>
+          <h2 className="text-xl font-bold text-gray-800">
             מפת ישיבה בכיתה - 15 שולחנות
           </h2>
         </div>
@@ -241,61 +255,62 @@ const ClassroomSeating = () => {
       <style jsx>{`
         .classroom-seating-container {
           width: 100%;
-          max-width: 1400px;
+          max-width: 900px;
           margin: 0 auto;
-          padding: 20px;
+          padding: 10px;
         }
 
         .classroom-header {
           background: white;
-          border-radius: 20px;
-          padding: 20px 30px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-          border-bottom: 3px solid #667eea;
-          margin-bottom: 20px;
+          border-radius: 8px;
+          padding: 8px 15px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          border-bottom: 2px solid #667eea;
+          margin-bottom: 10px;
         }
 
         .classroom-room {
           background: linear-gradient(to bottom, #f5f3f0, #e8e6e3);
-          border: 4px solid #8b4513;
-          border-radius: 15px;
-          padding: 20px;
-          min-height: 700px;
-          max-width: 1200px;
+          border: 2px solid #8b4513;
+          border-radius: 8px;
+          padding: 10px;
+          min-height: 400px;
+          max-width: 800px;
           margin: 0 auto;
           position: relative;
         }
 
         .blackboard {
           position: absolute;
-          top: 10px;
+          top: 5px;
           left: 50%;
           transform: translateX(-50%);
-          width: 60%;
-          height: 50px;
+          width: 45%;
+          height: 35px;
           background: linear-gradient(to bottom, #2c3e50, #1a252f);
-          border: 4px solid #8b4513;
+          border: 2px solid #8b4513;
           border-radius: 5px;
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 10;
+          font-size: 0.95em;
         }
 
         .desk-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 15px;
-          margin-top: 80px;
-          padding: 15px;
+          gap: 8px;
+          margin-top: 50px;
+          padding: 5px;
         }
 
         .desk {
           background: white;
-          border: 3px solid #34495e;
-          border-radius: 12px;
-          padding: 12px;
-          min-height: 110px;
+          border: 2px solid #34495e;
+          border-radius: 8px;
+          padding: 6px;
+          min-height: 80px;
           cursor: pointer;
           position: relative;
           transition: all 0.3s ease;
@@ -308,13 +323,13 @@ const ClassroomSeating = () => {
 
         .desk-number {
           position: absolute;
-          top: 3px;
-          right: 8px;
+          top: 2px;
+          right: 6px;
           background: linear-gradient(135deg, #3498db, #2980b9);
           color: white;
           font-weight: bold;
-          padding: 3px 8px;
-          border-radius: 15px;
+          padding: 2px 6px;
+          border-radius: 12px;
           font-size: 0.8em;
         }
 
@@ -322,40 +337,40 @@ const ClassroomSeating = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
-          margin-top: 22px;
+          gap: 4px;
+          margin-top: 14px;
         }
 
         .student-circle {
-          width: 50px;
-          height: 50px;
+          width: 36px;
+          height: 36px;
           border-radius: 50%;
           border: 2px solid #2c3e50;
           display: flex;
           align-items: center;
           justify-content: center;
           font-weight: bold;
-          font-size: 0.75em;
+          font-size: 0.7em;
           cursor: pointer;
           transition: all 0.3s ease;
         }
 
         .desk:hover .student-circle {
-          width: 60px;
-          height: 60px;
-          font-size: 0.9em;
+          width: 42px;
+          height: 42px;
+          font-size: 0.8em;
         }
 
         .compatibility-score {
           text-align: center;
-          margin-top: 8px;
+          margin-top: 4px;
           font-size: 0.75em;
           color: #7f8c8d;
           font-weight: 600;
         }
 
         .desk:hover .compatibility-score {
-          font-size: 0.85em;
+          font-size: 0.8em;
           font-weight: bold;
         }
 
@@ -365,28 +380,29 @@ const ClassroomSeating = () => {
         }
 
         .classroom-legend {
-          margin-top: 20px;
-          padding: 15px;
+          margin-top: 8px;
+          padding: 8px;
           background: #f8f9fa;
-          border-radius: 10px;
+          border-radius: 6px;
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 20px;
+          gap: 10px;
           flex-wrap: wrap;
+          font-size: 0.9em;
         }
 
         .legend-item {
           display: flex;
           align-items: center;
-          gap: 5px;
+          gap: 3px;
         }
 
         .legend-color {
-          width: 20px;
-          height: 20px;
+          width: 14px;
+          height: 14px;
           border: 1px solid #333;
-          border-radius: 5px;
+          border-radius: 3px;
         }
 
         /* Responsive design */

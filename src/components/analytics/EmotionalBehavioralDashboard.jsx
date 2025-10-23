@@ -95,7 +95,7 @@ const EmotionalBehavioralDashboard = ({ students = [], darkMode, theme, selected
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-4">
       {/* Main Content Based on View */}
       {currentView === 'overview' && (
         <OverviewSection data={analysisData} darkMode={darkMode} theme={theme} />

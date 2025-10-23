@@ -35,6 +35,7 @@ import {
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { solveSeatingCSP, calculateDeskPairCompatibility } from '../../utils/seatingOptimizer';
 
 // ============================================================================
 // SEATING SHAPE CONFIGURATIONS
@@ -785,21 +786,21 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
                 <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   {strengths}
                 </div>
-                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>חוזקות</div>
+                <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>חוזקות</div>
               </div>
               <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4 text-center`}>
                 <Target className={`mx-auto mb-2 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} size={24} />
                 <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   {challenges}
                 </div>
-                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אתגרים</div>
+                <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אתגרים</div>
               </div>
               <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4 text-center`}>
                 <TrendingUp className={`mx-auto mb-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} size={24} />
                 <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   {grade > 0 ? `${grade}%` : 'N/A'}
                 </div>
-                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון</div>
+                <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון</div>
               </div>
             </div>
 
@@ -820,7 +821,7 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
                         darkMode ? 'bg-green-500/10 border-green-500/30' : 'bg-green-50 border-green-200'
                       } border rounded-xl p-3 flex items-start gap-3`}
                     >
-                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                         {index + 1}
                       </div>
                       <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right flex-1`}>
@@ -849,7 +850,7 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
                         darkMode ? 'bg-orange-500/10 border-orange-500/30' : 'bg-orange-50 border-orange-200'
                       } border rounded-xl p-3 flex items-start gap-3`}
                     >
-                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                         {index + 1}
                       </div>
                       <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right flex-1`}>
@@ -1027,7 +1028,7 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
             e.stopPropagation();
             setShowPopup(true);
           }}
-          className={`w-16 h-16 rounded-lg bg-gradient-to-br ${colorScheme.gradient} flex items-center justify-center text-white font-bold text-[10px] shadow-lg ${colorScheme.shadow} border-2 ${colorScheme.border} cursor-pointer hover:ring-2 hover:ring-white transition-all`}
+          className={`w-16 h-16 rounded-lg bg-gradient-to-br ${colorScheme.gradient} flex items-center justify-center text-white font-bold text-sm shadow-lg ${colorScheme.shadow} border-2 ${colorScheme.border} cursor-pointer hover:ring-2 hover:ring-white transition-all`}
         >
           <div className="text-center leading-tight pointer-events-none">
             {student.studentCode.toString()}
@@ -1038,20 +1039,20 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
             </div>
           )}
           {/* Color indicator badge */}
-          <div className="absolute -bottom-1 -left-1 w-5 h-5 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200 shadow-sm pointer-events-none">
+          <div className="absolute -bottom-1 -left-1 w-5 h-5 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200 shadow-sm pointer-events-none">
             {colorScheme.emoji}
           </div>
         </div>
 
       {/* Enhanced AI-powered tooltip */}
       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50">
-        <div className="bg-gray-900 text-white text-xs rounded-xl shadow-2xl overflow-hidden max-w-sm" style={{ width: '320px' }}>
+        <div className="bg-gray-900 text-white text-sm rounded-xl shadow-2xl overflow-hidden max-w-sm" style={{ width: '320px' }}>
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 border-b border-white/20">
             <div className="flex items-center justify-between gap-2">
               <div className="flex-1">
                 <div className="font-bold text-sm">{student.name || `תלמיד ${student.studentCode}`}</div>
-                <div className="text-[10px] text-blue-200 mt-1">קוד: {student.studentCode}</div>
+                <div className="text-sm text-blue-200 mt-1">קוד: {student.studentCode}</div>
               </div>
               <div className="text-right">
                 <div className="text-lg">{colorScheme.emoji}</div>
@@ -1065,8 +1066,8 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
             <div className="flex items-start gap-2">
               <Sparkles className="text-yellow-400 flex-shrink-0 mt-0.5" size={14} />
               <div>
-                <div className="text-[10px] text-gray-400 mb-1">סיבה למיקום:</div>
-                <div className="font-semibold text-xs leading-relaxed">{placementReason.mainReason}</div>
+                <div className="text-sm text-gray-400 mb-1">סיבה למיקום:</div>
+                <div className="font-semibold text-sm leading-relaxed">{placementReason.mainReason}</div>
               </div>
             </div>
           </div>
@@ -1074,7 +1075,7 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
           {/* Detailed Reasons */}
           {placementReason.details.length > 0 && (
             <div className="px-4 py-3 bg-gray-800/30 border-b border-white/10">
-              <div className="text-[10px] text-gray-400 mb-2">פרטים מלאים:</div>
+              <div className="text-sm text-gray-400 mb-2">פרטים מלאים:</div>
               <div className="space-y-1.5">
                 {placementReason.details.map((detail, index) => (
                   <div key={index} className="text-[11px] leading-relaxed text-gray-200 text-right">
@@ -1088,12 +1089,12 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
           {/* Based On */}
           {placementReason.basedOn.length > 0 && (
             <div className="px-4 py-3 bg-gray-900/50">
-              <div className="text-[10px] text-gray-400 mb-2">מבוסס על:</div>
+              <div className="text-sm text-gray-400 mb-2">מבוסס על:</div>
               <div className="flex flex-wrap gap-1.5">
                 {placementReason.basedOn.map((factor, index) => (
                   <span
                     key={index}
-                    className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded-md text-[10px] border border-blue-500/30"
+                    className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded-md text-sm border border-blue-500/30"
                   >
                     {factor}
                   </span>
@@ -1134,6 +1135,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   const [showExplanations, setShowExplanations] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [swapFeedback, setSwapFeedback] = useState(null);
+  const [cspMetadata, setCspMetadata] = useState(null); // CSP solver metadata
 
   // Filter analyzed students only
   const analyzedStudents = students.filter(s => !s.needsAnalysis);
@@ -1156,11 +1158,24 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     }
   }, [students.length]);
 
-  // Generate arrangement when shape changes
+  // Generate arrangement when shape changes - Using CSP Solver
   useEffect(() => {
     if (analyzedStudents.length > 0) {
-      const newArrangement = generateOptimalSeating(analyzedStudents, selectedShape);
-      setArrangement(newArrangement);
+      const shape = SEATING_SHAPES[selectedShape];
+      const result = solveSeatingCSP(analyzedStudents, shape, {
+        populationSize: 50,
+        generations: 100,
+        mutationRate: 0.2
+      });
+
+      setArrangement(result.arrangement);
+      setCspMetadata(result.metadata);
+
+      console.log('🎯 CSP Solution:', {
+        score: result.score,
+        violations: result.violations,
+        metadata: result.metadata
+      });
     }
   }, [selectedShape, students.length]);
 
@@ -1183,9 +1198,21 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   const handleRegenerateArrangement = () => {
     setIsGenerating(true);
     setTimeout(() => {
-      const newArrangement = generateOptimalSeating(analyzedStudents, selectedShape);
-      setArrangement(newArrangement);
+      const shape = SEATING_SHAPES[selectedShape];
+      const result = solveSeatingCSP(analyzedStudents, shape, {
+        populationSize: 50,
+        generations: 100,
+        mutationRate: 0.2
+      });
+
+      setArrangement(result.arrangement);
+      setCspMetadata(result.metadata);
       setIsGenerating(false);
+
+      console.log('🔄 Regenerated CSP Solution:', {
+        score: result.score,
+        violations: result.violations
+      });
     }, 500);
   };
 
@@ -1373,128 +1400,238 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   const currentShape = SEATING_SHAPES[selectedShape];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Combined Header with AI Recommendation */}
-      <div className={`backdrop-blur-xl ${
-        darkMode ? 'bg-gradient-to-r from-purple-900/40 to-pink-900/40' : 'bg-gradient-to-r from-purple-100/80 to-pink-100/80'
-      } rounded-3xl p-5 border border-purple-300/30 shadow-2xl`}>
-        {/* Header Section */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className={`w-11 h-11 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center`}>
-              <Grid3x3 className="text-white" size={22} />
+      {aiRecommendation && showRecommendations && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`backdrop-blur-xl ${
+            darkMode ? 'bg-white/5' : 'bg-white/40'
+          } rounded-xl p-3 border ${darkMode ? 'border-white/10' : 'border-white/30'} shadow-xl`}
+        >
+          {/* Header Section */}
+          <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/20">
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center`}>
+                <Grid3x3 className="text-white" size={16} />
+              </div>
+              <div>
+                <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  סידור ישיבה חכם מבוסס AI
+                </h2>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {analyzedStudents.length} תלמידים מנותחים
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                סידור ישיבה חכם מבוסס AI
-              </h2>
-              <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                {analyzedStudents.length} תלמידים מנותחים
-              </p>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setShowExplanations(!showExplanations)}
+                className={`px-2 py-1.5 rounded-lg transition-all flex items-center gap-1 text-sm ${
+                  showExplanations
+                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
+                    : darkMode ? 'bg-white/10 text-gray-300' : 'bg-white/30 text-gray-700'
+                }`}
+              >
+                {showExplanations ? <EyeOff size={14} /> : <Eye size={14} />}
+                <span>הסברים</span>
+              </button>
+
+              <button
+                onClick={handleRegenerateArrangement}
+                disabled={isGenerating}
+                className={`px-2 py-1.5 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white transition-all flex items-center gap-1 text-sm ${
+                  isGenerating ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg'
+                }`}
+              >
+                <RefreshCw size={14} className={isGenerating ? 'animate-spin' : ''} />
+                <span>צור מחדש</span>
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowExplanations(!showExplanations)}
-              className={`px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
-                showExplanations
-                  ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
-                  : darkMode ? 'bg-white/10 text-gray-300' : 'bg-white/30 text-gray-700'
-              }`}
-            >
-              {showExplanations ? <EyeOff size={16} /> : <Eye size={16} />}
-              <span className="text-sm">הסברים</span>
-            </button>
-
-            <button
-              onClick={handleRegenerateArrangement}
-              disabled={isGenerating}
-              className={`px-3 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white transition-all flex items-center gap-1.5 ${
-                isGenerating ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg'
-              }`}
-            >
-              <RefreshCw size={16} className={isGenerating ? 'animate-spin' : ''} />
-              <span className="text-sm">צור מחדש</span>
-            </button>
-          </div>
-        </div>
-
-        {/* AI Recommendation Section */}
-        {aiRecommendation && showRecommendations && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`${
-              darkMode ? 'bg-white/5' : 'bg-white/40'
-            } rounded-2xl p-4 border ${darkMode ? 'border-white/10' : 'border-white/30'}`}
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Sparkles className="text-white" size={20} />
+          {/* AI Recommendation Content */}
+            <div className="flex items-start gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Sparkles className="text-white" size={16} />
               </div>
 
               <div className="flex-1">
-                <h3 className={`text-lg font-bold mb-1.5 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  המלצת AI - {SEATING_SHAPES[aiRecommendation.recommendedShape].name}
-                </h3>
-
-                <p className={`mb-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {aiRecommendation.reasoning}
-                </p>
-
-                <div className="flex items-center gap-2 mb-3">
-                  <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    ציון התאמה:
-                  </span>
-                  <div className="flex-1 h-2.5 bg-white/30 rounded-full overflow-hidden max-w-xs">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${aiRecommendation.score}%` }}
-                      transition={{ duration: 1 }}
-                      className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
-                    />
+                <div className="flex items-start justify-between gap-3 mb-1">
+                  <div className="flex-1">
+                    <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      המלצת AI - {SEATING_SHAPES[aiRecommendation.recommendedShape].name}
+                    </h3>
+                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {aiRecommendation.reasoning}
+                    </p>
                   </div>
-                  <span className={`text-base font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {aiRecommendation.score}%
-                  </span>
+
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <div className="w-20 h-2 bg-white/30 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${aiRecommendation.score}%` }}
+                        transition={{ duration: 1 }}
+                        className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
+                      />
+                    </div>
+                    <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {aiRecommendation.score}%
+                    </span>
+                  </div>
                 </div>
 
                 {aiRecommendation.alternatives.length > 0 && (
-                  <div>
-                    <p className={`text-xs font-medium mb-1.5 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                      חלופות מומלצות:
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {aiRecommendation.alternatives.map((alt, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleShapeChange(alt.shape)}
-                          className={`px-2.5 py-1 rounded-lg text-xs ${
-                            darkMode ? 'bg-white/10 hover:bg-white/20 text-gray-300' : 'bg-white/50 hover:bg-white/70 text-gray-700'
-                          } transition-all`}
-                        >
-                          {SEATING_SHAPES[alt.shape].name} ({alt.score}%)
-                        </button>
-                      ))}
-                    </div>
+                  <div className={`flex items-center gap-2 flex-wrap p-2 rounded-lg ${
+                    darkMode ? 'bg-white/5' : 'bg-gradient-to-r from-blue-50 to-indigo-50'
+                  } border ${darkMode ? 'border-white/10' : 'border-blue-100'}`}>
+                    <span className={`text-sm font-bold ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+                      חלופות:
+                    </span>
+                    {aiRecommendation.alternatives.map((alt, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleShapeChange(alt.shape)}
+                        className={`px-3 py-1 rounded-lg text-sm font-medium shadow-sm ${
+                          darkMode
+                            ? 'bg-gradient-to-r from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500 text-white'
+                            : 'bg-gradient-to-r from-blue-100 to-indigo-100 hover:from-blue-200 hover:to-indigo-200 text-blue-700'
+                        } transition-all hover:shadow-md hover:scale-105`}
+                      >
+                        {SEATING_SHAPES[alt.shape].name} ({alt.score}%)
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
             </div>
           </motion.div>
         )}
-      </div>
+
+      {/* CSP Placement Analysis Panel */}
+      {cspMetadata && selectedShape === 'rows' && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`backdrop-blur-xl ${
+            darkMode ? 'bg-white/5' : 'bg-white/40'
+          } rounded-xl p-3 border ${darkMode ? 'border-white/10' : 'border-white/30'} shadow-xl`}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center`}>
+                <Brain className="text-white" size={16} />
+              </div>
+              <div>
+                <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  ניתוח מיקום CSP
+                </h3>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  אלגוריתם גנטי למיקום אופטימלי
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון כולל</div>
+                <div className={`text-2xl font-bold ${
+                  cspMetadata.finalScore > 75 ? 'text-green-500' :
+                  cspMetadata.finalScore > 50 ? 'text-yellow-500' : 'text-orange-500'
+                }`}>
+                  {cspMetadata.finalScore ? cspMetadata.finalScore.toFixed(1) : 0}%
+                </div>
+              </div>
+              <div className="text-right">
+                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>דורות</div>
+                <div className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {cspMetadata.generations || 0}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desk Pair Analysis */}
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-64 overflow-y-auto p-2 rounded-lg ${
+            darkMode ? 'bg-white/5' : 'bg-white/20'
+          }`}>
+            {arrangement.filter(desk => desk.leftStudent || desk.rightStudent).map((desk) => {
+              const hasCompatibility = desk.compatibility && desk.leftStudent && desk.rightStudent;
+              const compatScore = hasCompatibility ? desk.compatibility.score : null;
+              const compatColor = compatScore > 75 ? 'green' : compatScore > 60 ? 'yellow' : compatScore > 40 ? 'orange' : 'red';
+
+              return (
+                <div
+                  key={desk.id}
+                  className={`p-2 rounded-lg border ${
+                    darkMode ? 'bg-white/5 border-white/10' : 'bg-white/30 border-gray-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      שורה {desk.row + 1}, שולחן {desk.desk + 1}
+                    </span>
+                    {hasCompatibility && (
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        compatColor === 'green' ? 'bg-green-500/20 text-green-300' :
+                        compatColor === 'yellow' ? 'bg-yellow-500/20 text-yellow-300' :
+                        compatColor === 'orange' ? 'bg-orange-500/20 text-orange-300' :
+                        'bg-red-500/20 text-red-300'
+                      }`}>
+                        {compatScore}%
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    {desk.leftStudent && (
+                      <div className={`text-xs p-1 rounded ${darkMode ? 'bg-white/5' : 'bg-white/40'}`}>
+                        <div className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                          ← {desk.leftStudent.name}
+                        </div>
+                        <div className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                          ✓ {desk.leftStudent.strengthsCount || 0} | ⚠ {desk.leftStudent.challengesCount || 0}
+                        </div>
+                      </div>
+                    )}
+                    {desk.rightStudent && (
+                      <div className={`text-xs p-1 rounded ${darkMode ? 'bg-white/5' : 'bg-white/40'}`}>
+                        <div className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                          → {desk.rightStudent.name}
+                        </div>
+                        <div className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                          ✓ {desk.rightStudent.strengthsCount || 0} | ⚠ {desk.rightStudent.challengesCount || 0}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {hasCompatibility && showExplanations && desk.compatibility.reasons && (
+                    <div className={`mt-1 text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'} space-y-0.5`}>
+                      {desk.compatibility.reasons.slice(0, 2).map((reason, idx) => (
+                        <div key={idx} className="truncate">{reason}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
 
       {/* Shape Selector */}
       <div className={`backdrop-blur-xl ${
         darkMode ? 'bg-white/10' : 'bg-white/40'
-      } rounded-3xl p-4 border border-white/20 shadow-2xl`}>
-        <h3 className={`text-base font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      } rounded-3xl p-3 border border-white/20 shadow-2xl`}>
+        <h3 className={`text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           בחר צורת ישיבה
         </h3>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
           {Object.values(SEATING_SHAPES).map((shape) => {
             const Icon = shape.icon;
             const isSelected = selectedShape === shape.id;
@@ -1523,7 +1660,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                 <div className="flex flex-col items-center gap-1.5">
                   <span className="text-xl">{shape.emoji}</span>
                   <Icon size={18} />
-                  <span className="text-[10px] font-medium text-center leading-tight">{shape.name}</span>
+                  <span className="text-sm font-medium text-center leading-tight">{shape.name}</span>
                 </div>
               </motion.button>
             );
@@ -1541,7 +1678,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
             <h4 className={`font-bold mb-1.5 text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               {currentShape.name}
             </h4>
-            <p className={`text-xs mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-sm mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               {currentShape.description}
             </p>
 
@@ -1549,7 +1686,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
               {currentShape.benefits.map((benefit, index) => (
                 <span
                   key={index}
-                  className={`px-2 py-0.5 rounded-md text-[10px] ${
+                  className={`px-2 py-0.5 rounded-md text-sm ${
                     darkMode ? 'bg-green-500/20 text-green-300' : 'bg-green-100 text-green-700'
                   }`}
                 >
@@ -1558,7 +1695,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
               ))}
             </div>
 
-            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               <strong>מומלץ עבור:</strong> {currentShape.bestFor}
             </p>
           </motion.div>
@@ -1568,82 +1705,82 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
       {/* Color Legend */}
       <div className={`backdrop-blur-xl ${
         darkMode ? 'bg-white/10' : 'bg-white/40'
-      } rounded-3xl p-4 border border-white/20 shadow-2xl`}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className={`text-base font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      } rounded-3xl p-3 border border-white/20 shadow-2xl`}>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
             מקרא צבעים
           </h3>
           <Info className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`} size={18} />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
           {/* Red: At-risk */}
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/50 border-2 border-red-300 relative">
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200">
+              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
                 🔴
               </div>
             </div>
             <div>
-              <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>סיכון גבוה</p>
-              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ אתגרים</p>
+              <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>סיכון גבוה</p>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ אתגרים</p>
             </div>
           </div>
 
           {/* Yellow: Moderate support */}
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/50 border-2 border-yellow-300 relative">
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200">
+              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
                 🟡
               </div>
             </div>
             <div>
-              <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>דורש תמיכה</p>
-              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>2-4 אתגרים</p>
+              <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>דורש תמיכה</p>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>2-4 אתגרים</p>
             </div>
           </div>
 
           {/* Green: High performer */}
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/50 border-2 border-green-300 relative">
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200">
+              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
                 🟢
               </div>
             </div>
             <div>
-              <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מצטיין</p>
-              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ חוזקות</p>
+              <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מצטיין</p>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ חוזקות</p>
             </div>
           </div>
 
           {/* Blue: Balanced */}
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/50 border-2 border-blue-300 relative">
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200">
+              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
                 🔵
               </div>
             </div>
             <div>
-              <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מאוזן</p>
-              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ביניים</p>
+              <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מאוזן</p>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ביניים</p>
             </div>
           </div>
 
           {/* Gray: Not analyzed */}
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center shadow-lg shadow-gray-500/50 border-2 border-gray-300 relative">
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs border border-gray-200">
+              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
                 ⚪
               </div>
             </div>
             <div>
-              <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>לא נותח</p>
-              <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אין נתונים</p>
+              <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>לא נותח</p>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אין נתונים</p>
             </div>
           </div>
         </div>
 
-        <p className={`mt-3 text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center`}>
+        <p className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center`}>
           העבר עכבר מעל תלמיד לראות פרטים מלאים • הצבעים מבוססים על ניתוח ISHEBOT AI
         </p>
       </div>
@@ -1682,7 +1819,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                         <Armchair className={`${darkMode ? 'text-purple-300' : 'text-purple-600'}`} size={28} />
                         <div>
                           <div className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>שולחן המורה</div>
-                          <div className={`text-xs ${darkMode ? 'text-purple-200' : 'text-purple-600'}`}>מיקום מרכזי לניהול הכיתה</div>
+                          <div className={`text-sm ${darkMode ? 'text-purple-200' : 'text-purple-600'}`}>מיקום מרכזי לניהול הכיתה</div>
                         </div>
                       </div>
                     </div>
@@ -1694,7 +1831,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                     <div className="w-20">
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
                         <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
-                        <span className={`text-xs font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
+                        <span className={`text-sm font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
                         <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
                     </div>
@@ -1719,7 +1856,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                             />
 
                             {showExplanations && item.reasoning && (
-                              <p className={`mt-2 text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                              <p className={`mt-2 text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                 {item.reasoning}
                               </p>
                             )}
@@ -1736,7 +1873,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                           className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
                         >
                           <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                          <span className={`text-sm font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
                         </div>
                       ))}
                     </div>
@@ -1752,7 +1889,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                     <div className="w-20">
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
                         <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
-                        <span className={`text-xs font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
+                        <span className={`text-sm font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
                         <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
                     </div>
@@ -1784,7 +1921,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                             </div>
 
                             {showExplanations && cluster.reasoning && (
-                              <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                              <p className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                 {cluster.reasoning}
                               </p>
                             )}
@@ -1801,7 +1938,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                           className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
                         >
                           <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                          <span className={`text-sm font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
                         </div>
                       ))}
                     </div>
@@ -1817,7 +1954,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                     <div className="w-20">
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
                         <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
-                        <span className={`text-xs font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
+                        <span className={`text-sm font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
                         <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
                     </div>
@@ -1843,7 +1980,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                             </div>
 
                             {showExplanations && pair.reasoning && (
-                              <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                              <p className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                 {pair.reasoning}
                               </p>
                             )}
@@ -1860,7 +1997,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                           className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
                         >
                           <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                          <span className={`text-sm font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
                         </div>
                       ))}
                     </div>
@@ -1898,7 +2035,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                     <div className="w-20">
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
                         <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
-                        <span className={`text-xs font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
+                        <span className={`text-sm font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
                         <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
                     </div>
@@ -1930,7 +2067,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                             <DraggableStudent student={item.student} isDraggable={true} darkMode={darkMode} />
 
                             {showExplanations && item.reasoning && (
-                              <div className={`absolute top-full mt-2 left-1/2 transform -translate-x-1/2 whitespace-nowrap text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                              <div className={`absolute top-full mt-2 left-1/2 transform -translate-x-1/2 whitespace-nowrap text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                 {item.reasoning}
                               </div>
                             )}
@@ -1954,7 +2091,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                           className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
                         >
                           <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                          <span className={`text-sm font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
                         </div>
                       ))}
                     </div>
@@ -1970,7 +2107,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                     <div className="w-20">
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
                         <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
-                        <span className={`text-xs font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
+                        <span className={`text-sm font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
                         <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
                     </div>
@@ -2000,7 +2137,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                             </div>
 
                             {showExplanations && station.reasoning && (
-                              <p className={`text-xs text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                              <p className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                 {station.reasoning}
                               </p>
                             )}
@@ -2017,7 +2154,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                           className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
                         >
                           <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-[10px] font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                          <span className={`text-sm font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
                         </div>
                       ))}
                     </div>

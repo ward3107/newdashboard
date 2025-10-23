@@ -197,7 +197,7 @@ const UnifiedDashboard = ({ students, darkMode, theme, toggleTheme, onAnalyzeCli
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto">
-        <div className="min-h-screen p-6">
+        <div className="min-h-screen pt-12 pb-6 px-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedView + (selectedSubView || '') + (selectedStudent?.studentCode || '')}

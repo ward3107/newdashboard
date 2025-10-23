@@ -57,7 +57,7 @@ const OverviewDashboard = ({ students, darkMode, theme, onNavigate }) => {
   }, [students]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-4">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -82,7 +82,7 @@ const OverviewDashboard = ({ students, darkMode, theme, onNavigate }) => {
       <ClassInfoCard darkMode={darkMode} theme={theme} />
 
       {/* Statistics Cards - Row of 4 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
         <StatCard
           icon={Users}
           label="סך הכל תלמידים"

@@ -58,7 +58,8 @@
       "Bash(gh repo edit:*)",
       "Bash(git ls-remote:*)",
       "Read(//c/**)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": []

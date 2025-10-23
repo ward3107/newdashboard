@@ -58,7 +58,7 @@ const CoreStatsDashboard = ({ students = [], darkMode, theme }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-4">
       {/* Header with Controls */}
       <div className={`backdrop-blur-xl ${
         darkMode ? 'bg-white/10' : 'bg-white/40'
