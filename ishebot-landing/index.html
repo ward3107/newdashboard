@@ -89,178 +89,463 @@
 
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #db2777 100%);
             color: var(--white);
-            padding: 6rem 0;
+            padding: 8rem 0 6rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 1;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            line-height: 1.2;
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: slideInDown 0.8s ease-out;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(120deg, #fbbf24, #f59e0b, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
         }
 
         .hero h2 {
-            font-size: 1.5rem;
-            font-weight: 400;
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 3rem;
+            opacity: 0.95;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            animation: slideInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
             margin-bottom: 2rem;
-            opacity: 0.9;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(16, 185, 129, 0.6); }
         }
 
         .hero-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 2rem;
-            margin: 3rem 0;
+            margin: 4rem 0;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            padding: 2rem 1.5rem;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
 
         .stat-card .icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
         }
 
         .stat-card h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1.4;
         }
 
         /* Buttons */
         .btn {
             display: inline-block;
-            padding: 1rem 2rem;
-            border-radius: 8px;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: none;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.2rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary {
-            background: var(--white);
-            color: var(--primary);
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1e3a8a;
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5);
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(251, 191, 36, 0.7);
+            animation: none;
         }
 
         .btn-secondary {
             background: transparent;
             color: var(--white);
-            border: 2px solid var(--white);
+            border: 3px solid var(--white);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
         }
 
         .btn-secondary:hover {
             background: var(--white);
-            color: var(--primary);
+            color: #1e3a8a;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.4);
         }
 
         .cta-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
             justify-content: center;
             flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.6s backwards;
         }
 
         /* Problem Section */
         .problem {
-            padding: 5rem 0;
-            background: var(--light);
+            padding: 6rem 0;
+            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .problem::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.1), transparent 70%);
+            pointer-events: none;
+        }
+
+        .problem .container {
+            position: relative;
+            z-index: 1;
         }
 
         .section-title {
             text-align: center;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 3rem;
-            color: var(--dark);
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+        }
+
+        .problem .section-subtitle {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #9ca3af;
+            margin-bottom: 4rem;
+            font-weight: 500;
         }
 
         .problems-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .problem-card {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(185, 28, 28, 0.05));
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
             display: flex;
-            align-items: start;
-            gap: 1rem;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .problem-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .problem-card:hover::before {
+            opacity: 1;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            border-color: rgba(239, 68, 68, 0.6);
+            box-shadow: 0 20px 50px rgba(239, 68, 68, 0.4);
         }
 
         .problem-card .icon {
-            font-size: 2rem;
-            color: var(--danger);
+            font-size: 4rem;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 5px 15px rgba(239, 68, 68, 0.5));
+            animation: shake 3s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            10%, 30%, 50%, 70%, 90% { transform: rotate(-5deg); }
+            20%, 40%, 60%, 80% { transform: rotate(5deg); }
         }
 
         .problem-card p {
-            font-size: 1.1rem;
-            color: var(--gray);
+            font-size: 1.3rem;
+            color: #e5e7eb;
+            font-weight: 600;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .problem-card .problem-impact {
+            font-size: 0.9rem;
+            color: #f87171;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
         }
 
         /* Features Section */
         .features {
-            padding: 5rem 0;
+            padding: 6rem 0;
+            background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1), transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.1), transparent 50%);
+            pointer-events: none;
+        }
+
+        .features .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .features .section-title {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6, #3B82F6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .features .section-subtitle {
+            text-align: center;
+            font-size: 1.8rem;
+            color: #6366f1;
+            margin-bottom: 4rem;
+            font-weight: 700;
         }
 
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .feature-card {
             text-align: center;
-            padding: 2rem;
+            padding: 3rem 2rem;
+            background: var(--white);
+            border-radius: 24px;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 24px;
+            padding: 3px;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6, #EC4899);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-20px) scale(1.05);
+            box-shadow: 0 30px 60px rgba(59, 130, 246, 0.3);
         }
 
         .feature-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            filter: drop-shadow(0 10px 20px rgba(59, 130, 246, 0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
         }
 
         .feature-card h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--dark);
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .feature-card ul {
             text-align: right;
             list-style: none;
-            color: var(--gray);
+            color: #4b5563;
         }
 
         .feature-card li {
-            margin-bottom: 0.5rem;
-            padding-right: 1.5rem;
+            margin-bottom: 1rem;
+            padding-right: 2rem;
             position: relative;
+            font-size: 1.1rem;
+            font-weight: 500;
+            line-height: 1.6;
         }
 
         .feature-card li::before {
-            content: "✓";
+            content: "⚡";
             position: absolute;
             right: 0;
-            color: var(--success);
-            font-weight: bold;
+            font-size: 1.2rem;
+            animation: pulse 2s ease-in-out infinite;
         }
 
         /* Benefits Section */
@@ -551,6 +836,28 @@
             }
         }
 
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .fade-in-up {
             animation: fadeInUp 0.6s ease-out;
         }
@@ -573,31 +880,39 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1 class="fade-in-up">ISHEBOT - העתיד של ניהול כיתה כבר כאן</h1>
-            <h2 class="fade-in-up">AI חכם שמשנה את אופן ניתוח התלמידים וסידור הכיתה</h2>
+            <div class="hero-badge">🔥 פתרון לעבודה הכי צורבת של המורים</div>
+            <h1>
+                <span class="highlight">ISHEBOT</span> - הופך מורים<br>
+                ליעילים ופרודוקטיביים פי 10!
+            </h1>
+            <h2>AI חכם שעושה את העבודה הכבדה במקומך: ניתוח תלמידים וסידור כיתה אוטומטי</h2>
 
             <div class="hero-stats">
                 <div class="stat-card">
-                    <div class="icon">⏱️</div>
-                    <h3>חוסך 10 שעות שבועיות</h3>
+                    <div class="icon">🚀</div>
+                    <h3>פי 10 יותר<br>פרודוקטיבי!</h3>
                 </div>
                 <div class="stat-card">
-                    <div class="icon">📊</div>
-                    <h3>ROI של 760%+</h3>
+                    <div class="icon">⚡</div>
+                    <h3>חסוך 15+ שעות<br>עבודה בשבוע</h3>
                 </div>
                 <div class="stat-card">
                     <div class="icon">🎯</div>
-                    <h3>מדויק ב-100%</h3>
+                    <h3>ניתוח 30+ תלמידים<br>תוך דקות!</h3>
                 </div>
                 <div class="stat-card">
-                    <div class="icon">🇮🇱</div>
-                    <h3>תואם תיקון 13</h3>
+                    <div class="icon">🧠</div>
+                    <h3>AI עושה את<br>החשיבה הכבדה</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">✅</div>
+                    <h3>פתרון מושלם<br>בלחיצת כפתור</h3>
                 </div>
             </div>
 
             <div class="cta-buttons">
-                <a href="#contact" class="btn btn-primary">קבל הדגמה חינמית</a>
-                <a href="#features" class="btn btn-secondary">למד עוד</a>
+                <a href="#contact" class="btn btn-primary">🎁 תן למערכת לעבוד במקומך - התחל עכשיו!</a>
+                <a href="#features" class="btn btn-secondary">ראה איך זה חוסך לך זמן</a>
             </div>
         </div>
     </section>
@@ -605,27 +920,38 @@
     <!-- Problem Section -->
     <section class="problem">
         <div class="container">
-            <h2 class="section-title">האתגרים של מורים היום</h2>
+            <h2 class="section-title">🔥 העבודה שגוזלת ממורים את כל האנרגיה 🔥</h2>
+            <p class="section-subtitle">האם אתה מבזבז שעות יקרות על המשימות האלו?</p>
             <div class="problems-list">
                 <div class="problem-card">
-                    <div class="icon">❌</div>
-                    <p>שעות על ניתוח תלמידים ידנית</p>
+                    <div class="icon">😫</div>
+                    <p>ניתוח ידני של 30+ תלמידים</p>
+                    <div class="problem-impact">⏱️ 8+ שעות בשבוע!</div>
                 </div>
                 <div class="problem-card">
-                    <div class="icon">❌</div>
-                    <p>קושי לעקוב אחר 30+ תלמידים</p>
+                    <div class="icon">🤯</div>
+                    <p>מעקב אחר חוזקות ואתגרים של כל תלמיד</p>
+                    <div class="problem-impact">💔 בלתי אפשרי ידנית!</div>
                 </div>
                 <div class="problem-card">
-                    <div class="icon">❌</div>
+                    <div class="icon">😩</div>
                     <p>סידור ישיבה בניסוי וטעייה</p>
+                    <div class="problem-impact">❌ תוצאות לא אופטימליות!</div>
                 </div>
                 <div class="problem-card">
-                    <div class="icon">❌</div>
-                    <p>מידע מפוזר בדפים ואקסל</p>
+                    <div class="icon">📋</div>
+                    <p>מידע מפוזר באקסל, דפים ופתקים</p>
+                    <div class="problem-impact">🗂️ כאוס מוחלט!</div>
                 </div>
                 <div class="problem-card">
-                    <div class="icon">❌</div>
-                    <p>החלטות אינטואיטיביות ללא נתונים</p>
+                    <div class="icon">🎲</div>
+                    <p>החלטות על בסיס אינטואיציה בלבד</p>
+                    <div class="problem-impact">⚠️ ללא נתונים מדויקים!</div>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">😓</div>
+                    <p>חוסר זמן לתשומת לב אישית לכל תלמיד</p>
+                    <div class="problem-impact">💥 עומס עצום!</div>
                 </div>
             </div>
         </div>
@@ -634,49 +960,78 @@
     <!-- Features Section -->
     <section id="features" class="features">
         <div class="container">
-            <h2 class="section-title">ISHEBOT - הפתרון החכם</h2>
+            <h2 class="section-title">💎 ISHEBOT - הפתרון שישנה לך את החיים! 💎</h2>
+            <p class="section-subtitle">AI חזק שעושה את כל העבודה הכבדה במקומך</p>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">🎨</div>
-                    <h3>מערכת צבעים חכמה</h3>
+                    <h3>ניתוח חכם אוטומטי</h3>
                     <ul>
-                        <li>אדום: תלמיד בסיכון</li>
-                        <li>צהוב: זקוק לתמיכה</li>
-                        <li>ירוק: מצטיין</li>
-                        <li>זיהוי מיידי של צרכים</li>
+                        <li>50+ נקודות נתונים לכל תלמיד</li>
+                        <li>זיהוי אוטומטי של חוזקות ואתגרים</li>
+                        <li>מערכת צבעים ויזואלית (🔴🟡🟢)</li>
+                        <li>סיווג מיידי לפי צרכים</li>
+                        <li>תובנות AI מתקדמות</li>
                     </ul>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">🪑</div>
-                    <h3>סידור ישיבה אוטומטי</h3>
+                    <div class="feature-icon">🧬</div>
+                    <h3>אלגוריתם גנטי מהפכני</h3>
                     <ul>
-                        <li>6 מבנים שונים</li>
-                        <li>אופטימיזציה מבוססת AI</li>
-                        <li>התאמה לפרופיל כל תלמיד</li>
-                        <li>זיווג חכם של תלמידים</li>
+                        <li>100 דורות של אופטימיזציה</li>
+                        <li>חישוב תואמות בין כל זוג תלמידים</li>
+                        <li>מציאת הסידור המושלם ביותר</li>
+                        <li>6 מבני כיתה שונים</li>
+                        <li>התאמה לכל מטרת למידה</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>ניתוח מיקום חכם</h3>
+                    <ul>
+                        <li>הסבר למה כל תלמיד יושב שם</li>
+                        <li>ניתוח לפי מיקום (קדמי/אחורי)</li>
+                        <li>התחשבות במיקום יחסי</li>
+                        <li>Hover Tooltip מפורט</li>
+                        <li>המלצות מותאמות אישית</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>גרור ושחרר עם AI</h3>
+                    <ul>
+                        <li>שינוי מיידי בגרירה</li>
+                        <li>משוב AI מיידי על כל שינוי</li>
+                        <li>ציון תואמות לכל זוג</li>
+                        <li>התראות על סידורים בעייתיים</li>
+                        <li>המלצות אוטומטיות לשיפור</li>
                     </ul>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
-                    <h3>לוח בקרה מקיף</h3>
+                    <h3>לוח בקרה פוטוריסטי</h3>
                     <ul>
-                        <li>תובנות בזמן אמת</li>
-                        <li>גרפים ויזואליים</li>
-                        <li>דוחות מקצועיים</li>
-                        <li>מעקב אחר התקדמות</li>
+                        <li>ממשק מודרני עם אנימציות</li>
+                        <li>גרפים אינטראקטיביים בזמן אמת</li>
+                        <li>דוחות מקצועיים להדפסה</li>
+                        <li>יצוא PDF איכותי</li>
+                        <li>מצב כהה/בהיר</li>
                     </ul>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">🔄</div>
-                    <h3>החלפה חכמה עם משוב</h3>
+                    <div class="feature-icon">🌍</div>
+                    <h3>רב-לשוני ונגיש</h3>
                     <ul>
-                        <li>גרור ושחרר תלמידים</li>
-                        <li>הערכת AI מיידית</li>
-                        <li>המלצות לשיפור</li>
-                        <li>מניעת טעויות</li>
+                        <li>4 שפות (עברית, אנגלית, ערבית, רוסית)</li>
+                        <li>תמיכה RTL/LTR מלאה</li>
+                        <li>נגישות WCAG 2.1 מלאה</li>
+                        <li>תמיכה בקוראי מסך</li>
+                        <li>ניווט מקלדת מלא</li>
                     </ul>
                 </div>
             </div>
@@ -728,39 +1083,59 @@
             <div class="pricing-grid">
                 <div class="pricing-card">
                     <h3>📦 חבילה בסיסית</h3>
-                    <div class="price">₪2,500</div>
+                    <div class="price">₪30,000</div>
                     <div class="period">לשנה</div>
                     <ul>
-                        <li>עד 200 תלמידים</li>
+                        <li>ניתוח 50+ נקודות נתונים לכל תלמיד</li>
+                        <li>מערכת צבעים חכמה (אדום/צהוב/ירוק)</li>
+                        <li>3 מבני כיתה (שורות, זוגות, אשכולות)</li>
+                        <li>סידור ישיבה אוטומטי עם AI</li>
+                        <li>לוח בקרה פוטוריסטי בסיסי</li>
+                        <li>הדפסה ויצוא PDF</li>
+                        <li>תמיכה ב-2 שפות (עברית ואנגלית)</li>
                         <li>עד 10 מורים</li>
                         <li>תמיכה במייל</li>
-                        <li>הדרכה בסיסית</li>
                     </ul>
                     <a href="#contact" class="btn btn-primary">התחל עכשיו</a>
                 </div>
 
                 <div class="pricing-card featured">
                     <h3>📦 חבילה מקצועית</h3>
-                    <div class="price">₪4,000</div>
+                    <div class="price">₪88,000</div>
                     <div class="period">לשנה</div>
                     <ul>
-                        <li>200-500 תלמידים</li>
+                        <li>אלגוריתם גנטי מתקדם (CSP) - 100 דורות</li>
+                        <li>ניתוח 50+ נקודות נתונים + ניתוח מיקום חכם</li>
+                        <li>כל 6 מבני הכיתה (שורות, זוגות, אשכולות, U-Shape, מעגל, גמיש)</li>
+                        <li>Hover Tooltip עם הסבר מפורט למיקום</li>
+                        <li>גרור ושחרר עם משוב מיידי</li>
+                        <li>לוח בקרה פוטוריסטי מלא עם אנימציות</li>
+                        <li>תמיכה ב-4 שפות (עברית, אנגלית, ערבית, רוסית)</li>
+                        <li>נגישות מלאה WCAG 2.1</li>
                         <li>עד 25 מורים</li>
-                        <li>תמיכה מהירה</li>
-                        <li>הדרכה אישית</li>
+                        <li>תמיכה מהירה ב-WhatsApp</li>
+                        <li>הדרכה אישית מקיפה</li>
                     </ul>
                     <a href="#contact" class="btn btn-primary">התחל עכשיו</a>
                 </div>
 
                 <div class="pricing-card">
                     <h3>📦 חבילה ארגונית</h3>
-                    <div class="price">₪6,000</div>
+                    <div class="price">₪110,000</div>
                     <div class="period">לשנה</div>
                     <ul>
-                        <li>500+ תלמידים</li>
+                        <li>כל תכונות החבילה המקצועית</li>
+                        <li>אלגוריתם גנטי מותאם אישית לארגון</li>
+                        <li>אינטגרציה עם Google Forms אוטומטית</li>
+                        <li>ניתוח ISHEBOT מתקדם עם תובנות AI</li>
+                        <li>דוחות מפורטים להנהלה והורים</li>
+                        <li>התאמה אישית למבני כיתה ייחודיים</li>
+                        <li>כל 4 השפות עם תמיכה RTL/LTR מלאה</li>
+                        <li>תואם תיקון 13 ומשרד החינוך</li>
                         <li>מורים ללא הגבלה</li>
-                        <li>תמיכה פרימיום</li>
+                        <li>תמיכה פרימיום 24/7</li>
                         <li>מנהל חשבון ייעודי</li>
+                        <li>עדכונים ושדרוגים ראשונים</li>
                     </ul>
                     <a href="#contact" class="btn btn-primary">התחל עכשיו</a>
                 </div>
@@ -903,7 +1278,6 @@
                 }
             });
         }, observerOptions);
-
         document.querySelectorAll('.problem-card, .feature-card, .benefit-card, .pricing-card').forEach(el => {
             observer.observe(el);
         });
