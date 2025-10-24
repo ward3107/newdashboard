@@ -42,6 +42,7 @@ import EnhancedAnalyticsDashboard from "../analytics/EnhancedAnalyticsDashboard"
 import { AnalysisAggregator } from "../../services/analysisAggregator";
 import ClassroomSeatingAI from "../classroom/ClassroomSeatingAI";
 import Footer from "../ui/Footer";
+import LanguageSwitcher from "../ui/LanguageSwitcher";
 
 // Use environment variable or config file for API URL
 // UPDATED 2025-10-10 - V5 WITH CORS HEADERS FIXED!
@@ -865,6 +866,9 @@ const FuturisticTeacherDashboard = () => {
                 <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
                 <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
+
+              {/* Language Switcher */}
+              <LanguageSwitcher />
 
               {/* Dark Mode Toggle - Hidden as themes now control this automatically */}
               {/* <button

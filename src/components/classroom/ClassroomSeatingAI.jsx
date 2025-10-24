@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users,
@@ -50,9 +51,10 @@ const SEATING_SHAPES = {
     benefits: ['ריכוז גבוה', 'שקט בכיתה', 'מתאים למבחנים'],
     bestFor: 'למידה עצמאית, מבחנים, הרצאות',
     layout: 'grid',
-    rows: 6,
-    cols: 5,
-    emoji: '📚'
+    rows: 4,
+    cols: 4,
+    emoji: '📚',
+    capacity: 32 // 4x4 desks = 16 desks x 2 students = 32 students
   },
   uShape: {
     id: 'uShape',
@@ -62,8 +64,9 @@ const SEATING_SHAPES = {
     benefits: ['תקשורת חזותית', 'דיונים קבוצתיים', 'נגישות למורה'],
     bestFor: 'דיונים, פעילויות קבוצתיות, סמינרים',
     layout: 'uShape',
-    positions: 16,
-    emoji: '💬'
+    positions: 32,
+    emoji: '💬',
+    capacity: 32
   },
   clusters: {
     id: 'clusters',
@@ -73,20 +76,10 @@ const SEATING_SHAPES = {
     benefits: ['שיתוף פעולה', 'למידה עמיתים', 'עבודת צוות'],
     bestFor: 'פרויקטים, עבודה צוותית, למידה שיתופית',
     layout: 'clusters',
-    clusters: 4,
+    clusters: 8,
     studentsPerCluster: 4,
-    emoji: '👥'
-  },
-  pairs: {
-    id: 'pairs',
-    name: 'זוגות',
-    icon: Square,
-    description: 'סידור בזוגות - מתאים ללמידה משותפת',
-    benefits: ['למידה זוגית', 'תמיכה הדדית', 'אינטראקציה קרובה'],
-    bestFor: 'למידה בזוגות, תרגול, חונכות עמיתים',
-    layout: 'pairs',
-    pairs: 8,
-    emoji: '👫'
+    emoji: '👥',
+    capacity: 32 // 8 clusters x 4 students = 32 students
   },
   circle: {
     id: 'circle',
@@ -96,8 +89,9 @@ const SEATING_SHAPES = {
     benefits: ['שוויון', 'דיון פתוח', 'קשר עין'],
     bestFor: 'דיונים סוקרטיים, שיתוף רגשי, בניית קהילה',
     layout: 'circle',
-    positions: 16,
-    emoji: '⭕'
+    positions: 32,
+    emoji: '⭕',
+    capacity: 32
   },
   flexible: {
     id: 'flexible',
@@ -108,7 +102,8 @@ const SEATING_SHAPES = {
     bestFor: 'למידה מותאמת אישית, תחנות, פעילויות מגוונות',
     layout: 'flexible',
     stations: 4,
-    emoji: '🎯'
+    emoji: '🎯',
+    capacity: 32 // 4 stations x ~8 students = 32 students
   }
 };
 
@@ -180,14 +175,12 @@ const analyzeClassForSeating = (students) => {
     recommendedShape = 'rows';
     score = 90;
     reasoning = `${Math.round(challengesPercent)}% מהתלמידים מציגים אתגרים התנהגותיים. סידור בשורות יאפשר ריכוז טוב יותר ובקרה של המורה.`;
-    alternatives.push({ shape: 'pairs', score: 75, reason: 'מאפשר למידה זוגית עם תמיכה הדדית' });
     alternatives.push({ shape: 'uShape', score: 70, reason: 'נגישות למורה לכל התלמידים' });
   } else if (independentPercent > 50) {
     recommendedShape = 'rows';
     score = 88;
     reasoning = `${Math.round(independentPercent)}% מהתלמידים מעדיפים למידה עצמאית. סידור מסורתי יתמוך בסגנון הלמידה שלהם.`;
     alternatives.push({ shape: 'flexible', score: 80, reason: 'תחנות למידה עצמאית מגוונות' });
-    alternatives.push({ shape: 'pairs', score: 70, reason: 'איזון בין עצמאות לתמיכה' });
   } else if (analysis.highPerformers > total * 0.4) {
     recommendedShape = 'uShape';
     score = 92;
@@ -200,7 +193,6 @@ const analyzeClassForSeating = (students) => {
     score = 85;
     reasoning = 'הכיתה מאוזנת עם סגנונות למידה מגוונים. אשכולות יאפשרו גמישות ושיתוף פעולה.';
     alternatives.push({ shape: 'uShape', score: 80, reason: 'מתאים לפעילויות מגוונות' });
-    alternatives.push({ shape: 'pairs', score: 75, reason: 'למידה זוגית עם תמיכה' });
   }
 
   return {
@@ -335,31 +327,6 @@ const generateOptimalSeating = (students, shapeId) => {
           cluster,
           students: clusterStudents,
           reasoning: getClusterReasoning(clusterStudents)
-        });
-      }
-      break;
-
-    case 'pairs':
-      let pairIndex = 0;
-      const pairStudents = [...sortedStudents];
-      while (pairStudents.length >= 2) {
-        const student1 = pairStudents.shift();
-        const student2 = pairStudents.shift();
-        arrangement.push({
-          id: `pair-${pairIndex}`,
-          type: 'pair',
-          students: [student1, student2],
-          reasoning: getPairReasoning(student1, student2)
-        });
-        pairIndex++;
-      }
-      // Handle odd student
-      if (pairStudents.length === 1) {
-        arrangement.push({
-          id: `pair-${pairIndex}`,
-          type: 'single',
-          students: [pairStudents[0]],
-          reasoning: 'תלמיד יחיד - יכול לעבוד עצמאית או להצטרף לצמד קיים'
         });
       }
       break;
@@ -734,23 +701,24 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
   const StatusIcon = colorScheme.icon;
 
   return (
-    <AnimatePresence>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+      style={{ zIndex: 999999 }}
+      onClick={onClose}
+    >
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
-        onClick={onClose}
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        onClick={(e) => e.stopPropagation()}
+        className={`${
+          darkMode ? 'bg-gray-900' : 'bg-white'
+        } rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto`}
+        style={{ zIndex: 9999999 }}
       >
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          onClick={(e) => e.stopPropagation()}
-          className={`${
-            darkMode ? 'bg-gray-900' : 'bg-white'
-          } rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto`}
-        >
           {/* Header */}
           <div className={`bg-gradient-to-r ${colorScheme.bg} p-6 relative`}>
             <button
@@ -913,8 +881,401 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
   );
+};
+
+// ============================================================================
+// STUDENT INFO SIDE PANEL COMPONENT
+// ============================================================================
+
+const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShape = 'rows', cspMetadata = null }) => {
+  if (!studentData) return null;
+
+  const student = studentData.student || studentData; // Support both formats
+  const row = studentData.row !== undefined ? studentData.row : null;
+  const col = studentData.col !== undefined ? studentData.col : null;
+  const totalRows = studentData.totalRows || 4;
+
+  const challenges = student.challengesCount || 0;
+  const strengths = student.strengthsCount || 0;
+  const grade = student.grade || 0;
+
+  // Add keyboard listener for Escape key
+  React.useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
+  // Parse strengths and challenges from analysis
+  const getTopItems = (text, count = 3) => {
+    if (!text) return [];
+    const lines = text.split('\n').filter(line => line.trim().length > 0);
+    return lines.slice(0, count);
+  };
+
+  const topStrengths = getTopItems(student.keyStrengths, 3);
+  const topChallenges = getTopItems(student.keyChallenges, 3);
+
+  // Determine color scheme
+  const getColorScheme = () => {
+    if (challenges > 4 || (grade > 0 && grade < 60)) {
+      return { bg: 'from-red-500 to-red-600', text: 'סיכון גבוה', emoji: '🔴', icon: AlertCircle };
+    }
+    if (challenges > 2 || (grade > 0 && grade < 75)) {
+      return { bg: 'from-yellow-400 to-orange-500', text: 'דורש תמיכה', emoji: '🟡', icon: Target };
+    }
+    if (strengths > 4 && challenges <= 2) {
+      return { bg: 'from-green-500 to-emerald-600', text: 'מצטיין', emoji: '🟢', icon: Award };
+    }
+    return { bg: 'from-blue-500 to-purple-500', text: 'מאוזן', emoji: '🔵', icon: CheckCircle };
+  };
+
+  const colorScheme = getColorScheme();
+  const StatusIcon = colorScheme.icon;
+
+  // Get AI reasoning based on layout type and ACTUAL POSITION
+  const getAIReasoning = () => {
+    const items = [];
+
+    // ONLY use position data if we're in ROWS layout (grid) - other layouts don't have meaningful row/col
+    const isRowsLayout = selectedShape === 'rows';
+    const hasValidPosition = row !== null && row !== undefined && isRowsLayout;
+
+    // Determine position in classroom (ONLY for rows layout)
+    const isFrontRow = hasValidPosition && row <= 1;
+    const isMiddleRow = hasValidPosition && row > 1 && row < totalRows - 1;
+    const isBackRow = hasValidPosition && row >= totalRows - 1;
+    const rowPosition = hasValidPosition ? `שורה ${row + 1} מתוך ${totalRows}` : '';
+
+    if (selectedShape === 'rows' && cspMetadata) {
+      // Show CSP-based reasoning for rows layout
+      const studentMetadata = cspMetadata.students?.[student.studentCode];
+      if (studentMetadata) {
+        items.push(`ציון איכות מיקום: ${(studentMetadata.qualityScore * 100).toFixed(1)}%`);
+        items.push(`תאימות עם שכן: ${studentMetadata.compatibility ? (studentMetadata.compatibility * 100).toFixed(1) + '%' : 'N/A'}`);
+        if (studentMetadata.deskPair) {
+          items.push(`זוג שולחן: #${studentMetadata.deskPair.desk1} ו-#${studentMetadata.deskPair.desk2}`);
+        }
+      }
+    }
+
+    // Add ACTUAL position information (ONLY for rows layout with valid position)
+    if (rowPosition && hasValidPosition) {
+      items.push(`📍 מיקום בכיתה: ${rowPosition}`);
+    }
+
+    // Generate personalized reasoning based on student profile
+    const languageLevel = student.languageLevel || 'לא ידוע';
+    const hasHighChallenges = challenges > 4;
+    const hasModChallenges = challenges > 2 && challenges <= 4;
+    const hasHighStrengths = strengths > 4;
+    const hasModStrengths = strengths > 2 && strengths <= 4;
+    const hasLowGrade = grade > 0 && grade < 60;
+    const hasMedGrade = grade >= 60 && grade < 75;
+    const hasHighGrade = grade >= 75;
+
+    // POSITION-AWARE reasoning ONLY for rows layout with valid position
+    if (hasValidPosition) {
+      if (isFrontRow) {
+        items.push('🎯 ממוקם בשורות הקדמיות - קרוב למורה');
+        if (hasHighChallenges) {
+          items.push(`✓ תלמיד עם ${challenges} אתגרים - מיקום קדמי מתאים לניטור צמוד`);
+          items.push('✓ קל למורה לזהות קשיים ולתת תמיכה מיידית');
+        } else if (hasHighStrengths) {
+          items.push(`✓ תלמיד מצטיין (${strengths} חוזקות) בשורה קדמית - משאב לכיתה`);
+          items.push('✓ יכול לסייע במענה על שאלות ולהוות דוגמה');
+        } else {
+          items.push('✓ מיקום קדמי מאפשר ריכוז גבוה והתמקדות');
+        }
+      } else if (isBackRow) {
+        items.push('🎯 ממוקם בשורות האחוריות - רחוק מהמורה');
+        if (hasHighChallenges) {
+          items.push(`⚠️ שים לב: תלמיד עם ${challenges} אתגרים - עלול להזדקק למעקב צמוד יותר`);
+          items.push('💡 שקול העברה לשורה קדמית יותר לשיפור התמיכה');
+        } else if (hasHighStrengths) {
+          items.push(`✓ תלמיד עצמאי (${strengths} חוזקות) - מתאים לשורה אחורית`);
+          items.push('✓ יכול לעבוד באופן עצמאי ללא ניטור צמוד');
+        } else {
+          items.push('✓ מיקום אחורי מתאים לתלמידים עצמאיים');
+        }
+      } else if (isMiddleRow) {
+        items.push('🎯 ממוקם בשורות האמצעיות - מרחק מאוזן מהמורה');
+        if (hasHighChallenges) {
+          items.push(`תלמיד עם ${challenges} אתגרים - שקול העברה לשורה קדמית יותר`);
+        } else if (hasHighStrengths) {
+          items.push(`✓ תלמיד מאוזן (${strengths} חוזקות) - מיקום מרכזי מתאים`);
+        } else {
+          items.push('✓ מיקום מאוזן - מתאים לרוב התלמידים');
+        }
+      }
+    } else {
+      // Generic student profile analysis for non-rows layouts
+      if (hasHighChallenges && hasHighStrengths) {
+        items.push(`📊 פרופיל מורכב: ${strengths} חוזקות + ${challenges} אתגרים`);
+        items.push('✓ תלמיד עם יכולות גבוהות אבל צרכים מיוחדים');
+      } else if (hasHighChallenges) {
+        items.push(`⚠️ תלמיד עם ${challenges} אתגרים - זקוק לתמיכה ומעקב`);
+        if (selectedShape === 'circle' || selectedShape === 'uShape') {
+          items.push('✓ סידור מעגלי מאפשר למורה לראות את כל התלמידים');
+        }
+      } else if (hasHighStrengths) {
+        items.push(`🌟 תלמיד מצטיין עם ${strengths} חוזקות`);
+        items.push('✓ יכול לסייע לתלמידים אחרים ולהוות משאב לכיתה');
+      } else if (hasModChallenges || hasModStrengths) {
+        items.push(`📊 פרופיל מאוזן: ${strengths} חוזקות, ${challenges} אתגרים`);
+      }
+    }
+
+    // Personalized reasoning based on grade
+    if (hasLowGrade) {
+      items.push(`📊 ציון נמוך (${grade}%) - דורש תשומת לב והתערבות`);
+    } else if (hasMedGrade) {
+      items.push(`📊 ציון בינוני (${grade}%) - פוטנציאל לשיפור`);
+    } else if (hasHighGrade) {
+      items.push(`📊 ציון גבוה (${grade}%) - תלמיד מצליח`);
+    }
+
+    // Personalized reasoning based on language level
+    if (languageLevel && languageLevel !== 'לא ידוע') {
+      items.push(`🗣️ רמת שפה: ${languageLevel}`);
+    }
+
+    // Add layout-specific reasoning
+    if (selectedShape === 'clusters') {
+      items.push('👥 סידור באשכולות לעבודה קבוצתית ולמידה שיתופית');
+      if (hasHighChallenges) {
+        items.push('💡 מומלץ לשבץ עם תלמידים תומכים באשכול');
+      }
+    } else if (selectedShape === 'circle' || selectedShape === 'uShape') {
+      items.push('⭕ סידור מעגלי - כל התלמידים במרחק שווה מהמורה');
+      items.push('✓ מאפשר ראייה ואינטראקציה שווה עם כל התלמידים');
+    } else if (selectedShape === 'stations') {
+      items.push('🚉 סידור בתחנות ללמידה גמישה ועצמאית');
+      if (hasHighStrengths) {
+        items.push('✓ מתאים לתלמידים עצמאיים');
+      } else if (hasHighChallenges) {
+        items.push('💡 עלול להזדקק לתמיכה נוספת בלמידה עצמאית');
+      }
+    }
+
+    return {
+      type: selectedShape === 'rows' && cspMetadata ? 'CSP Genetic Algorithm' : 'Personalized Placement',
+      title: selectedShape === 'rows' && cspMetadata ? 'ניתוח אלגוריתם גנטי (CSP)' : 'ניתוח פרופיל התלמיד',
+      icon: selectedShape === 'rows' && cspMetadata ? Brain : Sparkles,
+      items: items.filter(Boolean)
+    };
+  };
+
+  const aiReasoning = getAIReasoning();
+  const AIIcon = aiReasoning.icon;
+
+  // Render panel in a portal at document body level to ensure it's above everything
+  const panelContent = (
+    <div className="fixed inset-0 z-[9999999]" style={{ pointerEvents: 'none' }}>
+      {/* Backdrop overlay */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="fixed inset-0 bg-black/40"
+        style={{ pointerEvents: 'auto' }}
+        aria-label="Close panel"
+      />
+
+      {/* Side panel */}
+      <motion.div
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className={`fixed top-0 right-0 h-full w-96 ${
+          darkMode ? 'bg-gray-900' : 'bg-white'
+        } shadow-2xl overflow-y-auto`}
+        style={{ pointerEvents: 'auto' }}
+      >
+        {/* Header */}
+        <div className={`bg-gradient-to-r ${colorScheme.bg} p-6 relative sticky top-0`}>
+          <button
+            onClick={onClose}
+            className="absolute top-4 left-4 w-10 h-10 bg-white/30 hover:bg-white/50 rounded-full flex items-center justify-center transition-all shadow-lg hover:scale-110 group"
+            aria-label="סגור חלונית"
+          >
+            <X className="text-white drop-shadow-md group-hover:rotate-90 transition-transform" size={24} />
+          </button>
+
+          <div className="flex items-start gap-4 mt-8">
+            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl">
+              {colorScheme.emoji}
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-white mb-1">
+                {student.name || `תלמיד ${student.studentCode}`}
+              </h2>
+              <p className="text-white/80 text-sm mb-2">קוד: {student.studentCode}</p>
+              <div className="flex items-center gap-2">
+                <StatusIcon className="text-white" size={16} />
+                <span className="text-white font-semibold text-sm">{colorScheme.text}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 space-y-4">
+          {/* Quick Stats */}
+          <div className="grid grid-cols-3 gap-2">
+            <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-3 text-center`}>
+              <Award className={`mx-auto mb-1 ${darkMode ? 'text-green-400' : 'text-green-600'}`} size={20} />
+              <div className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {strengths}
+              </div>
+              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>חוזקות</div>
+            </div>
+            <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-3 text-center`}>
+              <Target className={`mx-auto mb-1 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} size={20} />
+              <div className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {challenges}
+              </div>
+              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אתגרים</div>
+            </div>
+            <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-3 text-center`}>
+              <TrendingUp className={`mx-auto mb-1 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} size={20} />
+              <div className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {grade > 0 ? `${grade}%` : 'N/A'}
+              </div>
+              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון</div>
+            </div>
+          </div>
+
+          {/* AI Reasoning Section - Shows ACTUAL analysis based on layout type */}
+          <div className={`${darkMode ? 'bg-blue-500/10 border-blue-500/30' : 'bg-blue-50 border-blue-200'} border rounded-xl p-4`}>
+            <div className="flex items-center gap-2 mb-3">
+              <AIIcon className="text-blue-500" size={20} />
+              <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {aiReasoning.title}
+              </h3>
+            </div>
+            <div className="space-y-2 text-xs">
+              {aiReasoning.items.map((item, index) => (
+                <p key={index} className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                  • {item}
+                </p>
+              ))}
+            </div>
+            <div className={`mt-2 text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} text-right italic`}>
+              {aiReasoning.type === 'CSP Genetic Algorithm'
+                ? '* מבוסס על אלגוריתם גנטי מתקדם (CSP)'
+                : '* סידור פשוט עם גיוון אקראי'}
+            </div>
+          </div>
+
+          {/* Top 3 Strengths */}
+          {topStrengths.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="text-green-500" size={18} />
+                <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  חוזקות מרכזיות
+                </h3>
+              </div>
+              <div className="space-y-2">
+                {topStrengths.map((strength, index) => (
+                  <div
+                    key={index}
+                    className={`${
+                      darkMode ? 'bg-green-500/10 border-green-500/30' : 'bg-green-50 border-green-200'
+                    } border rounded-lg p-2 flex items-start gap-2`}
+                  >
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      {index + 1}
+                    </div>
+                    <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right flex-1`}>
+                      {strength}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Top 3 Challenges */}
+          {topChallenges.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="text-orange-500" size={18} />
+                <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  אתגרים מרכזיים
+                </h3>
+              </div>
+              <div className="space-y-2">
+                {topChallenges.map((challenge, index) => (
+                  <div
+                    key={index}
+                    className={`${
+                      darkMode ? 'bg-orange-500/10 border-orange-500/30' : 'bg-orange-50 border-orange-200'
+                    } border rounded-lg p-2 flex items-start gap-2`}
+                  >
+                    <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      {index + 1}
+                    </div>
+                    <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right flex-1`}>
+                      {challenge}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Seating Strategy */}
+          <div className={`${darkMode ? 'bg-purple-500/10 border-purple-500/30' : 'bg-purple-50 border-purple-200'} border rounded-xl p-4`}>
+            <div className="flex items-center gap-2 mb-2">
+              <Brain className="text-purple-500" size={18} />
+              <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                אסטרטגיית ישיבה מומלצת
+              </h3>
+            </div>
+            <div className="space-y-1 text-xs">
+              {challenges > 4 && (
+                <>
+                  <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                    ✓ מיקום בשורה קדמית לניטור קרוב
+                  </p>
+                  <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                    ✓ ליד תלמיד חזק לחונכות עמיתים
+                  </p>
+                </>
+              )}
+              {strengths > 4 && (
+                <>
+                  <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                    ✓ יכול לשבת בשורות אחוריות (עצמאי)
+                  </p>
+                  <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                    ✓ מומלץ לשיבוץ כמנטור לתלמידים אחרים
+                  </p>
+                </>
+              )}
+              {challenges <= 4 && strengths <= 4 && (
+                <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} text-right`}>
+                  ✓ מיקום מרכזי מאוזן
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+
+  // Use portal to render at document body level, bypassing any stacking context issues
+  return ReactDOM.createPortal(panelContent, document.body);
 };
 
 // ============================================================================
@@ -922,8 +1283,6 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
 // ============================================================================
 
 const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 0, totalRows = 4, darkMode = false }) => {
-  const [showPopup, setShowPopup] = useState(false);
-
   // Safety check - if student is undefined, return null
   if (!student || !student.studentCode) {
     return null;
@@ -1014,8 +1373,7 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
   const colorScheme = getStudentColor();
 
   return (
-    <>
-      <motion.div
+    <motion.div
         ref={setNodeRef}
         style={style}
         {...attributes}
@@ -1024,11 +1382,7 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
         className="relative group cursor-move"
       >
         <div
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowPopup(true);
-          }}
-          className={`w-16 h-16 rounded-lg bg-gradient-to-br ${colorScheme.gradient} flex items-center justify-center text-white font-bold text-sm shadow-lg ${colorScheme.shadow} border-2 ${colorScheme.border} cursor-pointer hover:ring-2 hover:ring-white transition-all`}
+          className={`w-16 h-16 rounded-lg bg-gradient-to-br ${colorScheme.gradient} flex items-center justify-center text-white font-bold text-sm shadow-lg ${colorScheme.shadow} border-2 ${colorScheme.border} transition-all relative`}
         >
           <div className="text-center leading-tight pointer-events-none">
             {student.studentCode.toString()}
@@ -1042,85 +1396,95 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
           <div className="absolute -bottom-1 -left-1 w-5 h-5 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200 shadow-sm pointer-events-none">
             {colorScheme.emoji}
           </div>
+
+          {/* Info button overlay - separate from drag area */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onInfo) {
+                onInfo({ student, row, col, totalRows });
+              }
+            }}
+            onMouseDown={(e) => {
+              e.stopPropagation(); // Prevent drag from starting
+            }}
+            className="absolute inset-0 w-full h-full cursor-pointer opacity-0 hover:opacity-100 hover:bg-white/20 rounded-lg transition-all flex items-center justify-center group"
+            aria-label={`View details for student ${student.studentCode}`}
+            style={{ zIndex: 10 }}
+          >
+            <Info className="text-white drop-shadow-lg" size={20} />
+          </button>
         </div>
 
-      {/* Enhanced AI-powered tooltip */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50">
-        <div className="bg-gray-900 text-white text-sm rounded-xl shadow-2xl overflow-hidden max-w-sm" style={{ width: '320px' }}>
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 border-b border-white/20">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex-1">
-                <div className="font-bold text-sm">{student.name || `תלמיד ${student.studentCode}`}</div>
-                <div className="text-sm text-blue-200 mt-1">קוד: {student.studentCode}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-lg">{colorScheme.emoji}</div>
-                <div className="text-[9px] text-blue-200 mt-0.5">{colorScheme.label}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Reason */}
-          <div className="px-4 py-3 bg-gray-800/50 border-b border-white/10">
-            <div className="flex items-start gap-2">
-              <Sparkles className="text-yellow-400 flex-shrink-0 mt-0.5" size={14} />
-              <div>
-                <div className="text-sm text-gray-400 mb-1">סיבה למיקום:</div>
-                <div className="font-semibold text-sm leading-relaxed">{placementReason.mainReason}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Detailed Reasons */}
-          {placementReason.details.length > 0 && (
-            <div className="px-4 py-3 bg-gray-800/30 border-b border-white/10">
-              <div className="text-sm text-gray-400 mb-2">פרטים מלאים:</div>
-              <div className="space-y-1.5">
-                {placementReason.details.map((detail, index) => (
-                  <div key={index} className="text-[11px] leading-relaxed text-gray-200 text-right">
-                    {detail}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Based On */}
-          {placementReason.basedOn.length > 0 && (
-            <div className="px-4 py-3 bg-gray-900/50">
-              <div className="text-sm text-gray-400 mb-2">מבוסס על:</div>
-              <div className="flex flex-wrap gap-1.5">
-                {placementReason.basedOn.map((factor, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded-md text-sm border border-blue-500/30"
-                  >
-                    {factor}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Tooltip arrow */}
-        <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-px">
-          <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-900"></div>
-        </div>
-      </div>
+      {/* Disabled individual student hover tooltip - now using desk-level tooltip instead */}
     </motion.div>
-
-      {/* Analysis Popup */}
-      {showPopup && (
-        <StudentAnalysisPopup
-          student={student}
-          onClose={() => setShowPopup(false)}
-          darkMode={darkMode}
-        />
-      )}
-    </>
   );
+};
+
+// ============================================================================
+// SIMPLE ARRANGEMENT GENERATOR (for non-rows layouts)
+// ============================================================================
+
+/**
+ * Generate simple random arrangement for non-CSP layouts
+ */
+const generateSimpleArrangement = (students, shape) => {
+  const shuffled = [...students].sort(() => Math.random() - 0.5);
+
+  switch (shape.layout) {
+    case 'clusters': {
+      const clusters = [];
+      const studentsPerCluster = shape.studentsPerCluster || 4;
+      const numClusters = shape.clusters || 4;
+
+      for (let i = 0; i < numClusters; i++) {
+        const clusterStudents = shuffled.slice(i * studentsPerCluster, (i + 1) * studentsPerCluster);
+        clusters.push({
+          id: `cluster-${i}`,
+          students: clusterStudents,
+          reasoning: 'קבוצה מגוונת עם תלמידים בעלי כישורים משלימים'
+        });
+      }
+      return clusters;
+    }
+
+    case 'uShape':
+    case 'circle': {
+      const positions = [];
+      const numPositions = Math.min(shape.positions || 16, shuffled.length);
+
+      for (let i = 0; i < numPositions; i++) {
+        positions.push({
+          id: `position-${i}`,
+          student: shuffled[i],
+          position: i,
+          reasoning: 'מיקום אופטימלי לדיון ושיתוף'
+        });
+      }
+      return positions;
+    }
+
+    case 'flexible': {
+      const stations = [];
+      const numStations = shape.stations || 4;
+      const studentsPerStation = Math.ceil(shuffled.length / numStations);
+
+      for (let i = 0; i < numStations; i++) {
+        const stationStudents = shuffled.slice(i * studentsPerStation, (i + 1) * studentsPerStation);
+        stations.push({
+          id: `station-${i}`,
+          students: stationStudents,
+          type: ['reading', 'writing', 'collaboration', 'individual'][i % 4],
+          reasoning: 'תחנת למידה מותאמת לסגנון הלמידה'
+        });
+      }
+      return stations;
+    }
+
+    default:
+      return [];
+  }
 };
 
 // ============================================================================
@@ -1136,6 +1500,8 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   const [isGenerating, setIsGenerating] = useState(false);
   const [swapFeedback, setSwapFeedback] = useState(null);
   const [cspMetadata, setCspMetadata] = useState(null); // CSP solver metadata
+  const [hoveredDesk, setHoveredDesk] = useState(null); // Desk hover state for tooltip
+  const [selectedStudent, setSelectedStudent] = useState(null); // Selected student for side panel
 
   // Filter analyzed students only
   const analyzedStudents = students.filter(s => !s.needsAnalysis);
@@ -1158,26 +1524,82 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     }
   }, [students.length]);
 
-  // Generate arrangement when shape changes - Using CSP Solver
+  // Generate arrangement when shape changes
   useEffect(() => {
     if (analyzedStudents.length > 0) {
       const shape = SEATING_SHAPES[selectedShape];
-      const result = solveSeatingCSP(analyzedStudents, shape, {
-        populationSize: 50,
-        generations: 100,
-        mutationRate: 0.2
-      });
 
-      setArrangement(result.arrangement);
-      setCspMetadata(result.metadata);
+      // Only use CSP solver for rows layout (which has rows/cols)
+      if (shape.rows && shape.cols) {
+        const result = solveSeatingCSP(analyzedStudents, shape, {
+          populationSize: 50,
+          generations: 100,
+          mutationRate: 0.2
+        });
 
-      console.log('🎯 CSP Solution:', {
-        score: result.score,
-        violations: result.violations,
-        metadata: result.metadata
-      });
+        setArrangement(result.arrangement);
+        setCspMetadata(result.metadata);
+
+        console.log('🎯 CSP Solution:', {
+          score: result.score,
+          violations: result.violations,
+          metadata: result.metadata
+        });
+      } else {
+        // For other layouts, use simple random arrangement
+        const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+        setArrangement(simpleArrangement);
+        setCspMetadata(null); // No CSP metadata for non-optimized layouts
+      }
     }
   }, [selectedShape, students.length]);
+
+  // Get location-based reasoning for a student placement
+  const getLocationReasoning = (row, col, student, totalRows, totalCols) => {
+    const isFirstRow = row === 0;
+    const isLastRow = row === totalRows - 1;
+    const isFirstCol = col === 0;
+    const isLastCol = col === totalCols - 1;
+
+    const challenges = student.challengesCount || 0;
+    const strengths = student.strengthsCount || 0;
+
+    const reasons = [];
+
+    // Front row placement
+    if (isFirstRow) {
+      if (challenges >= 3) {
+        reasons.push('🎯 שורה קדמית - דורש תשומת לב וניטור מוגבר מהמורה');
+      } else {
+        reasons.push('⭐ שורה קדמית - מיקום מרכזי לתלמיד מעורב');
+      }
+    }
+
+    // Back row placement
+    if (isLastRow) {
+      if (strengths >= 3 && challenges <= 1) {
+        reasons.push('✨ שורה אחורית - לומד עצמאי שיכול לעבוד באופן עצמאי');
+      } else if (challenges >= 3) {
+        reasons.push('⚠️ שורה אחורית - דורש מעקב תכוף למניעת הסחות דעת');
+      }
+    }
+
+    // Side placements
+    if (isFirstCol) {
+      reasons.push('🚪 ליד הדלת - קל לתנועה ויציאה במידת הצורך');
+    }
+
+    if (isLastCol) {
+      reasons.push('🪟 ליד החלון - אור טבעי ונוף מרגיע');
+    }
+
+    // Middle placement
+    if (!isFirstRow && !isLastRow && !isFirstCol && !isLastCol) {
+      reasons.push('🎓 מיקום מרכזי - איזון אופטימלי בין מעורבות ועצמאות');
+    }
+
+    return reasons.length > 0 ? reasons : ['📍 מיקום סטנדרטי בכיתה'];
+  };
 
   const handleShapeChange = (shapeId) => {
     setIsGenerating(true);
@@ -1199,20 +1621,30 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     setIsGenerating(true);
     setTimeout(() => {
       const shape = SEATING_SHAPES[selectedShape];
-      const result = solveSeatingCSP(analyzedStudents, shape, {
-        populationSize: 50,
-        generations: 100,
-        mutationRate: 0.2
-      });
 
-      setArrangement(result.arrangement);
-      setCspMetadata(result.metadata);
+      // Only use CSP solver for rows layout
+      if (shape.rows && shape.cols) {
+        const result = solveSeatingCSP(analyzedStudents, shape, {
+          populationSize: 50,
+          generations: 100,
+          mutationRate: 0.2
+        });
+
+        setArrangement(result.arrangement);
+        setCspMetadata(result.metadata);
+
+        console.log('🔄 Regenerated CSP Solution:', {
+          score: result.score,
+          violations: result.violations
+        });
+      } else {
+        // For other layouts, regenerate simple arrangement
+        const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+        setArrangement(simpleArrangement);
+        setCspMetadata(null);
+      }
+
       setIsGenerating(false);
-
-      console.log('🔄 Regenerated CSP Solution:', {
-        score: result.score,
-        violations: result.violations
-      });
     }, 500);
   };
 
@@ -1491,7 +1923,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                     <span className={`text-sm font-bold ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
                       חלופות:
                     </span>
-                    {aiRecommendation.alternatives.map((alt, index) => (
+                    {aiRecommendation.alternatives.filter(alt => SEATING_SHAPES[alt.shape]).map((alt, index) => (
                       <button
                         key={index}
                         onClick={() => handleShapeChange(alt.shape)}
@@ -1512,6 +1944,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
         )}
 
       {/* CSP Placement Analysis Panel */}
+      {/* CSP Metadata - Compact Summary */}
       {cspMetadata && selectedShape === 'rows' && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -1520,17 +1953,17 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
             darkMode ? 'bg-white/5' : 'bg-white/40'
           } rounded-xl p-3 border ${darkMode ? 'border-white/10' : 'border-white/30'} shadow-xl`}
         >
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className={`w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center`}>
                 <Brain className="text-white" size={16} />
               </div>
               <div>
-                <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  ניתוח מיקום CSP
-                </h3>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   אלגוריתם גנטי למיקום אופטימלי
+                </h3>
+                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  💡 העבר עכבר מעל שולחן לראות ניתוח תואמות מפורט
                 </p>
               </div>
             </div>
@@ -1552,73 +1985,6 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Desk Pair Analysis */}
-          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-64 overflow-y-auto p-2 rounded-lg ${
-            darkMode ? 'bg-white/5' : 'bg-white/20'
-          }`}>
-            {arrangement.filter(desk => desk.leftStudent || desk.rightStudent).map((desk) => {
-              const hasCompatibility = desk.compatibility && desk.leftStudent && desk.rightStudent;
-              const compatScore = hasCompatibility ? desk.compatibility.score : null;
-              const compatColor = compatScore > 75 ? 'green' : compatScore > 60 ? 'yellow' : compatScore > 40 ? 'orange' : 'red';
-
-              return (
-                <div
-                  key={desk.id}
-                  className={`p-2 rounded-lg border ${
-                    darkMode ? 'bg-white/5 border-white/10' : 'bg-white/30 border-gray-200'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      שורה {desk.row + 1}, שולחן {desk.desk + 1}
-                    </span>
-                    {hasCompatibility && (
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                        compatColor === 'green' ? 'bg-green-500/20 text-green-300' :
-                        compatColor === 'yellow' ? 'bg-yellow-500/20 text-yellow-300' :
-                        compatColor === 'orange' ? 'bg-orange-500/20 text-orange-300' :
-                        'bg-red-500/20 text-red-300'
-                      }`}>
-                        {compatScore}%
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="space-y-1">
-                    {desk.leftStudent && (
-                      <div className={`text-xs p-1 rounded ${darkMode ? 'bg-white/5' : 'bg-white/40'}`}>
-                        <div className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                          ← {desk.leftStudent.name}
-                        </div>
-                        <div className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-                          ✓ {desk.leftStudent.strengthsCount || 0} | ⚠ {desk.leftStudent.challengesCount || 0}
-                        </div>
-                      </div>
-                    )}
-                    {desk.rightStudent && (
-                      <div className={`text-xs p-1 rounded ${darkMode ? 'bg-white/5' : 'bg-white/40'}`}>
-                        <div className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                          → {desk.rightStudent.name}
-                        </div>
-                        <div className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-                          ✓ {desk.rightStudent.strengthsCount || 0} | ⚠ {desk.rightStudent.challengesCount || 0}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {hasCompatibility && showExplanations && desk.compatibility.reasons && (
-                    <div className={`mt-1 text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'} space-y-0.5`}>
-                      {desk.compatibility.reasons.slice(0, 2).map((reason, idx) => (
-                        <div key={idx} className="truncate">{reason}</div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
           </div>
         </motion.div>
       )}
@@ -1841,27 +2207,187 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       <div className={`grid gap-4`} style={{
                         gridTemplateColumns: `repeat(${currentShape.cols}, 1fr)`
                       }}>
-                        {arrangement.map((item, index) => (
-                          <div
-                            key={item.id}
-                            className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'} flex flex-col items-center justify-center min-h-[120px] hover:shadow-lg transition-shadow`}
-                          >
-                            <DraggableStudent
-                              student={item.student}
-                              isDraggable={true}
-                              row={item.row}
-                              col={item.col}
-                              totalRows={currentShape.rows}
-                              darkMode={darkMode}
-                            />
+                        {arrangement.map((item, index) => {
+                          const hasCompatibility = item.compatibility && item.leftStudent && item.rightStudent;
+                          const compatScore = hasCompatibility ? item.compatibility.score : null;
+                          const compatColor = compatScore > 75 ? 'green' : compatScore > 60 ? 'yellow' : compatScore > 40 ? 'orange' : 'red';
 
-                            {showExplanations && item.reasoning && (
-                              <p className={`mt-2 text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                {item.reasoning}
-                              </p>
-                            )}
-                          </div>
-                        ))}
+                          return (
+                            <div
+                              key={item.id}
+                              className={`relative p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'} flex items-center justify-center gap-3 min-h-[120px] hover:shadow-lg transition-all ${
+                                hoveredDesk === item.id ? 'ring-2 ring-blue-500 scale-105' : ''
+                              }`}
+                              onMouseEnter={() => setHoveredDesk(item.id)}
+                              onMouseLeave={() => setHoveredDesk(null)}
+                            >
+                              {/* Left Student - pointer-events-none to not interfere with desk hover */}
+                              <div className="pointer-events-auto">
+                                {item.leftStudent ? (
+                                  <DraggableStudent
+                                    student={item.leftStudent}
+                                    onInfo={setSelectedStudent}
+                                    isDraggable={true}
+                                    row={item.row}
+                                    col={item.desk}
+                                    totalRows={currentShape.rows}
+                                    darkMode={darkMode}
+                                  />
+                                ) : (
+                                  <div className={`w-16 h-16 rounded-full border-2 border-dashed ${darkMode ? 'border-gray-600' : 'border-gray-400'} flex items-center justify-center pointer-events-none`}>
+                                    <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>ריק</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Right Student - pointer-events-none to not interfere with desk hover */}
+                              <div className="pointer-events-auto">
+                                {item.rightStudent ? (
+                                  <DraggableStudent
+                                    student={item.rightStudent}
+                                    onInfo={setSelectedStudent}
+                                    isDraggable={true}
+                                    row={item.row}
+                                    col={item.desk}
+                                    totalRows={currentShape.rows}
+                                    darkMode={darkMode}
+                                  />
+                                ) : (
+                                  <div className={`w-16 h-16 rounded-full border-2 border-dashed ${darkMode ? 'border-gray-600' : 'border-gray-400'} flex items-center justify-center pointer-events-none`}>
+                                    <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>ריק</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Enhanced Tooltip with Full Analysis */}
+                              {hoveredDesk === item.id && (item.leftStudent || item.rightStudent) && (
+                                <>
+                                  {/* Semi-transparent backdrop */}
+                                  <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+                                    style={{ zIndex: 999999 }}
+                                  />
+
+                                  {/* Popup content */}
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    transition={{ duration: 0.2 }}
+                                    className={`fixed p-5 rounded-xl shadow-2xl border-2 w-[420px] max-h-[500px] overflow-y-auto ${
+                                      compatColor === 'green' ? 'bg-green-900 border-green-500' :
+                                      compatColor === 'yellow' ? 'bg-yellow-900 border-yellow-500' :
+                                      compatColor === 'orange' ? 'bg-orange-900 border-orange-500' :
+                                      'bg-blue-900 border-blue-500'
+                                    }`}
+                                    style={{
+                                      left: '50%',
+                                      top: '50%',
+                                      transform: 'translate(-50%, -50%)',
+                                      zIndex: 9999999
+                                    }}
+                                  >
+                                  {/* Header */}
+                                  <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-white/30">
+                                    <h4 className="font-bold text-white text-lg flex items-center gap-2">
+                                      <Brain size={20} />
+                                      ניתוח מיקום AI
+                                    </h4>
+                                    <div className="text-xs text-white/80 bg-white/20 px-2 py-1 rounded">
+                                      שורה {item.row + 1}, שולחן {item.desk + 1}
+                                    </div>
+                                  </div>
+
+                                  {/* Location Reasoning */}
+                                  <div className="mb-4 bg-white/10 rounded-lg p-3">
+                                    <h5 className="text-sm font-bold text-white mb-2 flex items-center gap-1">
+                                      <Target size={14} />
+                                      סיבות למיקום זה:
+                                    </h5>
+                                    <div className="space-y-1">
+                                      {getLocationReasoning(item.row, item.desk, item.leftStudent || item.rightStudent, currentShape.rows, currentShape.cols).map((reason, idx) => (
+                                        <div key={idx} className="text-xs text-white/90">
+                                          {reason}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  {/* Students Analysis */}
+                                  <div className="space-y-3 mb-4">
+                                    {/* Left Student */}
+                                    {item.leftStudent && (
+                                      <div className="bg-white/15 rounded-lg p-3">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <div className="font-bold text-white text-sm">← {item.leftStudent.name}</div>
+                                          <div className="text-xs text-white/70">
+                                            ✓ {item.leftStudent.strengthsCount || 0} חוזקות | ⚠ {item.leftStudent.challengesCount || 0} אתגרים
+                                          </div>
+                                        </div>
+                                        {item.leftStudent.learningStyle && (
+                                          <div className="text-xs text-white/80 bg-white/10 rounded px-2 py-1 inline-block">
+                                            📚 {item.leftStudent.learningStyle}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+
+                                    {/* Right Student */}
+                                    {item.rightStudent && (
+                                      <div className="bg-white/15 rounded-lg p-3">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <div className="font-bold text-white text-sm">→ {item.rightStudent.name}</div>
+                                          <div className="text-xs text-white/70">
+                                            ✓ {item.rightStudent.strengthsCount || 0} חוזקות | ⚠ {item.rightStudent.challengesCount || 0} אתגרים
+                                          </div>
+                                        </div>
+                                        {item.rightStudent.learningStyle && (
+                                          <div className="text-xs text-white/80 bg-white/10 rounded px-2 py-1 inline-block">
+                                            📚 {item.rightStudent.learningStyle}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Compatibility Analysis */}
+                                  {hasCompatibility && (
+                                    <div className="bg-white/15 rounded-lg p-3">
+                                      <div className="flex items-center justify-between mb-2">
+                                        <h5 className="text-sm font-bold text-white flex items-center gap-1">
+                                          <Heart size={14} />
+                                          תואמות הזוג
+                                        </h5>
+                                        <span className={`text-xl font-bold ${
+                                          compatColor === 'green' ? 'text-green-300' :
+                                          compatColor === 'yellow' ? 'text-yellow-300' :
+                                          compatColor === 'orange' ? 'text-orange-300' :
+                                          'text-red-300'
+                                        }`}>
+                                          {compatScore}%
+                                        </span>
+                                      </div>
+                                      {item.compatibility.reasons && item.compatibility.reasons.length > 0 && (
+                                        <div className="space-y-1 mt-2">
+                                          {item.compatibility.reasons.slice(0, 4).map((reason, idx) => (
+                                            <div key={idx} className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                              • {reason}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+
+                                </motion.div>
+                                </>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
 
@@ -1910,7 +2436,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                               {(cluster.students && cluster.students.length > 0) ? (
                                 cluster.students.map(student => (
                                   <div key={student.studentCode} className="flex justify-center">
-                                    <DraggableStudent student={student} isDraggable={true} darkMode={darkMode} />
+                                    <DraggableStudent student={student} onInfo={setSelectedStudent} isDraggable={true} darkMode={darkMode} />
                                   </div>
                                 ))
                               ) : (
@@ -1923,65 +2449,6 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                             {showExplanations && cluster.reasoning && (
                               <p className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                 {cluster.reasoning}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* 4 Windows on the Right Side */}
-                    <div className="flex flex-col gap-4 w-24">
-                      {[1, 2, 3, 4].map((windowNum) => (
-                        <div
-                          key={windowNum}
-                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
-                        >
-                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-sm font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {currentShape.layout === 'pairs' && (
-                <div className="space-y-6">
-                  {/* Classroom with Door on Left and Windows on Right */}
-                  <div className="flex gap-4">
-                    {/* Door on the Left Side */}
-                    <div className="w-20">
-                      <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
-                        <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
-                        <span className={`text-sm font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
-                        <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
-                      </div>
-                    </div>
-
-                    {/* Pairs Grid in the middle */}
-                    <div className="flex-1">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {arrangement.map((pair, index) => (
-                          <div
-                            key={pair.id}
-                            className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'}`}
-                          >
-                            <div className="flex items-center justify-center gap-3 mb-2">
-                              {(pair.students && pair.students.length > 0) ? (
-                                pair.students.map(student => (
-                                  <DraggableStudent key={student.studentCode} student={student} isDraggable={true} darkMode={darkMode} />
-                                ))
-                              ) : (
-                                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center`}>
-                                  אין תלמידים בזוג זה
-                                </p>
-                              )}
-                            </div>
-
-                            {showExplanations && pair.reasoning && (
-                              <p className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                {pair.reasoning}
                               </p>
                             )}
                           </div>
@@ -2064,7 +2531,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                               transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`
                             }}
                           >
-                            <DraggableStudent student={item.student} isDraggable={true} darkMode={darkMode} />
+                            <DraggableStudent student={item.student} onInfo={setSelectedStudent} isDraggable={true} darkMode={darkMode} />
 
                             {showExplanations && item.reasoning && (
                               <div className={`absolute top-full mt-2 left-1/2 transform -translate-x-1/2 whitespace-nowrap text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -2127,7 +2594,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                             <div className="flex flex-wrap gap-3 justify-center mb-3">
                               {(station.students && station.students.length > 0) ? (
                                 station.students.map(student => (
-                                  <DraggableStudent key={student.studentCode} student={student} isDraggable={true} darkMode={darkMode} />
+                                  <DraggableStudent key={student.studentCode} student={student} onInfo={setSelectedStudent} isDraggable={true} darkMode={darkMode} />
                                 ))
                               ) : (
                                 <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center w-full`}>
@@ -2268,8 +2735,28 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           <span>שמור סידור</span>
         </button>
       </div>
+
+      {/* Student Info Side Panel */}
+      <AnimatePresence>
+        {selectedStudent && (
+          <StudentInfoPanel
+            studentData={selectedStudent}
+            onClose={() => setSelectedStudent(null)}
+            darkMode={darkMode}
+            selectedShape={selectedShape}
+            cspMetadata={cspMetadata}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
 export default ClassroomSeatingAI;
+
+
+
+
+
+
+

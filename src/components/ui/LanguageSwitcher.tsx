@@ -117,15 +117,14 @@ const LanguageSwitcher: React.FC = () => {
             setIsOpen(!isOpen);
             setAnnouncement(isOpen ? t('language.announcements.closed') : t('language.announcements.opened'));
           }}
-          className="fixed top-6 left-6 z-[10000] flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full border-2 border-white/20 hover:border-white/40 transition-all shadow-2xl hover:shadow-blue-500/50 hover:scale-105"
+          className="p-2 rounded-xl backdrop-blur-md bg-white/30 hover:bg-white/50 transition-all duration-300 flex items-center gap-1.5"
           aria-label={`${t('language.current')}: ${getCurrentLang()?.nativeName}. ${isOpen ? t('common.close') : t('language.change')}`}
           aria-expanded={isOpen}
           aria-haspopup="true"
           title={t('language.change')}
         >
-          <Globe className="w-5 h-5" aria-hidden="true" />
-          <span className="font-medium text-sm">{getCurrentLang()?.flag}</span>
-          <span className="font-medium text-sm hidden sm:inline">{getCurrentLang()?.nativeName}</span>
+          <Globe className="w-4 h-4" aria-hidden="true" />
+          <span className="font-medium text-xl">{getCurrentLang()?.flag}</span>
         </button>
 
         {/* Language Menu */}
@@ -137,7 +136,7 @@ const LanguageSwitcher: React.FC = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
               transition={{ duration: 0.15 }}
-              className="fixed top-20 left-6 z-[10000] w-64 bg-slate-800/95 backdrop-blur-xl rounded-2xl border border-slate-700 shadow-2xl overflow-hidden"
+              className="absolute left-0 mt-2 z-[10000] w-64 bg-slate-800/95 backdrop-blur-xl rounded-2xl border border-slate-700 shadow-2xl overflow-hidden"
               role="menu"
               aria-label={t('language.title')}
             >
