@@ -2294,6 +2294,14 @@
             color: #9ca3af;
         }
 
+        .form-help-text {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-align: right;
+            font-style: italic;
+        }
+
         .demo-form .btn-primary {
             width: 100%;
             background: var(--primary);
@@ -2305,6 +2313,126 @@
 
         .demo-form .btn-primary:hover {
             background: var(--primary-dark);
+        }
+
+        /* Dynamic Classroom Details Styling */
+        .dynamic-classroom-container {
+            display: none;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px dashed #e5e7eb;
+        }
+
+        .grade-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .grade-checkbox-label {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .grade-checkbox {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .grade-checkbox-custom {
+            display: block;
+            padding: 0.75rem 1rem;
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+
+        .grade-checkbox:checked ~ .grade-checkbox-custom {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-color: #2563eb;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .grade-checkbox-custom:hover {
+            border-color: #3b82f6;
+            background: #e0f2fe;
+        }
+
+        .grade-checkbox:checked ~ .grade-checkbox-custom:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .grade-detail-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 15px;
+            border: 2px solid #3b82f6;
+        }
+
+        .grade-detail-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .grade-detail-header h4 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1e40af;
+            text-align: right;
+            margin: 0;
+        }
+
+        .subclass-details-container {
+            margin-top: 1.5rem;
+        }
+
+        .subclass-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .subclass-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .subclass-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .subclass-card h5 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin: 0 0 1rem 0;
+            text-align: right;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        .subclass-card .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .subclass-card .form-group:last-child {
+            margin-bottom: 0;
         }
 
         /* Responsive form layout */
@@ -2324,6 +2452,24 @@
 
             .form-row .form-group:last-child {
                 margin-bottom: 0;
+            }
+
+            .grade-selection-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .grade-checkbox-custom {
+                padding: 0.6rem 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .subclass-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .grade-detail-section {
+                padding: 1rem;
             }
         }
 
@@ -3524,60 +3670,22 @@
                     <input type="text" id="school" name="school" required placeholder="הכנס שם בית הספר">
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="numClasses">מספר כיתות *</label>
-                        <select id="numClasses" name="numClasses" required>
-                            <option value="">בחר מספר כיתות</option>
-                            <option value="1-5">1-5 כיתות</option>
-                            <option value="6-10">6-10 כיתות</option>
-                            <option value="11-20">11-20 כיתות</option>
-                            <option value="21-30">21-30 כיתות</option>
-                            <option value="31-40">31-40 כיתות</option>
-                            <option value="41+">41+ כיתות</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="numSubclasses">מספר תתי-כיתות לכיתה *</label>
-                        <select id="numSubclasses" name="numSubclasses" required>
-                            <option value="">בחר מספר</option>
-                            <option value="0">אין תתי-כיתות</option>
-                            <option value="2">2 תתי-כיתות</option>
-                            <option value="3">3 תתי-כיתות</option>
-                            <option value="4">4 תתי-כיתות</option>
-                            <option value="5+">5+ תתי-כיתות</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="numClasses">בחר מספר כיתות במוסד *</label>
+                    <select id="numClasses" name="numClasses" required>
+                        <option value="">בחר מספר כיתות</option>
+                        <option value="1-5">1-5 כיתות</option>
+                        <option value="6-10">6-10 כיתות</option>
+                        <option value="11-20">11-20 כיתות</option>
+                        <option value="21-30">21-30 כיתות</option>
+                        <option value="31-40">31-40 כיתות</option>
+                        <option value="41+">41+ כיתות</option>
+                    </select>
+                    <p class="form-help-text">לאחר הבחירה, תוכל לפרט את רמות הכיתות ותתי-הכיתות</p>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="studentsPerClass">מספר תלמידים בכיתה (ממוצע) *</label>
-                        <select id="studentsPerClass" name="studentsPerClass" required>
-                            <option value="">בחר מספר תלמידים</option>
-                            <option value="10-15">10-15 תלמידים</option>
-                            <option value="16-20">16-20 תלמידים</option>
-                            <option value="21-25">21-25 תלמידים</option>
-                            <option value="26-30">26-30 תלמידים</option>
-                            <option value="31-35">31-35 תלמידים</option>
-                            <option value="36-40">36-40 תלמידים</option>
-                            <option value="41+">41+ תלמידים</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="teachersPerClass">מספר מורים לכיתה *</label>
-                        <select id="teachersPerClass" name="teachersPerClass" required>
-                            <option value="">בחר מספר מורים</option>
-                            <option value="1">מורה 1</option>
-                            <option value="2">2 מורים</option>
-                            <option value="3">3 מורים</option>
-                            <option value="4">4 מורים</option>
-                            <option value="5+">5+ מורים</option>
-                        </select>
-                    </div>
-                </div>
+                <!-- Dynamic Subclassroom Details Container -->
+                <div id="dynamicClassroomDetails" class="dynamic-classroom-container"></div>
 
                 <button type="submit" class="btn btn-primary btn-large">🚀 קבל הדגמה חינמית עכשיו</button>
             </form>
@@ -3653,22 +3761,196 @@
         document.getElementById('demoForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
+            // Collect basic form data
             const formData = {
                 name: document.getElementById('name').value,
                 school: document.getElementById('school').value,
                 role: document.getElementById('role').value,
                 phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value
+                email: document.getElementById('email').value,
+                numClasses: document.getElementById('numClasses').value,
+                classroomDetails: []
             };
+
+            // Collect dynamic classroom details
+            Object.keys(selectedGradesData).forEach(grade => {
+                const gradeData = selectedGradesData[grade];
+                const numSubclasses = document.getElementById(`grade-${grade}-subclasses`)?.value;
+
+                if (numSubclasses) {
+                    for (let i = 1; i <= parseInt(numSubclasses); i++) {
+                        const subclassName = parseInt(numSubclasses) === 1 ? grade : `${grade}${i}`;
+                        const students = document.getElementById(`subclass-${grade}-${i}-students`)?.value;
+                        const teachers = document.getElementById(`subclass-${grade}-${i}-teachers`)?.value;
+
+                        if (students && teachers) {
+                            formData.classroomDetails.push({
+                                subclass: subclassName,
+                                students: students,
+                                teachers: teachers
+                            });
+                        }
+                    }
+                }
+            });
 
             console.log('Demo request:', formData);
 
             // Here you would typically send the data to your backend
             alert('תודה! ניצור איתך קשר בקרוב להדגמה.');
 
-            // Reset form
+            // Reset form and dynamic data
             this.reset();
+            document.getElementById('dynamicClassroomDetails').innerHTML = '';
+            document.getElementById('dynamicClassroomDetails').style.display = 'none';
+            selectedGradesData = {};
         });
+
+        // Dynamic Classroom Details Generation
+        const hebrewGrades = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'יא', 'יב'];
+        let selectedGradesData = {};
+
+        // Listen to number of classes selection
+        document.getElementById('numClasses').addEventListener('change', function(e) {
+            const value = e.target.value;
+            const container = document.getElementById('dynamicClassroomDetails');
+
+            if (!value) {
+                container.innerHTML = '';
+                container.style.display = 'none';
+                selectedGradesData = {};
+                return;
+            }
+
+            // Show container
+            container.style.display = 'block';
+
+            // Generate grade selection section
+            container.innerHTML = `
+                <div class="form-section-title">פירוט כיתות ותתי-כיתות</div>
+                <div class="form-group">
+                    <label>בחר את רמות הכיתות במוסד שלך *</label>
+                    <div class="grade-selection-grid" id="gradeSelectionGrid">
+                        ${hebrewGrades.map(grade => `
+                            <label class="grade-checkbox-label">
+                                <input type="checkbox" name="grade" value="${grade}" class="grade-checkbox">
+                                <span class="grade-checkbox-custom">כיתה ${grade}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+                <div id="gradeDetailsContainer"></div>
+            `;
+
+            // Add event listeners to grade checkboxes
+            const gradeCheckboxes = container.querySelectorAll('.grade-checkbox');
+            gradeCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', handleGradeSelection);
+            });
+        });
+
+        function handleGradeSelection(e) {
+            const grade = e.target.value;
+            const isChecked = e.target.checked;
+            const gradeDetailsContainer = document.getElementById('gradeDetailsContainer');
+
+            if (isChecked) {
+                // Add grade details section
+                const gradeSection = document.createElement('div');
+                gradeSection.id = `grade-${grade}-section`;
+                gradeSection.className = 'grade-detail-section';
+                gradeSection.innerHTML = `
+                    <div class="grade-detail-header">
+                        <h4>כיתה ${grade}</h4>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="grade-${grade}-subclasses">מספר תתי-כיתות *</label>
+                            <select id="grade-${grade}-subclasses" class="subclass-count-select" data-grade="${grade}" required>
+                                <option value="">בחר מספר תתי-כיתות</option>
+                                <option value="1">1 (כיתה ${grade})</option>
+                                <option value="2">2 (${grade}1, ${grade}2)</option>
+                                <option value="3">3 (${grade}1, ${grade}2, ${grade}3)</option>
+                                <option value="4">4 (${grade}1, ${grade}2, ${grade}3, ${grade}4)</option>
+                                <option value="5">5 (${grade}1, ${grade}2, ${grade}3, ${grade}4, ${grade}5)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="grade-${grade}-subclass-details" class="subclass-details-container"></div>
+                `;
+                gradeDetailsContainer.appendChild(gradeSection);
+
+                // Add event listener for subclass count selection
+                document.getElementById(`grade-${grade}-subclasses`).addEventListener('change', handleSubclassCountSelection);
+
+                selectedGradesData[grade] = { subclasses: [] };
+            } else {
+                // Remove grade details section
+                const gradeSection = document.getElementById(`grade-${grade}-section`);
+                if (gradeSection) {
+                    gradeSection.remove();
+                }
+                delete selectedGradesData[grade];
+            }
+        }
+
+        function handleSubclassCountSelection(e) {
+            const count = parseInt(e.target.value);
+            const grade = e.target.dataset.grade;
+            const subclassDetailsContainer = document.getElementById(`grade-${grade}-subclass-details`);
+
+            if (!count) {
+                subclassDetailsContainer.innerHTML = '';
+                return;
+            }
+
+            // Generate subclass input fields
+            let subclassHTML = '<div class="subclass-grid">';
+            for (let i = 1; i <= count; i++) {
+                const subclassName = count === 1 ? grade : `${grade}${i}`;
+                subclassHTML += `
+                    <div class="subclass-card">
+                        <h5>כיתה ${subclassName}</h5>
+                        <div class="form-group">
+                            <label for="subclass-${grade}-${i}-students">מספר תלמידים *</label>
+                            <select id="subclass-${grade}-${i}-students" name="subclass-${grade}-${i}-students" required>
+                                <option value="">בחר מספר</option>
+                                <option value="10-15">10-15</option>
+                                <option value="16-20">16-20</option>
+                                <option value="21-25">21-25</option>
+                                <option value="26-30">26-30</option>
+                                <option value="31-35">31-35</option>
+                                <option value="36-40">36-40</option>
+                                <option value="41+">41+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subclass-${grade}-${i}-teachers">מספר מורים *</label>
+                            <select id="subclass-${grade}-${i}-teachers" name="subclass-${grade}-${i}-teachers" required>
+                                <option value="">בחר מספר</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5+">5+</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+            }
+            subclassHTML += '</div>';
+            subclassDetailsContainer.innerHTML = subclassHTML;
+
+            // Store data
+            selectedGradesData[grade].subclasses = [];
+            for (let i = 1; i <= count; i++) {
+                selectedGradesData[grade].subclasses.push({
+                    name: count === 1 ? grade : `${grade}${i}`,
+                    students: '',
+                    teachers: ''
+                });
+            }
+        }
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
