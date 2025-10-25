@@ -2215,11 +2215,33 @@
 
         /* Form */
         .demo-form {
-            max-width: 500px;
+            max-width: 700px;
             margin: 2rem auto;
             background: var(--white);
-            padding: 2rem;
-            border-radius: 12px;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #1e40af;
+            margin: 2rem 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid #3b82f6;
+            text-align: right;
+        }
+
+        .form-section-title:first-child {
+            margin-top: 0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group {
@@ -2227,37 +2249,82 @@
             text-align: right;
         }
 
+        .form-row .form-group {
+            margin-bottom: 0;
+        }
+
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             color: var(--dark);
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 1rem;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 0.8rem;
+            padding: 0.9rem 1rem;
             border: 2px solid #E5E7EB;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
             font-family: 'Rubik', sans-serif;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            background: var(--white);
+            direction: rtl;
         }
 
-        .form-group input:focus {
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233b82f6' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 1rem center;
+            padding-left: 2.5rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #9ca3af;
         }
 
         .demo-form .btn-primary {
             width: 100%;
             background: var(--primary);
             color: var(--white);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            margin-top: 2rem;
+            padding: 1.2rem;
         }
 
         .demo-form .btn-primary:hover {
             background: var(--primary-dark);
+        }
+
+        /* Responsive form layout */
+        @media (max-width: 768px) {
+            .demo-form {
+                padding: 2rem 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .form-row .form-group {
+                margin-bottom: 1.5rem;
+            }
+
+            .form-row .form-group:last-child {
+                margin-bottom: 0;
+            }
         }
 
         /* Footer */
@@ -3414,32 +3481,105 @@
             <p>הצטרפו למורים שכבר חוסכים 10 שעות שבועיות</p>
 
             <form class="demo-form" id="demoForm">
-                <div class="form-group">
-                    <label for="name">שם מלא</label>
-                    <input type="text" id="name" name="name" required>
+                <!-- Personal Information -->
+                <div class="form-section-title">פרטים אישיים</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">שם מלא *</label>
+                        <input type="text" id="name" name="name" required placeholder="הכנס שם מלא">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">תפקיד *</label>
+                        <select id="role" name="role" required>
+                            <option value="">בחר תפקיד</option>
+                            <option value="מנהל">מנהל/ת בית ספר</option>
+                            <option value="סגן מנהל">סגן/ית מנהל</option>
+                            <option value="רכז">רכז/ת פדגוגי</option>
+                            <option value="מורה">מורה/ה</option>
+                            <option value="יועץ">יועץ/ת חינוכי</option>
+                            <option value="אחר">אחר</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="school">בית ספר</label>
-                    <input type="text" id="school" name="school" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">טלפון *</label>
+                        <input type="tel" id="phone" name="phone" required placeholder="05X-XXXXXXX">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">אימייל *</label>
+                        <input type="email" id="email" name="email" required placeholder="example@school.edu">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="role">תפקיד</label>
-                    <input type="text" id="role" name="role" required>
-                </div>
+                <!-- School Information -->
+                <div class="form-section-title">פרטי המוסד</div>
 
                 <div class="form-group">
-                    <label for="phone">טלפון</label>
-                    <input type="tel" id="phone" name="phone" required>
+                    <label for="school">שם בית הספר *</label>
+                    <input type="text" id="school" name="school" required placeholder="הכנס שם בית הספר">
                 </div>
 
-                <div class="form-group">
-                    <label for="email">אימייל</label>
-                    <input type="email" id="email" name="email" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="numClasses">מספר כיתות *</label>
+                        <select id="numClasses" name="numClasses" required>
+                            <option value="">בחר מספר כיתות</option>
+                            <option value="1-5">1-5 כיתות</option>
+                            <option value="6-10">6-10 כיתות</option>
+                            <option value="11-20">11-20 כיתות</option>
+                            <option value="21-30">21-30 כיתות</option>
+                            <option value="31-40">31-40 כיתות</option>
+                            <option value="41+">41+ כיתות</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numSubclasses">מספר תתי-כיתות לכיתה *</label>
+                        <select id="numSubclasses" name="numSubclasses" required>
+                            <option value="">בחר מספר</option>
+                            <option value="0">אין תתי-כיתות</option>
+                            <option value="2">2 תתי-כיתות</option>
+                            <option value="3">3 תתי-כיתות</option>
+                            <option value="4">4 תתי-כיתות</option>
+                            <option value="5+">5+ תתי-כיתות</option>
+                        </select>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">קבל הדגמה חינמית עכשיו</button>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentsPerClass">מספר תלמידים בכיתה (ממוצע) *</label>
+                        <select id="studentsPerClass" name="studentsPerClass" required>
+                            <option value="">בחר מספר תלמידים</option>
+                            <option value="10-15">10-15 תלמידים</option>
+                            <option value="16-20">16-20 תלמידים</option>
+                            <option value="21-25">21-25 תלמידים</option>
+                            <option value="26-30">26-30 תלמידים</option>
+                            <option value="31-35">31-35 תלמידים</option>
+                            <option value="36-40">36-40 תלמידים</option>
+                            <option value="41+">41+ תלמידים</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="teachersPerClass">מספר מורים לכיתה *</label>
+                        <select id="teachersPerClass" name="teachersPerClass" required>
+                            <option value="">בחר מספר מורים</option>
+                            <option value="1">מורה 1</option>
+                            <option value="2">2 מורים</option>
+                            <option value="3">3 מורים</option>
+                            <option value="4">4 מורים</option>
+                            <option value="5+">5+ מורים</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-large">🚀 קבל הדגמה חינמית עכשיו</button>
             </form>
         </div>
     </section>
