@@ -2215,7 +2215,7 @@
 
         /* Form */
         .demo-form {
-            max-width: 700px;
+            max-width: 900px;
             margin: 2rem auto;
             background: var(--white);
             padding: 3rem;
@@ -2371,6 +2371,56 @@
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
         }
 
+        /* Subclass Selection Grid */
+        .subclass-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .subclass-checkbox-label {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .subclass-checkbox {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .subclass-checkbox-custom {
+            display: block;
+            padding: 0.6rem 0.8rem;
+            background: #fefce8;
+            border: 2px solid #fde047;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: #854d0e;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .subclass-checkbox:checked ~ .subclass-checkbox-custom {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-color: #f59e0b;
+            color: white;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .subclass-checkbox-custom:hover {
+            border-color: #fbbf24;
+            background: #fef3c7;
+        }
+
+        .subclass-checkbox:checked ~ .subclass-checkbox-custom:hover {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
         .grade-detail-section {
             margin-top: 2rem;
             padding: 1.5rem;
@@ -2397,7 +2447,7 @@
 
         .subclass-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-top: 1rem;
         }
@@ -3907,30 +3957,31 @@
                     <div class="grade-detail-header">
                         <h4>כיתה ${grade}</h4>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="grade-${grade}-subclasses">מספר תתי-כיתות *</label>
-                            <select id="grade-${grade}-subclasses" class="subclass-count-select" data-grade="${grade}" required>
-                                <option value="">בחר מספר תתי-כיתות</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
-                            </select>
+                    <div class="form-group">
+                        <label>בחר את תתי-הכיתות הקיימות *</label>
+                        <p class="form-help-text">סמן את תתי-הכיתות שקיימות במוסד שלך</p>
+                        <div class="subclass-selection-grid" id="subclass-grid-${grade}">
+                            <label class="subclass-checkbox-label">
+                                <input type="checkbox" name="subclass-${grade}" value="0" class="subclass-checkbox" data-grade="${grade}">
+                                <span class="subclass-checkbox-custom">כיתה ${grade}</span>
+                            </label>
+                            ${Array.from({length: 10}, (_, i) => i + 1).map(num => `
+                                <label class="subclass-checkbox-label">
+                                    <input type="checkbox" name="subclass-${grade}" value="${num}" class="subclass-checkbox" data-grade="${grade}">
+                                    <span class="subclass-checkbox-custom">${grade}${num}</span>
+                                </label>
+                            `).join('')}
                         </div>
                     </div>
                     <div id="grade-${grade}-subclass-details" class="subclass-details-container"></div>
                 `;
                 gradeDetailsContainer.appendChild(gradeSection);
 
-                // Add event listener for subclass count selection
-                document.getElementById(`grade-${grade}-subclasses`).addEventListener('change', handleSubclassCountSelection);
+                // Add event listeners for subclass checkboxes
+                const subclassCheckboxes = document.querySelectorAll(`.subclass-checkbox[data-grade="${grade}"]`);
+                subclassCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', handleSubclassSelection);
+                });
 
                 selectedGradesData[grade] = { subclasses: [] };
             } else {
@@ -3943,62 +3994,83 @@
             }
         }
 
-        function handleSubclassCountSelection(e) {
-            const count = parseInt(e.target.value);
+        function handleSubclassSelection(e) {
+            const subclassNum = e.target.value;
             const grade = e.target.dataset.grade;
+            const isChecked = e.target.checked;
             const subclassDetailsContainer = document.getElementById(`grade-${grade}-subclass-details`);
 
-            if (!count) {
-                subclassDetailsContainer.innerHTML = '';
-                return;
-            }
+            const subclassName = subclassNum === '0' ? grade : `${grade}${subclassNum}`;
+            const subclassId = `subclass-${grade}-${subclassNum}`;
 
-            // Generate subclass input fields
-            let subclassHTML = '<div class="subclass-grid">';
-            for (let i = 1; i <= count; i++) {
-                const subclassName = count === 1 ? grade : `${grade}${i}`;
-
-                // Generate student options (10-50)
+            if (isChecked) {
+                // Create student and teacher options
                 let studentOptions = '<option value="">בחר מספר</option>';
                 for (let s = 10; s <= 50; s++) {
                     studentOptions += `<option value="${s}">${s}</option>`;
                 }
 
-                // Generate teacher options (1-10)
                 let teacherOptions = '<option value="">בחר מספר</option>';
-                for (let t = 1; t <= 10; t++) {
+                for (let t = 1; t <= 5; t++) {
                     teacherOptions += `<option value="${t}">${t}</option>`;
                 }
 
-                subclassHTML += `
-                    <div class="subclass-card">
+                // Check if container is empty, if so create the grid
+                if (!subclassDetailsContainer.querySelector('.subclass-grid')) {
+                    subclassDetailsContainer.innerHTML = '<div class="subclass-grid"></div>';
+                }
+
+                const grid = subclassDetailsContainer.querySelector('.subclass-grid');
+
+                // Create and add the subclass card
+                const cardHTML = `
+                    <div class="subclass-card" id="${subclassId}">
                         <h5>כיתה ${subclassName}</h5>
                         <div class="form-group">
-                            <label for="subclass-${grade}-${i}-students">מספר תלמידים *</label>
-                            <select id="subclass-${grade}-${i}-students" name="subclass-${grade}-${i}-students" required>
+                            <label for="${subclassId}-students">מספר תלמידים *</label>
+                            <select id="${subclassId}-students" name="${subclassId}-students" required>
                                 ${studentOptions}
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="subclass-${grade}-${i}-teachers">מספר מורים *</label>
-                            <select id="subclass-${grade}-${i}-teachers" name="subclass-${grade}-${i}-teachers" required>
+                            <label for="${subclassId}-teachers">מספר מורים *</label>
+                            <select id="${subclassId}-teachers" name="${subclassId}-teachers" required>
                                 ${teacherOptions}
                             </select>
                         </div>
                     </div>
                 `;
-            }
-            subclassHTML += '</div>';
-            subclassDetailsContainer.innerHTML = subclassHTML;
+                grid.insertAdjacentHTML('beforeend', cardHTML);
 
-            // Store data
-            selectedGradesData[grade].subclasses = [];
-            for (let i = 1; i <= count; i++) {
+                // Add to data
+                if (!selectedGradesData[grade].subclasses) {
+                    selectedGradesData[grade].subclasses = [];
+                }
                 selectedGradesData[grade].subclasses.push({
-                    name: count === 1 ? grade : `${grade}${i}`,
+                    name: subclassName,
+                    num: subclassNum,
                     students: '',
                     teachers: ''
                 });
+            } else {
+                // Remove the subclass card
+                const card = document.getElementById(subclassId);
+                if (card) {
+                    card.remove();
+                }
+
+                // Remove from data
+                if (selectedGradesData[grade].subclasses) {
+                    selectedGradesData[grade].subclasses = selectedGradesData[grade].subclasses.filter(
+                        sc => sc.num !== subclassNum
+                    );
+                }
+
+                // If no more subclasses, remove the grid
+                const grid = subclassDetailsContainer.querySelector('.subclass-grid');
+                if (grid && grid.children.length === 0) {
+                    subclassDetailsContainer.innerHTML = '';
+                }
             }
         }
 
