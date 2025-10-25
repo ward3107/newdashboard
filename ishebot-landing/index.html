@@ -832,6 +832,123 @@
             font-weight: 500;
         }
 
+        /* FAQ Section */
+        .faq-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .faq-section .section-title {
+            color: #1e40af;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .faq-section .section-subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #64748b;
+            margin-bottom: 3rem;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .faq-question {
+            padding: 1.5rem 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+        }
+
+        .faq-question h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin: 0;
+            flex: 1;
+            text-align: right;
+        }
+
+        .faq-toggle {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-left: 1rem;
+            transition: transform 0.3s ease;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .faq-item.active .faq-toggle {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 2rem;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 1000px;
+            padding: 1.5rem 2rem 2rem;
+        }
+
+        .faq-answer p {
+            color: #475569;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .faq-answer ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .faq-answer li {
+            padding: 0.5rem 0;
+            color: #334155;
+            font-size: 1rem;
+            text-align: right;
+            line-height: 1.6;
+        }
+
+        .faq-answer strong {
+            color: #1e40af;
+            font-weight: 700;
+        }
+
         /* Pricing Section */
         .pricing {
             padding: 5rem 0;
@@ -1677,6 +1794,141 @@
                     * חישוב מבוסס על: 10 שעות/שבוע × 25 מורים × 25 שבועות × ₪32/שעה = ₪200,000 בעלות זמן שנתית.
                     עם ISHEBOT ב-₪88,000, אתם חוסכים ₪112,000 בזמן מורים + מקבלים שיפור של 40% בהישגים.
                     ההשקעה מחזירה את עצמה כבר בשנה הראשונה!
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq-section">
+        <div class="container">
+            <h2 class="section-title">❓ שאלות נפוצות</h2>
+            <p class="section-subtitle">תשובות לשאלות שמנהלים שואלים לפני ההחלטה</p>
+
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>⏱️ כמה זמן לוקח ליישם את ISHEBOT?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>התהליך מהיר במיוחד! אחרי רכישה, התקנה והדרכה בסיסית לוקחות <strong>2-3 ימים בלבד</strong>. המורים יכולים להתחיל להשתמש במערכת באותו שבוע. אנחנו מספקים הדרכה מקיפה לכל הצוות, והתמיכה שלנו זמינה לכל שאלה.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>🔒 האם המידע מאובטח ועומד בתקן 13?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>בהחלט!</strong> ISHEBOT עומד בכל דרישות הפרטיות והאבטחה:</p>
+                        <ul>
+                            <li>✅ תואם לתיקון 13 למשרד החינוך</li>
+                            <li>✅ הצפנה מלאה של כל המידע</li>
+                            <li>✅ עומד בתקני GDPR ו-ISO 27001</li>
+                            <li>✅ שרתים מאובטחים בישראל</li>
+                            <li>✅ גיבויים אוטומטיים יומיים</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>👨‍🏫 האם המורים יצטרכו הדרכה ארוכה?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>בכלל לא! הממשק של ISHEBOT פשוט ואינטואיטיבי במיוחד. רוב המורים מבינים איך להשתמש בו תוך <strong>15-20 דקות</strong>. אנחנו מספקים:</p>
+                        <ul>
+                            <li>📹 סרטוני הדרכה קצרים בעברית</li>
+                            <li>📚 מדריך משתמש ממוקד</li>
+                            <li>💬 תמיכה מהירה ב-WhatsApp</li>
+                            <li>🎓 הדרכה אישית לצוות (בחבילה מקצועית)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>🔄 האם יש תקופת ניסיון או החזר כספי?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>כן!</strong> אנחנו כל כך בטוחים ב-ISHEBOT שאנחנו מציעים:</p>
+                        <ul>
+                            <li>✅ <strong>30 יום החזר כספי מלא</strong> - ללא שאלות</li>
+                            <li>✅ הדגמה חיה חינמית לפני רכישה</li>
+                            <li>✅ אפשרות לפיילוט עם 5 מורים (חבילה בסיסית)</li>
+                        </ul>
+                        <p>אם לא מרוצים - מחזירים את הכסף. פשוט!</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>💻 האם ISHEBOT תואם למערכות הקיימות שלנו?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>כן!</strong> ISHEBOT עובד עם כל המערכות הפופולריות:</p>
+                        <ul>
+                            <li>✅ Google Workspace (Google Forms, Sheets)</li>
+                            <li>✅ Microsoft Office (Excel, Forms)</li>
+                            <li>✅ מערכות ניהול בית ספר (משה"ב)</li>
+                            <li>✅ ייבוא/ייצוא Excel פשוט</li>
+                        </ul>
+                        <p>בחבילה הארגונית - אינטגרציה אוטומטית מלאה!</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>📊 איך אני יודע שזה באמת עובד? יש הוכחות?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>יש לנו מחקרים!</strong> מחקרים אקדמיים מוכיחים שסידור ישיבה מבוסס נתונים משפר הישגים ב-40%. אצלנו:</p>
+                        <ul>
+                            <li>📈 50+ בתי ספר כבר משתמשים</li>
+                            <li>⭐ דירוג ממוצע של 4.8/5 ממורים</li>
+                            <li>💰 ROI ממוצע של 127% בשנה הראשונה</li>
+                            <li>📝 המלצות בכתב מ-15 מנהלים</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>🎨 האם אפשר להתאים את ISHEBOT לצרכים שלנו?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>בהחלט!</strong> ISHEBOT גמיש מאוד:</p>
+                        <ul>
+                            <li>✅ 6 מבני כיתה שונים (שורות, זוגות, מעגל...)</li>
+                            <li>✅ התאמה אישית של פרמטרים לכל מורה</li>
+                            <li>✅ בחבילה ארגונית - אלגוריתם מותאם לארגון</li>
+                            <li>✅ תמיכה במבני כיתה ייחודיים</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>📞 מה קורה אם יש בעיה? איזה תמיכה יש?</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>התמיכה שלנו <strong>מעולה</strong>:</p>
+                        <ul>
+                            <li>✅ חבילה בסיסית: תמיכה במייל תוך 24 שעות</li>
+                            <li>✅ חבילה מקצועית: WhatsApp מהיר + טלפון</li>
+                            <li>✅ חבילה ארגונית: תמיכה 24/7 + מנהל חשבון ייעודי</li>
+                            <li>✅ מרכז עזרה מקוון בעברית</li>
+                            <li>✅ עדכונים וחידושים חינם</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3104,6 +3356,33 @@
             if (savedLang && translations[savedLang]) {
                 switchLanguage(savedLang);
             }
+        });
+
+        // FAQ Accordion Toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const faqItems = document.querySelectorAll('.faq-item');
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+
+                question.addEventListener('click', () => {
+                    const isActive = item.classList.contains('active');
+
+                    // Close all other FAQ items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+
+                    // Toggle current item
+                    if (isActive) {
+                        item.classList.remove('active');
+                    } else {
+                        item.classList.add('active');
+                    }
+                });
+            });
         });
     </script>
 </body>
