@@ -43,6 +43,16 @@
             --gray: #6B7280;
         }
 
+        /* Smooth scroll with offset for sticky header */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
+        section[id] {
+            scroll-margin-top: 100px;
+        }
+
         body {
             font-family: 'Rubik', sans-serif;
             line-height: 1.6;
@@ -2877,6 +2887,8 @@
                 <li><a href="#features">תכונות</a></li>
                 <li><a href="#benefits">יתרונות</a></li>
                 <li><a href="#video-demo">סרטון הדגמה</a></li>
+                <li><a href="#before-after">לפני ואחרי</a></li>
+                <li><a href="#roi">ROI</a></li>
                 <li><a href="#faq">שאלות נפוצות</a></li>
                 <li><a href="#pricing">מחירים</a></li>
                 <li><a href="#contact">צור קשר</a></li>
@@ -3244,6 +3256,216 @@
         </div>
     </section>
 
+    <!-- Before/After Comparison Section -->
+    <section id="before-after" class="before-after-section">
+        <div class="container">
+            <h2 class="section-title" style="color: #1e40af;">🔄 מהפכה בניהול כיתה</h2>
+            <p class="section-subtitle" style="color: #475569; font-size: 1.4rem;">ראו את ההבדל המדהים!</p>
+
+            <div class="comparison-grid">
+                <!-- BEFORE Column -->
+                <div class="comparison-column before-column">
+                    <div class="column-header before-header">
+                        <h3>❌ לפני ISHEBOT</h3>
+                        <p>העבודה הידנית המתישה</p>
+                    </div>
+
+                    <div class="comparison-visual">
+                        <div class="visual-mockup before-mockup">
+                            <div class="mockup-content">
+                                <div class="excel-mess">
+                                    <div class="excel-row">תלמיד 1 | חיים | כיתה א | ???</div>
+                                    <div class="excel-row">תלמיד 2 | שרה | כיתה א | ???</div>
+                                    <div class="excel-row">תלמיד 3 | דוד | כיתה א | ???</div>
+                                    <div class="excel-row scattered">תלמיד 4 | רחל | ??? | ???</div>
+                                    <div class="excel-row scattered">תלמיד 5 | יוסי | ??? | חסר מידע</div>
+                                    <div class="note-paper">📄 פתקים מפוזרים</div>
+                                    <div class="note-paper" style="right: 120px; top: 80px;">📋 רשימות ידניות</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="comparison-stats">
+                            <div class="stat-item bad">
+                                <span class="stat-icon">⏱️</span>
+                                <strong>10 שעות/שבוע</strong>
+                                <span>עבודה מייגעת</span>
+                            </div>
+                            <div class="stat-item bad">
+                                <span class="stat-icon">📊</span>
+                                <strong>0% נתונים</strong>
+                                <span>רק ניחושים</span>
+                            </div>
+                            <div class="stat-item bad">
+                                <span class="stat-icon">😓</span>
+                                <strong>תוצאות חלשות</strong>
+                                <span>ללא אופטימיזציה</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ARROW -->
+                <div class="comparison-arrow">
+                    <div class="arrow-circle">→</div>
+                    <p>השינוי המדהים</p>
+                </div>
+
+                <!-- AFTER Column -->
+                <div class="comparison-column after-column">
+                    <div class="column-header after-header">
+                        <h3>✅ עם ISHEBOT</h3>
+                        <p>פתרון AI חכם ומהיר</p>
+                    </div>
+
+                    <div class="comparison-visual">
+                        <div class="visual-mockup after-mockup">
+                            <div class="mockup-content">
+                                <div class="ishebot-interface">
+                                    <div class="interface-header">
+                                        <span class="ai-badge">🤖 AI מנתח...</span>
+                                        <span class="status-badge">✅ מוכן!</span>
+                                    </div>
+                                    <div class="seat-grid">
+                                        <div class="seat green">👦<br>חיים</div>
+                                        <div class="seat yellow">👧<br>שרה</div>
+                                        <div class="seat green">👦<br>דוד</div>
+                                        <div class="seat green">👧<br>רחל</div>
+                                        <div class="seat yellow">👦<br>יוסי</div>
+                                        <div class="seat green">👧<br>מירי</div>
+                                    </div>
+                                    <div class="optimization-score">
+                                        <span class="score-label">ציון אופטימיזציה:</span>
+                                        <span class="score-value">95%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="comparison-stats">
+                            <div class="stat-item good">
+                                <span class="stat-icon">⚡</span>
+                                <strong>5 דקות</strong>
+                                <span>להשלמת סידור</span>
+                            </div>
+                            <div class="stat-item good">
+                                <span class="stat-icon">📈</span>
+                                <strong>50+ נקודות נתונים</strong>
+                                <span>החלטות מדויקות</span>
+                            </div>
+                            <div class="stat-item good">
+                                <span class="stat-icon">🎯</span>
+                                <strong>+40% שיפור</strong>
+                                <span>תוצאות מוכחות</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-cta">
+                <h3>מוכנים לעבור ל-ISHEBOT?</h3>
+                <a href="#contact" class="btn btn-primary btn-large">🚀 התחילו עכשיו - חינם למשך 30 יום!</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI Calculation Section -->
+    <section id="roi" class="roi-section">
+        <div class="container">
+            <h2 class="section-title">💰 תשואה על ההשקעה (ROI)</h2>
+            <p class="section-subtitle">למה ISHEBOT היא ההשקעה הכי חכמה שלכם?</p>
+
+            <div class="roi-calculator">
+                <div class="roi-breakdown">
+                    <div class="roi-item">
+                        <div class="roi-icon">👨‍🏫</div>
+                        <div class="roi-label">מספר מורים</div>
+                        <div class="roi-value">25</div>
+                    </div>
+
+                    <div class="roi-item">
+                        <div class="roi-icon">💵</div>
+                        <div class="roi-label">עלות למורה</div>
+                        <div class="roi-value">₪3,520</div>
+                    </div>
+
+                    <div class="roi-item">
+                        <div class="roi-icon">📈</div>
+                        <div class="roi-label">שיפור בהישגים</div>
+                        <div class="roi-value">+40%</div>
+                    </div>
+                </div>
+
+                <div class="roi-comparison">
+                    <div class="roi-comparison-item">
+                        <h4>❌ עבודה ידנית מסורתית</h4>
+                        <div class="amount" style="color: #ef4444;">₪200,000</div>
+                        <p style="margin-top: 0.5rem; font-size: 1.1rem; color: rgba(255,255,255,0.9); font-weight: 600;">
+                            עלות זמן המורים בשנה
+                        </p>
+                        <p style="margin-top: 1rem; font-size: 1rem; color: #fbbf24; line-height: 1.8;">
+                            ❌ 10 שעות/שבוע × 25 מורים × 25 שבועות<br>
+                            ❌ 6,250 שעות עבודה במקום הוראה<br>
+                            ❌ סידור בניסוי וטעייה - תוצאות חלשות<br>
+                            ❌ ללא נתונים או אופטימיזציה<br>
+                            ❌ שחיקת מורים ותסכול
+                        </p>
+                    </div>
+
+                    <div class="roi-comparison-arrow">→</div>
+
+                    <div class="roi-comparison-item">
+                        <h4>✅ ISHEBOT - פתרון מקצועי</h4>
+                        <div class="amount" style="color: #10b981;">₪88,000</div>
+                        <p style="margin-top: 0.5rem; font-size: 1.1rem; color: rgba(255,255,255,0.9); font-weight: 600;">
+                            השקעה שנתית עבור 25 מורים
+                        </p>
+                        <p style="margin-top: 1rem; font-size: 1rem; color: #10b981; line-height: 1.8; font-weight: 500;">
+                            ✅ חיסכון ₪112,000 בזמן מורים מדי שנה!<br>
+                            ✅ 6,250 שעות משוחררות להוראה אמיתית<br>
+                            ✅ שיפור של 40% בהישגים התלמידים<br>
+                            ✅ סידור מבוסס מדע ואלגוריתם גנטי<br>
+                            ✅ מורים מרוצים + הורים מרוצים
+                        </p>
+                    </div>
+                </div>
+
+                <div class="roi-result">
+                    <h3 style="font-size: 2rem; font-weight: 800;">🎯 החזר ההשקעה בפועל</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; text-align: right;">
+                        <div>
+                            <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">📈 שיפור 40% בהישגים</h4>
+                            <p style="font-size: 1.05rem; line-height: 1.6;">תלמידים בסידור אופטימלי משיגים תוצאות טובות יותר = שביעות רצון הורים וציונים גבוהים יותר</p>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">⏱️ 250 שעות למורה</h4>
+                            <p style="font-size: 1.05rem; line-height: 1.6;">10 שעות/שבוע × 25 שבועות = 250 שעות בשנה שהמורה יכול להקדיש להוראה</p>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">🧠 החלטות חכמות</h4>
+                            <p style="font-size: 1.05rem; line-height: 1.6;">מבוסס על 50+ נקודות נתונים ואלגוריתם מדעי, לא על אינטואיציה</p>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">📊 דיווח והוכחות</h4>
+                            <p style="font-size: 1.05rem; line-height: 1.6;">דוחות מקצועיים להורים והנהלה + עמידה בתקני משרד החינוך</p>
+                        </div>
+                    </div>
+                    <p style="font-size: 1.4rem; margin-top: 2rem; font-weight: 700; background: rgba(16, 185, 129, 0.2); padding: 1.5rem; border-radius: 12px;">
+                        💰 רק ₪3,520 למורה בשנה (₪293/חודש)<br>
+                        <span style="font-size: 1.15rem; opacity: 0.95;">השקעה שמחזירה את עצמה ב-40% שיפור בהישגים + 250 שעות חיסכון!</span>
+                    </p>
+                </div>
+
+                <div class="roi-note">
+                    * חישוב מבוסס על: 10 שעות/שבוע × 25 מורים × 25 שבועות × ₪32/שעה = ₪200,000 בעלות זמן שנתית.
+                    עם ISHEBOT ב-₪88,000, אתם חוסכים ₪112,000 בזמן מורים + מקבלים שיפור של 40% בהישגים.
+                    ההשקעה מחזירה את עצמה כבר בשנה הראשונה!
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- FAQ Section -->
     <section id="faq" class="faq-section">
         <div class="container">
@@ -3514,216 +3736,6 @@
         </div>
     </section>
 
-    <!-- Before/After Comparison Section -->
-    <section id="before-after" class="before-after-section">
-        <div class="container">
-            <h2 class="section-title" style="color: #1e40af;">🔄 מהפכה בניהול כיתה</h2>
-            <p class="section-subtitle" style="color: #475569; font-size: 1.4rem;">ראו את ההבדל המדהים!</p>
-
-            <div class="comparison-grid">
-                <!-- BEFORE Column -->
-                <div class="comparison-column before-column">
-                    <div class="column-header before-header">
-                        <h3>❌ לפני ISHEBOT</h3>
-                        <p>העבודה הידנית המתישה</p>
-                    </div>
-
-                    <div class="comparison-visual">
-                        <div class="visual-mockup before-mockup">
-                            <div class="mockup-content">
-                                <div class="excel-mess">
-                                    <div class="excel-row">תלמיד 1 | חיים | כיתה א | ???</div>
-                                    <div class="excel-row">תלמיד 2 | שרה | כיתה א | ???</div>
-                                    <div class="excel-row">תלמיד 3 | דוד | כיתה א | ???</div>
-                                    <div class="excel-row scattered">תלמיד 4 | רחל | ??? | ???</div>
-                                    <div class="excel-row scattered">תלמיד 5 | יוסי | ??? | חסר מידע</div>
-                                    <div class="note-paper">📄 פתקים מפוזרים</div>
-                                    <div class="note-paper" style="right: 120px; top: 80px;">📋 רשימות ידניות</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="comparison-stats">
-                            <div class="stat-item bad">
-                                <span class="stat-icon">⏱️</span>
-                                <strong>10 שעות/שבוע</strong>
-                                <span>עבודה מייגעת</span>
-                            </div>
-                            <div class="stat-item bad">
-                                <span class="stat-icon">📊</span>
-                                <strong>0% נתונים</strong>
-                                <span>רק ניחושים</span>
-                            </div>
-                            <div class="stat-item bad">
-                                <span class="stat-icon">😓</span>
-                                <strong>תוצאות חלשות</strong>
-                                <span>ללא אופטימיזציה</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ARROW -->
-                <div class="comparison-arrow">
-                    <div class="arrow-circle">→</div>
-                    <p>השינוי המדהים</p>
-                </div>
-
-                <!-- AFTER Column -->
-                <div class="comparison-column after-column">
-                    <div class="column-header after-header">
-                        <h3>✅ עם ISHEBOT</h3>
-                        <p>פתרון AI חכם ומהיר</p>
-                    </div>
-
-                    <div class="comparison-visual">
-                        <div class="visual-mockup after-mockup">
-                            <div class="mockup-content">
-                                <div class="ishebot-interface">
-                                    <div class="interface-header">
-                                        <span class="ai-badge">🤖 AI מנתח...</span>
-                                        <span class="status-badge">✅ מוכן!</span>
-                                    </div>
-                                    <div class="seat-grid">
-                                        <div class="seat green">👦<br>חיים</div>
-                                        <div class="seat yellow">👧<br>שרה</div>
-                                        <div class="seat green">👦<br>דוד</div>
-                                        <div class="seat green">👧<br>רחל</div>
-                                        <div class="seat yellow">👦<br>יוסי</div>
-                                        <div class="seat green">👧<br>מירי</div>
-                                    </div>
-                                    <div class="optimization-score">
-                                        <span class="score-label">ציון אופטימיזציה:</span>
-                                        <span class="score-value">95%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="comparison-stats">
-                            <div class="stat-item good">
-                                <span class="stat-icon">⚡</span>
-                                <strong>5 דקות</strong>
-                                <span>להשלמת סידור</span>
-                            </div>
-                            <div class="stat-item good">
-                                <span class="stat-icon">📈</span>
-                                <strong>50+ נקודות נתונים</strong>
-                                <span>החלטות מדויקות</span>
-                            </div>
-                            <div class="stat-item good">
-                                <span class="stat-icon">🎯</span>
-                                <strong>+40% שיפור</strong>
-                                <span>תוצאות מוכחות</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="comparison-cta">
-                <h3>מוכנים לעבור ל-ISHEBOT?</h3>
-                <a href="#contact" class="btn btn-primary btn-large">🚀 התחילו עכשיו - חינם למשך 30 יום!</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- ROI Calculation Section -->
-    <section id="roi" class="roi-section">
-        <div class="container">
-            <h2 class="section-title">💰 תשואה על ההשקעה (ROI)</h2>
-            <p class="section-subtitle">למה ISHEBOT היא ההשקעה הכי חכמה שלכם?</p>
-
-            <div class="roi-calculator">
-                <div class="roi-breakdown">
-                    <div class="roi-item">
-                        <div class="roi-icon">👨‍🏫</div>
-                        <div class="roi-label">מספר מורים</div>
-                        <div class="roi-value">25</div>
-                    </div>
-
-                    <div class="roi-item">
-                        <div class="roi-icon">💵</div>
-                        <div class="roi-label">עלות למורה</div>
-                        <div class="roi-value">₪3,520</div>
-                    </div>
-
-                    <div class="roi-item">
-                        <div class="roi-icon">📈</div>
-                        <div class="roi-label">שיפור בהישגים</div>
-                        <div class="roi-value">+40%</div>
-                    </div>
-                </div>
-
-                <div class="roi-comparison">
-                    <div class="roi-comparison-item">
-                        <h4>❌ עבודה ידנית מסורתית</h4>
-                        <div class="amount" style="color: #ef4444;">₪200,000</div>
-                        <p style="margin-top: 0.5rem; font-size: 1.1rem; color: rgba(255,255,255,0.9); font-weight: 600;">
-                            עלות זמן המורים בשנה
-                        </p>
-                        <p style="margin-top: 1rem; font-size: 1rem; color: #fbbf24; line-height: 1.8;">
-                            ❌ 10 שעות/שבוע × 25 מורים × 25 שבועות<br>
-                            ❌ 6,250 שעות עבודה במקום הוראה<br>
-                            ❌ סידור בניסוי וטעייה - תוצאות חלשות<br>
-                            ❌ ללא נתונים או אופטימיזציה<br>
-                            ❌ שחיקת מורים ותסכול
-                        </p>
-                    </div>
-
-                    <div class="roi-comparison-arrow">→</div>
-
-                    <div class="roi-comparison-item">
-                        <h4>✅ ISHEBOT - פתרון מקצועי</h4>
-                        <div class="amount" style="color: #10b981;">₪88,000</div>
-                        <p style="margin-top: 0.5rem; font-size: 1.1rem; color: rgba(255,255,255,0.9); font-weight: 600;">
-                            השקעה שנתית עבור 25 מורים
-                        </p>
-                        <p style="margin-top: 1rem; font-size: 1rem; color: #10b981; line-height: 1.8; font-weight: 500;">
-                            ✅ חיסכון ₪112,000 בזמן מורים מדי שנה!<br>
-                            ✅ 6,250 שעות משוחררות להוראה אמיתית<br>
-                            ✅ שיפור של 40% בהישגים התלמידים<br>
-                            ✅ סידור מבוסס מדע ואלגוריתם גנטי<br>
-                            ✅ מורים מרוצים + הורים מרוצים
-                        </p>
-                    </div>
-                </div>
-
-                <div class="roi-result">
-                    <h3 style="font-size: 2rem; font-weight: 800;">🎯 החזר ההשקעה בפועל</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; text-align: right;">
-                        <div>
-                            <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">📈 שיפור 40% בהישגים</h4>
-                            <p style="font-size: 1.05rem; line-height: 1.6;">תלמידים בסידור אופטימלי משיגים תוצאות טובות יותר = שביעות רצון הורים וציונים גבוהים יותר</p>
-                        </div>
-                        <div>
-                            <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">⏱️ 250 שעות למורה</h4>
-                            <p style="font-size: 1.05rem; line-height: 1.6;">10 שעות/שבוע × 25 שבועות = 250 שעות בשנה שהמורה יכול להקדיש להוראה</p>
-                        </div>
-                        <div>
-                            <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">🧠 החלטות חכמות</h4>
-                            <p style="font-size: 1.05rem; line-height: 1.6;">מבוסס על 50+ נקודות נתונים ואלגוריתם מדעי, לא על אינטואיציה</p>
-                        </div>
-                        <div>
-                            <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">📊 דיווח והוכחות</h4>
-                            <p style="font-size: 1.05rem; line-height: 1.6;">דוחות מקצועיים להורים והנהלה + עמידה בתקני משרד החינוך</p>
-                        </div>
-                    </div>
-                    <p style="font-size: 1.4rem; margin-top: 2rem; font-weight: 700; background: rgba(16, 185, 129, 0.2); padding: 1.5rem; border-radius: 12px;">
-                        💰 רק ₪3,520 למורה בשנה (₪293/חודש)<br>
-                        <span style="font-size: 1.15rem; opacity: 0.95;">השקעה שמחזירה את עצמה ב-40% שיפור בהישגים + 250 שעות חיסכון!</span>
-                    </p>
-                </div>
-
-                <div class="roi-note">
-                    * חישוב מבוסס על: 10 שעות/שבוע × 25 מורים × 25 שבועות × ₪32/שעה = ₪200,000 בעלות זמן שנתית.
-                    עם ISHEBOT ב-₪88,000, אתם חוסכים ₪112,000 בזמן מורים + מקבלים שיפור של 40% בהישגים.
-                    ההשקעה מחזירה את עצמה כבר בשנה הראשונה!
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- WhatsApp Chat Widget -->
     <a href="https://wa.me/972XXXXXXXXX?text=היי!%20אני%20מעוניין%20לשמוע%20עוד%20על%20ISHEBOT%20למוסד%20שלנו"
        class="whatsapp-widget"
@@ -3755,6 +3767,8 @@
                         <li><a href="#features">תכונות</a></li>
                         <li><a href="#benefits">יתרונות</a></li>
                         <li><a href="#video-demo">סרטון הדגמה</a></li>
+                        <li><a href="#before-after">לפני ואחרי</a></li>
+                        <li><a href="#roi">ROI</a></li>
                         <li><a href="#faq">שאלות נפוצות</a></li>
                         <li><a href="#pricing">מחירים</a></li>
                         <li><a href="#contact">צור קשר</a></li>
