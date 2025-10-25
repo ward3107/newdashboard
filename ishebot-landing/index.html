@@ -291,6 +291,76 @@
             animation: fadeInUp 0.8s ease-out 0.6s backwards;
         }
 
+        /* Trust Badges Section */
+        .trust-badges {
+            padding: 3rem 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .trust-header {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        .badge-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .badge-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .badge-icon {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .badge-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            text-align: right;
+        }
+
+        .badge-text strong {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #1e40af;
+            line-height: 1.2;
+        }
+
+        .badge-text span {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
         /* Problem Section */
         .problem {
             padding: 6rem 0;
@@ -1540,6 +1610,57 @@
             <div class="cta-buttons">
                 <a href="#contact" class="btn btn-primary">🎁 תן למערכת לעבוד במקומך - התחל עכשיו!</a>
                 <a href="#features" class="btn btn-secondary">ראה איך זה חוסך לך זמן</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Badges Section -->
+    <section class="trust-badges">
+        <div class="container">
+            <p class="trust-header">✅ בטוח, מאובטח, ומאושר</p>
+            <div class="badges-grid">
+                <div class="badge-item">
+                    <div class="badge-icon">🏛️</div>
+                    <div class="badge-text">
+                        <strong>תקן 13</strong>
+                        <span>משרד החינוך</span>
+                    </div>
+                </div>
+                <div class="badge-item">
+                    <div class="badge-icon">🔒</div>
+                    <div class="badge-text">
+                        <strong>ISO 27001</strong>
+                        <span>אבטחת מידע</span>
+                    </div>
+                </div>
+                <div class="badge-item">
+                    <div class="badge-icon">🌍</div>
+                    <div class="badge-text">
+                        <strong>GDPR</strong>
+                        <span>תואם אירופה</span>
+                    </div>
+                </div>
+                <div class="badge-item">
+                    <div class="badge-icon">🏫</div>
+                    <div class="badge-text">
+                        <strong>50+ בתי ספר</strong>
+                        <span>משתמשים בישראל</span>
+                    </div>
+                </div>
+                <div class="badge-item">
+                    <div class="badge-icon">⭐</div>
+                    <div class="badge-text">
+                        <strong>4.8/5</strong>
+                        <span>דירוג ממורים</span>
+                    </div>
+                </div>
+                <div class="badge-item">
+                    <div class="badge-icon">🔐</div>
+                    <div class="badge-text">
+                        <strong>256-bit SSL</strong>
+                        <span>הצפנה מלאה</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
