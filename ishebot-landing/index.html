@@ -2316,13 +2316,6 @@
         }
 
         /* Dynamic Classroom Details Styling */
-        .dynamic-classroom-container {
-            display: none;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 2px dashed #e5e7eb;
-        }
-
         .grade-selection-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -3720,66 +3713,13 @@
                     <input type="text" id="school" name="school" required placeholder="הכנס שם בית הספר">
                 </div>
 
+                <!-- Classroom Details Section -->
+                <div class="form-section-title">פירוט כיתות ותתי-כיתות</div>
                 <div class="form-group">
-                    <label for="numClasses">בחר מספר כיתות במוסד *</label>
-                    <select id="numClasses" name="numClasses" required>
-                        <option value="">בחר מספר כיתות</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                        <option value="21">21</option>
-                        <option value="22">22</option>
-                        <option value="23">23</option>
-                        <option value="24">24</option>
-                        <option value="25">25</option>
-                        <option value="26">26</option>
-                        <option value="27">27</option>
-                        <option value="28">28</option>
-                        <option value="29">29</option>
-                        <option value="30">30</option>
-                        <option value="31">31</option>
-                        <option value="32">32</option>
-                        <option value="33">33</option>
-                        <option value="34">34</option>
-                        <option value="35">35</option>
-                        <option value="36">36</option>
-                        <option value="37">37</option>
-                        <option value="38">38</option>
-                        <option value="39">39</option>
-                        <option value="40">40</option>
-                        <option value="41">41</option>
-                        <option value="42">42</option>
-                        <option value="43">43</option>
-                        <option value="44">44</option>
-                        <option value="45">45</option>
-                        <option value="46">46</option>
-                        <option value="47">47</option>
-                        <option value="48">48</option>
-                        <option value="49">49</option>
-                        <option value="50">50</option>
-                    </select>
-                    <p class="form-help-text">לאחר הבחירה, תוכל לפרט את רמות הכיתות ותתי-הכיתות</p>
+                    <label>בחר את רמות הכיתות במוסד שלך *</label>
+                    <div class="grade-selection-grid" id="gradeSelectionGrid"></div>
                 </div>
-
-                <!-- Dynamic Subclassroom Details Container -->
-                <div id="dynamicClassroomDetails" class="dynamic-classroom-container"></div>
+                <div id="gradeDetailsContainer"></div>
 
                 <button type="submit" class="btn btn-primary btn-large">🚀 קבל הדגמה חינמית עכשיו</button>
             </form>
@@ -3862,29 +3802,28 @@
                 role: document.getElementById('role').value,
                 phone: document.getElementById('phone').value,
                 email: document.getElementById('email').value,
-                numClasses: document.getElementById('numClasses').value,
                 classroomDetails: []
             };
 
             // Collect dynamic classroom details
             Object.keys(selectedGradesData).forEach(grade => {
                 const gradeData = selectedGradesData[grade];
-                const numSubclasses = document.getElementById(`grade-${grade}-subclasses`)?.value;
 
-                if (numSubclasses) {
-                    for (let i = 1; i <= parseInt(numSubclasses); i++) {
-                        const subclassName = parseInt(numSubclasses) === 1 ? grade : `${grade}${i}`;
-                        const students = document.getElementById(`subclass-${grade}-${i}-students`)?.value;
-                        const teachers = document.getElementById(`subclass-${grade}-${i}-teachers`)?.value;
+                // Get all subclasses for this grade
+                if (gradeData.subclasses && gradeData.subclasses.length > 0) {
+                    gradeData.subclasses.forEach(subclass => {
+                        const subclassId = `subclass-${grade}-${subclass.num}`;
+                        const students = document.getElementById(`${subclassId}-students`)?.value;
+                        const teachers = document.getElementById(`${subclassId}-teachers`)?.value;
 
                         if (students && teachers) {
                             formData.classroomDetails.push({
-                                subclass: subclassName,
+                                subclass: subclass.name,
                                 students: students,
                                 teachers: teachers
                             });
                         }
-                    }
+                    });
                 }
             });
 
@@ -3895,8 +3834,8 @@
 
             // Reset form and dynamic data
             this.reset();
-            document.getElementById('dynamicClassroomDetails').innerHTML = '';
-            document.getElementById('dynamicClassroomDetails').style.display = 'none';
+            document.getElementById('gradeDetailsContainer').innerHTML = '';
+            document.getElementById('gradeSelectionGrid').querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
             selectedGradesData = {};
         });
 
@@ -3904,44 +3843,26 @@
         const hebrewGrades = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'יא', 'יב'];
         let selectedGradesData = {};
 
-        // Listen to number of classes selection
-        document.getElementById('numClasses').addEventListener('change', function(e) {
-            const value = e.target.value;
-            const container = document.getElementById('dynamicClassroomDetails');
+        // Initialize grade selection grid on page load
+        (function initializeGradeSelection() {
+            const gradeGrid = document.getElementById('gradeSelectionGrid');
 
-            if (!value) {
-                container.innerHTML = '';
-                container.style.display = 'none';
-                selectedGradesData = {};
-                return;
-            }
+            // Generate grade checkboxes
+            const gradeCheckboxesHTML = hebrewGrades.map(grade => `
+                <label class="grade-checkbox-label">
+                    <input type="checkbox" name="grade" value="${grade}" class="grade-checkbox">
+                    <span class="grade-checkbox-custom">כיתה ${grade}</span>
+                </label>
+            `).join('');
 
-            // Show container
-            container.style.display = 'block';
-
-            // Generate grade selection section
-            container.innerHTML = `
-                <div class="form-section-title">פירוט כיתות ותתי-כיתות</div>
-                <div class="form-group">
-                    <label>בחר את רמות הכיתות במוסד שלך *</label>
-                    <div class="grade-selection-grid" id="gradeSelectionGrid">
-                        ${hebrewGrades.map(grade => `
-                            <label class="grade-checkbox-label">
-                                <input type="checkbox" name="grade" value="${grade}" class="grade-checkbox">
-                                <span class="grade-checkbox-custom">כיתה ${grade}</span>
-                            </label>
-                        `).join('')}
-                    </div>
-                </div>
-                <div id="gradeDetailsContainer"></div>
-            `;
+            gradeGrid.innerHTML = gradeCheckboxesHTML;
 
             // Add event listeners to grade checkboxes
-            const gradeCheckboxes = container.querySelectorAll('.grade-checkbox');
+            const gradeCheckboxes = gradeGrid.querySelectorAll('.grade-checkbox');
             gradeCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', handleGradeSelection);
             });
-        });
+        })();
 
         function handleGradeSelection(e) {
             const grade = e.target.value;
