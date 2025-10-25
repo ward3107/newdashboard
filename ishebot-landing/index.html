@@ -2120,6 +2120,129 @@
             }
         }
 
+        /* WhatsApp Chat Widget */
+        .whatsapp-widget {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: whatsappPulse 2s ease-in-out infinite;
+            position: relative;
+        }
+
+        .whatsapp-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            animation: whatsappRipple 2s ease-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes whatsappPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes whatsappRipple {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .whatsapp-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .whatsapp-widget:hover .whatsapp-icon {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.6);
+        }
+
+        .whatsapp-tooltip {
+            background: var(--white);
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            border: 2px solid #25D366;
+        }
+
+        .whatsapp-tooltip span {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #128C7E;
+        }
+
+        .whatsapp-widget:hover .whatsapp-tooltip {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Mobile adjustments for WhatsApp widget */
+        @media (max-width: 768px) {
+            .whatsapp-widget {
+                bottom: 1.5rem;
+                left: 1.5rem;
+            }
+
+            .whatsapp-icon {
+                width: 55px;
+                height: 55px;
+            }
+
+            .whatsapp-icon svg {
+                width: 28px;
+                height: 28px;
+            }
+
+            .whatsapp-tooltip {
+                display: none; /* Hide tooltip on mobile to save space */
+            }
+        }
+
+        /* Prevent overlap with scroll-to-top button */
+        @media print {
+            .whatsapp-widget {
+                display: none;
+            }
+        }
+
         /* Pricing Section */
         .pricing {
             padding: 5rem 0;
@@ -3606,6 +3729,22 @@
             </form>
         </div>
     </section>
+
+    <!-- WhatsApp Chat Widget -->
+    <a href="https://wa.me/972XXXXXXXXX?text=היי!%20אני%20מעוניין%20לשמוע%20עוד%20על%20ISHEBOT%20למוסד%20שלנו"
+       class="whatsapp-widget"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="צור קשר דרך WhatsApp">
+        <div class="whatsapp-icon">
+            <svg viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 0C7.164 0 0 7.164 0 16c0 2.828.735 5.482 2.022 7.784L0 32l8.448-2.016A15.91 15.91 0 0016 32c8.836 0 16-7.164 16-16S24.836 0 16 0zm8.123 22.831c-.356.993-1.767 1.822-2.888 2.061-.758.162-1.748.291-5.083-.986-4.253-1.629-7.002-5.914-7.216-6.187-.21-.273-1.718-2.287-1.718-4.362 0-2.075 1.089-3.095 1.476-3.516.387-.421.844-.527 1.125-.527.281 0 .562.003.809.014.259.013.605-.098.946.721.35.844 1.194 2.919 1.299 3.13.105.21.175.456.035.729-.14.273-.21.443-.421.681-.21.238-.442.531-.632.713-.21.203-.43.422-.185.827.245.405 1.089 1.796 2.336 2.91 1.605 1.434 2.957 1.879 3.377 2.089.421.21.666.175.911-.105.245-.281.945-1.104 1.196-1.483.251-.379.526-.316.877-.189.35.127 2.226 1.049 2.606 1.239.379.189.632.281.721.438.089.156.089.911-.266 1.904z"/>
+            </svg>
+        </div>
+        <div class="whatsapp-tooltip">
+            <span>💬 שלחו לנו הודעה!</span>
+        </div>
+    </a>
 
     <!-- Footer -->
     <footer>
