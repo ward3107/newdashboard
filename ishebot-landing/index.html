@@ -1446,6 +1446,361 @@
             }
         }
 
+        /* Interactive ROI Calculator Section */
+        .interactive-roi-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #fef3c7 100%);
+        }
+
+        .calculator-container {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-top: 3rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border: 3px solid #3b82f6;
+        }
+
+        .calculator-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding-bottom: 3rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .input-icon {
+            font-size: 1.5rem;
+        }
+
+        .input-label {
+            flex: 1;
+        }
+
+        .slider-container {
+            position: relative;
+        }
+
+        .slider {
+            width: 100%;
+            height: 10px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #dbeafe, #3b82f6);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            background: #2563eb;
+            transform: scale(1.2);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.7);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .slider::-moz-range-thumb:hover {
+            background: #2563eb;
+            transform: scale(1.2);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.7);
+        }
+
+        .slider-value {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            justify-content: center;
+        }
+
+        .slider-value span:first-child {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #1e40af;
+        }
+
+        .value-unit {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* Calculator Results */
+        .calculator-results {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .result-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .manual-cost {
+            border: 3px solid #ef4444;
+        }
+
+        .ishebot-cost {
+            border: 3px solid #10b981;
+        }
+
+        .result-header h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .manual-cost .result-header h3 {
+            color: #ef4444;
+        }
+
+        .ishebot-cost .result-header h3 {
+            color: #10b981;
+        }
+
+        .result-header p {
+            font-size: 1rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .result-amount {
+            font-size: 3rem;
+            font-weight: 900;
+            margin: 1.5rem 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .manual-cost .result-amount {
+            color: #ef4444;
+        }
+
+        .ishebot-cost .result-amount {
+            color: #10b981;
+        }
+
+        .result-details {
+            font-size: 1rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .result-details span {
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .result-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .arrow-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--white);
+            font-weight: 900;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .result-arrow p {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #3b82f6;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* Savings Highlight */
+        .savings-highlight {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 20px;
+            padding: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            color: var(--white);
+            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
+            margin-top: 1rem;
+        }
+
+        .savings-icon {
+            font-size: 4rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .savings-content {
+            flex: 1;
+            text-align: center;
+        }
+
+        .savings-content h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 1rem 0;
+            opacity: 0.95;
+        }
+
+        .savings-amount {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); }
+            50% { text-shadow: 0 8px 24px rgba(255, 255, 255, 0.5); }
+        }
+
+        .savings-details {
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+
+        .savings-details span {
+            font-weight: 900;
+            font-size: 1.3rem;
+        }
+
+        .roi-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .badge-label {
+            font-size: 1rem;
+            font-weight: 700;
+            opacity: 0.9;
+        }
+
+        .badge-value {
+            font-size: 2rem;
+            font-weight: 900;
+        }
+
+        /* Calculator CTA */
+        .calculator-cta {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        /* Responsive Design for Calculator */
+        @media (max-width: 1024px) {
+            .calculator-results {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .result-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .calculator-inputs {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .result-amount {
+                font-size: 2.5rem;
+            }
+
+            .savings-highlight {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem;
+            }
+
+            .savings-amount {
+                font-size: 3rem;
+            }
+
+            .savings-icon {
+                font-size: 3rem;
+            }
+        }
+
         /* Pricing Section */
         .pricing {
             padding: 5rem 0;
@@ -2457,6 +2812,138 @@
                     עם ISHEBOT ב-₪88,000, אתם חוסכים ₪112,000 בזמן מורים + מקבלים שיפור של 40% בהישגים.
                     ההשקעה מחזירה את עצמה כבר בשנה הראשונה!
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive ROI Calculator -->
+    <section id="roi-calculator" class="interactive-roi-section">
+        <div class="container">
+            <h2 class="section-title" style="color: #1e40af;">🧮 חשבון ROI למוסד שלכם</h2>
+            <p class="section-subtitle" style="color: #475569; font-size: 1.4rem; font-weight: 600;">
+                הכניסו את הנתונים שלכם וראו כמה תחסכו!
+            </p>
+
+            <div class="calculator-container">
+                <!-- Input Controls -->
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label for="numTeachers">
+                            <span class="input-icon">👨‍🏫</span>
+                            <span class="input-label">מספר מורים</span>
+                        </label>
+                        <div class="slider-container">
+                            <input type="range" id="numTeachers" min="1" max="100" value="25" class="slider">
+                            <div class="slider-value">
+                                <span id="numTeachersValue">25</span>
+                                <span class="value-unit">מורים</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="hoursPerWeek">
+                            <span class="input-icon">⏱️</span>
+                            <span class="input-label">שעות/שבוע לסידור כיתה</span>
+                        </label>
+                        <div class="slider-container">
+                            <input type="range" id="hoursPerWeek" min="1" max="20" value="10" class="slider">
+                            <div class="slider-value">
+                                <span id="hoursPerWeekValue">10</span>
+                                <span class="value-unit">שעות</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="weeksPerYear">
+                            <span class="input-icon">📅</span>
+                            <span class="input-label">שבועות/שנה</span>
+                        </label>
+                        <div class="slider-container">
+                            <input type="range" id="weeksPerYear" min="10" max="40" value="25" class="slider">
+                            <div class="slider-value">
+                                <span id="weeksPerYearValue">25</span>
+                                <span class="value-unit">שבועות</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="hourlyRate">
+                            <span class="input-icon">💵</span>
+                            <span class="input-label">עלות שעת מורה</span>
+                        </label>
+                        <div class="slider-container">
+                            <input type="range" id="hourlyRate" min="20" max="100" value="32" class="slider">
+                            <div class="slider-value">
+                                <span id="hourlyRateValue">32</span>
+                                <span class="value-unit">₪/שעה</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Display -->
+                <div class="calculator-results">
+                    <div class="result-card manual-cost">
+                        <div class="result-header">
+                            <h3>❌ העלות הנוכחית</h3>
+                            <p>עבודה ידנית</p>
+                        </div>
+                        <div class="result-amount" id="manualCost">₪200,000</div>
+                        <div class="result-details">
+                            <p>
+                                <span id="totalHours">6,250</span> שעות/שנה<br>
+                                של עבודה מייגעת וחוזרת
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="result-arrow">
+                        <div class="arrow-icon">→</div>
+                        <p>החלף ל-ISHEBOT</p>
+                    </div>
+
+                    <div class="result-card ishebot-cost">
+                        <div class="result-header">
+                            <h3>✅ עם ISHEBOT</h3>
+                            <p>השקעה חכמה</p>
+                        </div>
+                        <div class="result-amount" id="ishebotCost">₪88,000</div>
+                        <div class="result-details">
+                            <p>
+                                <span id="costPerTeacher">₪3,520</span>/מורה<br>
+                                (₪293/חודש)
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="savings-highlight">
+                        <div class="savings-icon">💰</div>
+                        <div class="savings-content">
+                            <h4>החיסכון שלכם:</h4>
+                            <div class="savings-amount" id="totalSavings">₪112,000</div>
+                            <p class="savings-details">
+                                <span id="savingsPercent">56%</span> חיסכון בעלויות זמן +
+                                <span id="savedHours">6,250</span> שעות משוחררות להוראה!
+                            </p>
+                            <div class="roi-badge">
+                                <span class="badge-label">ROI</span>
+                                <span class="badge-value" id="roiPercent">127%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calculator-cta">
+                <p style="font-size: 1.3rem; color: #1e40af; font-weight: 700; margin-bottom: 1.5rem;">
+                    מוכנים לראות את החיסכון הזה בפועל?
+                </p>
+                <a href="#contact" class="btn btn-primary btn-large">
+                    🚀 התחילו ניסיון חינם למשך 30 יום!
+                </a>
             </div>
         </div>
     </section>
@@ -4045,6 +4532,90 @@
                     }
                 });
             });
+        });
+
+        // Interactive ROI Calculator
+        document.addEventListener('DOMContentLoaded', () => {
+            const numTeachersSlider = document.getElementById('numTeachers');
+            const hoursPerWeekSlider = document.getElementById('hoursPerWeek');
+            const weeksPerYearSlider = document.getElementById('weeksPerYear');
+            const hourlyRateSlider = document.getElementById('hourlyRate');
+
+            const numTeachersValue = document.getElementById('numTeachersValue');
+            const hoursPerWeekValue = document.getElementById('hoursPerWeekValue');
+            const weeksPerYearValue = document.getElementById('weeksPerYearValue');
+            const hourlyRateValue = document.getElementById('hourlyRateValue');
+
+            const manualCostElement = document.getElementById('manualCost');
+            const ishebotCostElement = document.getElementById('ishebotCost');
+            const totalHoursElement = document.getElementById('totalHours');
+            const costPerTeacherElement = document.getElementById('costPerTeacher');
+            const totalSavingsElement = document.getElementById('totalSavings');
+            const savingsPercentElement = document.getElementById('savingsPercent');
+            const savedHoursElement = document.getElementById('savedHours');
+            const roiPercentElement = document.getElementById('roiPercent');
+
+            // Format number with commas (Israeli style)
+            function formatCurrency(number) {
+                return '₪' + Math.round(number).toLocaleString('he-IL');
+            }
+
+            function formatNumber(number) {
+                return Math.round(number).toLocaleString('he-IL');
+            }
+
+            function calculateROI() {
+                const numTeachers = parseInt(numTeachersSlider.value);
+                const hoursPerWeek = parseInt(hoursPerWeekSlider.value);
+                const weeksPerYear = parseInt(weeksPerYearSlider.value);
+                const hourlyRate = parseInt(hourlyRateSlider.value);
+
+                // Update slider value displays
+                numTeachersValue.textContent = numTeachers;
+                hoursPerWeekValue.textContent = hoursPerWeek;
+                weeksPerYearValue.textContent = weeksPerYear;
+                hourlyRateValue.textContent = hourlyRate;
+
+                // Calculate manual cost
+                const totalHoursPerYear = hoursPerWeek * numTeachers * weeksPerYear;
+                const manualCost = totalHoursPerYear * hourlyRate;
+
+                // Calculate ISHEBOT cost (₪3,520 per teacher per year)
+                const costPerTeacher = 3520;
+                const ishebotCost = costPerTeacher * numTeachers;
+
+                // Calculate savings
+                const totalSavings = manualCost - ishebotCost;
+                const savingsPercent = ((totalSavings / manualCost) * 100);
+                const roiPercent = ((totalSavings / ishebotCost) * 100);
+
+                // Update display with animations
+                manualCostElement.textContent = formatCurrency(manualCost);
+                ishebotCostElement.textContent = formatCurrency(ishebotCost);
+                totalHoursElement.textContent = formatNumber(totalHoursPerYear);
+                costPerTeacherElement.textContent = formatCurrency(costPerTeacher);
+                totalSavingsElement.textContent = formatCurrency(totalSavings);
+                savingsPercentElement.textContent = Math.round(savingsPercent) + '%';
+                savedHoursElement.textContent = formatNumber(totalHoursPerYear);
+                roiPercentElement.textContent = Math.round(roiPercent) + '%';
+
+                // Add pulse animation to updated values
+                [manualCostElement, ishebotCostElement, totalSavingsElement].forEach(el => {
+                    el.style.animation = 'none';
+                    setTimeout(() => {
+                        el.style.animation = 'glow 0.5s ease-in-out';
+                    }, 10);
+                });
+            }
+
+            // Add event listeners to all sliders
+            numTeachersSlider.addEventListener('input', calculateROI);
+            hoursPerWeekSlider.addEventListener('input', calculateROI);
+            weeksPerYearSlider.addEventListener('input', calculateROI);
+            hourlyRateSlider.addEventListener('input', calculateROI);
+
+            // Initial calculation
+            calculateROI();
         });
     </script>
 </body>
