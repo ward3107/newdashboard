@@ -47,11 +47,27 @@
 
         /* Header */
         header {
-            background: var(--white);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        header.scrolled nav {
+            padding: 0.75rem 0;
+        }
+
+        header.scrolled .logo {
+            font-size: 1.75rem;
         }
 
         nav {
@@ -59,6 +75,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 1rem 0;
+            transition: all 0.3s ease;
         }
 
         .logo {
@@ -68,6 +85,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            transition: all 0.3s ease;
         }
 
         .nav-links {
@@ -5013,6 +5031,23 @@
 
             // Initial calculation
             calculateROI();
+        });
+
+        // Sticky Header Scroll Effect
+        const header = document.querySelector('header');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+
+            // Add 'scrolled' class when scrolled past 50px
+            if (currentScroll > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+
+            lastScroll = currentScroll;
         });
     </script>
 </body>
