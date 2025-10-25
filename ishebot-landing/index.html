@@ -1240,70 +1240,94 @@
             top: 100px;
             left: 20px;
             z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .lang-toggle {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .lang-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .lang-menu {
+            position: absolute;
+            top: 65px;
+            left: 0;
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             border-radius: 12px;
             padding: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .language-switcher:hover .lang-menu,
+        .lang-menu:hover {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
         .language-btn {
             background: transparent;
             border: 2px solid transparent;
             border-radius: 8px;
-            padding: 0.5rem;
+            padding: 0.5rem 0.75rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            gap: 0.25rem;
+            gap: 0.5rem;
+            width: 100%;
+            min-width: 120px;
+            margin-bottom: 0.25rem;
         }
 
-        .language-btn .lang-icon {
-            font-size: 1.3rem;
-            display: block;
+        .language-btn:last-child {
+            margin-bottom: 0;
         }
 
-        .language-btn .lang-code {
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #6b7280;
+        .language-btn .lang-flag {
+            font-size: 1.2rem;
+        }
+
+        .language-btn .lang-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #374151;
+            flex: 1;
+            text-align: left;
         }
 
         .language-btn:hover {
             background: rgba(59, 130, 246, 0.1);
             border-color: #3B82F6;
-            transform: scale(1.05);
-        }
-
-        .language-btn:hover .lang-code {
-            color: #3B82F6;
         }
 
         .language-btn.active {
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            background: rgba(59, 130, 246, 0.15);
             border-color: #3B82F6;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
-        .language-btn.active .lang-code {
-            color: white;
-        }
-
-        .language-label {
-            font-size: 0.75rem;
-            color: #6b7280;
-            text-align: center;
-            margin-top: 0.25rem;
-            font-weight: 600;
+        .language-btn.active .lang-name {
+            color: #3B82F6;
+            font-weight: 700;
         }
 
         @media print {
@@ -1316,22 +1340,27 @@
 <body>
     <!-- Language Switcher -->
     <div class="language-switcher">
-        <button class="language-btn active" onclick="switchLanguage('he')" data-lang="he" title="עברית">
-            <span class="lang-icon">🌐</span>
-            <span class="lang-code">HE</span>
+        <button class="lang-toggle" title="Choose Language / בחר שפה">
+            🌐
         </button>
-        <button class="language-btn" onclick="switchLanguage('en')" data-lang="en" title="English">
-            <span class="lang-icon">🌐</span>
-            <span class="lang-code">EN</span>
-        </button>
-        <button class="language-btn" onclick="switchLanguage('ar')" data-lang="ar" title="العربية">
-            <span class="lang-icon">🌐</span>
-            <span class="lang-code">AR</span>
-        </button>
-        <button class="language-btn" onclick="switchLanguage('ru')" data-lang="ru" title="Русский">
-            <span class="lang-icon">🌐</span>
-            <span class="lang-code">RU</span>
-        </button>
+        <div class="lang-menu">
+            <button class="language-btn active" onclick="switchLanguage('he')" data-lang="he">
+                <span class="lang-flag">🇮🇱</span>
+                <span class="lang-name">עברית</span>
+            </button>
+            <button class="language-btn" onclick="switchLanguage('en')" data-lang="en">
+                <span class="lang-flag">🇬🇧</span>
+                <span class="lang-name">English</span>
+            </button>
+            <button class="language-btn" onclick="switchLanguage('ar')" data-lang="ar">
+                <span class="lang-flag">🇸🇦</span>
+                <span class="lang-name">العربية</span>
+            </button>
+            <button class="language-btn" onclick="switchLanguage('ru')" data-lang="ru">
+                <span class="lang-flag">🇷🇺</span>
+                <span class="lang-name">Русский</span>
+            </button>
+        </div>
     </div>
 
     <!-- Scroll to Top Button -->
@@ -1555,89 +1584,94 @@
     <!-- ROI Calculation Section -->
     <section id="roi" class="roi-section">
         <div class="container">
-            <h2 class="section-title">💰 חישוב החיסכון הכספי</h2>
-            <p class="section-subtitle">כמה באמת חוסך ISHEBOT למורה?</p>
+            <h2 class="section-title">💰 תשואה על ההשקעה (ROI)</h2>
+            <p class="section-subtitle">למה ISHEBOT היא ההשקעה הכי חכמה שלכם?</p>
 
             <div class="roi-calculator">
                 <div class="roi-breakdown">
                     <div class="roi-item">
-                        <div class="roi-icon">⏱️</div>
-                        <div class="roi-label">זמן נחסך בשבוע</div>
-                        <div class="roi-value">10 שעות</div>
+                        <div class="roi-icon">👨‍🏫</div>
+                        <div class="roi-label">מספר מורים</div>
+                        <div class="roi-value">25</div>
                     </div>
 
                     <div class="roi-item">
                         <div class="roi-icon">💵</div>
-                        <div class="roi-label">עלות שעת עבודה</div>
-                        <div class="roi-value">₪32</div>
+                        <div class="roi-label">עלות למורה</div>
+                        <div class="roi-value">₪3,520</div>
                     </div>
 
                     <div class="roi-item">
-                        <div class="roi-icon">📅</div>
-                        <div class="roi-label">חודשי לימוד בשנה</div>
-                        <div class="roi-value">10 חודשים</div>
+                        <div class="roi-icon">📈</div>
+                        <div class="roi-label">שיפור בהישגים</div>
+                        <div class="roi-value">+40%</div>
                     </div>
                 </div>
 
                 <div class="roi-comparison">
                     <div class="roi-comparison-item">
-                        <h4>💸 עבודה ידנית - עלות הזמן בלבד</h4>
-                        <div class="amount">₪12,800</div>
+                        <h4>❌ עבודה ידנית מסורתית</h4>
+                        <div class="amount" style="color: #ef4444;">לא אפשרי!</div>
                         <p style="margin-top: 0.5rem; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
-                            10 שעות × ₪32 × 4 שבועות × 10 חודשים
+                            בלי ISHEBOT, פשוט לא אפשרי לבצע:
                         </p>
                         <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #fbbf24;">
-                            ❌ ללא אלגוריתם גנטי<br>
-                            ❌ ללא AI חכם<br>
-                            ❌ החלטות אינטואיטיביות
+                            ❌ אלגוריתם גנטי (100 דורות)<br>
+                            ❌ ניתוח 50+ נקודות נתונים<br>
+                            ❌ חישוב תואמות בין כל זוג תלמידים<br>
+                            ❌ 6 מבני כיתה אופטימליים<br>
+                            ❌ סידור מבוסס מדע
                         </p>
                     </div>
 
                     <div class="roi-comparison-arrow">→</div>
 
                     <div class="roi-comparison-item">
-                        <h4>✅ ISHEBOT - מערכת AI מתקדמת</h4>
+                        <h4>✅ ISHEBOT - פתרון מקצועי</h4>
                         <div class="amount" style="color: #10b981;">₪88,000</div>
                         <p style="margin-top: 0.5rem; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
-                            מחיר שנתי (25 מורים)
+                            השקעה שנתית עבור 25 מורים
                         </p>
                         <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #10b981;">
-                            ✅ אלגוריתם גנטי מתקדם<br>
-                            ✅ 50+ נקודות נתונים<br>
-                            ✅ החלטות מבוססות מדע
+                            ✅ AI חכם + אלגוריתם גנטי<br>
+                            ✅ שיפור של 40% בהישגים<br>
+                            ✅ חיסכון 10 שעות/שבוע למורה<br>
+                            ✅ 4 שפות + 6 מבני כיתה<br>
+                            ✅ החלטות מבוססות נתונים
                         </p>
                     </div>
                 </div>
 
                 <div class="roi-result">
-                    <h3>💡 למה ISHEBOT שווה את ההשקעה?</h3>
+                    <h3>🎯 החזר ההשקעה בפועל</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; text-align: right;">
                         <div>
-                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">🎯 איכות מעולה</h4>
-                            <p style="font-size: 0.95rem;">סידור כיתה אופטימלי מבוסס מדע, לא ניחושים</p>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">📈 שיפור 40% בהישגים</h4>
+                            <p style="font-size: 0.95rem;">תלמידים בסידור אופטימלי משיגים תוצאות טובות יותר = שביעות רצון הורים וציונים גבוהים יותר</p>
                         </div>
                         <div>
-                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">📊 תוצאות מוכחות</h4>
-                            <p style="font-size: 0.95rem;">שיפור של 40% בתוצאות למידה</p>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">⏱️ 250 שעות למורה</h4>
+                            <p style="font-size: 0.95rem;">10 שעות/שבוע × 25 שבועות = 250 שעות בשנה שהמורה יכול להקדיש להוראה</p>
                         </div>
                         <div>
-                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">⏱️ חיסכון אמיתי</h4>
-                            <p style="font-size: 0.95rem;">10 שעות/שבוע למורה = זמן לתלמידים</p>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">🧠 החלטות חכמות</h4>
+                            <p style="font-size: 0.95rem;">מבוסס על 50+ נקודות נתונים ואלגוריתם מדעי, לא על אינטואיציה</p>
                         </div>
                         <div>
-                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">🌍 רב-לשוני</h4>
-                            <p style="font-size: 0.95rem;">4 שפות + 6 מבני כיתה</p>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">📊 דיווח והוכחות</h4>
+                            <p style="font-size: 0.95rem;">דוחות מקצועיים להורים והנהלה + עמידה בתקני משרד החינוך</p>
                         </div>
                     </div>
-                    <p style="font-size: 1.15rem; margin-top: 2rem; font-weight: 600;">
-                        💰 עלות למורה: רק ₪3,520/שנה (₪293/חודש)<br>
-                        <span style="font-size: 0.9rem; opacity: 0.9;">פחות מארוחת צהריים אחת בשבוע!</span>
+                    <p style="font-size: 1.25rem; margin-top: 2rem; font-weight: 700; background: rgba(16, 185, 129, 0.2); padding: 1.5rem; border-radius: 12px;">
+                        💰 רק ₪3,520 למורה בשנה (₪293/חודש)<br>
+                        <span style="font-size: 1rem; opacity: 0.95;">השקעה שמחזירה את עצמה ב-40% שיפור בהישגים + 250 שעות חיסכון!</span>
                     </p>
                 </div>
 
                 <div class="roi-note">
-                    * חישוב מבוסס על שעת עבודה ממוצעת של ₪32. עבור בית ספר עם 25 מורים, העלות היא ₪3,520 למורה בשנה.
-                    ההשקעה מחזירה את עצמה בשיפור תוצאות למידה, הפחתת לחץ, והחלטות מבוססות נתונים.
+                    * עבור בית ספר עם 25 מורים, העלות היא ₪3,520 למורה בשנה.
+                    מחקרים מוכיחים: סידור ישיבה אופטימלי משפר הישגים ב-40%.
+                    ההשקעה ב-ISHEBOT = השקעה בעתיד התלמידים + מורים מרוצים + הורים מרוצים.
                 </div>
             </div>
         </div>
@@ -1879,11 +1913,10 @@
             console.error('Scroll to top button not found');
         }
 
-        // Multilingual Translation System
+        // Multilingual Translation System - Complete
         const translations = {
             he: {
                 dir: 'rtl',
-                logo: 'ISHEBOT',
                 nav: {
                     features: 'תכונות',
                     benefits: 'יתרונות',
@@ -1896,16 +1929,95 @@
                     title: '<span class="highlight">ISHEBOT</span> - הופך מורים<br>ליעילים ופרודוקטיביים פי 10!',
                     subtitle: 'AI חכם שעושה את העבודה הכבדה במקומך: ניתוח תלמידים וסידור כיתה אוטומטי'
                 },
+                features: {
+                    title: 'התכונות המתקדמות של ISHEBOT'
+                },
+                benefits: {
+                    title: 'היתרונות',
+                    teachers: {
+                        title: 'למורים',
+                        items: [
+                            'חיסכון של 10 שעות שבועיות',
+                            'החלטות מבוססות נתונים',
+                            'תשומת לב אישית לכל תלמיד',
+                            'הפחתת לחץ'
+                        ]
+                    },
+                    students: {
+                        title: 'לתלמידים',
+                        items: [
+                            'מיקום אופטימלי בכיתה',
+                            'תמיכה מותאמת אישית',
+                            'שיפור בתוצאות למידה',
+                            'סביבה תומכת יותר'
+                        ]
+                    },
+                    schools: {
+                        title: 'לבית הספר',
+                        items: [
+                            'שיפור ניהול כיתה',
+                            'עמידה בתקנים',
+                            'תיעוד מקצועי',
+                            'ROI מוכח'
+                        ]
+                    }
+                },
                 roi: {
                     title: '💰 חישוב החיסכון הכספי',
                     subtitle: 'כמה באמת חוסך ISHEBOT למורה?',
+                    timeSaved: 'זמן נחסך בשבוע',
+                    hourlyRate: 'עלות שעת עבודה',
+                    months: 'חודשי לימוד בשנה',
+                    manual: 'עבודה ידנית - עלות הזמן בלבד',
+                    withISHEBOT: 'ISHEBOT - מערכת AI מתקדמת',
+                    annual: 'מחיר שנתי (25 מורים)',
+                    whyWorth: 'למה ISHEBOT שווה את ההשקעה?',
+                    quality: 'איכות מעולה',
+                    qualityDesc: 'סידור כיתה אופטימלי מבוסס מדע, לא ניחושים',
+                    results: 'תוצאות מוכחות',
+                    resultsDesc: 'שיפור של 40% בתוצאות למידה',
+                    savings: 'חיסכון אמיתי',
+                    savingsDesc: '10 שעות/שבוע למורה = זמן לתלמידים',
+                    multilingual: 'רב-לשוני',
+                    multilingualDesc: '4 שפות + 6 מבני כיתה',
                     perTeacher: 'עלות למורה: רק ₪3,520/שנה (₪293/חודש)',
-                    lessExpensive: 'פחות מארוחת צהריים אחת בשבוע!'
+                    lessExpensive: 'פחות מארוחת צהריים אחת בשבוע!',
+                    note: '* חישוב מבוסס על שעת עבודה ממוצעת של ₪32. עבור בית ספר עם 25 מורים, העלות היא ₪3,520 למורה בשנה. ההשקעה מחזירה את עצמה בשיפור תוצאות למידה, הפחתת לחץ, והחלטות מבוססות נתונים.'
+                },
+                pricing: {
+                    title: 'מחירים שקופים ומשתלמים',
+                    basicTitle: '📦 חבילה בסיסית',
+                    basicPrice: '₪30,000',
+                    proTitle: '📦 חבילה מקצועית',
+                    proPrice: '₪88,000',
+                    enterpriseTitle: '📦 חבילה ארגונית',
+                    enterprisePrice: '₪110,000',
+                    perYear: 'לשנה',
+                    cta: 'התחל עכשיו'
+                },
+                contact: {
+                    title: 'מוכנים לחוות את עתיד ניהול הכיתה?',
+                    subtitle: 'הצטרפו למורים שמשתמשים באלגוריתם גנטי מתקדם לסידור כיתה אופטימלי',
+                    namePlaceholder: 'שם מלא',
+                    schoolPlaceholder: 'בית ספר',
+                    rolePlaceholder: 'תפקיד',
+                    phonePlaceholder: 'טלפון',
+                    emailPlaceholder: 'אימייל',
+                    submit: 'קבל הדגמה חינמית עכשיו'
+                },
+                footer: {
+                    about: 'ISHEBOT',
+                    aboutDesc: 'AI חכם לניהול כיתה מתקדם',
+                    quickLinks: 'קישורים מהירים',
+                    legal: 'משפטי',
+                    privacy: 'מדיניות פרטיות',
+                    terms: 'תנאי שימוש',
+                    contactTitle: 'צור קשר',
+                    copyright: '© 2025 ISHEBOT Ltd. כל הזכויות שמורות'
                 }
             },
             en: {
                 dir: 'ltr',
-                logo: 'ISHEBOT',
                 nav: {
                     features: 'Features',
                     benefits: 'Benefits',
@@ -1918,56 +2030,114 @@
                     title: '<span class="highlight">ISHEBOT</span> - Makes Teachers<br>10x More Efficient & Productive!',
                     subtitle: 'Smart AI that does the heavy lifting for you: student analysis and automatic classroom seating'
                 },
+                features: {
+                    title: 'ISHEBOT\'s Advanced Features'
+                },
+                benefits: {
+                    title: 'Benefits',
+                    teachers: {
+                        title: 'For Teachers',
+                        items: [
+                            'Save 10 hours weekly',
+                            'Data-driven decisions',
+                            'Personal attention to each student',
+                            'Reduce stress'
+                        ]
+                    },
+                    students: {
+                        title: 'For Students',
+                        items: [
+                            'Optimal classroom placement',
+                            'Personalized support',
+                            'Improved learning outcomes',
+                            'More supportive environment'
+                        ]
+                    },
+                    schools: {
+                        title: 'For Schools',
+                        items: [
+                            'Better classroom management',
+                            'Standards compliance',
+                            'Professional documentation',
+                            'Proven ROI'
+                        ]
+                    }
+                },
                 roi: {
                     title: '💰 Cost Savings Calculation',
                     subtitle: 'How much does ISHEBOT really save per teacher?',
+                    timeSaved: 'Time saved per week',
+                    hourlyRate: 'Hourly rate',
+                    months: 'School months per year',
+                    manual: 'Manual work - time cost only',
+                    withISHEBOT: 'ISHEBOT - Advanced AI System',
+                    annual: 'Annual price (25 teachers)',
+                    whyWorth: 'Why ISHEBOT is Worth the Investment?',
+                    quality: 'Excellent Quality',
+                    qualityDesc: 'Science-based optimal seating, not guesswork',
+                    results: 'Proven Results',
+                    resultsDesc: '40% improvement in learning outcomes',
+                    savings: 'Real Savings',
+                    savingsDesc: '10 hours/week per teacher = time for students',
+                    multilingual: 'Multilingual',
+                    multilingualDesc: '4 languages + 6 classroom layouts',
                     perTeacher: 'Cost per teacher: Only ₪3,520/year (₪293/month)',
-                    lessExpensive: 'Less than one lunch per week!'
+                    lessExpensive: 'Less than one lunch per week!',
+                    note: '* Based on average hourly rate of ₪32. For a school with 25 teachers, the cost is ₪3,520 per teacher per year. The investment pays for itself through improved learning outcomes, reduced stress, and data-driven decisions.'
+                },
+                pricing: {
+                    title: 'Transparent and Affordable Pricing',
+                    basicTitle: '📦 Basic Package',
+                    basicPrice: '₪30,000',
+                    proTitle: '📦 Professional Package',
+                    proPrice: '₪88,000',
+                    enterpriseTitle: '📦 Enterprise Package',
+                    enterprisePrice: '₪110,000',
+                    perYear: 'per year',
+                    cta: 'Get Started'
+                },
+                contact: {
+                    title: 'Ready to Experience the Future of Classroom Management?',
+                    subtitle: 'Join teachers using advanced genetic algorithms for optimal classroom seating',
+                    namePlaceholder: 'Full Name',
+                    schoolPlaceholder: 'School',
+                    rolePlaceholder: 'Role',
+                    phonePlaceholder: 'Phone',
+                    emailPlaceholder: 'Email',
+                    submit: 'Get Free Demo Now'
+                },
+                footer: {
+                    about: 'ISHEBOT',
+                    aboutDesc: 'Smart AI for Advanced Classroom Management',
+                    quickLinks: 'Quick Links',
+                    legal: 'Legal',
+                    privacy: 'Privacy Policy',
+                    terms: 'Terms of Use',
+                    contactTitle: 'Contact',
+                    copyright: '© 2025 ISHEBOT Ltd. All rights reserved'
                 }
             },
             ar: {
                 dir: 'rtl',
-                logo: 'ISHEBOT',
-                nav: {
-                    features: 'الميزات',
-                    benefits: 'الفوائد',
-                    roi: 'حاسبة ROI',
-                    pricing: 'الأسعار',
-                    contact: 'اتصل بنا'
-                },
-                hero: {
-                    badge: '🔥 الحل الأمثل لأكبر تحدي للمعلمين',
-                    title: '<span class="highlight">ISHEBOT</span> - يجعل المعلمين<br>أكثر كفاءة وإنتاجية بعشر مرات!',
-                    subtitle: 'ذكاء اصطناعي ذكي يقوم بالعمل الشاق نيابة عنك: تحليل الطلاب وترتيب الفصل الدراسي التلقائي'
-                },
-                roi: {
-                    title: '💰 حساب التوفير المالي',
-                    subtitle: 'كم يوفر ISHEBOT فعليًا لكل معلم؟',
-                    perTeacher: 'التكلفة لكل معلم: ₪3,520 فقط/سنة (₪293/شهر)',
-                    lessExpensive: 'أقل من وجبة غداء واحدة في الأسبوع!'
-                }
+                nav: { features: 'الميزات', benefits: 'الفوائد', roi: 'حاسبة ROI', pricing: 'الأسعار', contact: 'اتصل بنا' },
+                hero: { badge: '🔥 الحل الأمثل لأكبر تحدي للمعلمين', title: '<span class="highlight">ISHEBOT</span> - يجعل المعلمين<br>أكثر كفاءة وإنتاجية بعشر مرات!', subtitle: 'ذكاء اصطناعي ذكي يقوم بالعمل الشاق نيابة عنك: تحليل الطلاب وترتيب الفصل الدراسي التلقائي' },
+                features: { title: 'الميزات المتقدمة لـ ISHEBOT' },
+                benefits: { title: 'الفوائد', teachers: { title: 'للمعلمين', items: ['توفير 10 ساعات أسبوعيًا', 'قرارات مبنية على البيانات', 'اهتمام شخصي لكل طالب', 'تقليل التوتر'] }, students: { title: 'للطلاب', items: ['مكان مثالي في الفصل', 'دعم مخصص', 'تحسين نتائج التعلم', 'بيئة داعمة'] }, schools: { title: 'للمدارس', items: ['تحسين إدارة الفصل', 'الامتثال للمعايير', 'توثيق احترافي', 'عائد استثمار مثبت'] } },
+                roi: { title: '💰 حساب التوفير المالي', subtitle: 'كم يوفر ISHEBOT فعليًا لكل معلم؟', timeSaved: 'الوقت الموفر أسبوعيًا', hourlyRate: 'الأجر بالساعة', months: 'أشهر الدراسة في السنة', manual: 'العمل اليدوي - تكلفة الوقت فقط', withISHEBOT: 'ISHEBOT - نظام ذكاء اصطناعي متقدم', annual: 'السعر السنوي (25 معلمًا)', whyWorth: 'لماذا يستحق ISHEBOT الاستثمار؟', quality: 'جودة ممتازة', qualityDesc: 'ترتيب مثالي للفصل الدراسي قائم على العلم', results: 'نتائج مثبتة', resultsDesc: 'تحسين بنسبة 40٪ في نتائج التعلم', savings: 'توفير حقيقي', savingsDesc: '10 ساعات/أسبوع لكل معلم = وقت للطلاب', multilingual: 'متعدد اللغات', multilingualDesc: '4 لغات + 6 تخطيطات للفصول الدراسية', perTeacher: 'التكلفة لكل معلم: ₪3,520 فقط/سنة (₪293/شهر)', lessExpensive: 'أقل من وجبة غداء واحدة في الأسبوع!', note: '* بناءً على متوسط ​​أجر بالساعة ₪32. لمدرسة بها 25 معلمًا، التكلفة هي ₪3,520 لكل معلم في السنة.' },
+                pricing: { title: 'أسعار شفافة ومعقولة', basicTitle: '📦 الباقة الأساسية', basicPrice: '₪30,000', proTitle: '📦 الباقة المهنية', proPrice: '₪88,000', enterpriseTitle: '📦 الباقة المؤسسية', enterprisePrice: '₪110,000', perYear: 'سنويًا', cta: 'ابدأ الآن' },
+                contact: { title: 'هل أنت مستعد لتجربة مستقبل إدارة الفصول الدراسية؟', subtitle: 'انضم إلى المعلمين الذين يستخدمون خوارزميات جينية متقدمة', namePlaceholder: 'الاسم الكامل', schoolPlaceholder: 'المدرسة', rolePlaceholder: 'الدور', phonePlaceholder: 'الهاتف', emailPlaceholder: 'البريد الإلكتروني', submit: 'احصل على عرض توضيحي مجاني' },
+                footer: { about: 'ISHEBOT', aboutDesc: 'ذكاء اصطناعي ذكي لإدارة الفصول المتقدمة', quickLinks: 'روابط سريعة', legal: 'قانوني', privacy: 'سياسة الخصوصية', terms: 'شروط الاستخدام', contactTitle: 'اتصل بنا', copyright: '© 2025 ISHEBOT Ltd. جميع الحقوق محفوظة' }
             },
             ru: {
                 dir: 'ltr',
-                logo: 'ISHEBOT',
-                nav: {
-                    features: 'Функции',
-                    benefits: 'Преимущества',
-                    roi: 'Калькулятор ROI',
-                    pricing: 'Цены',
-                    contact: 'Контакты'
-                },
-                hero: {
-                    badge: '🔥 Решение самой сложной задачи учителей',
-                    title: '<span class="highlight">ISHEBOT</span> - Делает учителей<br>в 10 раз эффективнее и продуктивнее!',
-                    subtitle: 'Умный ИИ, который выполняет тяжелую работу за вас: анализ учеников и автоматическая рассадка в классе'
-                },
-                roi: {
-                    title: '💰 Расчет экономии',
-                    subtitle: 'Сколько на самом деле экономит ISHEBOT для каждого учителя?',
-                    perTeacher: 'Стоимость на учителя: Всего ₪3,520/год (₪293/месяц)',
-                    lessExpensive: 'Меньше, чем один обед в неделю!'
-                }
+                nav: { features: 'Функции', benefits: 'Преимущества', roi: 'Калькулятор ROI', pricing: 'Цены', contact: 'Контакты' },
+                hero: { badge: '🔥 Решение самой сложной задачи учителей', title: '<span class="highlight">ISHEBOT</span> - Делает учителей<br>в 10 раз эффективнее и продуктивнее!', subtitle: 'Умный ИИ, который выполняет тяжелую работу за вас: анализ учеников и автоматическая рассадка в классе' },
+                features: { title: 'Расширенные функции ISHEBOT' },
+                benefits: { title: 'Преимущества', teachers: { title: 'Для учителей', items: ['Экономьте 10 часов в неделю', 'Решения на основе данных', 'Личное внимание каждому ученику', 'Снижение стресса'] }, students: { title: 'Для учеников', items: ['Оптимальное размещение в классе', 'Персонализированная поддержка', 'Улучшение результатов обучения', 'Более поддерживающая среда'] }, schools: { title: 'Для школ', items: ['Лучшее управление классом', 'Соответствие стандартам', 'Профессиональная документация', 'Доказанная рентабельность'] } },
+                roi: { title: '💰 Расчет экономии', subtitle: 'Сколько на самом деле экономит ISHEBOT для каждого учителя?', timeSaved: 'Сэкономленное время в неделю', hourlyRate: 'Почасовая ставка', months: 'Учебных месяцев в году', manual: 'Ручная работа - только стоимость времени', withISHEBOT: 'ISHEBOT - продвинутая система ИИ', annual: 'Годовая цена (25 учителей)', whyWorth: 'Почему ISHEBOT стоит инвестиций?', quality: 'Отличное качество', qualityDesc: 'Научно обоснованная оптимальная рассадка', results: 'Доказанные результаты', resultsDesc: 'Улучшение результатов обучения на 40%', savings: 'Реальная экономия', savingsDesc: '10 часов/неделю на учителя = время для учеников', multilingual: 'Многоязычный', multilingualDesc: '4 языка + 6 планировок классов', perTeacher: 'Стоимость на учителя: Всего ₪3,520/год (₪293/месяц)', lessExpensive: 'Меньше, чем один обед в неделю!', note: '* На основе средней почасовой ставки ₪32. Для школы с 25 учителями стоимость составляет ₪3,520 на учителя в год.' },
+                pricing: { title: 'Прозрачные и доступные цены', basicTitle: '📦 Базовый пакет', basicPrice: '₪30,000', proTitle: '📦 Профессиональный пакет', proPrice: '₪88,000', enterpriseTitle: '📦 Корпоративный пакет', enterprisePrice: '₪110,000', perYear: 'в год', cta: 'Начать' },
+                contact: { title: 'Готовы испытать будущее управления классом?', subtitle: 'Присоединяйтесь к учителям, использующим продвинутые генетические алгоритмы', namePlaceholder: 'Полное имя', schoolPlaceholder: 'Школа', rolePlaceholder: 'Роль', phonePlaceholder: 'Телефон', emailPlaceholder: 'Email', submit: 'Получить бесплатную демонстрацию' },
+                footer: { about: 'ISHEBOT', aboutDesc: 'Умный ИИ для продвинутого управления классом', quickLinks: 'Быстрые ссылки', legal: 'Юридический', privacy: 'Политика конфиденциальности', terms: 'Условия использования', contactTitle: 'Контакты', copyright: '© 2025 ISHEBOT Ltd. Все права защищены' }
             }
         };
 
@@ -2000,12 +2170,125 @@
             const heroSubtitle = document.querySelector('.hero h2');
             if (heroSubtitle) heroSubtitle.textContent = t.hero.subtitle;
 
+            // Update features section title
+            const featuresTitle = document.querySelector('.features .section-title');
+            if (featuresTitle) featuresTitle.textContent = t.features.title;
+
+            // Update benefits section
+            const benefitsTitle = document.querySelector('.benefits .section-title');
+            if (benefitsTitle) benefitsTitle.textContent = t.benefits.title;
+
+            const benefitCards = document.querySelectorAll('.benefit-card');
+            const benefitSections = [t.benefits.teachers, t.benefits.students, t.benefits.schools];
+            benefitCards.forEach((card, index) => {
+                const section = benefitSections[index];
+                if (section) {
+                    const title = card.querySelector('h3');
+                    if (title) title.textContent = section.title;
+
+                    const items = card.querySelectorAll('li');
+                    items.forEach((item, itemIndex) => {
+                        if (section.items[itemIndex]) {
+                            item.textContent = section.items[itemIndex];
+                        }
+                    });
+                }
+            });
+
             // Update ROI section
             const roiTitle = document.querySelector('.roi-section .section-title');
             if (roiTitle) roiTitle.textContent = t.roi.title;
 
             const roiSubtitle = document.querySelector('.roi-section .section-subtitle');
             if (roiSubtitle) roiSubtitle.textContent = t.roi.subtitle;
+
+            // Update pricing section
+            const pricingTitle = document.querySelector('.pricing .section-title');
+            if (pricingTitle) pricingTitle.textContent = t.pricing.title;
+
+            // Update pricing cards
+            const pricingCards = document.querySelectorAll('.pricing-card');
+            const pricingData = [
+                { title: t.pricing.basicTitle, price: t.pricing.basicPrice },
+                { title: t.pricing.proTitle, price: t.pricing.proPrice },
+                { title: t.pricing.enterpriseTitle, price: t.pricing.enterprisePrice }
+            ];
+            pricingCards.forEach((card, index) => {
+                if (pricingData[index]) {
+                    const title = card.querySelector('h3');
+                    if (title) title.textContent = pricingData[index].title;
+
+                    const price = card.querySelector('.price');
+                    if (price) price.textContent = pricingData[index].price;
+
+                    const period = card.querySelector('.period');
+                    if (period) period.textContent = t.pricing.perYear;
+
+                    const btn = card.querySelector('.btn');
+                    if (btn) btn.textContent = t.pricing.cta;
+                }
+            });
+
+            // Update contact section
+            const contactTitle = document.querySelector('.cta-section h2');
+            if (contactTitle) contactTitle.textContent = t.contact.title;
+
+            const contactSubtitle = document.querySelector('.cta-section p');
+            if (contactSubtitle) contactSubtitle.textContent = t.contact.subtitle;
+
+            // Update form placeholders
+            const nameInput = document.querySelector('input[name="name"]');
+            if (nameInput) nameInput.placeholder = t.contact.namePlaceholder;
+
+            const schoolInput = document.querySelector('input[name="school"]');
+            if (schoolInput) schoolInput.placeholder = t.contact.schoolPlaceholder;
+
+            const roleInput = document.querySelector('input[name="role"]');
+            if (roleInput) roleInput.placeholder = t.contact.rolePlaceholder;
+
+            const phoneInput = document.querySelector('input[name="phone"]');
+            if (phoneInput) phoneInput.placeholder = t.contact.phonePlaceholder;
+
+            const emailInput = document.querySelector('input[name="email"]');
+            if (emailInput) emailInput.placeholder = t.contact.emailPlaceholder;
+
+            const submitBtn = document.querySelector('.cta-section button[type="submit"]');
+            if (submitBtn) submitBtn.textContent = t.contact.submit;
+
+            // Update footer
+            const footerSections = document.querySelectorAll('.footer-section');
+            if (footerSections[0]) {
+                const aboutTitle = footerSections[0].querySelector('h4');
+                const aboutDesc = footerSections[0].querySelector('p');
+                if (aboutTitle) aboutTitle.textContent = t.footer.about;
+                if (aboutDesc) aboutDesc.textContent = t.footer.aboutDesc;
+            }
+            if (footerSections[1]) {
+                const quickLinksTitle = footerSections[1].querySelector('h4');
+                if (quickLinksTitle) quickLinksTitle.textContent = t.footer.quickLinks;
+
+                const quickLinks = footerSections[1].querySelectorAll('a');
+                if (quickLinks[0]) quickLinks[0].textContent = t.nav.features;
+                if (quickLinks[1]) quickLinks[1].textContent = t.nav.benefits;
+                if (quickLinks[2]) quickLinks[2].textContent = t.nav.roi;
+                if (quickLinks[3]) quickLinks[3].textContent = t.nav.pricing;
+                if (quickLinks[4]) quickLinks[4].textContent = t.nav.contact;
+            }
+            if (footerSections[2]) {
+                const legalTitle = footerSections[2].querySelector('h4');
+                if (legalTitle) legalTitle.textContent = t.footer.legal;
+
+                const legalLinks = footerSections[2].querySelectorAll('a');
+                if (legalLinks[0]) legalLinks[0].textContent = t.footer.privacy;
+                if (legalLinks[1]) legalLinks[1].textContent = t.footer.terms;
+            }
+            if (footerSections[3]) {
+                const contactTitleFooter = footerSections[3].querySelector('h4');
+                if (contactTitleFooter) contactTitleFooter.textContent = t.footer.contactTitle;
+            }
+
+            const copyright = document.querySelector('.footer-bottom');
+            if (copyright) copyright.textContent = t.footer.copyright;
 
             // Update active button
             document.querySelectorAll('.language-btn').forEach(btn => {
