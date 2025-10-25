@@ -7,6 +7,17 @@
     <meta name="keywords" content="ניהול כיתה, AI, תלמידים, סידור ישיבה, משרד החינוך, תיקון 13">
     <title>ISHEBOT - העתיד של ניהול כיתה</title>
 
+    <!-- Performance Optimization -->
+    <meta name="theme-color" content="#3B82F6">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap">
+
+    <!-- DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="https://wa.me">
+    <link rel="dns-prefetch" href="https://www.youtube.com">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -301,10 +312,29 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #fbbf24 100%);
+            background-size: 200% 100%;
             color: #1e3a8a;
-            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5);
-            animation: bounce 2s ease-in-out infinite;
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5), 0 0 20px rgba(251, 191, 36, 0.3);
+            animation: bounce 2s ease-in-out infinite, shimmer 3s ease-in-out infinite;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            will-change: transform;
+        }
+
+        .btn-primary::after {
+            content: '→';
+            position: absolute;
+            right: 2rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover::after {
+            opacity: 1;
+            right: 1.5rem;
         }
 
         @keyframes bounce {
@@ -312,10 +342,52 @@
             50% { transform: translateY(-5px); }
         }
 
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
         .btn-primary:hover {
             transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(251, 191, 36, 0.7);
+            box-shadow: 0 15px 50px rgba(251, 191, 36, 0.8), 0 0 40px rgba(251, 191, 36, 0.5);
             animation: none;
+        }
+
+        .btn-primary:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        /* Super CTA with pulse ring */
+        .btn-super {
+            position: relative;
+            animation: bounce 2s ease-in-out infinite, shimmer 3s ease-in-out infinite;
+        }
+
+        .btn-super::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border: 3px solid #fbbf24;
+            border-radius: 50px;
+            transform: translate(-50%, -50%);
+            animation: pulseRing 2s ease-out infinite;
+            z-index: -2;
+        }
+
+        @keyframes pulseRing {
+            0% {
+                width: 100%;
+                height: 100%;
+                opacity: 1;
+            }
+            100% {
+                width: 130%;
+                height: 150%;
+                opacity: 0;
+            }
         }
 
         .btn-secondary {
@@ -1902,6 +1974,7 @@
             transition: all 0.4s ease;
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
             animation: pulse 2s ease-in-out infinite;
+            will-change: transform;
         }
 
         .play-icon {
@@ -2024,6 +2097,21 @@
             font-weight: 700;
             color: var(--white);
             border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .video-iframe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            z-index: 20;
+        }
+
+        .video-iframe-container iframe {
+            border-radius: 24px;
         }
 
         .video-features {
@@ -2178,6 +2266,7 @@
             transition: all 0.3s ease;
             animation: whatsappPulse 2s ease-in-out infinite;
             position: relative;
+            will-change: transform;
         }
 
         .whatsapp-icon::before {
@@ -2886,7 +2975,11 @@
             <ul class="nav-links" id="navLinks">
                 <li><a href="#features">תכונות</a></li>
                 <li><a href="#benefits">יתרונות</a></li>
-                <li><a href="#roi">חישוב ROI</a></li>
+                <li><a href="#video-demo">סרטון הדגמה</a></li>
+                <li><a href="#roi">ROI</a></li>
+                <li><a href="#roi-calculator">מחשבון ROI</a></li>
+                <li><a href="#before-after">לפני ואחרי</a></li>
+                <li><a href="#faq">שאלות נפוצות</a></li>
                 <li><a href="#pricing">מחירים</a></li>
                 <li><a href="#contact">צור קשר</a></li>
             </ul>
@@ -2927,7 +3020,7 @@
             </div>
 
             <div class="cta-buttons">
-                <a href="#contact" class="btn btn-primary">🎁 תן למערכת לעבוד במקומך - התחל עכשיו!</a>
+                <a href="#contact" class="btn btn-primary btn-super">🎁 תן למערכת לעבוד במקומך - התחל עכשיו!</a>
                 <a href="#features" class="btn btn-secondary">ראה איך זה חוסך לך זמן</a>
             </div>
         </div>
@@ -3025,7 +3118,7 @@
     </section>
 
     <!-- Before/After Comparison Section -->
-    <section class="before-after-section">
+    <section id="before-after" class="before-after-section">
         <div class="container">
             <h2 class="section-title" style="color: #1e40af;">🔄 מהפכה בניהול כיתה</h2>
             <p class="section-subtitle" style="color: #475569; font-size: 1.4rem;">ראו את ההבדל המדהים!</p>
@@ -3258,7 +3351,7 @@
     </section>
 
     <!-- Video Demo Section -->
-    <section class="video-demo-section">
+    <section id="video-demo" class="video-demo-section">
         <div class="container">
             <h2 class="section-title" style="color: #1e40af;">🎬 ראו את ISHEBOT בפעולה</h2>
             <p class="section-subtitle" style="color: #475569; font-size: 1.4rem; font-weight: 600;">
@@ -3266,15 +3359,15 @@
             </p>
 
             <div class="video-container">
-                <div class="video-placeholder">
-                    <div class="video-play-button">
+                <div class="video-placeholder" id="videoPlaceholder">
+                    <div class="video-play-button" id="videoPlayButton">
                         <div class="play-icon">▶</div>
                     </div>
                     <div class="video-overlay">
                         <h3>צפו בהדגמה מלאה</h3>
                         <p>ראו איך ISHEBOT חוסכת 10 שעות שבועיות למורים</p>
                     </div>
-                    <div class="video-thumbnail">
+                    <div class="video-thumbnail" id="videoThumbnail">
                         <div class="thumbnail-content">
                             <div class="fake-interface">
                                 <div class="interface-top-bar">
@@ -3302,6 +3395,20 @@
                                 <span>⏱️ 3 דקות</span>
                             </div>
                         </div>
+                    </div>
+                    <!-- Video iframe (hidden initially) -->
+                    <div class="video-iframe-container" id="videoIframeContainer" style="display: none;">
+                        <iframe
+                            id="videoIframe"
+                            width="100%"
+                            height="100%"
+                            src=""
+                            title="ISHEBOT Demo Video"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            loading="lazy">
+                        </iframe>
                     </div>
                 </div>
 
@@ -5323,6 +5430,41 @@
                         mobileMenuToggle.setAttribute('aria-expanded', 'false');
                         document.body.style.overflow = '';
                     }
+                }
+            });
+        }
+
+        // Video Demo Player
+        const videoPlayButton = document.getElementById('videoPlayButton');
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        const videoThumbnail = document.getElementById('videoThumbnail');
+        const videoIframeContainer = document.getElementById('videoIframeContainer');
+        const videoIframe = document.getElementById('videoIframe');
+
+        if (videoPlayButton && videoIframeContainer && videoIframe) {
+            // Replace this with your actual YouTube video ID or URL
+            // Example: https://www.youtube.com/watch?v=YOUR_VIDEO_ID
+            const videoId = 'dQw4w9WgXcQ'; // Replace with actual ISHEBOT demo video ID
+            const videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+
+            videoPlayButton.addEventListener('click', () => {
+                // Hide thumbnail and play button
+                videoThumbnail.style.display = 'none';
+                videoPlayButton.style.display = 'none';
+
+                // Show and load video
+                videoIframeContainer.style.display = 'block';
+                videoIframe.src = videoUrl;
+
+                // Optional: Track video play event
+                console.log('Video demo started');
+            });
+
+            // Alternative: Make entire placeholder clickable
+            videoPlaceholder.style.cursor = 'pointer';
+            videoPlaceholder.addEventListener('click', (e) => {
+                if (e.target === videoPlaceholder || e.target.closest('.video-thumbnail, .video-overlay')) {
+                    videoPlayButton.click();
                 }
             });
         }
