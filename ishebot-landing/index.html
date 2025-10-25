@@ -465,6 +465,7 @@
             gap: 3rem;
             max-width: 1400px;
             margin: 0 auto;
+            perspective: 1000px;
         }
 
         .feature-card {
@@ -477,6 +478,7 @@
             position: relative;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transform-style: preserve-3d;
         }
 
         .feature-card::before {
@@ -488,17 +490,47 @@
             background: linear-gradient(135deg, #3B82F6, #8B5CF6, #EC4899);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
             mask-composite: exclude;
             opacity: 0;
             transition: opacity 0.5s;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.3) 50%,
+                transparent 70%
+            );
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
         }
 
         .feature-card:hover::before {
             opacity: 1;
         }
 
+        .feature-card:hover::after {
+            opacity: 1;
+            animation: shine 1.5s ease-in-out;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
         .feature-card:hover {
-            transform: translateY(-20px) scale(1.05);
+            transform: translateY(-20px) scale(1.05) rotateX(2deg);
             box-shadow: 0 30px 60px rgba(59, 130, 246, 0.3);
         }
 
@@ -538,7 +570,22 @@
             font-size: 1.1rem;
             font-weight: 500;
             line-height: 1.6;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.4s ease;
         }
+
+        .feature-card:hover li {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .feature-card:hover li:nth-child(1) { transition-delay: 0.1s; }
+        .feature-card:hover li:nth-child(2) { transition-delay: 0.2s; }
+        .feature-card:hover li:nth-child(3) { transition-delay: 0.3s; }
+        .feature-card:hover li:nth-child(4) { transition-delay: 0.4s; }
+        .feature-card:hover li:nth-child(5) { transition-delay: 0.5s; }
+        .feature-card:hover li:nth-child(6) { transition-delay: 0.6s; }
 
         .feature-card li::before {
             content: "⚡";
@@ -558,37 +605,226 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 3rem;
+            perspective: 1000px;
         }
 
         .benefit-card {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .benefit-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg at 50% 50%,
+                rgba(59, 130, 246, 0.1) 0deg,
+                rgba(139, 92, 246, 0.1) 120deg,
+                rgba(236, 72, 153, 0.1) 240deg,
+                rgba(59, 130, 246, 0.1) 360deg);
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .benefit-card:hover::before {
+            opacity: 1;
+            transform: rotate(180deg);
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-15px) rotateX(5deg);
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
         }
 
         .benefit-card h3 {
             font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
-            color: var(--primary);
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
         }
 
         .benefit-card ul {
             list-style: none;
+            position: relative;
+            z-index: 1;
         }
 
         .benefit-card li {
             margin-bottom: 1rem;
-            padding-right: 2rem;
+            padding-right: 2.5rem;
             position: relative;
             color: var(--gray);
+            font-weight: 500;
+            opacity: 1;
+            transform: translateX(0);
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover li {
+            transform: translateX(-5px);
+            color: #374151;
         }
 
         .benefit-card li::before {
             content: "✅";
             position: absolute;
             right: 0;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .benefit-card:hover li::before {
+            transform: scale(1.2) rotate(360deg);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* ROI Section */
+        .roi-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: var(--white);
+        }
+
+        .roi-section .section-title {
+            color: var(--white);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .roi-section .section-subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 3rem;
+        }
+
+        .roi-calculator {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 3rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .roi-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .roi-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .roi-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .roi-item .roi-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .roi-item .roi-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+        }
+
+        .roi-item .roi-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+        }
+
+        .roi-comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+        }
+
+        .roi-comparison-item {
+            text-align: center;
+        }
+
+        .roi-comparison-item h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .roi-comparison-item .amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--white);
+        }
+
+        .roi-comparison-arrow {
+            font-size: 3rem;
+            color: #10b981;
+        }
+
+        .roi-result {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .roi-result h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .roi-result .percentage {
+            font-size: 4rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .roi-note {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
         }
 
         /* Pricing Section */
@@ -601,27 +837,49 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             margin-top: 3rem;
+            perspective: 1000px;
         }
 
         .pricing-card {
-            background: var(--white);
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
             border: 2px solid #E5E7EB;
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: 24px;
+            padding: 2.5rem;
             text-align: center;
-            transition: all 0.3s;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .pricing-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .pricing-card:hover::after {
+            opacity: 1;
         }
 
         .pricing-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transform: translateY(-20px) scale(1.05);
+            box-shadow: 0 30px 60px rgba(59, 130, 246, 0.25);
             border-color: var(--primary);
         }
 
         .pricing-card.featured {
-            border-color: var(--primary);
-            border-width: 3px;
+            background: linear-gradient(145deg, #ffffff, #eff6ff);
+            border: 3px solid transparent;
+            background-clip: padding-box;
             position: relative;
+            transform: scale(1.05);
         }
 
         .pricing-card.featured::before {
@@ -630,12 +888,45 @@
             top: -15px;
             right: 50%;
             transform: translateX(50%);
-            background: var(--primary);
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
             color: var(--white);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
             font-size: 0.9rem;
-            font-weight: 600;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            z-index: 10;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+                transform: translateX(50%) scale(1);
+            }
+            50% {
+                box-shadow: 0 6px 25px rgba(59, 130, 246, 0.6);
+                transform: translateX(50%) scale(1.05);
+            }
+        }
+
+        .pricing-card.featured::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 24px;
+            padding: 3px;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6, #EC4899);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            z-index: -1;
+        }
+
+        .pricing-card.featured:hover {
+            transform: translateY(-25px) scale(1.08);
+            box-shadow: 0 35px 70px rgba(59, 130, 246, 0.35);
         }
 
         .pricing-card h3 {
@@ -643,29 +934,66 @@
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--dark);
+            position: relative;
+            z-index: 1;
         }
 
         .pricing-card .price {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 800;
-            color: var(--primary);
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .pricing-card:hover .price {
+            transform: scale(1.1);
         }
 
         .pricing-card .period {
             color: var(--gray);
             margin-bottom: 2rem;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
         }
 
         .pricing-card ul {
             list-style: none;
             margin-bottom: 2rem;
             text-align: right;
+            position: relative;
+            z-index: 1;
         }
 
         .pricing-card li {
             margin-bottom: 1rem;
             color: var(--gray);
+            font-weight: 500;
+            padding-right: 1.5rem;
+            position: relative;
+            opacity: 1;
+            transform: translateX(0);
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover li {
+            transform: translateX(-3px);
+            color: #374151;
+        }
+
+        .pricing-card li::before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.2rem;
         }
 
         /* Guarantee Section */
@@ -861,9 +1189,131 @@
         .fade-in-up {
             animation: fadeInUp 0.6s ease-out;
         }
+
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #3B82F6;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            background: #8B5CF6;
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .scroll-to-top:active {
+            transform: translateY(-2px);
+        }
+
+        @media print {
+            .scroll-to-top {
+                display: none;
+            }
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 100px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .language-btn {
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+        }
+
+        .language-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3B82F6;
+            transform: scale(1.1);
+        }
+
+        .language-btn.active {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            border-color: #3B82F6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .language-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 0.25rem;
+            font-weight: 600;
+        }
+
+        @media print {
+            .language-switcher {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="language-btn active" onclick="switchLanguage('he')" data-lang="he" title="עברית">
+            🇮🇱
+        </button>
+        <button class="language-btn" onclick="switchLanguage('en')" data-lang="en" title="English">
+            🇬🇧
+        </button>
+        <button class="language-btn" onclick="switchLanguage('ar')" data-lang="ar" title="العربية">
+            🇸🇦
+        </button>
+        <button class="language-btn" onclick="switchLanguage('ru')" data-lang="ru" title="Русский">
+            🇷🇺
+        </button>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTop" aria-label="גלול למעלה" type="button">
+        ↑
+    </button>
+
     <!-- Header -->
     <header>
         <nav class="container">
@@ -871,6 +1321,7 @@
             <ul class="nav-links">
                 <li><a href="#features">תכונות</a></li>
                 <li><a href="#benefits">יתרונות</a></li>
+                <li><a href="#roi">חישוב ROI</a></li>
                 <li><a href="#pricing">מחירים</a></li>
                 <li><a href="#contact">צור קשר</a></li>
             </ul>
@@ -1076,6 +1527,97 @@
         </div>
     </section>
 
+    <!-- ROI Calculation Section -->
+    <section id="roi" class="roi-section">
+        <div class="container">
+            <h2 class="section-title">💰 חישוב החיסכון הכספי</h2>
+            <p class="section-subtitle">כמה באמת חוסך ISHEBOT למורה?</p>
+
+            <div class="roi-calculator">
+                <div class="roi-breakdown">
+                    <div class="roi-item">
+                        <div class="roi-icon">⏱️</div>
+                        <div class="roi-label">זמן נחסך בשבוע</div>
+                        <div class="roi-value">10 שעות</div>
+                    </div>
+
+                    <div class="roi-item">
+                        <div class="roi-icon">💵</div>
+                        <div class="roi-label">עלות שעת עבודה</div>
+                        <div class="roi-value">₪32</div>
+                    </div>
+
+                    <div class="roi-item">
+                        <div class="roi-icon">📅</div>
+                        <div class="roi-label">חודשי לימוד בשנה</div>
+                        <div class="roi-value">10 חודשים</div>
+                    </div>
+                </div>
+
+                <div class="roi-comparison">
+                    <div class="roi-comparison-item">
+                        <h4>💸 עבודה ידנית - עלות הזמן בלבד</h4>
+                        <div class="amount">₪12,800</div>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                            10 שעות × ₪32 × 4 שבועות × 10 חודשים
+                        </p>
+                        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #fbbf24;">
+                            ❌ ללא אלגוריתם גנטי<br>
+                            ❌ ללא AI חכם<br>
+                            ❌ החלטות אינטואיטיביות
+                        </p>
+                    </div>
+
+                    <div class="roi-comparison-arrow">→</div>
+
+                    <div class="roi-comparison-item">
+                        <h4>✅ ISHEBOT - מערכת AI מתקדמת</h4>
+                        <div class="amount" style="color: #10b981;">₪88,000</div>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                            מחיר שנתי (25 מורים)
+                        </p>
+                        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #10b981;">
+                            ✅ אלגוריתם גנטי מתקדם<br>
+                            ✅ 50+ נקודות נתונים<br>
+                            ✅ החלטות מבוססות מדע
+                        </p>
+                    </div>
+                </div>
+
+                <div class="roi-result">
+                    <h3>💡 למה ISHEBOT שווה את ההשקעה?</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; text-align: right;">
+                        <div>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">🎯 איכות מעולה</h4>
+                            <p style="font-size: 0.95rem;">סידור כיתה אופטימלי מבוסס מדע, לא ניחושים</p>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">📊 תוצאות מוכחות</h4>
+                            <p style="font-size: 0.95rem;">שיפור של 40% בתוצאות למידה</p>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">⏱️ חיסכון אמיתי</h4>
+                            <p style="font-size: 0.95rem;">10 שעות/שבוע למורה = זמן לתלמידים</p>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">🌍 רב-לשוני</h4>
+                            <p style="font-size: 0.95rem;">4 שפות + 6 מבני כיתה</p>
+                        </div>
+                    </div>
+                    <p style="font-size: 1.15rem; margin-top: 2rem; font-weight: 600;">
+                        💰 עלות למורה: רק ₪3,520/שנה (₪293/חודש)<br>
+                        <span style="font-size: 0.9rem; opacity: 0.9;">פחות מארוחת צהריים אחת בשבוע!</span>
+                    </p>
+                </div>
+
+                <div class="roi-note">
+                    * חישוב מבוסס על שעת עבודה ממוצעת של ₪32. עבור בית ספר עם 25 מורים, העלות היא ₪3,520 למורה בשנה.
+                    ההשקעה מחזירה את עצמה בשיפור תוצאות למידה, הפחתת לחץ, והחלטות מבוססות נתונים.
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Pricing Section -->
     <section id="pricing" class="pricing">
         <div class="container">
@@ -1199,6 +1741,7 @@
                     <ul>
                         <li><a href="#features">תכונות</a></li>
                         <li><a href="#benefits">יתרונות</a></li>
+                        <li><a href="#roi">חישוב ROI</a></li>
                         <li><a href="#pricing">מחירים</a></li>
                         <li><a href="#contact">צור קשר</a></li>
                     </ul>
@@ -1280,6 +1823,182 @@
         }, observerOptions);
         document.querySelectorAll('.problem-card, .feature-card, .benefit-card, .pricing-card').forEach(el => {
             observer.observe(el);
+        });
+
+        // Scroll to Top Button functionality
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+
+        if (scrollToTopBtn) {
+            console.log('Scroll to top button found');
+
+            // Show/hide button based on scroll position
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.classList.add('visible');
+                    console.log('Button should be visible');
+                } else {
+                    scrollToTopBtn.classList.remove('visible');
+                }
+            });
+
+            // Scroll to top when button is clicked
+            scrollToTopBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Button clicked');
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        } else {
+            console.error('Scroll to top button not found');
+        }
+
+        // Multilingual Translation System
+        const translations = {
+            he: {
+                dir: 'rtl',
+                logo: 'ISHEBOT',
+                nav: {
+                    features: 'תכונות',
+                    benefits: 'יתרונות',
+                    roi: 'חישוב ROI',
+                    pricing: 'מחירים',
+                    contact: 'צור קשר'
+                },
+                hero: {
+                    badge: '🔥 פתרון לעבודה הכי צורבת של המורים',
+                    title: '<span class="highlight">ISHEBOT</span> - הופך מורים<br>ליעילים ופרודוקטיביים פי 10!',
+                    subtitle: 'AI חכם שעושה את העבודה הכבדה במקומך: ניתוח תלמידים וסידור כיתה אוטומטי'
+                },
+                roi: {
+                    title: '💰 חישוב החיסכון הכספי',
+                    subtitle: 'כמה באמת חוסך ISHEBOT למורה?',
+                    perTeacher: 'עלות למורה: רק ₪3,520/שנה (₪293/חודש)',
+                    lessExpensive: 'פחות מארוחת צהריים אחת בשבוע!'
+                }
+            },
+            en: {
+                dir: 'ltr',
+                logo: 'ISHEBOT',
+                nav: {
+                    features: 'Features',
+                    benefits: 'Benefits',
+                    roi: 'ROI Calculator',
+                    pricing: 'Pricing',
+                    contact: 'Contact'
+                },
+                hero: {
+                    badge: '🔥 Solution to Teachers\' Biggest Challenge',
+                    title: '<span class="highlight">ISHEBOT</span> - Makes Teachers<br>10x More Efficient & Productive!',
+                    subtitle: 'Smart AI that does the heavy lifting for you: student analysis and automatic classroom seating'
+                },
+                roi: {
+                    title: '💰 Cost Savings Calculation',
+                    subtitle: 'How much does ISHEBOT really save per teacher?',
+                    perTeacher: 'Cost per teacher: Only ₪3,520/year (₪293/month)',
+                    lessExpensive: 'Less than one lunch per week!'
+                }
+            },
+            ar: {
+                dir: 'rtl',
+                logo: 'ISHEBOT',
+                nav: {
+                    features: 'الميزات',
+                    benefits: 'الفوائد',
+                    roi: 'حاسبة ROI',
+                    pricing: 'الأسعار',
+                    contact: 'اتصل بنا'
+                },
+                hero: {
+                    badge: '🔥 الحل الأمثل لأكبر تحدي للمعلمين',
+                    title: '<span class="highlight">ISHEBOT</span> - يجعل المعلمين<br>أكثر كفاءة وإنتاجية بعشر مرات!',
+                    subtitle: 'ذكاء اصطناعي ذكي يقوم بالعمل الشاق نيابة عنك: تحليل الطلاب وترتيب الفصل الدراسي التلقائي'
+                },
+                roi: {
+                    title: '💰 حساب التوفير المالي',
+                    subtitle: 'كم يوفر ISHEBOT فعليًا لكل معلم؟',
+                    perTeacher: 'التكلفة لكل معلم: ₪3,520 فقط/سنة (₪293/شهر)',
+                    lessExpensive: 'أقل من وجبة غداء واحدة في الأسبوع!'
+                }
+            },
+            ru: {
+                dir: 'ltr',
+                logo: 'ISHEBOT',
+                nav: {
+                    features: 'Функции',
+                    benefits: 'Преимущества',
+                    roi: 'Калькулятор ROI',
+                    pricing: 'Цены',
+                    contact: 'Контакты'
+                },
+                hero: {
+                    badge: '🔥 Решение самой сложной задачи учителей',
+                    title: '<span class="highlight">ISHEBOT</span> - Делает учителей<br>в 10 раз эффективнее и продуктивнее!',
+                    subtitle: 'Умный ИИ, который выполняет тяжелую работу за вас: анализ учеников и автоматическая рассадка в классе'
+                },
+                roi: {
+                    title: '💰 Расчет экономии',
+                    subtitle: 'Сколько на самом деле экономит ISHEBOT для каждого учителя?',
+                    perTeacher: 'Стоимость на учителя: Всего ₪3,520/год (₪293/месяц)',
+                    lessExpensive: 'Меньше, чем один обед в неделю!'
+                }
+            }
+        };
+
+        let currentLang = 'he';
+
+        function switchLanguage(lang) {
+            if (!translations[lang]) return;
+
+            currentLang = lang;
+            const t = translations[lang];
+
+            // Update document direction
+            document.body.setAttribute('dir', t.dir);
+            document.documentElement.setAttribute('lang', lang);
+
+            // Update navigation
+            const navLinks = document.querySelectorAll('.nav-links a');
+            const navTexts = [t.nav.features, t.nav.benefits, t.nav.roi, t.nav.pricing, t.nav.contact];
+            navLinks.forEach((link, index) => {
+                if (navTexts[index]) link.textContent = navTexts[index];
+            });
+
+            // Update hero section
+            const heroBadge = document.querySelector('.hero-badge');
+            if (heroBadge) heroBadge.textContent = t.hero.badge;
+
+            const heroTitle = document.querySelector('.hero h1');
+            if (heroTitle) heroTitle.innerHTML = t.hero.title;
+
+            const heroSubtitle = document.querySelector('.hero h2');
+            if (heroSubtitle) heroSubtitle.textContent = t.hero.subtitle;
+
+            // Update ROI section
+            const roiTitle = document.querySelector('.roi-section .section-title');
+            if (roiTitle) roiTitle.textContent = t.roi.title;
+
+            const roiSubtitle = document.querySelector('.roi-section .section-subtitle');
+            if (roiSubtitle) roiSubtitle.textContent = t.roi.subtitle;
+
+            // Update active button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+
+            // Store preference
+            localStorage.setItem('preferredLanguage', lang);
+
+            console.log(`Language switched to: ${lang}`);
+        }
+
+        // Load saved language preference
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferredLanguage');
+            if (savedLang && translations[savedLang]) {
+                switchLanguage(savedLang);
+            }
         });
     </script>
 </body>
