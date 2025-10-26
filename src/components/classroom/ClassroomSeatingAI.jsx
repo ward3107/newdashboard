@@ -2260,7 +2260,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                               </div>
 
                               {/* Enhanced Tooltip with Full Analysis */}
-                              {hoveredDesk === item.id && (item.leftStudent || item.rightStudent) && (
+                              {hoveredDesk === item.id && (item.leftStudent || item.rightStudent) && ReactDOM.createPortal(
                                 <>
                                   {/* Semi-transparent backdrop */}
                                   <motion.div
@@ -2269,6 +2269,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                     exit={{ opacity: 0 }}
                                     className="fixed inset-0 bg-black/50 backdrop-blur-sm"
                                     style={{ zIndex: 999999 }}
+                                    onClick={() => setHoveredDesk(null)}
                                   />
 
                                   {/* Popup content */}
@@ -2277,7 +2278,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.2 }}
-                                    className={`fixed p-5 rounded-xl shadow-2xl border-2 w-[420px] max-h-[500px] overflow-y-auto ${
+                                    className={`fixed p-5 rounded-xl shadow-2xl border-2 w-[420px] max-h-[90vh] overflow-y-auto ${
                                       compatColor === 'green' ? 'bg-green-900 border-green-500' :
                                       compatColor === 'yellow' ? 'bg-yellow-900 border-yellow-500' :
                                       compatColor === 'orange' ? 'bg-orange-900 border-orange-500' :
@@ -2383,7 +2384,8 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                   )}
 
                                 </motion.div>
-                                </>
+                                </>,
+                                document.body
                               )}
                             </div>
                           );
