@@ -1,9 +1,9 @@
-import { Student, StudentDetail, Stats, FilterOptions, Filters } from '../types';
+import { Student, StudentDetail, Stats, FilterOptions, Filters, APIResponse } from '../types';
 
 export function getAllStudents(): Promise<Student[]>;
 export function getStudent(studentId: string): Promise<StudentDetail>;
 export function getStats(): Promise<Stats>;
-export function analyzeStudent(studentId: string): Promise<any>;
+export function analyzeStudent(studentId: string): Promise<APIResponse<{ analyzed: number }>>;
 export function searchStudents(query: string, students: Student[]): Student[];
 export function filterStudents(students: Student[], filters: Filters): Student[];
 export function sortStudents(students: Student[], sortBy: string, sortOrder: 'asc' | 'desc'): Student[];

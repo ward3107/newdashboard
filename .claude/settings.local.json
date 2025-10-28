@@ -61,7 +61,9 @@
       "Bash(find:*)",
       "Bash(taskkill:*)",
       "Bash(npx eslint:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(npm run lint)",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": []

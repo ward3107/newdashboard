@@ -101,7 +101,7 @@ describe('API Service Layer', () => {
         '../../../etc/passwd'
       ];
 
-      for (const input of inputs) {
+      for (const _input of inputs) {
         // Test with getAllStudents since searchStudents doesn't exist
         global.fetch = vi.fn().mockResolvedValueOnce({
           ok: true,

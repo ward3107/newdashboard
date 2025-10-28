@@ -145,7 +145,9 @@ const MOCK_STUDENTS: Student[] = [
  */
 function buildUrl(action: string, params?: Record<string, string>): string {
   if (!API_URL) {
-    console.warn('⚠️ VITE_API_URL not set in .env.local');
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('⚠️ VITE_API_URL not set in .env.local');
+    }
     return '';
   }
 
@@ -191,13 +193,17 @@ async function fetchWithTimeout(url: string, timeout: number = API_TIMEOUT): Pro
 async function apiCall<T>(action: string, params?: Record<string, string>): Promise<ApiResponse<T>> {
   // Use mock data in development
   if (USE_MOCK_DATA) {
-    console.log(`🔧 Using mock data for action: ${action}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🔧 Using mock data for action: ${action}`);
+    }
     return handleMockResponse<T>(action, params);
   }
 
   // Check if API URL is configured
   if (!API_URL || API_URL.includes('YOUR_DEPLOYMENT_ID')) {
-    console.error('❌ API URL not configured. Please update .env.local');
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ API URL not configured. Please update .env.local');
+    }
     return {
       success: false,
       error: 'API not configured. Please deploy Google Apps Script and update .env.local',
@@ -206,7 +212,9 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
 
   try {
     const url = buildUrl(action, params);
-    console.log(`📡 API Call: ${action}`, params);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`📡 API Call: ${action}`, params);
+    }
 
     const response = await fetchWithTimeout(url);
 
@@ -221,18 +229,23 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
       throw new Error(data.error);
     }
 
-    console.log(`✅ API Success: ${action}`, data);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`✅ API Success: ${action}`, data);
+    }
 
     return {
       success: true,
       data: data as T,
     };
 
-  } catch (error: any) {
-    console.error(`❌ API Error: ${action}`, error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    if (process.env.NODE_ENV === 'development') {
+      console.error(`❌ API Error: ${action}`, error);
+    }
 
     // Handle specific errors
-    if (error.name === 'AbortError') {
+    if (error instanceof Error && error.name === 'AbortError') {
       return {
         success: false,
         error: 'Request timeout. Please check your internet connection.',
@@ -240,7 +253,7 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
     }
 
     // Sanitize error messages to prevent exposing sensitive information
-    let sanitizedError = error.message || 'Unknown error occurred';
+    let sanitizedError = errorMessage;
 
     // Remove IP addresses (IPv4 and IPv6)
     sanitizedError = sanitizedError.replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, '[IP_REMOVED]');
@@ -270,13 +283,14 @@ function handleMockResponse<T>(action: string, params?: Record<string, string>):
     case 'getAllStudents':
       return { success: true, data: { students: MOCK_STUDENTS } as T };
 
-    case 'getStudent':
+    case 'getStudent': {
       const studentId = params?.studentId;
       const mockStudent = MOCK_STUDENTS.find(s => s.studentCode === studentId);
       if (mockStudent) {
         return { success: true, data: mockStudent as T };
       }
       return { success: false, error: 'Student not found' };
+    }
 
     default:
       return { success: false, error: 'Mock data not available for this action' };
@@ -332,7 +346,11 @@ export async function analyzeStudent(studentId: string): Promise<ApiResponse<{ s
 /**
  * Test API connection
  */
-export async function testConnection(): Promise<ApiResponse<any>> {
+export async function testConnection(): Promise<ApiResponse<{
+  message: string;
+  mode: string;
+  stats?: DashboardStats;
+}>> {
   if (USE_MOCK_DATA) {
     return {
       success: true,
@@ -369,10 +387,11 @@ export async function testConnection(): Promise<ApiResponse<any>> {
       },
     };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
-      error: `Connection failed: ${error.message}`,
+      error: `Connection failed: ${errorMessage}`,
     };
   }
 }

@@ -9,12 +9,10 @@ import {
   ChevronDown,
   BookOpen,
   Heart,
-  Shield,
   Activity,
   Zap,
   Star,
   TrendingUp,
-  Users,
   Clock,
   CheckCircle,
   Info,
@@ -23,15 +21,13 @@ import {
   Compass,
   Flag,
   BarChart3,
-  PieChart,
   Microscope,
-  Sparkles,
   Plus,
   Bell
 } from 'lucide-react';
 import enhancedAnalysisService from '../services/enhancedAnalysisService';
 
-const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
+const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
   const [analysis, setAnalysis] = useState(null);
   const [expandedInsights, setExpandedInsights] = useState({});
   const [activeTab, setActiveTab] = useState('insights');
@@ -58,7 +54,10 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
         const savedAssignments = JSON.parse(localStorage.getItem(`assignments_${studentData.studentCode}`) || '[]');
         setAssignments(savedAssignments);
       } catch (error) {
-        console.error('Error generating enhanced analysis:', error);
+        // Log error for debugging purposes
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error generating enhanced analysis:', error);
+        }
       } finally {
         setLoading(false);
       }
@@ -140,18 +139,6 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
     const reminderDate = new Date(assignment.reminderDate);
     const now = new Date();
     return now >= reminderDate;
-  };
-
-  const getSeverityColor = (severity) => {
-    switch(severity) {
-      case 'critical': return 'from-red-500 to-red-600';
-      case 'high': return 'from-orange-500 to-orange-600';
-      case 'moderate': return 'from-yellow-500 to-yellow-600';
-      case 'low': return 'from-green-500 to-green-600';
-      case 'positive': return 'from-blue-500 to-blue-600';
-      case 'important': return 'from-purple-500 to-purple-600';
-      default: return 'from-gray-500 to-gray-600';
-    }
   };
 
   const getSeverityIcon = (severity) => {
@@ -307,6 +294,15 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
                 <div
                   className={`p-6 cursor-pointer hover:bg-gray-50 transition-colors ${darkMode ? 'hover:bg-gray-700/30' : ''}`}
                   onClick={() => toggleInsight(insight.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleInsight(insight.id);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isExpanded}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4">
@@ -700,9 +696,9 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
 
               {/* Success Rating */}
               <div className="mb-6">
-                <label className={`block text-sm font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`block text-sm font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   מדד הצלחה (1-5) *
-                </label>
+                </div>
                 <div className="flex gap-2 justify-center">
                   {[1, 2, 3, 4, 5].map(level => (
                     <button
@@ -732,10 +728,11 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
 
               {/* Observed Changes */}
               <div className="mb-6">
-                <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <label htmlFor="observed-changes" className={`block text-sm font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   שינויים שנצפו בתלמיד *
                 </label>
                 <textarea
+                  id="observed-changes"
                   value={rating.observedChanges}
                   onChange={(e) => setRating(prev => ({ ...prev, observedChanges: e.target.value }))}
                   className={`w-full p-3 rounded-lg border ${
@@ -751,10 +748,11 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode, theme }) => {
 
               {/* Next Steps */}
               <div className="mb-6">
-                <label className={`block text-sm font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <label htmlFor="next-steps" className={`block text-sm font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   צעדים הבאים
                 </label>
                 <textarea
+                  id="next-steps"
                   value={rating.nextSteps}
                   onChange={(e) => setRating(prev => ({ ...prev, nextSteps: e.target.value }))}
                   className={`w-full p-3 rounded-lg border ${

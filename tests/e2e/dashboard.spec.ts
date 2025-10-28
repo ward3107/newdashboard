@@ -88,7 +88,7 @@ test.describe('Dashboard Functionality', () => {
     }
   });
 
-  test('should have responsive design', async ({ page, viewport }) => {
+  test('should have responsive design', async ({ page }) => {
     // Test mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
     await page.waitForTimeout(500);

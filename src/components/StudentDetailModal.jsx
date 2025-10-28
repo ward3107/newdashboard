@@ -22,7 +22,6 @@ import {
   ChevronRight,
   Download,
   Printer,
-  Share2,
   Users
 } from 'lucide-react';
 import * as API from '../services/googleAppsScriptAPI';
@@ -107,13 +106,18 @@ const StudentDetailModal = ({ student, onClose, darkMode, theme }) => {
   return (
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
-      onClick={onClose} // Click outside to close
+      onClick={onClose}
+      onKeyDown={(e) => (e.key === 'Escape') && onClose()}
+      role="dialog"
+      aria-modal="true"
+      tabIndex={-1}
     >
       <div
         className={`relative w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl ${
           darkMode ? 'bg-gray-900' : 'bg-white'
         }`}
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
       >
         {/* Header with gradient */}
         <div className={`relative h-48 bg-gradient-to-r ${getLearningStyleColor(student.learningStyle)} p-8`}>

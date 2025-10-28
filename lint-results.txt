@@ -1,0 +1,586 @@
+
+> ai-student-analysis-dashboard@1.0.0 lint
+> eslint . --ext .ts,.tsx,.js,.jsx
+
+
+C:\Users\User\Desktop\newdashboard\src\App.tsx
+  67:13  warning  Unexpected console statement  no-console
+
+C:\Users\User\Desktop\newdashboard\src\components\AdminControlPanel.jsx
+  337:9  warning  'handleInitialSync' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\AdminPanel.jsx
+  70:7  error  Visible, non-interactive elements with click handlers must have at least one keyboard listener  jsx-a11y/click-events-have-key-events
+  70:7  error  Non-interactive elements should not be assigned mouse or keyboard event listeners               jsx-a11y/no-noninteractive-element-interactions
+
+C:\Users\User\Desktop\newdashboard\src\components\EnhancedStudentDetail.jsx
+    72:6   warning  React Hook useEffect has a missing dependency: 'student'. Either include it or remove the dependency array. If 'setFullData' needs the current value of 'student', you can also switch to useReducer instead of useState and read 'student' in the reducer  react-hooks/exhaustive-deps
+   402:9   warning  'generatePrintContent' is assigned a value but never used                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   664:39  warning  'index' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   813:7   error    Non-interactive elements should not be assigned mouse or keyboard event listeners                                                                                                                                                                           jsx-a11y/no-noninteractive-element-interactions
+  1159:7   warning  'CategorySection' is assigned a value but never used                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\StudentDetailModal.jsx
+   25:3  warning  'Share2' is defined but never used                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   55:6  warning  React Hook useEffect has a missing dependency: 'student'. Either include it or remove the dependency array. If 'setFullData' needs the current value of 'student', you can also switch to useReducer instead of useState and read 'student' in the reducer  react-hooks/exhaustive-deps
+  108:5  error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                                                                              jsx-a11y/click-events-have-key-events
+  108:5  error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element                                                           jsx-a11y/no-static-element-interactions
+  112:7  error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                                                                              jsx-a11y/click-events-have-key-events
+  112:7  error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element                                                           jsx-a11y/no-static-element-interactions
+
+C:\Users\User\Desktop\newdashboard\src\components\UnifiedDashboard.jsx
+    1:27  warning  'useEffect' is defined but never used                                    @typescript-eslint/no-unused-vars
+  286:35  warning  'theme' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\analytics\AnalyticsDashboard.jsx
+     9:3   warning  'PieChart' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+    21:3   warning  'Download' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+    27:3   warning  'Info' is defined but never used                                                                                     @typescript-eslint/no-unused-vars
+    33:3   warning  'Briefcase' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+    38:3   warning  'ChartLine' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+    39:3   warning  'ChartPie' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+    48:3   warning  'EyeOff' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+    49:3   warning  'Layers' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+    52:3   warning  'Navigation' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+    73:3   warning  'ProgressGrowthSection' is defined but never used                                                                    @typescript-eslint/no-unused-vars
+    74:3   warning  'ComparativeAnalyticsSection' is defined but never used                                                              @typescript-eslint/no-unused-vars
+    86:10  warning  'selectedStudent' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+    86:27  warning  'setSelectedStudent' is assigned a value but never used                                                              @typescript-eslint/no-unused-vars
+    91:10  warning  'viewMode' is assigned a value but never used                                                                        @typescript-eslint/no-unused-vars
+    91:20  warning  'setViewMode' is assigned a value but never used                                                                     @typescript-eslint/no-unused-vars
+   164:11  warning  Unexpected console statement                                                                                         no-console
+   168:13  warning  Unexpected console statement                                                                                         no-console
+   175:11  warning  Unexpected console statement                                                                                         no-console
+   186:6   warning  React Hook useEffect has a missing dependency: 'analyzedStudents'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   337:9   warning  'toggleMenu' is assigned a value but never used                                                                      @typescript-eslint/no-unused-vars
+   506:7   warning  'QuickStats' is assigned a value but never used                                                                      @typescript-eslint/no-unused-vars
+   506:48  warning  'theme' is defined but never used. Allowed unused args must match /^_/u                                              @typescript-eslint/no-unused-vars
+   605:7   warning  'AcademicPerformanceSection' is assigned a value but never used                                                      @typescript-eslint/no-unused-vars
+   960:7   warning  'LearningAnalyticsSection' is assigned a value but never used                                                        @typescript-eslint/no-unused-vars
+  1089:48  warning  'theme' is defined but never used. Allowed unused args must match /^_/u                                              @typescript-eslint/no-unused-vars
+  1198:54  warning  'theme' is defined but never used. Allowed unused args must match /^_/u                                              @typescript-eslint/no-unused-vars
+  1248:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1248:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1249:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1249:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1250:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1250:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1251:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1251:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1252:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1252:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1258:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1258:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1259:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1259:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1260:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1260:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1261:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1261:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1262:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1262:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1263:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1263:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1269:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1269:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1270:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1270:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1271:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1271:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1272:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1272:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1273:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1273:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1274:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1274:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1280:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1280:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1281:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1281:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1282:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1282:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1283:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1283:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1284:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1284:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1285:14  error    'PlaceholderCard' is not defined                                                                                     react/jsx-no-undef
+  1285:14  error    'PlaceholderCard' is not defined                                                                                     no-undef
+  1626:37  warning  'data' is defined but never used. Allowed unused args must match /^_/u                                               @typescript-eslint/no-unused-vars
+  1626:53  warning  'theme' is defined but never used. Allowed unused args must match /^_/u                                              @typescript-eslint/no-unused-vars
+  1730:34  warning  'data' is defined but never used. Allowed unused args must match /^_/u                                               @typescript-eslint/no-unused-vars
+  1730:50  warning  'theme' is defined but never used. Allowed unused args must match /^_/u                                              @typescript-eslint/no-unused-vars
+  1834:33  warning  'data' is defined but never used. Allowed unused args must match /^_/u                                               @typescript-eslint/no-unused-vars
+  1834:49  warning  'theme' is defined but never used. Allowed unused args must match /^_/u                                              @typescript-eslint/no-unused-vars
+  1938:35  warning  'theme' is defined but never used. Allowed unused args must match /^_/u                                              @typescript-eslint/no-unused-vars
+  1960:46  warning  'theme' is defined but never used. Allowed unused args must match /^_/u                                              @typescript-eslint/no-unused-vars
+  1981:76  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                      react/no-unescaped-entities
+  1981:83  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                      react/no-unescaped-entities
+  2019:26  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                      react/no-unescaped-entities
+  2019:33  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                      react/no-unescaped-entities
+
+C:\Users\User\Desktop\newdashboard\src\components\analytics\AnalyticsSectionsExtended.jsx
+     4:3   warning  'TrendingDown' is defined but never used                                 @typescript-eslint/no-unused-vars
+     5:3   warning  'Award' is defined but never used                                        @typescript-eslint/no-unused-vars
+     6:3   warning  'Target' is defined but never used                                       @typescript-eslint/no-unused-vars
+     7:3   warning  'Activity' is defined but never used                                     @typescript-eslint/no-unused-vars
+     8:3   warning  'BarChart3' is defined but never used                                    @typescript-eslint/no-unused-vars
+    10:3   warning  'Calendar' is defined but never used                                     @typescript-eslint/no-unused-vars
+    15:3   warning  'ChevronRight' is defined but never used                                 @typescript-eslint/no-unused-vars
+    16:3   warning  'Star' is defined but never used                                         @typescript-eslint/no-unused-vars
+    17:3   warning  'UserCheck' is defined but never used                                    @typescript-eslint/no-unused-vars
+    20:3   warning  'MessageSquare' is defined but never used                                @typescript-eslint/no-unused-vars
+    21:3   warning  'FileText' is defined but never used                                     @typescript-eslint/no-unused-vars
+    24:3   warning  'Percent' is defined but never used                                      @typescript-eslint/no-unused-vars
+    26:3   warning  'UserPlus' is defined but never used                                     @typescript-eslint/no-unused-vars
+    27:3   warning  'UserMinus' is defined but never used                                    @typescript-eslint/no-unused-vars
+    29:3   warning  'Layers' is defined but never used                                       @typescript-eslint/no-unused-vars
+    31:3   warning  'Map' is defined but never used                                          @typescript-eslint/no-unused-vars
+    32:3   warning  'Navigation' is defined but never used                                   @typescript-eslint/no-unused-vars
+    35:3   warning  'Brain' is defined but never used                                        @typescript-eslint/no-unused-vars
+    37:3   warning  'Globe' is defined but never used                                        @typescript-eslint/no-unused-vars
+    46:57  warning  'theme' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+   385:63  warning  'theme' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+   711:63  warning  'theme' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  1044:57  warning  'theme' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\analytics\CoreStatsDashboard.jsx
+   12:3   warning  'Clock' is defined but never used                                            @typescript-eslint/no-unused-vars
+   20:3   warning  'ChevronRight' is defined but never used                                     @typescript-eslint/no-unused-vars
+   21:3   warning  'Filter' is defined but never used                                           @typescript-eslint/no-unused-vars
+   22:3   warning  'Download' is defined but never used                                         @typescript-eslint/no-unused-vars
+   28:18  warning  'AnimatePresence' is defined but never used                                  @typescript-eslint/no-unused-vars
+   36:10  warning  'selectedMetric' is assigned a value but never used                          @typescript-eslint/no-unused-vars
+   36:26  warning  'setSelectedMetric' is assigned a value but never used                       @typescript-eslint/no-unused-vars
+   38:10  warning  'loading' is assigned a value but never used                                 @typescript-eslint/no-unused-vars
+   38:19  warning  'setLoading' is assigned a value but never used                              @typescript-eslint/no-unused-vars
+  181:51  warning  'theme' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  284:36  warning  'timeRange' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  284:57  warning  'theme' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  394:54  warning  'theme' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  512:50  warning  'theme' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  565:50  warning  'theme' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  659:42  warning  'theme' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  726:58  warning  'theme' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  809:48  warning  'theme' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  899:27  warning  'data' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\analytics\EmotionalBehavioralDashboard.jsx
+    14:3   warning  'Sparkles' is defined but never used                                        @typescript-eslint/no-unused-vars
+    15:3   warning  'UserCheck' is defined but never used                                       @typescript-eslint/no-unused-vars
+    16:3   warning  'UserX' is defined but never used                                           @typescript-eslint/no-unused-vars
+    17:3   warning  'Clock' is defined but never used                                           @typescript-eslint/no-unused-vars
+    18:3   warning  'Calendar' is defined but never used                                        @typescript-eslint/no-unused-vars
+    21:3   warning  'ChevronRight' is defined but never used                                    @typescript-eslint/no-unused-vars
+    22:3   warning  'Filter' is defined but never used                                          @typescript-eslint/no-unused-vars
+    23:3   warning  'Download' is defined but never used                                        @typescript-eslint/no-unused-vars
+    24:3   warning  'RefreshCw' is defined but never used                                       @typescript-eslint/no-unused-vars
+    25:3   warning  'MapPin' is defined but never used                                          @typescript-eslint/no-unused-vars
+    26:3   warning  'Layout' is defined but never used                                          @typescript-eslint/no-unused-vars
+    28:3   warning  'Move' is defined but never used                                            @typescript-eslint/no-unused-vars
+    29:3   warning  'Compass' is defined but never used                                         @typescript-eslint/no-unused-vars
+    30:3   warning  'Navigation' is defined but never used                                      @typescript-eslint/no-unused-vars
+    31:3   warning  'Map' is defined but never used                                             @typescript-eslint/no-unused-vars
+    33:3   warning  'School' is defined but never used                                          @typescript-eslint/no-unused-vars
+    35:3   warning  'MessageSquare' is defined but never used                                   @typescript-eslint/no-unused-vars
+    36:3   warning  'Volume2' is defined but never used                                         @typescript-eslint/no-unused-vars
+    37:3   warning  'VolumeX' is defined but never used                                         @typescript-eslint/no-unused-vars
+    39:3   warning  'Moon' is defined but never used                                            @typescript-eslint/no-unused-vars
+    40:3   warning  'Cloud' is defined but never used                                           @typescript-eslint/no-unused-vars
+    41:3   warning  'Wind' is defined but never used                                            @typescript-eslint/no-unused-vars
+    42:3   warning  'Layers' is defined but never used                                          @typescript-eslint/no-unused-vars
+    44:18  warning  'AnimatePresence' is defined but never used                                 @typescript-eslint/no-unused-vars
+    51:29  warning  'setSelectedTimeRange' is assigned a value but never used                   @typescript-eslint/no-unused-vars
+    55:10  warning  'loading' is assigned a value but never used                                @typescript-eslint/no-unused-vars
+    55:19  warning  'setLoading' is assigned a value but never used                             @typescript-eslint/no-unused-vars
+    74:9   warning  'viewOptions' is assigned a value but never used                            @typescript-eslint/no-unused-vars
+   235:10  warning  'showDetails' is assigned a value but never used                            @typescript-eslint/no-unused-vars
+   235:23  warning  'setShowDetails' is assigned a value but never used                         @typescript-eslint/no-unused-vars
+   302:36  warning  'students' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+   303:9   warning  'rows' is assigned a value but never used                                   @typescript-eslint/no-unused-vars
+   304:9   warning  'cols' is assigned a value but never used                                   @typescript-eslint/no-unused-vars
+   381:40  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+   433:50  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+   561:50  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+   611:47  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+   654:57  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+   703:44  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+   753:66  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+   847:3   warning  Unexpected console statement                                                no-console
+   862:9   warning  'avgChallenges' is assigned a value but never used                          @typescript-eslint/no-unused-vars
+   988:10  warning  'extractTriggersFromInsights' is defined but never used                     @typescript-eslint/no-unused-vars
+  1004:10  warning  'extractPatternsFromInsights' is defined but never used                     @typescript-eslint/no-unused-vars
+  1016:10  warning  'extractInterventionsFromInsights' is defined but never used                @typescript-eslint/no-unused-vars
+  1034:10  warning  'extractProcessingStyles' is defined but never used                         @typescript-eslint/no-unused-vars
+  1051:10  warning  'extractEnvironmentalPreferences' is defined but never used                 @typescript-eslint/no-unused-vars
+  1088:10  warning  'extractCognitiveProfile' is defined but never used                         @typescript-eslint/no-unused-vars
+  1104:41  warning  'data' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  1138:7   warning  'LoadingState' is assigned a value but never used                           @typescript-eslint/no-unused-vars
+  1157:49  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1197:55  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1223:59  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1259:59  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1280:59  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1301:34  warning  'data' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  1301:50  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1312:36  warning  'data' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  1312:52  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1323:47  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1337:33  warning  'data' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  1337:49  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1348:61  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1374:35  warning  'strengths' is assigned a value but never used                              @typescript-eslint/no-unused-vars
+  1374:61  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1385:56  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1407:38  warning  'preferences' is assigned a value but never used                            @typescript-eslint/no-unused-vars
+  1407:66  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1418:30  warning  'load' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  1418:46  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1429:51  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  1443:31  warning  'placements' is assigned a value but never used                             @typescript-eslint/no-unused-vars
+  1443:58  warning  'theme' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\analytics\EnhancedAnalyticsDashboard.tsx
+    6:27  warning  'useEffect' is defined but never used                                                                                                                                                              @typescript-eslint/no-unused-vars
+   10:3   warning  'PieChart' is defined but never used                                                                                                                                                               @typescript-eslint/no-unused-vars
+   15:3   warning  'Target' is defined but never used                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   19:3   warning  'Filter' is defined but never used                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  135:7   warning  Unexpected console statement                                                                                                                                                                       no-console
+  393:7   warning  'MetricCard' is assigned a value but never used                                                                                                                                                    @typescript-eslint/no-unused-vars
+  397:9   warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  440:9   warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  487:42  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  521:48  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  565:9   warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  570:7   warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  583:5   error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  583:5   error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  647:9   warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  649:6   warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  768:33  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+
+C:\Users\User\Desktop\newdashboard\src\components\analytics\TestAnalytics.jsx
+  28:77  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\User\Desktop\newdashboard\src\components\charts\AnalysisCharts.tsx
+   21:10  warning  'Line' is defined but never used          @typescript-eslint/no-unused-vars
+   40:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  168:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  252:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  303:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  385:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  417:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  421:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  440:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  520:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\Desktop\newdashboard\src\components\charts\ChartsSection.jsx
+   3:113  warning  'LineChart' is defined but never used                                   @typescript-eslint/no-unused-vars
+   3:124  warning  'Line' is defined but never used                                        @typescript-eslint/no-unused-vars
+  77:83   warning  'name' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\charts\OptimizedCharts.tsx
+    6:17  warning  'useRef' is defined but never used        @typescript-eslint/no-unused-vars
+    6:25  warning  'useEffect' is defined but never used     @typescript-eslint/no-unused-vars
+   39:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  370:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\Desktop\newdashboard\src\components\classroom\ClassroomSeating.jsx
+  152:5   warning  Unexpected console statement                                     no-console
+  178:72  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  255:14  error    Unknown property 'jsx' found                                     react/no-unknown-property
+
+C:\Users\User\Desktop\newdashboard\src\components\classroom\ClassroomSeatingAI.jsx
+     8:3   warning  'Square' is defined but never used                                                                                                                                                                 @typescript-eslint/no-unused-vars
+    12:3   warning  'ChevronDown' is defined but never used                                                                                                                                                            @typescript-eslint/no-unused-vars
+    13:3   warning  'ChevronRight' is defined but never used                                                                                                                                                           @typescript-eslint/no-unused-vars
+    21:3   warning  'User' is defined but never used                                                                                                                                                                   @typescript-eslint/no-unused-vars
+    28:3   warning  'TrendingDown' is defined but never used                                                                                                                                                           @typescript-eslint/no-unused-vars
+    37:10  warning  'arrayMove' is defined but never used                                                                                                                                                              @typescript-eslint/no-unused-vars
+    39:27  warning  'calculateDeskPairCompatibility' is defined but never used                                                                                                                                         @typescript-eslint/no-unused-vars
+   211:7   warning  'generateOptimalSeating' is assigned a value but never used                                                                                                                                        @typescript-eslint/no-unused-vars
+   241:7   error    Unexpected lexical declaration in case block                                                                                                                                                       no-case-declarations
+   241:13  warning  'totalSeats' is assigned a value but never used                                                                                                                                                    @typescript-eslint/no-unused-vars
+   242:7   error    Unexpected lexical declaration in case block                                                                                                                                                       no-case-declarations
+   243:7   error    Unexpected lexical declaration in case block                                                                                                                                                       no-case-declarations
+   244:7   error    Unexpected lexical declaration in case block                                                                                                                                                       no-case-declarations
+   266:7   error    Unexpected lexical declaration in case block                                                                                                                                                       no-case-declarations
+   266:11  warning  'studentIndex' is assigned a value but never used                                                                                                                                                  @typescript-eslint/no-unused-vars
+   316:7   error    Unexpected lexical declaration in case block                                                                                                                                                       no-case-declarations
+   317:7   error    Unexpected lexical declaration in case block                                                                                                                                                       no-case-declarations
+   349:7   error    Unexpected lexical declaration in case block                                                                                                                                                       no-case-declarations
+   350:7   error    Unexpected lexical declaration in case block                                                                                                                                                       no-case-declarations
+   398:9   warning  'isMiddleRow' is assigned a value but never used                                                                                                                                                   @typescript-eslint/no-unused-vars
+   408:13  warning  'needsAttention' is assigned a value but never used                                                                                                                                                @typescript-eslint/no-unused-vars
+   638:7   warning  'getPairReasoning' is assigned a value but never used                                                                                                                                              @typescript-eslint/no-unused-vars
+   669:7   warning  'StudentAnalysisPopup' is assigned a value but never used                                                                                                                                          @typescript-eslint/no-unused-vars
+   875:17  warning  Unexpected console statement                                                                                                                                                                       no-console
+   896:9   warning  'col' is assigned a value but never used                                                                                                                                                           @typescript-eslint/no-unused-vars
+   904:3   error    React Hook "React.useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  1285:99  warning  'darkMode' is assigned a value but never used                                                                                                                                                      @typescript-eslint/no-unused-vars
+  1298:7   error    React Hook "useSortable" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?      react-hooks/rules-of-hooks
+  1310:3   warning  Unexpected console statement                                                                                                                                                                       no-console
+  1494:64  warning  'theme' is assigned a value but never used                                                                                                                                                         @typescript-eslint/no-unused-vars
+  1498:31  warning  'setShowRecommendations' is assigned a value but never used                                                                                                                                        @typescript-eslint/no-unused-vars
+  1525:6   warning  React Hook useEffect has a missing dependency: 'analyzedStudents'. Either include it or remove the dependency array                                                                                react-hooks/exhaustive-deps
+  1543:9   warning  Unexpected console statement                                                                                                                                                                       no-console
+  1555:6   warning  React Hook useEffect has a missing dependency: 'analyzedStudents'. Either include it or remove the dependency array                                                                                react-hooks/exhaustive-deps
+  1636:9   warning  Unexpected console statement                                                                                                                                                                       no-console
+  1778:36  warning  'index' is defined but never used. Allowed unused args must match /^_/u                                                                                                                            @typescript-eslint/no-unused-vars
+  1808:9   warning  Unexpected console statement                                                                                                                                                                       no-console
+  2210:49  warning  'index' is defined but never used. Allowed unused args must match /^_/u                                                                                                                            @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\common\ErrorBoundary.test.tsx
+  3:8  warning  'userEvent' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\dashboard\Dashboard.jsx
+   72:9   warning  Unexpected console statement                                                                                                                                                                       no-console
+   83:7   warning  Unexpected console statement                                                                                                                                                                       no-console
+  250:36  warning  'config' is defined but never used. Allowed unused args must match /^_/u                                                                                                                           @typescript-eslint/no-unused-vars
+  452:68  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+  452:82  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+  749:9   error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  749:9   error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  766:11  error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  766:11  error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\User\Desktop\newdashboard\src\components\dashboard\DataAnalytics.jsx
+  2:53  warning  'PieChartIcon' is defined but never used  @typescript-eslint/no-unused-vars
+  2:67  warning  'TrendingUp' is defined but never used    @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\dashboard\FuturisticDashboard.jsx
+     9:3   warning  'PieChart' is defined but never used                                                                                                                                                               @typescript-eslint/no-unused-vars
+    35:3   warning  'Lightbulb' is defined but never used                                                                                                                                                              @typescript-eslint/no-unused-vars
+    60:5   warning  Unexpected console statement                                                                                                                                                                       no-console
+    62:5   warning  Unexpected console statement                                                                                                                                                                       no-console
+    65:5   warning  Unexpected console statement                                                                                                                                                                       no-console
+    88:5   warning  Unexpected console statement                                                                                                                                                                       no-console
+   100:5   warning  Unexpected console statement                                                                                                                                                                       no-console
+   102:5   warning  Unexpected console statement                                                                                                                                                                       no-console
+   111:7   warning  'analyzeStudent' is assigned a value but never used                                                                                                                                                @typescript-eslint/no-unused-vars
+   503:10  warning  'aggregatedData' is assigned a value but never used                                                                                                                                                @typescript-eslint/no-unused-vars
+   560:30  warning  'statsData' is assigned a value but never used                                                                                                                                                     @typescript-eslint/no-unused-vars
+   604:30  warning  'statsData' is assigned a value but never used                                                                                                                                                     @typescript-eslint/no-unused-vars
+   957:21  error    'loadData' is not defined                                                                                                                                                                          no-undef
+  1013:17  error    A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  1037:19  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users                                                                                                      jsx-a11y/no-autofocus
+  1120:3   warning  'onSmartAnalysis' is defined but never used. Allowed unused args must match /^_/u                                                                                                                  @typescript-eslint/no-unused-vars
+  1136:9   warning  'avgChallenges' is assigned a value but never used                                                                                                                                                 @typescript-eslint/no-unused-vars
+  1312:19  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+  1571:7   warning  'ChartCard' is assigned a value but never used                                                                                                                                                     @typescript-eslint/no-unused-vars
+  1632:7   warning  'LearningStylesChart' is assigned a value but never used                                                                                                                                           @typescript-eslint/no-unused-vars
+  1705:7   warning  'ClassDistributionChart' is assigned a value but never used                                                                                                                                        @typescript-eslint/no-unused-vars
+  1767:3   warning  Unexpected console statement                                                                                                                                                                       no-console
+  1924:17  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+  2130:5   error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  2130:5   error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  2427:7   warning  'StrengthsChallengesChart' is assigned a value but never used                                                                                                                                      @typescript-eslint/no-unused-vars
+  2488:7   warning  'WeeklyActivityChart' is assigned a value but never used                                                                                                                                           @typescript-eslint/no-unused-vars
+  2559:39  warning  'theme' is defined but never used. Allowed unused args must match /^_/u                                                                                                                            @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\dashboard\SearchAndFilters.jsx
+  3:18  warning  'Filter' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\debug\ConnectionStatus.jsx
+  24:7  warning  Unexpected console statement  no-console
+  29:7  warning  Unexpected console statement  no-console
+
+C:\Users\User\Desktop\newdashboard\src\components\insights\InsightsAndRecommendations.tsx
+   13:3   warning  'TrendingUp' is defined but never used          @typescript-eslint/no-unused-vars
+   20:3   warning  'Filter' is defined but never used              @typescript-eslint/no-unused-vars
+   21:3   warning  'Download' is defined but never used            @typescript-eslint/no-unused-vars
+   22:3   warning  'Bell' is defined but never used                @typescript-eslint/no-unused-vars
+   23:3   warning  'Star' is defined but never used                @typescript-eslint/no-unused-vars
+   26:3   warning  'Zap' is defined but never used                 @typescript-eslint/no-unused-vars
+   28:29  warning  'Insight' is defined but never used             @typescript-eslint/no-unused-vars
+   28:38  warning  'Recommendation' is defined but never used      @typescript-eslint/no-unused-vars
+   55:11  warning  't' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  376:15  error    A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\User\Desktop\newdashboard\src\components\navigation\UnifiedSidebar.jsx
+  13:3  warning  'ChevronDown' is defined but never used    @typescript-eslint/no-unused-vars
+  20:3  warning  'MessageSquare' is defined but never used  @typescript-eslint/no-unused-vars
+  21:3  warning  'UserPlus' is defined but never used       @typescript-eslint/no-unused-vars
+  22:3  warning  'Map' is defined but never used            @typescript-eslint/no-unused-vars
+  23:3  warning  'Compass' is defined but never used        @typescript-eslint/no-unused-vars
+  26:3  warning  'Bell' is defined but never used           @typescript-eslint/no-unused-vars
+  29:3  warning  'User' is defined but never used           @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\optimized\VirtualStudentList.tsx
+    6:23  warning  'useCallback' is defined but never used                @typescript-eslint/no-unused-vars
+    6:36  warning  'CSSProperties' is defined but never used              @typescript-eslint/no-unused-vars
+  196:9   warning  'outerElementType' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  196:28  error    Component definition is missing display name           react/display-name
+  196:61  warning  Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  240:43  error    Component definition is missing display name           react/display-name
+
+C:\Users\User\Desktop\newdashboard\src\components\overview\OverviewDashboard.jsx
+  320:68  warning  'theme' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  408:38  warning  'total' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  408:55  warning  'theme' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  484:53  warning  'theme' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  549:77  warning  'theme' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\setup\DataConnectionSetup.jsx
+  195:17  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  331:17  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  435:57  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  435:64  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\User\Desktop\newdashboard\src\components\student\ISHEBOTReportDisplay.jsx
+    9:3  warning  'CheckCircle' is defined but never used            @typescript-eslint/no-unused-vars
+  432:9  warning  'colorClasses' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\student\StudentDetail.jsx
+   13:3  warning  'Award' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+   22:3  warning  'Star' is defined but never used                                                                                    @typescript-eslint/no-unused-vars
+   55:6  warning  React Hook useEffect has a missing dependency: 'loadStudentData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  115:9  warning  'getSectionIcon' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+  125:9  warning  'getPriorityColor' is assigned a value but never used                                                               @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\components\ui\Card.jsx
+  28:3  warning  'gradient' is assigned a value but never used                                                   @typescript-eslint/no-unused-vars
+  90:5  error    Visible, non-interactive elements with click handlers must have at least one keyboard listener  jsx-a11y/click-events-have-key-events
+
+C:\Users\User\Desktop\newdashboard\src\components\ui\CookieConsent.tsx
+  144:7  warning  Unexpected console statement  no-console
+  147:7  warning  Unexpected console statement  no-console
+  150:7  warning  Unexpected console statement  no-console
+
+C:\Users\User\Desktop\newdashboard\src\components\ui\Footer.tsx
+  36:37  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  92:63  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\User\Desktop\newdashboard\src\components\ui\LanguageSwitcher.tsx
+  16:7  warning  'LANGUAGE_KEY' is assigned a value but never used                                                     @typescript-eslint/no-unused-vars
+  72:6  warning  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  84:5  warning  Unexpected console statement                                                                          no-console
+
+C:\Users\User\Desktop\newdashboard\src\components\ui\Table.jsx
+  124:49  error  React Hook "React.useState" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks
+
+C:\Users\User\Desktop\newdashboard\src\hooks\useAnimations.ts
+    2:10  warning  'AnimatePresence' is defined but never used  @typescript-eslint/no-unused-vars
+  191:49  warning  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  385:15  warning  'rect' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  433:52  warning  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  433:75  warning  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+C:\Users\User\Desktop\newdashboard\src\hooks\useLocalStorage.ts
+    7:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+    8:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  152:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  184:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  283:59  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\Desktop\newdashboard\src\hooks\useStats.ts
+  27:9  warning  'queryClient' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\hooks\useStudents.ts
+   29:18  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   79:27  warning  React Hook useCallback received a function whose dependencies are unknown. Pass an inline function instead           react-hooks/exhaustive-deps
+  129:6   warning  React Hook useCallback has a missing dependency: 'setSearchQuery'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\User\Desktop\newdashboard\src\monitoring\rum.ts
+    9:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   13:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  228:9   warning  Unexpected console statement              no-console
+  241:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  270:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  290:5   warning  Unexpected console statement              no-console
+
+C:\Users\User\Desktop\newdashboard\src\pages\ApiTestPage.tsx
+    7:40  warning  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+    9:66  warning  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   14:7   warning  Unexpected console statement                                     no-console
+   16:7   warning  Unexpected console statement                                     no-console
+   18:21  warning  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  101:25  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  101:41  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  102:25  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  102:35  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  103:25  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  103:38  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\User\Desktop\newdashboard\src\pages\DataProcessingPage.tsx
+   97:47  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   97:57  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  162:74  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  185:88  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\User\Desktop\newdashboard\src\pages\PrivacyPolicyPage.tsx
+   38:83   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   57:57   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   57:70   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   57:76   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   57:79   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   57:85   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   57:88   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   57:93   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   65:53   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   82:76   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  117:51   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  117:56   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  269:102  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  301:34   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  313:88   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\User\Desktop\newdashboard\src\pages\SecurityPage.tsx
+  108:75  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  108:85  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  273:88  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\User\Desktop\newdashboard\src\pages\TermsPage.tsx
+   38:83   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   57:97   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  125:106  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  145:47   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  145:57   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  185:36   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  215:76   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  239:88   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\User\Desktop\newdashboard\src\security\csp.ts
+  105:3   warning  Unexpected console statement              no-console
+  128:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\Desktop\newdashboard\src\security\rateLimiter.ts
+  142:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:69  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  154:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  162:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\Desktop\newdashboard\src\service-worker\sw.ts
+  233:3  warning  Unexpected console statement  no-console
+
+C:\Users\User\Desktop\newdashboard\src\services\api.test.ts
+  104:18  warning  '_input' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\services\api.ts
+  197:7  warning  Unexpected console statement  no-console
+  216:7  warning  Unexpected console statement  no-console
+  233:7  warning  Unexpected console statement  no-console
+
+C:\Users\User\Desktop\newdashboard\src\services\insightsGenerator.ts
+  256:59  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  529:50  warning  'students' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\User\Desktop\newdashboard\src\types\index.ts
+  226:81  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\Desktop\newdashboard\src\utils\index.ts
+    1:15  warning  'LearningStyle' is defined but never used  @typescript-eslint/no-unused-vars
+  324:5   warning  Unexpected console statement               no-console
+
+C:\Users\User\Desktop\newdashboard\src\utils\performanceMonitoring.ts
+   48:5  warning  Unexpected console statement  no-console
+  139:5  warning  Unexpected console statement  no-console
+  140:5  warning  Unexpected console statement  no-console
+
+C:\Users\User\Desktop\newdashboard\tests\e2e\dashboard.spec.ts
+  177:11  warning  'hasLoadingStates' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 469 problems (132 errors, 337 warnings)
+

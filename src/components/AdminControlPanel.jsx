@@ -15,7 +15,6 @@ import {
   BarChart3,
   Settings,
   Play,
-  Pause,
   Archive,
   FileText,
   Zap
@@ -50,7 +49,9 @@ const AdminControlPanel = () => {
       if (statsRes.success) setStats(statsRes.stats);
       if (healthRes) setHealth(healthRes);
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error loading dashboard data:', error);
+      }
     }
   };
 
@@ -61,7 +62,9 @@ const AdminControlPanel = () => {
         setBackups(result.backups);
       }
     } catch (error) {
-      console.error('Error loading backups:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error loading backups:', error);
+      }
     }
   };
 
@@ -72,7 +75,9 @@ const AdminControlPanel = () => {
         setAuditLog(result.events);
       }
     } catch (error) {
-      console.error('Error loading audit log:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error loading audit log:', error);
+      }
     }
   };
 
@@ -239,7 +244,6 @@ const AdminControlPanel = () => {
     setLoading(true);
     try {
       const result = await API.searchAnalyses(searchQuery);
-      console.log('Search results:', result);
       // You can display results in a modal or dedicated section
       alert(`נמצאו ${result.count} תוצאות עבור "${searchQuery}"`);
     } catch (error) {
@@ -381,7 +385,7 @@ const AdminControlPanel = () => {
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">סה"כ תלמידים</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">סה&quot;כ תלמידים</p>
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">
                     {stats.totalStudents}
                   </p>
@@ -685,8 +689,9 @@ const AdminControlPanel = () => {
                   <div className="bg-white dark:bg-gray-700 rounded-lg p-6 border-2 border-gray-200 dark:border-gray-600">
                     <h3 className="text-lg font-bold mb-4">מחק ניתוחים ישנים</h3>
                     <div className="flex items-center gap-4 mb-4">
-                      <label className="text-gray-700 dark:text-gray-300">מחק ניתוחים מעל:</label>
+                      <label htmlFor="deleteOlderThan" className="text-gray-700 dark:text-gray-300">מחק ניתוחים מעל:</label>
                       <input
+                        id="deleteOlderThan"
                         type="number"
                         value={deleteOlderThan}
                         onChange={(e) => setDeleteOlderThan(parseInt(e.target.value))}
@@ -733,10 +738,11 @@ const AdminControlPanel = () => {
                       מחק את כל הניתוחים (מסוכן!)
                     </h3>
                     <div className="mb-4">
-                      <label className="block text-gray-700 dark:text-gray-300 mb-2">
+                      <label htmlFor="adminToken" className="block text-gray-700 dark:text-gray-300 mb-2">
                         Admin Token (נדרש):
                       </label>
                       <input
+                        id="adminToken"
                         type="password"
                         value={adminToken}
                         onChange={(e) => setAdminToken(e.target.value)}

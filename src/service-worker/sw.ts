@@ -12,7 +12,7 @@ import { BackgroundSyncPlugin } from 'workbox-background-sync';
 
 // Service Worker type declarations
 interface ExtendableEvent extends Event {
-  waitUntil(promise: Promise<any>): void;
+  waitUntil(promise: Promise<unknown>): void;
 }
 
 interface FetchEvent extends ExtendableEvent {
@@ -21,13 +21,13 @@ interface FetchEvent extends ExtendableEvent {
 }
 
 interface ExtendableMessageEvent extends ExtendableEvent {
-  data: any;
+  data: { type?: string; [key: string]: unknown };
 }
 
 interface PushEvent extends ExtendableEvent {
   data?: {
     text(): string;
-    json(): any;
+    json(): Record<string, unknown>;
   };
 }
 
@@ -181,11 +181,15 @@ async function syncApiData() {
         const response = await fetch(request);
         await cache.put(request, response.clone());
       } catch (error) {
-        console.error('Sync failed for:', request.url);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Sync failed for:', request.url);
+        }
       }
     }
   } catch (error) {
-    console.error('Background sync failed:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Background sync failed:', error);
+    }
   }
 }
 
@@ -225,4 +229,6 @@ self.addEventListener('push', (event: PushEvent) => {
   );
 });
 
-console.log('⚡ Enhanced Service Worker loaded with offline support');
+if (process.env.NODE_ENV === 'development') {
+  console.log('⚡ Enhanced Service Worker loaded with offline support');
+}

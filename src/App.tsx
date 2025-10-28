@@ -57,13 +57,21 @@ function App() {
     initializeCSP();
 
     // Real User Monitoring
-    const rum = initializeRUM();
+    initializeRUM();
 
     // Service Worker registration
     if ('serviceWorker' in navigator && import.meta.env.PROD) {
       navigator.serviceWorker.register('/sw.js').then(
-        (registration) => console.log('⚡ Service Worker registered:', registration.scope),
-        (error) => console.error('Service Worker registration failed:', error)
+        (registration) => {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Service Worker registered:', registration.scope);
+          }
+        },
+        (error) => {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Service Worker registration failed:', error);
+          }
+        }
       );
     }
   }, []);

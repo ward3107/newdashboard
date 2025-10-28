@@ -6,7 +6,6 @@ import {
   Target,
   Activity,
   BarChart3,
-  PieChart,
   Users,
   Calendar,
   Clock,
@@ -18,41 +17,29 @@ import {
   CheckCircle,
   ChevronRight,
   ChevronDown,
-  Download,
   Grid3x3,
   Bell,
   Home,
   Filter,
   RefreshCw,
-  Info,
   Star,
-  UserCheck,
   User,
-  UserX,
-  GraduationCap,
-  Briefcase,
   MessageSquare,
-  FileText,
   Settings,
-  ChartBar,
-  ChartLine,
-  ChartPie,
   Globe,
   Lightbulb,
-  Percent,
-  Timer,
   TrendingDown,
   UserPlus,
-  UserMinus,
   Eye,
-  EyeOff,
-  Layers,
-  Compass,
-  Map,
-  Navigation,
-  Sparkles,
   Sun,
-  Moon
+  ChartBar,
+  FileText,
+  UserX,
+  GraduationCap,
+  UserCheck,
+  UserMinus,
+  Percent,
+  Timer
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -75,6 +62,23 @@ import {
   PredictiveStatisticsSection,
   TeacherSupportSection
 } from './AnalyticsSectionsExtended';
+
+// ============================================================================
+// SHARED COMPONENTS
+// ============================================================================
+
+// PlaceholderCard - shared component used across multiple sections
+const PlaceholderCard = ({ title, icon: Icon, darkMode }) => (
+  <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
+    <div className="flex items-center gap-2 mb-2">
+      <Icon className="text-purple-500" size={20} />
+      <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h4>
+    </div>
+    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+      תוכן מפורט עבור {title}
+    </p>
+  </div>
+);
 
 // ============================================================================
 // MAIN ANALYTICS DASHBOARD
@@ -1245,44 +1249,44 @@ const BehavioralInsightsSection = ({ data, darkMode, theme, selectedSubCategory 
               icon={TrendingDown}
               color="text-red-500"
             />
-            <PlaceholderCard title="תדירות שבועית" icon={BarChart3} />
-            <PlaceholderCard title="התנהגויות חיוביות" icon={CheckCircle} />
-            <PlaceholderCard title="התנהגויות לשיפור" icon={AlertTriangle} />
-            <PlaceholderCard title="מגמות לאורך זמן" icon={TrendingUp} />
-            <PlaceholderCard title="השוואה לכיתה" icon={Users} />
+            <PlaceholderCard title="תדירות שבועית" icon={BarChart3} darkMode={darkMode} />
+            <PlaceholderCard title="התנהגויות חיוביות" icon={CheckCircle} darkMode={darkMode} />
+            <PlaceholderCard title="התנהגויות לשיפור" icon={AlertTriangle} darkMode={darkMode} />
+            <PlaceholderCard title="מגמות לאורך זמן" icon={TrendingUp} darkMode={darkMode} />
+            <PlaceholderCard title="השוואה לכיתה" icon={Users} darkMode={darkMode} />
           </div>
         );
       case 'interactions':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="אינטראקציות חברתיות" icon={Users} />
-            <PlaceholderCard title="שיתוף פעולה" icon={UserPlus} />
-            <PlaceholderCard title="תקשורת" icon={MessageSquare} />
-            <PlaceholderCard title="יחסים עם מורים" icon={User} />
-            <PlaceholderCard title="פתרון קונפליקטים" icon={Shield} />
-            <PlaceholderCard title="מיומנויות חברתיות" icon={Heart} />
+            <PlaceholderCard title="אינטראקציות חברתיות" icon={Users} darkMode={darkMode} />
+            <PlaceholderCard title="שיתוף פעולה" icon={UserPlus} darkMode={darkMode} />
+            <PlaceholderCard title="תקשורת" icon={MessageSquare} darkMode={darkMode} />
+            <PlaceholderCard title="יחסים עם מורים" icon={User} darkMode={darkMode} />
+            <PlaceholderCard title="פתרון קונפליקטים" icon={Shield} darkMode={darkMode} />
+            <PlaceholderCard title="מיומנויות חברתיות" icon={Heart} darkMode={darkMode} />
           </div>
         );
       case 'focus':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="יכולת ריכוז" icon={Target} />
-            <PlaceholderCard title="זמני קשב" icon={Clock} />
-            <PlaceholderCard title="הסחות דעת" icon={Eye} />
-            <PlaceholderCard title="שיפור קשב" icon={TrendingUp} />
-            <PlaceholderCard title="אסטרטגיות ריכוז" icon={Lightbulb} />
-            <PlaceholderCard title="ביצועים" icon={Award} />
+            <PlaceholderCard title="יכולת ריכוז" icon={Target} darkMode={darkMode} />
+            <PlaceholderCard title="זמני קשב" icon={Clock} darkMode={darkMode} />
+            <PlaceholderCard title="הסחות דעת" icon={Eye} darkMode={darkMode} />
+            <PlaceholderCard title="שיפור קשב" icon={TrendingUp} darkMode={darkMode} />
+            <PlaceholderCard title="אסטרטגיות ריכוז" icon={Lightbulb} darkMode={darkMode} />
+            <PlaceholderCard title="ביצועים" icon={Award} darkMode={darkMode} />
           </div>
         );
       case 'regulation':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="ויסות רגשי" icon={Heart} />
-            <PlaceholderCard title="שליטה עצמית" icon={Shield} />
-            <PlaceholderCard title="תגובות למצבי לחץ" icon={AlertTriangle} />
-            <PlaceholderCard title="ניהול כעסים" icon={Activity} />
-            <PlaceholderCard title="יציבות רגשית" icon={Target} />
-            <PlaceholderCard title="אסטרטגיות התמודדות" icon={Lightbulb} />
+            <PlaceholderCard title="ויסות רגשי" icon={Heart} darkMode={darkMode} />
+            <PlaceholderCard title="שליטה עצמית" icon={Shield} darkMode={darkMode} />
+            <PlaceholderCard title="תגובות למצבי לחץ" icon={AlertTriangle} darkMode={darkMode} />
+            <PlaceholderCard title="ניהול כעסים" icon={Activity} darkMode={darkMode} />
+            <PlaceholderCard title="יציבות רגשית" icon={Target} darkMode={darkMode} />
+            <PlaceholderCard title="אסטרטגיות התמודדות" icon={Lightbulb} darkMode={darkMode} />
           </div>
         );
       default:
@@ -1634,73 +1638,61 @@ const CognitiveAnalysisSection = ({ data, darkMode, theme, selectedSubCategory }
     return titles[selectedSubCategory] || 'ניתוח קוגניטיבי';
   };
 
-  const PlaceholderCard = ({ title, icon: Icon }) => (
-    <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
-      <div className="flex items-center gap-2 mb-2">
-        <Icon className="text-purple-500" size={20} />
-        <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h4>
-      </div>
-      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        תוכן מפורט עבור {title}
-      </p>
-    </div>
-  );
-
   const renderContent = () => {
     switch(selectedSubCategory) {
       case 'processing':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="מהירות עיבוד" icon={Zap} />
-            <PlaceholderCard title="דיוק במידע" icon={Target} />
-            <PlaceholderCard title="עיבוד ויזואלי" icon={Eye} />
-            <PlaceholderCard title="עיבוד שמיעתי" icon={MessageSquare} />
-            <PlaceholderCard title="עיבוד רב-חושי" icon={Activity} />
-            <PlaceholderCard title="שיפור עיבוד" icon={TrendingUp} />
+            <PlaceholderCard title="מהירות עיבוד" icon={Zap} darkMode={darkMode} />
+            <PlaceholderCard title="דיוק במידע" icon={Target} darkMode={darkMode} />
+            <PlaceholderCard title="עיבוד ויזואלי" icon={Eye} darkMode={darkMode} />
+            <PlaceholderCard title="עיבוד שמיעתי" icon={MessageSquare} darkMode={darkMode} />
+            <PlaceholderCard title="עיבוד רב-חושי" icon={Activity} darkMode={darkMode} />
+            <PlaceholderCard title="שיפור עיבוד" icon={TrendingUp} darkMode={darkMode} />
           </div>
         );
       case 'memory':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="זיכרון קצר מועד" icon={Clock} />
-            <PlaceholderCard title="זיכרון ארוך מועד" icon={BookOpen} />
-            <PlaceholderCard title="זיכרון עבודה" icon={Brain} />
-            <PlaceholderCard title="אסטרטגיות זכירה" icon={Lightbulb} />
-            <PlaceholderCard title="שיפור זיכרון" icon={TrendingUp} />
-            <PlaceholderCard title="ביצועים" icon={Award} />
+            <PlaceholderCard title="זיכרון קצר מועד" icon={Clock} darkMode={darkMode} />
+            <PlaceholderCard title="זיכרון ארוך מועד" icon={BookOpen} darkMode={darkMode} />
+            <PlaceholderCard title="זיכרון עבודה" icon={Brain} darkMode={darkMode} />
+            <PlaceholderCard title="אסטרטגיות זכירה" icon={Lightbulb} darkMode={darkMode} />
+            <PlaceholderCard title="שיפור זיכרון" icon={TrendingUp} darkMode={darkMode} />
+            <PlaceholderCard title="ביצועים" icon={Award} darkMode={darkMode} />
           </div>
         );
       case 'attention':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="קשב מרוכז" icon={Target} />
-            <PlaceholderCard title="קשב מתמשך" icon={Clock} />
-            <PlaceholderCard title="קשב חלוקה" icon={Users} />
-            <PlaceholderCard title="קשב בררני" icon={Filter} />
-            <PlaceholderCard title="שיפור קשב" icon={TrendingUp} />
-            <PlaceholderCard title="ביצועים" icon={Award} />
+            <PlaceholderCard title="קשב מרוכז" icon={Target} darkMode={darkMode} />
+            <PlaceholderCard title="קשב מתמשך" icon={Clock} darkMode={darkMode} />
+            <PlaceholderCard title="קשב חלוקה" icon={Users} darkMode={darkMode} />
+            <PlaceholderCard title="קשב בררני" icon={Filter} darkMode={darkMode} />
+            <PlaceholderCard title="שיפור קשב" icon={TrendingUp} darkMode={darkMode} />
+            <PlaceholderCard title="ביצועים" icon={Award} darkMode={darkMode} />
           </div>
         );
       case 'flexibility':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="חשיבה יצירתית" icon={Sparkles} />
-            <PlaceholderCard title="פתרון בעיות" icon={Lightbulb} />
-            <PlaceholderCard title="הסתגלות" icon={RefreshCw} />
-            <PlaceholderCard title="חשיבה מופשטת" icon={Brain} />
-            <PlaceholderCard title="גמישות תפיסתית" icon={Eye} />
-            <PlaceholderCard title="שיפור גמישות" icon={TrendingUp} />
+            <PlaceholderCard title="חשיבה יצירתית" icon={Sparkles} darkMode={darkMode} />
+            <PlaceholderCard title="פתרון בעיות" icon={Lightbulb} darkMode={darkMode} />
+            <PlaceholderCard title="הסתגלות" icon={RefreshCw} darkMode={darkMode} />
+            <PlaceholderCard title="חשיבה מופשטת" icon={Brain} darkMode={darkMode} />
+            <PlaceholderCard title="גמישות תפיסתית" icon={Eye} darkMode={darkMode} />
+            <PlaceholderCard title="שיפור גמישות" icon={TrendingUp} darkMode={darkMode} />
           </div>
         );
       default:
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="עיבוד מידע" icon={Zap} />
-            <PlaceholderCard title="זיכרון" icon={BookOpen} />
-            <PlaceholderCard title="קשב" icon={Eye} />
-            <PlaceholderCard title="גמישות מחשבתית" icon={RefreshCw} />
-            <PlaceholderCard title="ביצועים כללים" icon={Award} />
-            <PlaceholderCard title="שיפור קוגניטיבי" icon={TrendingUp} />
+            <PlaceholderCard title="עיבוד מידע" icon={Zap} darkMode={darkMode} />
+            <PlaceholderCard title="זיכרון" icon={BookOpen} darkMode={darkMode} />
+            <PlaceholderCard title="קשב" icon={Eye} darkMode={darkMode} />
+            <PlaceholderCard title="גמישות מחשבתית" icon={RefreshCw} darkMode={darkMode} />
+            <PlaceholderCard title="ביצועים כללים" icon={Award} darkMode={darkMode} />
+            <PlaceholderCard title="שיפור קוגניטיבי" icon={TrendingUp} darkMode={darkMode} />
           </div>
         );
     }
@@ -1738,73 +1730,61 @@ const SocialDynamicsSection = ({ data, darkMode, theme, selectedSubCategory }) =
     return titles[selectedSubCategory] || 'אינטראקציה חברתית';
   };
 
-  const PlaceholderCard = ({ title, icon: Icon }) => (
-    <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
-      <div className="flex items-center gap-2 mb-2">
-        <Icon className="text-green-500" size={20} />
-        <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h4>
-      </div>
-      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        תוכן מפורט עבור {title}
-      </p>
-    </div>
-  );
-
   const renderContent = () => {
     switch(selectedSubCategory) {
       case 'dynamics':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="קבוצות חברתיות" icon={Users} />
-            <PlaceholderCard title="מעמד חברתי" icon={Award} />
-            <PlaceholderCard title="השפעה חברתית" icon={TrendingUp} />
-            <PlaceholderCard title="אינטראקציות" icon={UserPlus} />
-            <PlaceholderCard title="רשתות חברתיות" icon={Globe} />
-            <PlaceholderCard title="שינויים דינמיים" icon={RefreshCw} />
+            <PlaceholderCard title="קבוצות חברתיות" icon={Users} darkMode={darkMode} />
+            <PlaceholderCard title="מעמד חברתי" icon={Award} darkMode={darkMode} />
+            <PlaceholderCard title="השפעה חברתית" icon={TrendingUp} darkMode={darkMode} />
+            <PlaceholderCard title="אינטראקציות" icon={UserPlus} darkMode={darkMode} />
+            <PlaceholderCard title="רשתות חברתיות" icon={Globe} darkMode={darkMode} />
+            <PlaceholderCard title="שינויים דינמיים" icon={RefreshCw} darkMode={darkMode} />
           </div>
         );
       case 'relationships':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="חברויות" icon={Heart} />
-            <PlaceholderCard title="יחסי תלמיד-מורה" icon={User} />
-            <PlaceholderCard title="משפחה" icon={Home} />
-            <PlaceholderCard title="איכות יחסים" icon={Star} />
-            <PlaceholderCard title="קונפליקטים" icon={AlertTriangle} />
-            <PlaceholderCard title="פתרון בעיות" icon={Lightbulb} />
+            <PlaceholderCard title="חברויות" icon={Heart} darkMode={darkMode} />
+            <PlaceholderCard title="יחסי תלמיד-מורה" icon={User} darkMode={darkMode} />
+            <PlaceholderCard title="משפחה" icon={Home} darkMode={darkMode} />
+            <PlaceholderCard title="איכות יחסים" icon={Star} darkMode={darkMode} />
+            <PlaceholderCard title="קונפליקטים" icon={AlertTriangle} darkMode={darkMode} />
+            <PlaceholderCard title="פתרון בעיות" icon={Lightbulb} darkMode={darkMode} />
           </div>
         );
       case 'communication':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="מיומנויות תקשורת" icon={MessageSquare} />
-            <PlaceholderCard title="הבעה מילולית" icon={MessageSquare} />
-            <PlaceholderCard title="הבעה לא-מילולית" icon={Eye} />
-            <PlaceholderCard title="הקשבה פעילה" icon={Users} />
-            <PlaceholderCard title="אמפתיה" icon={Heart} />
-            <PlaceholderCard title="משוב יעיל" icon={CheckCircle} />
+            <PlaceholderCard title="מיומנויות תקשורת" icon={MessageSquare} darkMode={darkMode} />
+            <PlaceholderCard title="הבעה מילולית" icon={MessageSquare} darkMode={darkMode} />
+            <PlaceholderCard title="הבעה לא-מילולית" icon={Eye} darkMode={darkMode} />
+            <PlaceholderCard title="הקשבה פעילה" icon={Users} darkMode={darkMode} />
+            <PlaceholderCard title="אמפתיה" icon={Heart} darkMode={darkMode} />
+            <PlaceholderCard title="משוב יעיל" icon={CheckCircle} darkMode={darkMode} />
           </div>
         );
       case 'collaboration':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="עבודת צוות" icon={Users} />
-            <PlaceholderCard title="שיתוף פעולה" icon={UserPlus} />
-            <PlaceholderCard title="פתרון בעיות קבוצתי" icon={Lightbulb} />
-            <PlaceholderCard title="מנהיגות" icon={Award} />
-            <PlaceholderCard title="תרומה קבוצתית" icon={Star} />
-            <PlaceholderCard title="יעילות צוותית" icon={TrendingUp} />
+            <PlaceholderCard title="עבודת צוות" icon={Users} darkMode={darkMode} />
+            <PlaceholderCard title="שיתוף פעולה" icon={UserPlus} darkMode={darkMode} />
+            <PlaceholderCard title="פתרון בעיות קבוצתי" icon={Lightbulb} darkMode={darkMode} />
+            <PlaceholderCard title="מנהיגות" icon={Award} darkMode={darkMode} />
+            <PlaceholderCard title="תרומה קבוצתית" icon={Star} darkMode={darkMode} />
+            <PlaceholderCard title="יעילות צוותית" icon={TrendingUp} darkMode={darkMode} />
           </div>
         );
       default:
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="דינמיקה חברתית" icon={Users} />
-            <PlaceholderCard title="יחסים" icon={Heart} />
-            <PlaceholderCard title="תקשורת" icon={MessageSquare} />
-            <PlaceholderCard title="שיתוף פעולה" icon={UserPlus} />
-            <PlaceholderCard title="מיומנויות חברתיות" icon={Star} />
-            <PlaceholderCard title="שיפור חברתי" icon={TrendingUp} />
+            <PlaceholderCard title="דינמיקה חברתית" icon={Users} darkMode={darkMode} />
+            <PlaceholderCard title="יחסים" icon={Heart} darkMode={darkMode} />
+            <PlaceholderCard title="תקשורת" icon={MessageSquare} darkMode={darkMode} />
+            <PlaceholderCard title="שיתוף פעולה" icon={UserPlus} darkMode={darkMode} />
+            <PlaceholderCard title="מיומנויות חברתיות" icon={Star} darkMode={darkMode} />
+            <PlaceholderCard title="שיפור חברתי" icon={TrendingUp} darkMode={darkMode} />
           </div>
         );
     }
@@ -1842,73 +1822,61 @@ const EnvironmentalSection = ({ data, darkMode, theme, selectedSubCategory }) =>
     return titles[selectedSubCategory] || 'סביבת למידה';
   };
 
-  const PlaceholderCard = ({ title, icon: Icon }) => (
-    <div className={`p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'}`}>
-      <div className="flex items-center gap-2 mb-2">
-        <Icon className="text-orange-500" size={20} />
-        <h4 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{title}</h4>
-      </div>
-      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        תוכן מפורט עבור {title}
-      </p>
-    </div>
-  );
-
   const renderContent = () => {
     switch(selectedSubCategory) {
       case 'preferences':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="אור" icon={Sun} />
-            <PlaceholderCard title="רעש" icon={Bell} />
-            <PlaceholderCard title="טמפרטורה" icon={Activity} />
-            <PlaceholderCard title="סידור ישיבה" icon={Grid3x3} />
-            <PlaceholderCard title="כלים טכנולוגיים" icon={Globe} />
-            <PlaceholderCard title="סגנון למידה" icon={Eye} />
+            <PlaceholderCard title="אור" icon={Sun} darkMode={darkMode} />
+            <PlaceholderCard title="רעש" icon={Bell} darkMode={darkMode} />
+            <PlaceholderCard title="טמפרטורה" icon={Activity} darkMode={darkMode} />
+            <PlaceholderCard title="סידור ישיבה" icon={Grid3x3} darkMode={darkMode} />
+            <PlaceholderCard title="כלים טכנולוגיים" icon={Globe} darkMode={darkMode} />
+            <PlaceholderCard title="סגנון למידה" icon={Eye} darkMode={darkMode} />
           </div>
         );
       case 'optimal':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="מקום אופטימלי" icon={Star} />
-            <PlaceholderCard title="זמן אופטימלי" icon={Clock} />
-            <PlaceholderCard title="גורמים סביבתיים" icon={Compass} />
-            <PlaceholderCard title="תנאי עבודה" icon={Settings} />
-            <PlaceholderCard title="משאבים זמינים" icon={BookOpen} />
-            <PlaceholderCard title="שיפור תנאים" icon={TrendingUp} />
+            <PlaceholderCard title="מקום אופטימלי" icon={Star} darkMode={darkMode} />
+            <PlaceholderCard title="זמן אופטימלי" icon={Clock} darkMode={darkMode} />
+            <PlaceholderCard title="גורמים סביבתיים" icon={Compass} darkMode={darkMode} />
+            <PlaceholderCard title="תנאי עבודה" icon={Settings} darkMode={darkMode} />
+            <PlaceholderCard title="משאבים זמינים" icon={BookOpen} darkMode={darkMode} />
+            <PlaceholderCard title="שיפור תנאים" icon={TrendingUp} darkMode={darkMode} />
           </div>
         );
       case 'adaptations':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="התאמות פיזיות" icon={Settings} />
-            <PlaceholderCard title="התאמות למידה" icon={Brain} />
-            <PlaceholderCard title="התאמות טכנולוגיות" icon={Globe} />
-            <PlaceholderCard title="התאמות זמן" icon={Clock} />
-            <PlaceholderCard title="תמיכה נוספת" icon={Shield} />
-            <PlaceholderCard title="מעקב התאמות" icon={Eye} />
+            <PlaceholderCard title="התאמות פיזיות" icon={Settings} darkMode={darkMode} />
+            <PlaceholderCard title="התאמות למידה" icon={Brain} darkMode={darkMode} />
+            <PlaceholderCard title="התאמות טכנולוגיות" icon={Globe} darkMode={darkMode} />
+            <PlaceholderCard title="התאמות זמן" icon={Clock} darkMode={darkMode} />
+            <PlaceholderCard title="תמיכה נוספת" icon={Shield} darkMode={darkMode} />
+            <PlaceholderCard title="מעקב התאמות" icon={Eye} darkMode={darkMode} />
           </div>
         );
       case 'classroom':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="עיצוב כיתה" icon={Home} />
-            <PlaceholderCard title="סידור מקומות" icon={Grid3x3} />
-            <PlaceholderCard title="חומרים זמינים" icon={BookOpen} />
-            <PlaceholderCard title="אזורי למידה" icon={Map} />
-            <PlaceholderCard title="אווירה כיתתית" icon={Heart} />
-            <PlaceholderCard title="שיפור סביבה" icon={TrendingUp} />
+            <PlaceholderCard title="עיצוב כיתה" icon={Home} darkMode={darkMode} />
+            <PlaceholderCard title="סידור מקומות" icon={Grid3x3} darkMode={darkMode} />
+            <PlaceholderCard title="חומרים זמינים" icon={BookOpen} darkMode={darkMode} />
+            <PlaceholderCard title="אזורי למידה" icon={Map} darkMode={darkMode} />
+            <PlaceholderCard title="אווירה כיתתית" icon={Heart} darkMode={darkMode} />
+            <PlaceholderCard title="שיפור סביבה" icon={TrendingUp} darkMode={darkMode} />
           </div>
         );
       default:
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <PlaceholderCard title="העדפות" icon={Settings} />
-            <PlaceholderCard title="תנאים מיטביים" icon={Star} />
-            <PlaceholderCard title="התאמות" icon={Compass} />
-            <PlaceholderCard title="סביבת כיתה" icon={Home} />
-            <PlaceholderCard title="משאבים" icon={BookOpen} />
-            <PlaceholderCard title="שיפור סביבתי" icon={TrendingUp} />
+            <PlaceholderCard title="העדפות" icon={Settings} darkMode={darkMode} />
+            <PlaceholderCard title="תנאים מיטביים" icon={Star} darkMode={darkMode} />
+            <PlaceholderCard title="התאמות" icon={Compass} darkMode={darkMode} />
+            <PlaceholderCard title="סביבת כיתה" icon={Home} darkMode={darkMode} />
+            <PlaceholderCard title="משאבים" icon={BookOpen} darkMode={darkMode} />
+            <PlaceholderCard title="שיפור סביבתי" icon={TrendingUp} darkMode={darkMode} />
           </div>
         );
     }

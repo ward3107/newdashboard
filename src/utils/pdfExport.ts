@@ -13,11 +13,43 @@ interface ExportOptions {
   includeCharts?: boolean;
 }
 
+interface AnalyticsData {
+  totalStudents?: number;
+  analyzedStudents?: number;
+  needsAnalysis?: number;
+  unanalyzedStudents?: number;
+  averageGrade?: number;
+  completionRate?: number;
+  analysisCompletionRate?: number;
+  performanceDistribution?: {
+    excellent?: number;
+    good?: number;
+    average?: number;
+    needsSupport?: number;
+  };
+  riskDistribution?: {
+    high?: number;
+    medium?: number;
+    low?: number;
+  };
+  performanceTrends?: {
+    improving?: number;
+    stable?: number;
+    declining?: number;
+  };
+  emotionalHealth?: {
+    positive?: number;
+    neutral?: number;
+    concerning?: number;
+  };
+  topStrengths?: Array<{ strength: string; count: number }>;
+}
+
 /**
  * Generate PDF from analytics data
  */
 export async function generateAnalyticsPDF(
-  data: any,
+  data: AnalyticsData,
   options: ExportOptions = { title: 'דוח ניתוח תלמידים' }
 ): Promise<void> {
   try {
@@ -233,7 +265,7 @@ export async function generateAnalyticsPDF(
 
       pdf.setFontSize(10);
       pdf.setTextColor(52, 58, 64);
-      data.topStrengths.slice(0, 10).forEach((strength: any, index: number) => {
+      data.topStrengths.slice(0, 10).forEach((strength, index) => {
         if (yPosition > pageHeight - 30) {
           pdf.addPage();
           yPosition = margin;
@@ -254,7 +286,9 @@ export async function generateAnalyticsPDF(
 
     return Promise.resolve();
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error generating PDF:', error);
+    }
     return Promise.reject(error);
   }
 }
@@ -292,7 +326,9 @@ export async function captureElementToPDF(
     pdf.addImage(imgData, 'PNG', 20, yPosition, imgWidth, imgHeight);
     return yPosition + imgHeight + 10;
   } catch (error) {
-    console.error('Error capturing element:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error capturing element:', error);
+    }
     return yPosition;
   }
 }

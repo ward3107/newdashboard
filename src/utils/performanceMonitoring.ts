@@ -49,8 +49,9 @@ function sendToAnalytics(data: PerformanceData) {
   }
 
   // Send to your analytics service (Google Analytics, etc.)
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'web_vitals', {
+  if (typeof window !== 'undefined' && (window as Window & { gtag?: (...args: unknown[]) => void }).gtag) {
+    const gtag = (window as Window & { gtag: (...args: unknown[]) => void }).gtag;
+    gtag('event', 'web_vitals', {
       event_category: 'Performance',
       event_label: data.metric,
       value: Math.round(data.value),
@@ -70,7 +71,9 @@ function sendToAnalytics(data: PerformanceData) {
     }
     localStorage.setItem('performance_metrics', JSON.stringify(metrics));
   } catch (error) {
-    console.error('Failed to store performance metrics:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to store performance metrics:', error);
+    }
   }
 }
 
@@ -159,10 +162,10 @@ function measureCustomMetrics() {
 
   // Bundle size (approximate)
   if (window.performance && window.performance.getEntriesByType) {
-    const resources = window.performance.getEntriesByType('resource');
+    const resources = window.performance.getEntriesByType('resource') as PerformanceResourceTiming[];
     const jsSize = resources
       .filter(r => r.name.endsWith('.js'))
-      .reduce((total, r) => total + (r as any).transferSize || 0, 0);
+      .reduce((total, r) => total + r.transferSize || 0, 0);
 
     if (jsSize > 0) {
       const sizeMB = jsSize / (1024 * 1024);
@@ -176,8 +179,17 @@ function measureCustomMetrics() {
   }
 
   // Memory usage (if available)
-  if ((window.performance as any).memory) {
-    const memory = (window.performance as any).memory;
+  interface PerformanceWithMemory extends Performance {
+    memory?: {
+      usedJSHeapSize: number;
+      totalJSHeapSize: number;
+      jsHeapSizeLimit: number;
+    };
+  }
+
+  const performanceWithMemory = window.performance as PerformanceWithMemory;
+  if (performanceWithMemory.memory) {
+    const memory = performanceWithMemory.memory;
     const usedMB = memory.usedJSHeapSize / (1024 * 1024);
 
     sendToAnalytics({
@@ -197,7 +209,9 @@ export function getPerformanceMetrics(): PerformanceData[] {
     const stored = localStorage.getItem('performance_metrics') || '[]';
     return JSON.parse(stored);
   } catch (error) {
-    console.error('Failed to retrieve performance metrics:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to retrieve performance metrics:', error);
+    }
     return [];
   }
 }
@@ -209,7 +223,9 @@ export function clearPerformanceMetrics() {
   try {
     localStorage.removeItem('performance_metrics');
   } catch (error) {
-    console.error('Failed to clear performance metrics:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to clear performance metrics:', error);
+    }
   }
 }
 

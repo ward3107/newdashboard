@@ -1,4 +1,4 @@
-import { Student, LearningStyle, Priority } from '../types';
+import type { LearningStyle, Priority } from '../types';
 
 /**
  * Utility functions for the Student Dashboard
@@ -140,7 +140,7 @@ export const groupBy = <T>(array: T[], keyGetter: (item: T) => string): Record<s
   }, {} as Record<string, T[]>);
 };
 
-export const sortBy = <T>(array: T[], keyGetter: (item: T) => any, direction: 'asc' | 'desc' = 'asc'): T[] => {
+export const sortBy = <T>(array: T[], keyGetter: (item: T) => string | number | Date, direction: 'asc' | 'desc' = 'asc'): T[] => {
   return [...array].sort((a, b) => {
     const aValue = keyGetter(a);
     const bValue = keyGetter(b);
@@ -156,7 +156,7 @@ export const sortBy = <T>(array: T[], keyGetter: (item: T) => any, direction: 'a
   });
 };
 
-export const unique = <T>(array: T[], keyGetter?: (item: T) => any): T[] => {
+export const unique = <T>(array: T[], keyGetter?: (item: T) => string | number): T[] => {
   if (!keyGetter) {
     return [...new Set(array)];
   }
@@ -222,7 +222,9 @@ export const storage = {
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : defaultValue || null;
     } catch (error) {
-      console.error('Error reading from localStorage:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error reading from localStorage:', error);
+      }
       return defaultValue || null;
     }
   },
@@ -231,7 +233,9 @@ export const storage = {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.error('Error writing to localStorage:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error writing to localStorage:', error);
+      }
     }
   },
 
@@ -239,7 +243,9 @@ export const storage = {
     try {
       localStorage.removeItem(key);
     } catch (error) {
-      console.error('Error removing from localStorage:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error removing from localStorage:', error);
+      }
     }
   },
 
@@ -247,7 +253,9 @@ export const storage = {
     try {
       localStorage.clear();
     } catch (error) {
-      console.error('Error clearing localStorage:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error clearing localStorage:', error);
+      }
     }
   }
 };
@@ -273,14 +281,16 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
       document.body.removeChild(textArea);
       return true;
     } catch (fallbackError) {
-      console.error('Failed to copy to clipboard:', fallbackError);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to copy to clipboard:', fallbackError);
+      }
       return false;
     }
   }
 };
 
 // Performance utilities
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: never[]) => unknown>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {
@@ -292,7 +302,7 @@ export const debounce = <T extends (...args: any[]) => any>(
   };
 };
 
-export const throttle = <T extends (...args: any[]) => any>(
+export const throttle = <T extends (...args: never[]) => unknown>(
   func: T,
   limit: number
 ): ((...args: Parameters<T>) => void) => {
@@ -308,7 +318,7 @@ export const throttle = <T extends (...args: any[]) => any>(
 };
 
 // Analytics utilities
-export const trackEvent = (eventName: string, properties?: Record<string, any>): void => {
+export const trackEvent = (eventName: string, properties?: Record<string, string | number | boolean>): void => {
   // This would typically integrate with your analytics service
   if (process.env.NODE_ENV === 'development') {
     console.log('Analytics Event:', eventName, properties);
@@ -335,7 +345,9 @@ export const logError = (error: unknown, context?: string): void => {
   const errorMessage = formatError(error);
   const timestamp = new Date().toISOString();
 
-  console.error(`[${timestamp}] ${context ? `${context}: ` : ''}${errorMessage}`);
+  if (process.env.NODE_ENV === 'development') {
+    console.error(`[${timestamp}] ${context ? `${context}: ` : ''}${errorMessage}`);
+  }
 
   // In production, you might want to send this to an error tracking service
   // Sentry.captureException(error);

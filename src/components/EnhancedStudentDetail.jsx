@@ -5,30 +5,19 @@ import {
   Brain,
   Award,
   Target,
-  Calendar,
-  BookOpen,
   Sparkles,
   TrendingUp,
-  AlertCircle,
   CheckCircle,
   Clock,
-  Heart,
-  Lightbulb,
-  Shield,
   Zap,
   Star,
   Activity,
-  ChevronRight,
   Bell,
-  MessageCircle,
   ListChecks,
   CheckSquare,
   Square,
-  Send,
   Plus,
   Trash2,
-  Edit2,
-  Save,
   Download,
   Printer
 } from 'lucide-react';
@@ -37,7 +26,7 @@ import jsPDF from 'jspdf';
 import * as API from '../services/googleAppsScriptAPI';
 import EnhancedAnalysisDisplay from './EnhancedAnalysisDisplay';
 
-const EnhancedStudentDetail = ({ student, onClose, darkMode, theme, assignments = [] }) => {
+const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
   const [fullData, setFullData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -58,24 +47,20 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme, assignments 
     const fetchStudentDetails = async () => {
       try {
         const result = await API.getStudent(student.studentCode);
-        console.log('📊 API Response for student:', student.studentCode, result);
 
         if (result.success) {
-          console.log('✅ Student data received:', result.student);
-          console.log('🔍 Has insights?', result.student?.insights ? 'YES' : 'NO');
-          if (result.student?.insights) {
-            console.log('📋 Insights count:', result.student.insights.length);
-          }
           setFullData(result.student);
           // Generate AI tasks based on analysis
           generateAITasks(result.student);
         } else {
-          console.log('⚠️ API returned unsuccessful, using basic student data');
           setFullData(student);
           generateAITasks(student);
         }
       } catch (error) {
-        console.error('❌ Error fetching student details:', error);
+        // Log errors in development mode only
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error fetching student details:', error);
+        }
         setFullData(student);
         generateAITasks(student);
       } finally {
@@ -176,8 +161,6 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme, assignments 
   };
 
   const handlePrint = () => {
-    console.log('🖨️ Print clicked - Current active tab:', activeTab);
-
     // Get the actual visible content from the current tab
     const contentArea = document.querySelector('.p-6.overflow-y-auto');
     if (!contentArea) {
@@ -417,8 +400,6 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme, assignments 
   };
 
   const generatePrintContent = () => {
-    console.log('📄 Generating print content for tab:', activeTab);
-
     const studentAssignments = JSON.parse(localStorage.getItem(`assignments_${student.studentCode}`) || '[]');
     const strengths = fullData?.strengths || (typeof student.strengths === 'string' ? [student.strengths] : student.strengths) || [];
     const challenges = fullData?.challenges || (typeof student.challenges === 'string' ? [student.challenges] : student.challenges) || [];
@@ -426,13 +407,6 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme, assignments 
     // Get ISHEBOT insights if available
     const insights = fullData?.insights || [];
     const ishebotReport = fullData?.ishebotReport || {};
-
-    console.log('Data available:', {
-      insights: insights.length,
-      ishebotReport: Object.keys(ishebotReport).length,
-      assignments: studentAssignments.length,
-      tasks: tasks.length
-    });
 
     // Helper to clean text
     const cleanText = (text) => String(text || '').replace(/[^\u0590-\u05FF\s\w.,;:!?()"-]/g, '');
@@ -630,8 +604,6 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme, assignments 
   };
 
   const handleDownload = async () => {
-    console.log('📥 Download clicked - Current active tab:', activeTab);
-
     try {
       // Show loading indicator
       const loadingDiv = document.createElement('div');
@@ -795,7 +767,10 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme, assignments 
       // Save the PDF with tab name
       pdf.save(`student_${student.studentCode}_${activeTab}.pdf`);
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      // Log errors in development mode only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error generating PDF:', error);
+      }
       alert('שגיאה ביצירת קובץ PDF. אנא נסה שנית.\n\nפרטים: ' + error.message);
 
       // Remove loading indicator if it exists
@@ -813,40 +788,6 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme, assignments 
     { id: 'progress', label: 'התקדמות', icon: TrendingUp },
   ];
 
-  // Parse analysis into categories
-  const parseAnalysis = (text) => {
-    if (!text) return {};
-
-    const categories = {
-      academic: [],
-      social: [],
-      emotional: [],
-      behavioral: [],
-      recommendations: []
-    };
-
-    // Simple categorization based on keywords
-    const lines = text.split('\n').filter(line => line.trim());
-
-    lines.forEach(line => {
-      if (line.includes('למידה') || line.includes('אקדמ') || line.includes('ציונ')) {
-        categories.academic.push(line);
-      } else if (line.includes('חברת') || line.includes('חבר') || line.includes('קשר')) {
-        categories.social.push(line);
-      } else if (line.includes('רגש') || line.includes('הרגש') || line.includes('פחד')) {
-        categories.emotional.push(line);
-      } else if (line.includes('התנהג') || line.includes('משמע')) {
-        categories.behavioral.push(line);
-      } else {
-        categories.recommendations.push(line);
-      }
-    });
-
-    return categories;
-  };
-
-  const categories = parseAnalysis(fullData?.analysis || student.keyNotes);
-
   const getPriorityColor = (priority) => {
     switch(priority) {
       case 'high': return 'text-red-500 bg-red-100 border-red-300';
@@ -860,12 +801,23 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme, assignments 
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
       onClick={onClose}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      }}
+      role="button"
+      tabIndex={-1}
+      aria-label="Close modal"
     >
       <div
         className={`relative w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl ${
           darkMode ? 'bg-gray-900' : 'bg-white'
         }`}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
       >
         {/* Header */}
         <div className={`relative h-32 bg-gradient-to-r ${theme.primary} p-6`}>

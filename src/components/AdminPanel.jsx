@@ -8,7 +8,6 @@ import {
   UserCheck,
   Users,
   Download,
-  Upload,
   Search,
   AlertCircle,
   CheckCircle,
@@ -64,13 +63,17 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
   return (
     <div
       className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      onClick={onClose} // Click outside to close
+      onClick={onClose}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      role="presentation"
     >
       <div
         className={`relative backdrop-blur-xl ${
           darkMode ? 'bg-gray-900/95' : 'bg-white/95'
         } rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden border border-white/20 shadow-2xl`}
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
       >
         {/* Header */}
         <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
@@ -196,9 +199,9 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 </h3>
 
                 {/* AI Smart Analysis Button - Prominent */}
-                <div
+                <button
                   onClick={onSmartAnalysis}
-                  className={`p-6 rounded-xl border-2 transition-all cursor-pointer bg-gradient-to-r ${theme.secondary} hover:opacity-90 shadow-lg mb-6`}
+                  className={`p-6 rounded-xl border-2 transition-all cursor-pointer bg-gradient-to-r ${theme.secondary} hover:opacity-90 shadow-lg mb-6 w-full text-left`}
                 >
                   <div className="flex items-start gap-4">
                     <div className="p-3 rounded-lg bg-white/20">
@@ -213,13 +216,14 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                       </p>
                     </div>
                   </div>
-                </div>
+                </button>
 
                 <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} mb-4`}>
-                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label htmlFor="studentCode" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Student Code
                   </label>
                   <input
+                    id="studentCode"
                     type="text"
                     placeholder="Enter student code (e.g., 70105)"
                     className={`w-full px-4 py-2 rounded-lg ${
@@ -279,10 +283,11 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 </h3>
 
                 <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} mb-4`}>
-                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label htmlFor="batchSize" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Batch Size
                   </label>
                   <input
+                    id="batchSize"
                     type="number"
                     value={batchSize}
                     onChange={(e) => setBatchSize(e.target.value)}
@@ -350,10 +355,11 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 />
 
                 <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} mb-4`}>
-                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label htmlFor="daysOld" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Days Old (for old analyses deletion)
                   </label>
                   <input
+                    id="daysOld"
                     type="number"
                     value={daysOld}
                     onChange={(e) => setDaysOld(e.target.value)}
@@ -409,10 +415,11 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 />
 
                 <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} mb-4`}>
-                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <label htmlFor="searchQuery" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     Search Query
                   </label>
                   <input
+                    id="searchQuery"
                     type="text"
                     placeholder="Search in analyses..."
                     value={searchQuery}
@@ -491,9 +498,10 @@ const FunctionCard = ({
   };
 
   return (
-    <div
+    <button
       onClick={disabled ? undefined : onClick}
-      className={`p-4 rounded-xl border transition-all cursor-pointer ${
+      disabled={disabled}
+      className={`p-4 rounded-xl border transition-all cursor-pointer w-full text-left ${
         disabled
           ? 'opacity-50 cursor-not-allowed'
           : getVariantStyles()
@@ -514,7 +522,7 @@ const FunctionCard = ({
           </p>
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 
