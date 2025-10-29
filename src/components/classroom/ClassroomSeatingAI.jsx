@@ -2215,11 +2215,10 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                           return (
                             <div
                               key={item.id}
-                              className={`relative p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'} flex items-center justify-center gap-3 min-h-[120px] hover:shadow-lg transition-all ${
+                              className={`relative p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'} flex items-center justify-center gap-3 min-h-[120px] hover:shadow-lg transition-all cursor-pointer ${
                                 hoveredDesk === item.id ? 'ring-2 ring-blue-500 scale-105' : ''
                               }`}
-                              onMouseEnter={() => setHoveredDesk(item.id)}
-                              onMouseLeave={() => setHoveredDesk(null)}
+                              onClick={() => setHoveredDesk(hoveredDesk === item.id ? null : item.id)}
                             >
                               {/* Left Student - pointer-events-none to not interfere with desk hover */}
                               <div className="pointer-events-auto">
