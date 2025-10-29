@@ -79,9 +79,9 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <Router>
-          <ErrorBoundary>
-            <div className="min-h-screen bg-gray-50" dir="rtl">
+          <Router>
+            <ErrorBoundary>
+              <div className="min-h-screen bg-gray-50" dir="rtl">
               {/* Toast Notifications */}
               <Toaster
                 position="top-center"
@@ -138,22 +138,20 @@ function App() {
                 <Suspense fallback={<Loading />}>
                   <ErrorBoundary>
                     <Routes>
-                      <Route path="/" element={<FuturisticDashboard />} />
-                      <Route path="/original" element={<Dashboard />} />
-                      <Route path="/student/:studentId" element={<StudentDetail />} />
-                      <Route path="/test-analytics" element={<TestAnalytics />} />
-
-                      {/* Admin Control Panel */}
-                      <Route path="/admin" element={<AdminControlPanel />} />
-
-                      {/* API Test Page */}
-                      <Route path="/api-test" element={<ApiTestPage />} />
-
-                      {/* Legal Pages */}
+                      {/* Legal Pages (Public) */}
                       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                       <Route path="/terms" element={<TermsPage />} />
                       <Route path="/data-processing" element={<DataProcessingPage />} />
                       <Route path="/security" element={<SecurityPage />} />
+
+                      {/* Main Routes - Authentication temporarily disabled for presentation */}
+                      <Route path="/" element={<FuturisticDashboard />} />
+                      <Route path="/dashboard" element={<FuturisticDashboard />} />
+                      <Route path="/original" element={<Dashboard />} />
+                      <Route path="/student/:studentId" element={<StudentDetail />} />
+                      <Route path="/test-analytics" element={<TestAnalytics />} />
+                      <Route path="/admin" element={<AdminControlPanel />} />
+                      <Route path="/api-test" element={<ApiTestPage />} />
 
                       <Route path="*" element={<NotFound />} />
                     </Routes>
