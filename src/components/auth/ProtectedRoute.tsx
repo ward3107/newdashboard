@@ -79,15 +79,21 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { user, loading } = useAuth();
   const location = useLocation();
 
+  console.log('🛡️ ProtectedRoute:', { loading, hasUser: !!user, path: location.pathname });
+
   // Show loading spinner while checking auth state
   if (loading) {
+    console.log('🛡️ ProtectedRoute: Showing loading spinner');
     return <LoadingSpinner />;
   }
 
   // Redirect to login if not authenticated
   if (!user) {
+    console.log('🛡️ ProtectedRoute: No user, redirecting to /login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
+
+  console.log('🛡️ ProtectedRoute: User authenticated, showing protected content');
 
   // Check if user has required role
   if (requiredRole && user.role !== requiredRole) {
