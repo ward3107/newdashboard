@@ -3,7 +3,8 @@
  * Helper functions for authentication and authorization
  */
 
-import type { User, UserRole, Permissions } from '../types/auth';
+import { UserRole } from '../types/auth';
+import type { User, Permissions } from '../types/auth';
 
 /**
  * Get user permissions based on role
