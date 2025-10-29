@@ -12,12 +12,6 @@ import { initializeRUM } from './monitoring/rum';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { Loading } from './components/common/Loading';
 
-// Authentication
-import { AuthProvider } from './contexts/AuthContext';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { LoginPage } from './components/auth/LoginPage';
-import { ForgotPasswordPage } from './components/auth/ForgotPasswordPage';
-
 // UI Components
 import CookieConsent from './components/ui/CookieConsent';
 import AccessibilityWidget from './components/ui/AccessibilityWidget';
@@ -85,7 +79,6 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
           <Router>
             <ErrorBoundary>
               <div className="min-h-screen bg-gray-50" dir="rtl">
@@ -145,77 +138,20 @@ function App() {
                 <Suspense fallback={<Loading />}>
                   <ErrorBoundary>
                     <Routes>
-                      {/* Public Routes */}
-                      <Route path="/login" element={<LoginPage />} />
-                      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-
                       {/* Legal Pages (Public) */}
                       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                       <Route path="/terms" element={<TermsPage />} />
                       <Route path="/data-processing" element={<DataProcessingPage />} />
                       <Route path="/security" element={<SecurityPage />} />
 
-                      {/* Protected Routes */}
-                      <Route
-                        path="/"
-                        element={
-                          <ProtectedRoute>
-                            <FuturisticDashboard />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/dashboard"
-                        element={
-                          <ProtectedRoute>
-                            <FuturisticDashboard />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/original"
-                        element={
-                          <ProtectedRoute>
-                            <Dashboard />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/student/:studentId"
-                        element={
-                          <ProtectedRoute>
-                            <StudentDetail />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/test-analytics"
-                        element={
-                          <ProtectedRoute>
-                            <TestAnalytics />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      {/* Admin Control Panel (Admin only) */}
-                      <Route
-                        path="/admin"
-                        element={
-                          <ProtectedRoute>
-                            <AdminControlPanel />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      {/* API Test Page (Protected) */}
-                      <Route
-                        path="/api-test"
-                        element={
-                          <ProtectedRoute>
-                            <ApiTestPage />
-                          </ProtectedRoute>
-                        }
-                      />
+                      {/* Main Routes - Authentication temporarily disabled for presentation */}
+                      <Route path="/" element={<FuturisticDashboard />} />
+                      <Route path="/dashboard" element={<FuturisticDashboard />} />
+                      <Route path="/original" element={<Dashboard />} />
+                      <Route path="/student/:studentId" element={<StudentDetail />} />
+                      <Route path="/test-analytics" element={<TestAnalytics />} />
+                      <Route path="/admin" element={<AdminControlPanel />} />
+                      <Route path="/api-test" element={<ApiTestPage />} />
 
                       <Route path="*" element={<NotFound />} />
                     </Routes>
@@ -225,7 +161,6 @@ function App() {
             </div>
           </ErrorBoundary>
         </Router>
-        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
