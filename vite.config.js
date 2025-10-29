@@ -1,14 +1,19 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from 'vite-plugin-pwa';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
   resolve: {
     // Ensure only one instance of React is used
     dedupe: ['react', 'react-dom'],
     alias: {
-      'react': '/node_modules/react',
-      'react-dom': '/node_modules/react-dom'
+      'react': resolve(__dirname, './node_modules/react'),
+      'react-dom': resolve(__dirname, './node_modules/react-dom')
     }
   },
   plugins: [
@@ -83,15 +88,19 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        // Advanced chunking strategy
+        // Simplified chunking strategy with proper React handling
         manualChunks: (id) => {
-          // React core
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react-core';
+          // Keep React and React-DOM together in a single chunk
+          // This prevents "Cannot read properties of undefined (reading 'createContext')" errors
+          if (id.includes('node_modules/react') ||
+              id.includes('node_modules/react-dom') ||
+              id.includes('node_modules/react-is') ||
+              id.includes('node_modules/scheduler')) {
+            return 'vendor';
           }
-          // Router
+          // Router (depends on React, so keep in vendor or separate)
           if (id.includes('node_modules/react-router')) {
-            return 'react-router';
+            return 'vendor';
           }
           // Animations
           if (id.includes('node_modules/framer-motion')) {
