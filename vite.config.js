@@ -3,6 +3,14 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  resolve: {
+    // Ensure only one instance of React is used
+    dedupe: ['react', 'react-dom'],
+    alias: {
+      'react': '/node_modules/react',
+      'react-dom': '/node_modules/react-dom'
+    }
+  },
   plugins: [
     react(),
     VitePWA({
