@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Frontend service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ishebot-dashboard
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # Add your environment variables here
+      # These should be provided via .env file or at runtime
+      - VITE_API_URL=${VITE_API_URL}
+      - VITE_SPREADSHEET_ID=${VITE_SPREADSHEET_ID}
+      - VITE_ADMIN_PASSWORD=${VITE_ADMIN_PASSWORD}
+      - VITE_USE_MOCK_DATA=${VITE_USE_MOCK_DATA:-false}
+      - VITE_ENABLE_AI_ANALYSIS=${VITE_ENABLE_AI_ANALYSIS:-true}
+      - VITE_DEFAULT_LOCALE=${VITE_DEFAULT_LOCALE:-he}
+    restart: unless-stopped
+    networks:
+      - ishebot-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  ishebot-network:
+    driver: bridge
+
+# Optional: If you add backend services later
+# Uncomment and configure as needed
+
+# services:
+#   backend:
+#     build:
+#       context: ./backend
+#       dockerfile: Dockerfile
+#     container_name: ishebot-backend
+#     ports:
+#       - "3000:3000"
+#     environment:
+#       - NODE_ENV=production
+#       - PORT=3000
+#       - DATABASE_URL=${DATABASE_URL}
+#     restart: unless-stopped
+#     networks:
+#       - ishebot-network
+#
+#   postgres:
+#     image: postgres:16-alpine
+#     container_name: ishebot-db
+#     environment:
+#       - POSTGRES_USER=${DB_USER:-ishebot}
+#       - POSTGRES_PASSWORD=${DB_PASSWORD}
+#       - POSTGRES_DB=ishebot
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres-data:/var/lib/postgresql/data
+#     restart: unless-stopped
+#     networks:
+#       - ishebot-network
+#
+# volumes:
+#   postgres-data:
