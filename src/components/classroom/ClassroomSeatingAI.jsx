@@ -2215,11 +2215,26 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                           return (
                             <div
                               key={item.id}
-                              className={`relative p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'} flex items-center justify-center gap-3 min-h-[120px] hover:shadow-lg transition-all cursor-pointer ${
+                              className={`relative p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'} flex items-center justify-center gap-3 min-h-[120px] hover:shadow-lg transition-all ${
                                 hoveredDesk === item.id ? 'ring-2 ring-blue-500 scale-105' : ''
                               }`}
-                              onClick={() => setHoveredDesk(hoveredDesk === item.id ? null : item.id)}
                             >
+                              {/* Info button - only show if desk has students */}
+                              {(item.leftStudent || item.rightStudent) && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setHoveredDesk(hoveredDesk === item.id ? null : item.id);
+                                  }}
+                                  className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10 transition-all ${
+                                    darkMode ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-blue-400 hover:bg-blue-500 text-white'
+                                  }`}
+                                  title="הצג ניתוח מלא"
+                                >
+                                  i
+                                </button>
+                              )}
+
                               {/* Left Student - pointer-events-none to not interfere with desk hover */}
                               <div className="pointer-events-auto">
                                 {item.leftStudent ? (
