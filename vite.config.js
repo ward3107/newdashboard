@@ -16,6 +16,10 @@ export default defineConfig({
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom')
     }
   },
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+    force: true
+  },
   plugins: [
     react(),
     VitePWA({
@@ -90,13 +94,15 @@ export default defineConfig({
       output: {
         // Advanced chunking strategy
         manualChunks: (id) => {
-          // React core
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react-core';
-          }
-          // Router
+          // Router (check first to avoid react-router being caught by react check)
           if (id.includes('node_modules/react-router')) {
             return 'react-router';
+          }
+          // React core (more specific checks)
+          if (id.includes('node_modules/react/') ||
+              id.includes('node_modules/react-dom/') ||
+              id.match(/node_modules\/react$/)) {
+            return 'react-core';
           }
           // Animations
           if (id.includes('node_modules/framer-motion')) {
