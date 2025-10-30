@@ -50,14 +50,16 @@ function sendToAnalytics(data: PerformanceData) {
 
   // Send to your analytics service (Google Analytics, etc.)
   if (typeof window !== 'undefined' && (window as Window & { gtag?: (...args: unknown[]) => void }).gtag) {
-    const gtag = (window as Window & { gtag: (...args: unknown[]) => void }).gtag;
-    gtag('event', 'web_vitals', {
-      event_category: 'Performance',
-      event_label: data.metric,
-      value: Math.round(data.value),
-      metric_rating: data.rating,
-      non_interaction: true,
-    });
+    const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+    if (gtag) {
+      gtag('event', 'web_vitals', {
+        event_category: 'Performance',
+        event_label: data.metric,
+        value: Math.round(data.value),
+        metric_rating: data.rating,
+        non_interaction: true,
+      });
+    }
   }
 
   // Store in localStorage for debugging

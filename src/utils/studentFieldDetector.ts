@@ -12,7 +12,7 @@ export interface StudentIdentifier {
 /**
  * Automatically detect the student code/ID field from a student object
  */
-export function getStudentIdentifier(student: Record<string, unknown>): StudentIdentifier {
+export function getStudentIdentifier(student: Record<string, any>): StudentIdentifier {
   if (!student) return {};
 
   const result: StudentIdentifier = {};
@@ -72,7 +72,7 @@ export function getStudentIdentifier(student: Record<string, unknown>): StudentI
 /**
  * Get a formatted display string for student identification
  */
-export function getStudentDisplayText(student: Record<string, unknown>, showCode: boolean = true): string {
+export function getStudentDisplayText(student: Record<string, any>, showCode: boolean = true): string {
   const identifier = getStudentIdentifier(student);
 
   if (!identifier.displayName && !identifier.code) {
@@ -91,7 +91,7 @@ export function getStudentDisplayText(student: Record<string, unknown>, showCode
 /**
  * Analyze a collection of students to determine available fields
  */
-export function analyzeStudentFields(students: Record<string, unknown>[]): {
+export function analyzeStudentFields(students: Record<string, any>[]): {
   hasCodeField: boolean;
   codeFieldName: string | null;
   hasNameField: boolean;
@@ -151,7 +151,7 @@ export function analyzeStudentFields(students: Record<string, unknown>[]): {
 /**
  * Get all available student fields for debugging
  */
-export function getStudentFields(student: Record<string, unknown>): string[] {
+export function getStudentFields(student: Record<string, any>): string[] {
   if (!student || typeof student !== 'object') {
     return [];
   }

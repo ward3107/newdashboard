@@ -103,7 +103,7 @@ export async function generateAnalyticsPDF(
       { label: 'Analyzed / מנותחים', value: data.analyzedStudents || 0 },
       { label: 'Needs Analysis / דורשים ניתוח', value: data.needsAnalysis || data.unanalyzedStudents || 0 },
       { label: 'Average Grade / ציון ממוצע', value: data.averageGrade ? `${data.averageGrade.toFixed(1)}%` : 'N/A' },
-      { label: 'Completion Rate / אחוז השלמה', value: data.completionRate || data.analysisCompletionRate ? `${(data.completionRate || data.analysisCompletionRate).toFixed(1)}%` : 'N/A' },
+      { label: 'Completion Rate / אחוז השלמה', value: data.completionRate || data.analysisCompletionRate ? `${((data.completionRate || data.analysisCompletionRate) ?? 0).toFixed(1)}%` : 'N/A' },
     ];
 
     stats.forEach(stat => {

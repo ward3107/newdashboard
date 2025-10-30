@@ -153,7 +153,7 @@ export const useStudents = (): UseStudentsHook & {
   useEffect(() => {
     const hasActiveFilters = Object.values(filters).some(value => value !== 'all' && value !== '');
     if (hasActiveFilters) {
-      trackEvent('filters_applied', { filters });
+      trackEvent('filters_applied', { ...filters });
     }
   }, [filters]);
 
