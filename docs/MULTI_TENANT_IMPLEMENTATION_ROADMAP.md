@@ -25,40 +25,44 @@
 
 ---
 
-## 📊 Updated Role Hierarchy
+## 📊 Role Hierarchy (SIMPLIFIED)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     SUPER ADMIN (Platform Owner)             │
-│  - Access all schools                                        │
-│  - Manage subscriptions                                      │
-│  - Platform-wide analytics                                   │
+│                  ADMIN (Developer/Platform Owner)            │
+│  - Full platform access                                      │
+│  - See ALL schools, ALL students                             │
+│  - Manage subscriptions & billing                            │
+│  - Platform analytics & monitoring                           │
 │  - Create/suspend schools                                    │
 └──────────────────┬──────────────────────────────────────────┘
                    │
-      ┌────────────┴────────────┬──────────────────┐
-      │                         │                   │
-┌─────▼───────┐         ┌──────▼─────┐     ┌──────▼─────────┐
-│ SCHOOL      │         │ MANAGER    │     │ CONSULTANT     │
-│ (Tenant)    │         │ (Admin)    │     │ (External)     │
-└─────────────┘         │            │     │                │
-                        │ - Manage   │     │ - View only    │
-                        │   teachers │     │ - Reports      │
-                        │ - View all │     │ - Analytics    │
-                        │   students │     │ - Multi-school │
-                        │ - Reports  │     │   if assigned  │
-                        │ - Settings │     │                │
-                        └──────┬─────┘     └────────────────┘
-                               │
-                        ┌──────▼─────┐
-                        │ TEACHER    │
-                        │            │
-                        │ - Assigned │
-                        │   students │
-                        │ - Assigned │
-                        │   classes  │
-                        │ - Reports  │
-                        └────────────┘
+      ┌────────────┴─────────────┬──────────────────┐
+      │                          │                   │
+┌─────▼───────────┐      ┌──────▼──────┐    ┌──────▼─────────┐
+│ SCHOOL MANAGER  │      │ CONSULTANT  │    │ SCHOOL         │
+│ (School Admin)  │      │ (External)  │    │ (Tenant)       │
+└─────────────────┘      └─────────────┘    └────────────────┘
+│                        │
+│ - See ALL students     │ - See ALL students
+│   in THEIR school      │   (across assigned schools)
+│ - Manage teachers      │ - View only (no edit)
+│ - Manage classes       │ - Export reports
+│ - School settings      │ - Analytics access
+│ - Reports & analytics  │
+│                        │
+└──────┬─────────────────┘
+       │
+┌──────▼─────┐
+│  TEACHER   │
+│            │
+│ - See ONLY │
+│   assigned │
+│   students │
+│ - Assigned │
+│   classes  │
+│ - Reports  │
+└────────────┘
 ```
 
 ---
@@ -84,12 +88,17 @@ export interface User {
   email: string;
   displayName: string;
   role: UserRole;
-  schoolId: string;                 // Primary school
-  schoolIds?: string[];             // Multiple schools for consultants
+  schoolId: string;                 // Primary school (for Manager/Teacher)
+  schoolIds?: string[];             // Multiple schools (for Consultant)
   photoURL?: string;
-  assignedClasses?: string[];
-  assignedStudentIds?: string[];
-  consultantAccess?: ConsultantAccess;  // NEW
+
+  // Teacher-specific fields
+  assignedClasses?: string[];       // Only for TEACHER role
+  assignedStudentIds?: string[];    // Only for TEACHER role
+
+  // Consultant-specific fields
+  consultantAccess?: ConsultantAccess;  // Only for CONSULTANT role
+
   createdAt: Date;
   lastLogin?: Date;
   isActive: boolean;
@@ -98,30 +107,33 @@ export interface User {
 
 // NEW: Consultant access configuration
 export interface ConsultantAccess {
-  schoolIds: string[];              // Schools they can access
+  schoolIds: string[];              // Schools they can access (ALL students)
   expiresAt?: Date;                 // Optional access expiration
-  permissions: ConsultantPermissions;
-}
-
-export interface ConsultantPermissions {
-  canViewReports: boolean;
-  canViewAnalytics: boolean;
-  canExportData: boolean;
-  canViewTeachers: boolean;
+  canExportData: boolean;           // Can export reports
+  canViewAnalytics: boolean;        // Can view analytics
+  notes?: string;                   // Why they have access
 }
 
 // UPDATE Permissions
 export interface Permissions {
-  canViewAllStudents: boolean;
-  canViewSchoolStudents: boolean;   // NEW: View within assigned schools
-  canEditStudentData: boolean;
-  canAccessAdminPanel: boolean;
-  canManageTeachers: boolean;
-  canManageSchool: boolean;
-  canExportData: boolean;
-  canDeleteData: boolean;
-  canInviteUsers: boolean;          // NEW
-  canManageSubscription: boolean;    // NEW
+  // Student Access
+  canViewAllStudents: boolean;      // Admin: ALL | Manager: their school | Consultant: ALL (assigned schools) | Teacher: NO
+  canViewAssignedStudents: boolean; // Teacher: YES (only assigned)
+  canEditStudentData: boolean;      // Admin: YES | Manager: YES | Consultant: NO | Teacher: NO
+
+  // User Management
+  canManageTeachers: boolean;       // Admin: YES | Manager: YES | Consultant: NO | Teacher: NO
+  canInviteUsers: boolean;          // Admin: YES | Manager: YES (teachers) | Consultant: NO | Teacher: NO
+
+  // School Management
+  canManageSchool: boolean;         // Admin: YES | Manager: YES | Consultant: NO | Teacher: NO
+  canAccessAdminPanel: boolean;     // Admin: YES | Manager: YES | Consultant: NO | Teacher: NO
+  canManageSubscription: boolean;   // Admin: YES | Manager: YES | Consultant: NO | Teacher: NO
+
+  // Data & Reports
+  canExportData: boolean;           // Admin: YES | Manager: YES | Consultant: YES | Teacher: YES (assigned)
+  canViewAnalytics: boolean;        // All roles: YES (but different scopes)
+  canDeleteData: boolean;           // Admin: YES (all) | Manager: YES (their school) | Others: NO
 }
 ```
 
@@ -240,21 +252,22 @@ service cloud.firestore {
       allow read: if hasSchoolAccess(schoolId);
     }
 
-    // Students collection - CRITICAL SECURITY
+    // Students collection - CRITICAL SECURITY (UPDATED)
     match /students/{studentId} {
-      // Super admins have full access
+      // ADMIN: Full access to ALL students
       allow read, write: if isSuperAdmin();
 
-      // Users can only access students from their school
-      allow read: if isAuthenticated() &&
+      // SCHOOL MANAGER: Full access to students in THEIR school
+      allow read, write: if isAuthenticated() &&
+                            isSchoolAdmin(resource.data.schoolId);
+
+      // CONSULTANT: Read-only access to students in ASSIGNED schools
+      allow read: if isConsultant() &&
                      hasSchoolAccess(resource.data.schoolId);
 
-      // School admins can write students in their school
-      allow write: if isAuthenticated() &&
-                      isSchoolAdmin(request.resource.data.schoolId);
-
-      // Teachers can read students assigned to them
+      // TEACHER: Read ONLY students assigned to them
       allow read: if isAuthenticated() &&
+                     getUserRole() == 'teacher' &&
                      request.auth.uid in resource.data.assignedTeacherIds;
     }
 
@@ -291,25 +304,49 @@ export async function getAllStudents(
   return apiCall<{ students: Student[] }>('getAllStudents', params);
 }
 
-// NEW: Get students with automatic school filtering based on user
+// NEW: Get students with automatic filtering based on user role
 export async function getStudentsForCurrentUser(
   user: User
 ): Promise<ApiResponse<{ students: Student[] }>> {
+
+  // ADMIN: See ALL students across ALL schools
   if (user.role === UserRole.SUPER_ADMIN) {
-    // Super admin sees all
-    return getAllStudents();
-  } else if (user.role === UserRole.CONSULTANT && user.consultantAccess) {
-    // Consultant sees multiple schools
+    return getAllStudents(); // No filter - returns everything
+  }
+
+  // SCHOOL MANAGER: See ALL students in THEIR school
+  else if (user.role === UserRole.SCHOOL_ADMIN) {
+    return getAllStudents(user.schoolId);
+  }
+
+  // CONSULTANT: See ALL students in ASSIGNED schools
+  else if (user.role === UserRole.CONSULTANT && user.consultantAccess) {
     const promises = user.consultantAccess.schoolIds.map(schoolId =>
       getAllStudents(schoolId)
     );
     const results = await Promise.all(promises);
     const allStudents = results.flatMap(r => r.data?.students || []);
     return { success: true, data: { students: allStudents } };
-  } else {
-    // School admin and teachers see their school only
-    return getAllStudents(user.schoolId);
   }
+
+  // TEACHER: See ONLY assigned students
+  else if (user.role === UserRole.TEACHER) {
+    return getAssignedStudents(user.uid, user.schoolId);
+  }
+
+  // Fallback: No access
+  return { success: true, data: { students: [] } };
+}
+
+// NEW: Get students assigned to a specific teacher
+export async function getAssignedStudents(
+  teacherId: string,
+  schoolId: string
+): Promise<ApiResponse<{ students: Student[] }>> {
+  return apiCall<{ students: Student[] }>('getAssignedStudents', {
+    teacherId,
+    schoolId
+  });
 }
 ```
 
