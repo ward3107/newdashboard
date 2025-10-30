@@ -103,9 +103,6 @@ export const getAllStudents = async () => {
     } else if (Array.isArray(response.data)) {
       // Format 3: Direct array
       studentsArray = response.data;
-    } else if (response.data?.success && response.data?.students) {
-      // Format 4: { success: true, students: [...] }
-      studentsArray = response.data.students;
     }
 
     if (studentsArray && Array.isArray(studentsArray)) {
