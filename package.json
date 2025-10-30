@@ -2,6 +2,7 @@
   "name": "ai-student-analysis-dashboard",
   "version": "1.0.0",
   "description": "AI-powered student analysis dashboard with Claude AI integration",
+  "type": "module",
   "private": true,
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

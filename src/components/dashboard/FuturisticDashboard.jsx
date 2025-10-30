@@ -33,6 +33,8 @@ import {
   X,
   Grid3x3,
   Lightbulb,
+  Compass,
+  Map,
 } from "lucide-react";
 import AdminPanel from "../AdminPanel";
 import EnhancedStudentDetail from "../EnhancedStudentDetail";
@@ -595,22 +597,21 @@ const FuturisticTeacherDashboard = () => {
     }
   };
 
-  // Fetch real data from backend
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        // Fetch students and stats in parallel
-        const [studentsData, statsData] = await Promise.all([
-          fetchStudents(),
-          fetchStats(),
-        ]);
+  // Fetch real data from backend - defined at component level for reuse
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      // Fetch students and stats in parallel
+      const [studentsData, statsData] = await Promise.all([
+        fetchStudents(),
+        fetchStats(),
+      ]);
 
-        setStudents(studentsData);
+      setStudents(studentsData);
 
-        // Use the AnalysisAggregator to process all student data
-        const aggregated = AnalysisAggregator.aggregateStudentData(studentsData);
-        setAggregatedData(aggregated);
+      // Use the AnalysisAggregator to process all student data
+      const aggregated = AnalysisAggregator.aggregateStudentData(studentsData);
+      setAggregatedData(aggregated);
 
         // Update stats with real aggregated data
         setStats({
@@ -636,8 +637,10 @@ const FuturisticTeacherDashboard = () => {
       } finally {
         setLoading(false);
       }
-    };
+  };
 
+  // Load data on component mount
+  useEffect(() => {
     loadData();
   }, []);
 
