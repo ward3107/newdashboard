@@ -44,14 +44,17 @@ const StudentCircle = ({ studentId, isFirst, onStudentClick }) => {
     ? 'linear-gradient(135deg, #a8d8ea, #6bb6d6)' // Light blue
     : 'linear-gradient(135deg, #ffcab0, #ff9a76)'; // Light orange
 
+  const handleClick = () => {
+    setShowTooltip(!showTooltip);
+    onStudentClick(studentId);
+  };
+
   return (
     <div className="relative">
       <motion.div
         className="student-circle"
         style={{ background: bgGradient }}
-        onClick={() => onStudentClick(studentId)}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
+        onClick={handleClick}
         whileHover={{ scale: 1.25 }}
         transition={{ duration: 0.3 }}
       >
