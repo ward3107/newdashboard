@@ -17,8 +17,8 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['react', 'react-dom'],
-    force: true
+    include: ['react', 'react-dom', 'react/jsx-runtime'],
+    exclude: []
   },
   plugins: [
     react(),
@@ -92,38 +92,10 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        // Advanced chunking strategy
-        manualChunks: (id) => {
-          // Router (check first to avoid react-router being caught by react check)
-          if (id.includes('node_modules/react-router')) {
-            return 'react-router';
-          }
-          // React core (more specific checks)
-          if (id.includes('node_modules/react/') ||
-              id.includes('node_modules/react-dom/') ||
-              id.match(/node_modules\/react$/)) {
-            return 'react-core';
-          }
-          // Animations
-          if (id.includes('node_modules/framer-motion')) {
-            return 'framer-motion';
-          }
-          // Icons (split separately - large library)
-          if (id.includes('node_modules/lucide-react')) {
-            return 'lucide-icons';
-          }
-          // Charts (split separately - large library)
-          if (id.includes('node_modules/recharts')) {
-            return 'recharts';
-          }
-          // Export libraries (lazy load these)
-          if (id.includes('node_modules/jspdf') || id.includes('node_modules/xlsx')) {
-            return 'export-libs';
-          }
-          // Other vendors
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+        // Simpler, more reliable chunking strategy
+        manualChunks: {
+          // Explicitly define React core as its own chunk
+          'react-vendor': ['react', 'react-dom', 'react/jsx-runtime'],
         },
         // Optimize chunk file names
         chunkFileNames: 'assets/[name]-[hash].js',
