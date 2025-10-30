@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+dist/
+build/
+coverage/
+.next/
+out/
+
+# Cache
+.cache/
+.parcel-cache/
+.turbo/
+
+# Reports
+reports/
+playwright-report/
+test-results/
+
+# Config files
+*.config.js
+*.config.ts
+
+# Env files
+.env*
+
+# IDE
+.vscode/
+.idea/
+
+# Generated files
+*.tsbuildinfo
+
+# Public assets
+public/mockServiceWorker.js
+public/sw.js
+public/workbox-*.js
+
+# Documentation (preserve formatting)
+CHANGELOG.md
+LICENSE

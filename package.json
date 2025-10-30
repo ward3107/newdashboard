@@ -53,10 +53,11 @@
     "a11y": "node scripts/run-a11y.js",
     "perf": "node scripts/run-perf.js",
     "scan:deps": "npm audit --audit-level=moderate && npx better-npm-audit audit",
-    "scan:security": "node scripts/security-scan.js",
+    "scan:security": "node scripts/security-scan.cjs",
     "precommit": "npm run lint && npm run typecheck && npm run test",
-    "ci": "npm run clean && npm run lint && npm run typecheck && npm run test:coverage && npm run test:int && npm run e2e && npm run a11y && npm run scan:deps",
-    "reports": "node scripts/generate-reports.js"
+    "ci": "npm run clean && npm run lint && npm run typecheck && npm run test:coverage && npm run e2e && npm run a11y && npm run scan:deps",
+    "ci:full": "npm run clean && npm run lint && npm run typecheck && npm run test:coverage && npm run test:int && npm run e2e && npm run a11y && npm run scan:deps",
+    "reports": "node scripts/generate-reports.cjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.8.0",
