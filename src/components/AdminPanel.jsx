@@ -145,8 +145,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 </h3>
 
                 <FunctionCard
-                  title="Get All Students"
-                  description="Fetch all students from the database"
+                  title="קבל את כל התלמידים"
+                  description="שלוף את כל התלמידים מבסיס הנתונים"
                   icon={Users}
                   onClick={() => handleApiCall(API.getAllStudents)}
                   darkMode={darkMode}
@@ -154,8 +154,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 />
 
                 <FunctionCard
-                  title="Get Statistics"
-                  description="Get comprehensive statistics about all students"
+                  title="קבל סטטיסטיקה"
+                  description="קבל סטטיסטיקה מקיפה על כל התלמידים"
                   icon={Database}
                   onClick={() => handleApiCall(API.getStats)}
                   darkMode={darkMode}
@@ -163,8 +163,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 />
 
                 <FunctionCard
-                  title="Sync Students"
-                  description="Sync student data from Google Forms responses"
+                  title="סנכרן תלמידים"
+                  description="סנכרן נתוני תלמידים מטפסי Google"
                   icon={RefreshCw}
                   onClick={() => handleApiCall(API.syncStudents)}
                   darkMode={darkMode}
@@ -225,7 +225,7 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                   <input
                     id="studentCode"
                     type="text"
-                    placeholder="Enter student code (e.g., 70105)"
+                    placeholder="הכנס קוד תלמיד (לדוגמה: 70105)"
                     className={`w-full px-4 py-2 rounded-lg ${
                       darkMode
                         ? 'bg-gray-700 text-white border-gray-600'
@@ -236,8 +236,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 </div>
 
                 <FunctionCard
-                  title="Analyze Student"
-                  description="Run AI analysis on a specific student"
+                  title="נתח תלמיד"
+                  description="הרץ ניתוח AI על תלמיד ספציפי"
                   icon={UserCheck}
                   onClick={() => handleApiCall(API.analyzeOneStudent, selectedStudents[0])}
                   disabled={!selectedStudents[0]}
@@ -246,8 +246,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 />
 
                 <FunctionCard
-                  title="Re-analyze Student"
-                  description="Re-run analysis for a student (deletes old analysis)"
+                  title="נתח תלמיד מחדש"
+                  description="הרץ ניתוח מחדש עבור תלמיד (מוחק ניתוח ישן)"
                   icon={RefreshCw}
                   onClick={() => handleApiCall(API.reanalyzeStudent, selectedStudents[0])}
                   disabled={!selectedStudents[0]}
@@ -256,8 +256,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 />
 
                 <FunctionCard
-                  title="Get Analyzed Students"
-                  description="List all students who have been analyzed"
+                  title="קבל תלמידים מנותחים"
+                  description="הצג רשימת כל התלמידים שנותחו"
                   icon={CheckCircle}
                   onClick={() => handleApiCall(API.getAnalyzedStudents)}
                   darkMode={darkMode}
@@ -265,8 +265,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 />
 
                 <FunctionCard
-                  title="Get Unanalyzed Students"
-                  description="List all students who need analysis"
+                  title="קבל תלמידים לא מנותחים"
+                  description="הצג רשימת כל התלמידים שצריכים ניתוח"
                   icon={AlertCircle}
                   onClick={() => handleApiCall(API.getUnanalyzedStudents)}
                   darkMode={darkMode}
@@ -302,8 +302,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 </div>
 
                 <FunctionCard
-                  title="Analyze Batch"
-                  description={`Analyze ${batchSize} unanalyzed students`}
+                  title="נתח אצווה"
+                  description={`נתח ${batchSize} תלמידים שלא נותחו`}
                   icon={Users}
                   onClick={() => handleApiCall(API.analyzeBatch, batchSize)}
                   darkMode={darkMode}
@@ -311,8 +311,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 />
 
                 <FunctionCard
-                  title="Standard Batch"
-                  description="Run standard batch analysis (5 students)"
+                  title="אצווה רגילה"
+                  description="הרץ ניתוח אצווה רגיל (5 תלמידים)"
                   icon={Zap}
                   onClick={() => handleApiCall(API.standardBatch)}
                   darkMode={darkMode}
@@ -320,8 +320,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 />
 
                 <FunctionCard
-                  title="Quick Batch"
-                  description="Run quick batch analysis (3 students)"
+                  title="אצווה מהירה"
+                  description="הרץ ניתוח אצווה מהיר (3 תלמידים)"
                   icon={Clock}
                   onClick={() => handleApiCall(API.quickBatch)}
                   darkMode={darkMode}
@@ -344,8 +344,8 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 </div>
 
                 <FunctionCard
-                  title="Delete Student Analysis"
-                  description="Delete analysis for a specific student"
+                  title="מחק ניתוח תלמיד"
+                  description="מחק ניתוח עבור תלמיד ספציפי"
                   icon={Trash2}
                   onClick={() => handleApiCall(API.deleteStudentAnalysis, selectedStudents[0])}
                   disabled={!selectedStudents[0]}
@@ -383,11 +383,11 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
                 />
 
                 <FunctionCard
-                  title="Delete All Analyses"
-                  description="⚠️ Delete ALL student analyses (use with extreme caution!)"
+                  title="מחק את כל הניתוחים"
+                  description="⚠️ מחק את כל ניתוחי התלמידים (השתמש בזהירות רבה!)"
                   icon={XCircle}
                   onClick={() => {
-                    if (confirm('Are you ABSOLUTELY sure? This will delete ALL analyses!')) {
+                    if (confirm('האם אתה בטוח לחלוטין? זה ימחק את כל הניתוחים!')) {
                       handleApiCall(API.deleteAllAnalyses);
                     }
                   }}
