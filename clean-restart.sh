@@ -12,14 +12,19 @@ rm -rf node_modules/.cache
 rm -rf .vite
 rm -rf dist
 
-# Clear npm cache (just for this project)
-npm cache clean --force
-
 echo "✅ Caches cleared!"
 echo ""
 echo "🔧 Starting fresh development server..."
-echo "⚠️  IMPORTANT: When the server starts, press Ctrl+Shift+R in your browser to hard refresh!"
 echo ""
+echo "⚠️  CRITICAL: After server starts, you MUST:"
+echo "   1. Open DevTools (F12)"
+echo "   2. Right-click the refresh button"
+echo "   3. Select 'Empty Cache and Hard Reload'"
+echo ""
+echo "   OR press Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)"
+echo ""
+echo "Starting in 3 seconds..."
+sleep 3
 
 # Start dev server
 npm run dev
