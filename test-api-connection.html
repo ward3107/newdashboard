@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Google Apps Script API Connection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4285f4;
+            padding-bottom: 10px;
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background: #4285f4;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #357ae8;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4285f4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Google Apps Script API Connection</h1>
+
+        <div class="input-group">
+            <label for="apiUrl">Google Apps Script URL:</label>
+            <input
+                type="text"
+                id="apiUrl"
+                placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"
+                value="https://script.google.com/macros/s/AKfycbxSawbi4f370i94rPA2EpVZh3LlfMisq7uu6r3pS0Q3rQU8nW5qTk_Witm1FVd5kQtb/exec"
+            >
+        </div>
+
+        <div style="margin: 20px 0;">
+            <button onclick="testConnection()">🔌 Test Connection</button>
+            <button onclick="getAllStudents()">👥 Get All Students</button>
+            <button onclick="getStats()">📊 Get Stats</button>
+            <button onclick="clearResults()">🗑️ Clear</button>
+        </div>
+
+        <div id="loading" style="display: none;">
+            <span class="loading"></span> Testing connection...
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        const loadingDiv = document.getElementById('loading');
+
+        function showLoading() {
+            loadingDiv.style.display = 'block';
+        }
+
+        function hideLoading() {
+            loadingDiv.style.display = 'none';
+        }
+
+        function showResult(message, type = 'info') {
+            hideLoading();
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = message;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function showSuccess(title, data) {
+            hideLoading();
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result success';
+            resultDiv.innerHTML = `<strong>✅ ${title}</strong>\n\n${JSON.stringify(data, null, 2)}`;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function showError(title, error) {
+            hideLoading();
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result error';
+            resultDiv.innerHTML = `<strong>❌ ${title}</strong>\n\n${error}`;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+
+        function getApiUrl() {
+            return document.getElementById('apiUrl').value.trim();
+        }
+
+        async function testConnection() {
+            clearResults();
+            showLoading();
+
+            const url = getApiUrl();
+
+            if (!url) {
+                showError('Error', 'Please enter a Google Apps Script URL');
+                return;
+            }
+
+            try {
+                const testUrl = `${url}?action=test`;
+                console.log('Testing:', testUrl);
+
+                const response = await fetch(testUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError('API Error', data.error);
+                } else {
+                    showSuccess('Connection Successful!', data);
+                }
+            } catch (error) {
+                if (error.message.includes('CORS')) {
+                    showError(
+                        'CORS Error - Action Required!',
+                        `The Google Apps Script is blocking requests from this origin.\n\n` +
+                        `HOW TO FIX:\n` +
+                        `1. Open your Google Apps Script\n` +
+                        `2. Go to Deploy → Manage deployments\n` +
+                        `3. Click "Edit" (pencil icon)\n` +
+                        `4. Set "Who has access" to "Anyone"\n` +
+                        `5. Click "Deploy"\n` +
+                        `6. Try testing again\n\n` +
+                        `Technical error: ${error.message}`
+                    );
+                } else {
+                    showError('Connection Failed', error.message);
+                }
+            }
+        }
+
+        async function getAllStudents() {
+            clearResults();
+            showLoading();
+
+            const url = getApiUrl();
+
+            if (!url) {
+                showError('Error', 'Please enter a Google Apps Script URL');
+                return;
+            }
+
+            try {
+                const studentsUrl = `${url}?action=getAllStudents`;
+                console.log('Fetching students:', studentsUrl);
+
+                const response = await fetch(studentsUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError('API Error', data.error);
+                    return;
+                }
+
+                const students = data.students || [];
+
+                // Show stats
+                hideLoading();
+                const statsDiv = document.createElement('div');
+                statsDiv.className = 'stats';
+                statsDiv.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-label">Total Students</div>
+                        <div class="stat-value">${students.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">With Analysis</div>
+                        <div class="stat-value">${students.filter(s => s.strengthsCount > 0).length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Need Analysis</div>
+                        <div class="stat-value">${students.filter(s => !s.strengthsCount || s.strengthsCount === 0).length}</div>
+                    </div>
+                `;
+                resultsDiv.appendChild(statsDiv);
+
+                // Show sample students
+                showSuccess(
+                    `Students Retrieved (showing first 5 of ${students.length})`,
+                    students.slice(0, 5)
+                );
+
+            } catch (error) {
+                if (error.message.includes('CORS')) {
+                    showError(
+                        'CORS Error',
+                        `Cannot access API due to CORS policy.\n\nSee instructions above to fix.`
+                    );
+                } else {
+                    showError('Fetch Failed', error.message);
+                }
+            }
+        }
+
+        async function getStats() {
+            clearResults();
+            showLoading();
+
+            const url = getApiUrl();
+
+            if (!url) {
+                showError('Error', 'Please enter a Google Apps Script URL');
+                return;
+            }
+
+            try {
+                const statsUrl = `${url}?action=getStats`;
+                console.log('Fetching stats:', statsUrl);
+
+                const response = await fetch(statsUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError('API Error', data.error);
+                } else {
+                    showSuccess('Statistics Retrieved', data);
+                }
+            } catch (error) {
+                if (error.message.includes('CORS')) {
+                    showError('CORS Error', 'See instructions above to fix CORS.');
+                } else {
+                    showError('Fetch Failed', error.message);
+                }
+            }
+        }
+
+        // Auto-test on load if URL is present
+        window.addEventListener('load', () => {
+            const url = getApiUrl();
+            if (url && url !== 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec') {
+                console.log('Auto-testing connection...');
+                testConnection();
+            }
+        });
+    </script>
+</body>
+</html>
