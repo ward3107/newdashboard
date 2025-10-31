@@ -26,6 +26,14 @@ const resources = {
 
 const LANGUAGE_KEY = 'ishebot-language';
 
+// Safely get saved language from localStorage (browser only)
+const getSavedLanguage = () => {
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    return localStorage.getItem(LANGUAGE_KEY) || 'he';
+  }
+  return 'he';
+};
+
 i18n
   // detect user language
   .use(LanguageDetector)
@@ -35,7 +43,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'he', // Default language
-    lng: localStorage.getItem(LANGUAGE_KEY) || 'he', // Load saved language or default to Hebrew
+    lng: getSavedLanguage(), // Load saved language or default to Hebrew
     debug: false,
 
     interpolation: {
@@ -60,6 +68,8 @@ i18n
 
 // Update HTML attributes when language changes
 i18n.on('languageChanged', (lng) => {
+  if (typeof document === 'undefined') return;
+
   const root = document.documentElement;
 
   // Set language attribute
@@ -70,8 +80,10 @@ i18n.on('languageChanged', (lng) => {
   const dir = rtlLanguages.includes(lng) ? 'rtl' : 'ltr';
   root.setAttribute('dir', dir);
 
-  // Store in localStorage
-  localStorage.setItem(LANGUAGE_KEY, lng);
+  // Store in localStorage (browser only)
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(LANGUAGE_KEY, lng);
+  }
 });
 
 export default i18n;
