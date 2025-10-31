@@ -35,7 +35,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'he', // Default language
-    lng: localStorage.getItem(LANGUAGE_KEY) || 'he', // Load saved language or default to Hebrew
+    lng: (typeof window !== 'undefined' && localStorage.getItem(LANGUAGE_KEY)) || 'he', // Load saved language or default to Hebrew
     debug: false,
 
     interpolation: {
@@ -60,6 +60,8 @@ i18n
 
 // Update HTML attributes when language changes
 i18n.on('languageChanged', (lng) => {
+  if (typeof window === 'undefined') return;
+
   const root = document.documentElement;
 
   // Set language attribute

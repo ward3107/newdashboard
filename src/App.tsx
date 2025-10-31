@@ -60,21 +60,8 @@ function App() {
     // Real User Monitoring
     initializeRUM();
 
-    // Service Worker registration
-    if ('serviceWorker' in navigator && import.meta.env.PROD) {
-      navigator.serviceWorker.register('/sw.js').then(
-        (registration) => {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Service Worker registered:', registration.scope);
-          }
-        },
-        (error) => {
-          if (process.env.NODE_ENV === 'development') {
-            console.error('Service Worker registration failed:', error);
-          }
-        }
-      );
-    }
+    // Service Worker registration disabled (PWA plugin is disabled in vite.config.js)
+    // If you want to enable PWA, uncomment the VitePWA plugin in vite.config.js
   }, []);
 
   return (
