@@ -26,7 +26,7 @@ const StudentRow = memo<RowComponentProps<{
   students: Student[];
   onStudentClick?: (student: Student) => void;
   searchQuery?: string;
-}>>(({ index, style, ariaAttributes, students, onStudentClick, searchQuery }) => {
+}>>(({ index, style, ariaAttributes, students, onStudentClick, searchQuery }): React.ReactElement => {
   const student = students[index];
 
   // Highlight search terms
@@ -221,7 +221,7 @@ export const VirtualStudentList: React.FC<VirtualStudentListProps> = ({
         defaultHeight={height}
         rowCount={students.length}
         rowHeight={itemHeight}
-        rowComponent={StudentRow}
+        rowComponent={StudentRow as any}
         rowProps={{
           students,
           onStudentClick,

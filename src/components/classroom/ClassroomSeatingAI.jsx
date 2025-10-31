@@ -888,13 +888,45 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
 // STUDENT INFO SIDE PANEL COMPONENT
 // ============================================================================
 
-const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShape = 'rows', cspMetadata = null }) => {
+const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShape = 'rows', cspMetadata = null, arrangement = [], onOpenDeskPopup = null }) => {
   if (!studentData) return null;
 
   const student = studentData.student || studentData; // Support both formats
   const row = studentData.row !== undefined ? studentData.row : null;
   const col = studentData.col !== undefined ? studentData.col : null;
   const totalRows = studentData.totalRows || 4;
+
+  // Find desk partner and compatibility
+  const findDeskPartner = () => {
+    if (!arrangement || arrangement.length === 0) return null;
+
+    // Find the desk that contains this student
+    const desk = arrangement.find(item => {
+      if (!item) return false;
+      const leftMatch = item.leftStudent && item.leftStudent.studentCode === student.studentCode;
+      const rightMatch = item.rightStudent && item.rightStudent.studentCode === student.studentCode;
+      const singleMatch = item.student && item.student.studentCode === student.studentCode;
+      return leftMatch || rightMatch || singleMatch;
+    });
+
+    if (!desk) return null;
+
+    // Determine the partner
+    let partner = null;
+    if (desk.leftStudent && desk.leftStudent.studentCode === student.studentCode) {
+      partner = desk.rightStudent;
+    } else if (desk.rightStudent && desk.rightStudent.studentCode === student.studentCode) {
+      partner = desk.leftStudent;
+    }
+
+    return {
+      partner,
+      compatibility: desk.compatibility,
+      deskInfo: desk
+    };
+  };
+
+  const deskPartnerInfo = findDeskPartner();
 
   const challenges = student.challengesCount || 0;
   const strengths = student.strengthsCount || 0;
@@ -1153,6 +1185,93 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
             </div>
           </div>
 
+          {/* Desk Partner Section */}
+          {deskPartnerInfo && deskPartnerInfo.partner && (
+            <div className={`${darkMode ? 'bg-purple-500/10 border-purple-500/30' : 'bg-purple-50 border-purple-200'} border rounded-xl p-4`}>
+              <div className="flex items-center gap-2 mb-3">
+                <Users className="text-purple-500" size={20} />
+                <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  שותף לשולחן
+                </h3>
+              </div>
+
+              <div className={`${darkMode ? 'bg-white/5' : 'bg-white'} rounded-lg p-3 mb-3`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {deskPartnerInfo.partner.name}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {deskPartnerInfo.partner.studentCode}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-xs">
+                  <span className={`${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+                    ✓ {deskPartnerInfo.partner.strengthsCount || 0} חוזקות
+                  </span>
+                  <span className={`${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>
+                    ⚠ {deskPartnerInfo.partner.challengesCount || 0} אתגרים
+                  </span>
+                </div>
+              </div>
+
+              {deskPartnerInfo.compatibility && deskPartnerInfo.compatibility.score !== undefined && (
+                <div className={`${darkMode ? 'bg-white/5' : 'bg-white'} rounded-lg p-3`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Heart size={16} className="text-pink-500" />
+                      <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        תואמות
+                      </span>
+                    </div>
+                    <span className={`text-xl font-bold ${
+                      deskPartnerInfo.compatibility.score > 75 ? 'text-green-500' :
+                      deskPartnerInfo.compatibility.score > 60 ? 'text-yellow-500' :
+                      deskPartnerInfo.compatibility.score > 40 ? 'text-orange-500' :
+                      'text-red-500'
+                    }`}>
+                      {deskPartnerInfo.compatibility.score}%
+                    </span>
+                  </div>
+                  {deskPartnerInfo.compatibility.reasons && deskPartnerInfo.compatibility.reasons.length > 0 && (
+                    <div className="space-y-1 mt-2">
+                      {deskPartnerInfo.compatibility.reasons.slice(0, 2).map((reason, idx) => (
+                        <p key={idx} className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                          • {reason}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <button
+                onClick={() => {
+                  if (onOpenDeskPopup && deskPartnerInfo.deskInfo && deskPartnerInfo.deskInfo.id) {
+                    onClose();
+                    setTimeout(() => {
+                      onOpenDeskPopup(deskPartnerInfo.deskInfo.id);
+                    }, 300); // Wait for sidebar to close
+                  }
+                }}
+                className="w-full mt-3 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2"
+              >
+                <Info size={16} />
+                הצג ניתוח שולחן מלא
+              </button>
+            </div>
+          )}
+
+          {deskPartnerInfo && !deskPartnerInfo.partner && (
+            <div className={`${darkMode ? 'bg-gray-500/10 border-gray-500/30' : 'bg-gray-50 border-gray-200'} border rounded-xl p-4`}>
+              <div className="flex items-center gap-2">
+                <Users className="text-gray-500" size={20} />
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  תלמיד זה יושב לבד
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* AI Reasoning Section - Shows ACTUAL analysis based on layout type */}
           <div className={`${darkMode ? 'bg-blue-500/10 border-blue-500/30' : 'bg-blue-50 border-blue-200'} border rounded-xl p-4`}>
             <div className="flex items-center gap-2 mb-3">
@@ -1268,6 +1387,74 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
                 </p>
               )}
             </div>
+          </div>
+
+          {/* Quick Action Buttons */}
+          <div className={`${darkMode ? 'bg-gray-800/50' : 'bg-gray-100'} rounded-xl p-4 space-y-2`}>
+            <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-3 flex items-center gap-2`}>
+              <Sparkles size={16} className="text-yellow-500" />
+              פעולות מהירות
+            </h3>
+
+            <div className="grid grid-cols-2 gap-2">
+              {/* View Partner Profile - Only show if has partner */}
+              {deskPartnerInfo && deskPartnerInfo.partner && (
+                <button
+                  onClick={() => {
+                    // Open partner's profile
+                    const partnerData = { ...deskPartnerInfo.partner, row, col, totalRows };
+                    onClose();
+                    setTimeout(() => {
+                      // Reopen sidebar with partner data
+                      // This would need to be passed from parent, for now just close
+                    }, 100);
+                  }}
+                  className={`${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1`}
+                >
+                  <User size={14} />
+                  פרופיל שותף
+                </button>
+              )}
+
+              {/* Shuffle/Swap placeholder */}
+              <button
+                onClick={() => {
+                  alert('תכונת החלפה תהיה זמינה בקרוב');
+                }}
+                className={`${darkMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1`}
+              >
+                <Shuffle size={14} />
+                החלף תלמיד
+              </button>
+
+              {/* Move to front - only for rows layout */}
+              {selectedShape === 'rows' && row !== null && row > 1 && (
+                <button
+                  onClick={() => {
+                    alert('תכונת העברה תהיה זמינה בקרוב');
+                  }}
+                  className={`${darkMode ? 'bg-green-600 hover:bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1`}
+                >
+                  <TrendingUp size={14} />
+                  העבר קדימה
+                </button>
+              )}
+
+              {/* Refresh/Regenerate */}
+              <button
+                onClick={() => {
+                  alert('יצירת סידור חדש תתבצע בקרוב');
+                }}
+                className={`${darkMode ? 'bg-orange-600 hover:bg-orange-700' : 'bg-orange-500 hover:bg-orange-600'} text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1`}
+              >
+                <RefreshCw size={14} />
+                סדר מחדש
+              </button>
+            </div>
+
+            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} text-center mt-2`}>
+              💡 פעולות אלו ישנו את סידור הכיתה
+            </p>
           </div>
         </div>
       </motion.div>
@@ -2215,11 +2402,26 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                           return (
                             <div
                               key={item.id}
-                              className={`relative p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'} flex items-center justify-center gap-3 min-h-[120px] hover:shadow-lg transition-all cursor-pointer ${
+                              className={`relative p-4 rounded-xl ${darkMode ? 'bg-white/5' : 'bg-white/30'} border ${darkMode ? 'border-white/10' : 'border-gray-200'} flex items-center justify-center gap-3 min-h-[120px] hover:shadow-lg transition-all ${
                                 hoveredDesk === item.id ? 'ring-2 ring-blue-500 scale-105' : ''
                               }`}
-                              onClick={() => setHoveredDesk(hoveredDesk === item.id ? null : item.id)}
                             >
+                              {/* Info button - only show if desk has students */}
+                              {(item.leftStudent || item.rightStudent) && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setHoveredDesk(hoveredDesk === item.id ? null : item.id);
+                                  }}
+                                  className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10 transition-all ${
+                                    darkMode ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-blue-400 hover:bg-blue-500 text-white'
+                                  }`}
+                                  title="הצג ניתוח מלא"
+                                >
+                                  i
+                                </button>
+                              )}
+
                               {/* Left Student - pointer-events-none to not interfere with desk hover */}
                               <div className="pointer-events-auto">
                                 {item.leftStudent ? (
@@ -2328,11 +2530,24 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                             ✓ {item.leftStudent.strengthsCount || 0} חוזקות | ⚠ {item.leftStudent.challengesCount || 0} אתגרים
                                           </div>
                                         </div>
-                                        {item.leftStudent.learningStyle && (
-                                          <div className="text-xs text-white/80 bg-white/10 rounded px-2 py-1 inline-block">
-                                            📚 {item.leftStudent.learningStyle}
-                                          </div>
-                                        )}
+                                        <div className="flex items-center justify-between gap-2 mt-2">
+                                          {item.leftStudent.learningStyle && (
+                                            <div className="text-xs text-white/80 bg-white/10 rounded px-2 py-1 inline-block">
+                                              📚 {item.leftStudent.learningStyle}
+                                            </div>
+                                          )}
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setHoveredDesk(null);
+                                              setSelectedStudent({ ...item.leftStudent, row: item.row, col: item.desk, totalRows: currentShape.rows });
+                                            }}
+                                            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition-all flex items-center gap-1 whitespace-nowrap"
+                                          >
+                                            <User size={12} />
+                                            פרופיל מלא
+                                          </button>
+                                        </div>
                                       </div>
                                     )}
 
@@ -2345,11 +2560,24 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                             ✓ {item.rightStudent.strengthsCount || 0} חוזקות | ⚠ {item.rightStudent.challengesCount || 0} אתגרים
                                           </div>
                                         </div>
-                                        {item.rightStudent.learningStyle && (
-                                          <div className="text-xs text-white/80 bg-white/10 rounded px-2 py-1 inline-block">
-                                            📚 {item.rightStudent.learningStyle}
-                                          </div>
-                                        )}
+                                        <div className="flex items-center justify-between gap-2 mt-2">
+                                          {item.rightStudent.learningStyle && (
+                                            <div className="text-xs text-white/80 bg-white/10 rounded px-2 py-1 inline-block">
+                                              📚 {item.rightStudent.learningStyle}
+                                            </div>
+                                          )}
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setHoveredDesk(null);
+                                              setSelectedStudent({ ...item.rightStudent, row: item.row, col: item.desk, totalRows: currentShape.rows });
+                                            }}
+                                            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition-all flex items-center gap-1 whitespace-nowrap"
+                                          >
+                                            <User size={12} />
+                                            פרופיל מלא
+                                          </button>
+                                        </div>
                                       </div>
                                     )}
                                   </div>
@@ -2380,6 +2608,44 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                           ))}
                                         </div>
                                       )}
+                                    </div>
+                                  )}
+
+                                  {/* Swap Suggestions - Show if compatibility is low */}
+                                  {hasCompatibility && compatScore < 65 && (
+                                    <div className="bg-yellow-900/30 border border-yellow-500/30 rounded-lg p-3 mt-4">
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <AlertCircle size={16} className="text-yellow-400" />
+                                        <h5 className="text-sm font-bold text-yellow-300">
+                                          💡 הצעות לשיפור
+                                        </h5>
+                                      </div>
+                                      <p className="text-xs text-white/80 mb-2">
+                                        תאימות נמוכה ({compatScore}%) - שקול אפשרויות אלו:
+                                      </p>
+                                      <div className="space-y-1">
+                                        <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                          • נסה לשבץ את {item.leftStudent?.name || 'תלמיד זה'} עם תלמיד בעל יכולות משלימות
+                                        </div>
+                                        <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                          • שקול להפריד אם יש התנגשויות אישיות
+                                        </div>
+                                        <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                          • לחץ "סדר מחדש" למטה לקבלת סידור אוטומטי חדש
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* High compatibility - positive reinforcement */}
+                                  {hasCompatibility && compatScore >= 75 && (
+                                    <div className="bg-green-900/30 border border-green-500/30 rounded-lg p-3 mt-4">
+                                      <div className="flex items-center gap-2">
+                                        <CheckCircle size={16} className="text-green-400" />
+                                        <p className="text-sm font-bold text-green-300">
+                                          🌟 זוג מצוין! תאימות גבוהה ({compatScore}%)
+                                        </p>
+                                      </div>
                                     </div>
                                   )}
 
@@ -2747,6 +3013,8 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
             darkMode={darkMode}
             selectedShape={selectedShape}
             cspMetadata={cspMetadata}
+            arrangement={arrangement}
+            onOpenDeskPopup={(deskId) => setHoveredDesk(deskId)}
           />
         )}
       </AnimatePresence>

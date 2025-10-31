@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-10-30T16:16:08.287Z",
+  "project": "AI Student Analysis Dashboard",
+  "reports": {
+    "coverage": false,
+    "accessibility": false,
+    "performance": true
+  },
+  "status": {
+    "coverage": false,
+    "build": true
+  },
+  "overallStatus": "FAIL"
+}

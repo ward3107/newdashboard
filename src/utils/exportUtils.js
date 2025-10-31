@@ -1,6 +1,12 @@
 /**
  * Optimized Export Utilities with Dynamic Imports
  * This reduces the initial bundle size by ~600KB
+ *
+ * SECURITY NOTE: xlsx@0.18.5 has known vulnerabilities (Prototype Pollution, ReDoS).
+ * However, this library is ONLY used for EXPORTING data (output), never for parsing
+ * untrusted Excel files (input). The risk is minimal as we only generate Excel files
+ * from trusted application data. Monitor https://github.com/advisories/GHSA-4r6h-8v6p-xvw6
+ * for updates.
  */
 
 import { EXPORT_CONFIG } from '../config';

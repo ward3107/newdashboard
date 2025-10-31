@@ -4,6 +4,10 @@ import { cleanup } from '@testing-library/react';
 import { afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { server } from './mocks/server';
 
+// Mock environment variables for tests
+vi.stubEnv('VITE_API_URL', 'https://test-api.example.com/api');
+vi.stubEnv('VITE_USE_MOCK_DATA', 'false');
+
 // Establish API mocking before all tests
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'error' });
