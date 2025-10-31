@@ -239,29 +239,36 @@ class RealUserMonitoring {
    * Send data to server
    */
   private async sendToServer(data: any): Promise<void> {
-    // In production, send to actual monitoring service
-    if (import.meta.env.PROD) {
-      const response = await fetch(this.apiEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-        keepalive: true // Ensure request completes even if page unloads
-      });
-
-      if (!response.ok) {
-        throw new Error(`RUM endpoint returned ${response.status}`);
+    // For now, only log locally (RUM endpoint not deployed yet)
+    // Store in localStorage for inspection in both dev and prod
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('rum_data') || '[]';
+        const rumData = JSON.parse(stored);
+        rumData.push(data);
+        // Keep only last 10 entries
+        if (rumData.length > 10) {
+          rumData.shift();
+        }
+        localStorage.setItem('rum_data', JSON.stringify(rumData));
+      } catch (err) {
+        // Silently fail if localStorage is not available
+        console.debug('RUM: localStorage not available');
       }
-    } else {
-      // In development, store in localStorage for inspection
-      const stored = localStorage.getItem('rum_data') || '[]';
-      const rumData = JSON.parse(stored);
-      rumData.push(data);
-      // Keep only last 10 entries
-      if (rumData.length > 10) {
-        rumData.shift();
-      }
-      localStorage.setItem('rum_data', JSON.stringify(rumData));
     }
+
+    // TODO: Uncomment when RUM endpoint is deployed
+    // if (import.meta.env.PROD && this.apiEndpoint !== '/api/rum') {
+    //   const response = await fetch(this.apiEndpoint, {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(data),
+    //     keepalive: true
+    //   });
+    //   if (!response.ok) {
+    //     throw new Error(`RUM endpoint returned ${response.status}`);
+    //   }
+    // }
   }
 
   /**
