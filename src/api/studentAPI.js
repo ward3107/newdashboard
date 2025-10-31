@@ -9,11 +9,28 @@ const api = axios.create({
   }
 });
 
-// Response interceptor for error handling
+// Response interceptor for error handling with CORS detection
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error);
+
+    // Detect CORS errors
+    if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
+      const corsError = new Error(
+        '🔒 CORS Error: Cannot connect to Google Apps Script.\n\n' +
+        '✅ QUICK FIX:\n' +
+        '1. Open your Google Apps Script\n' +
+        '2. Click Deploy → Manage deployments → Edit\n' +
+        '3. Set "Who has access" to "Anyone"\n' +
+        '4. Click Deploy\n' +
+        '5. Refresh this page\n\n' +
+        'See CONNECTING_YOUR_DATA.md for detailed instructions.'
+      );
+      corsError.isCORS = true;
+      throw corsError;
+    }
+
     throw new Error(
       error.response?.data?.message ||
       error.message ||
