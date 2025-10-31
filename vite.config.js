@@ -8,6 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
+  base: '/',
   resolve: {
     // Ensure only one instance of React is used
     dedupe: ['react', 'react-dom'],
@@ -17,7 +18,12 @@ export default defineConfig({
     }
   },
   plugins: [
-    react(),
+    react({
+      // Optimize React for production
+      babel: {
+        compact: true,
+      }
+    }),
     // TEMPORARILY DISABLED PWA to clear service worker cache
     // VitePWA({
     //   registerType: 'autoUpdate',
