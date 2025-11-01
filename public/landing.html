@@ -126,6 +126,21 @@
             color: var(--primary);
         }
 
+        .nav-cta {
+            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+            color: white !important;
+            padding: 0.6rem 1.5rem !important;
+            border-radius: 25px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease !important;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
         .mobile-menu-toggle {
             display: none;
             flex-direction: column;
@@ -2807,6 +2822,7 @@
                 <li><a href="#faq">שאלות נפוצות</a></li>
                 <li><a href="#pricing">מחירים</a></li>
                 <li><a href="#contact">צור קשר</a></li>
+                <li><a href="/dashboard" class="nav-cta">📊 כניסה למערכת</a></li>
             </ul>
         </nav>
     </header>
@@ -2845,7 +2861,7 @@
             </div>
 
             <div class="cta-buttons">
-                <a href="#contact" class="btn btn-primary btn-super">🎁 תן למערכת לעבוד במקומך - התחל עכשיו!</a>
+                <a href="/dashboard" class="btn btn-primary btn-super">🎁 תן למערכת לעבוד במקומך - התחל עכשיו!</a>
                 <a href="#features" class="btn btn-secondary">ראה איך זה חוסך לך זמן</a>
             </div>
         </div>
@@ -3481,7 +3497,7 @@
                         <li>עד 10 מורים</li>
                         <li>תמיכה במייל</li>
                     </ul>
-                    <a href="#contact" class="btn btn-primary">התחל עכשיו</a>
+                    <a href="/dashboard" class="btn btn-primary">התחל עכשיו</a>
                 </div>
 
                 <div class="pricing-card featured">
@@ -3501,7 +3517,7 @@
                         <li>תמיכה מהירה ב-WhatsApp</li>
                         <li>הדרכה אישית מקיפה</li>
                     </ul>
-                    <a href="#contact" class="btn btn-primary">התחל עכשיו</a>
+                    <a href="/dashboard" class="btn btn-primary">התחל עכשיו</a>
                 </div>
 
                 <div class="pricing-card">
@@ -3522,7 +3538,7 @@
                         <li>מנהל חשבון ייעודי</li>
                         <li>עדכונים ושדרוגים ראשונים</li>
                     </ul>
-                    <a href="#contact" class="btn btn-primary">התחל עכשיו</a>
+                    <a href="/dashboard" class="btn btn-primary">התחל עכשיו</a>
                 </div>
             </div>
         </div>
