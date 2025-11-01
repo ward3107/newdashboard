@@ -64,7 +64,12 @@
       "Bash(node -e:*)",
       "Bash(npm run lint)",
       "Bash(tee:*)",
-      "Bash(copy \"C:\\Users\\Waseem\\Downloads\\openart-video_d485d177_1761663607278.mp4\" \"public\\hero-video.mp4\")"
+      "Bash(copy \"C:\\Users\\Waseem\\Downloads\\openart-video_d485d177_1761663607278.mp4\" \"public\\hero-video.mp4\")",
+      "Bash(git pull:*)",
+      "Bash(venvScriptsactivate)",
+      "Bash(pip install:*)",
+      "Bash(venv/Scripts/python.exe -m pip:*)",
+      "Bash(venv/Scripts/python.exe:*)"
     ],
     "deny": [],
     "ask": []
