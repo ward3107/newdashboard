@@ -2481,7 +2481,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                     animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
                                     exit={{ opacity: 0, scale: 0.95, x: '-50%', y: '-50%' }}
                                     transition={{ duration: 0.2 }}
-                                    className={`fixed p-5 rounded-xl shadow-2xl border-2 w-[420px] overflow-y-auto ${
+                                    className={`fixed p-6 rounded-xl shadow-2xl border-2 w-[650px] overflow-y-auto ${
                                       compatColor === 'green' ? 'bg-green-900 border-green-500' :
                                       compatColor === 'yellow' ? 'bg-yellow-900 border-yellow-500' :
                                       compatColor === 'orange' ? 'bg-orange-900 border-orange-500' :
