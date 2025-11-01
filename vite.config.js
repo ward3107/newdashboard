@@ -8,13 +8,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
+  base: '/',
   resolve: {
     // Ensure only one instance of React is used
-    dedupe: ['react', 'react-dom'],
-    alias: {
-      'react': path.resolve(__dirname, 'node_modules/react'),
-      'react-dom': path.resolve(__dirname, 'node_modules/react-dom')
-    }
+    dedupe: ['react', 'react-dom']
   },
   plugins: [
     react(),
@@ -91,9 +88,11 @@ export default defineConfig({
       output: {
         // Advanced chunking strategy
         manualChunks: (id) => {
-          // React core
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react-core';
+          // React core - MUST be together
+          if (id.includes('node_modules/react/') ||
+              id.includes('node_modules/react-dom/') ||
+              id.includes('node_modules/scheduler/')) {
+            return 'react-vendor';
           }
           // Router
           if (id.includes('node_modules/react-router')) {
@@ -116,7 +115,7 @@ export default defineConfig({
             return 'export-libs';
           }
           // Other vendors
-          if (id.includes('node_modules')) {
+          if (id.includes('node_modules/')) {
             return 'vendor';
           }
         },

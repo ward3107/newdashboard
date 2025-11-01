@@ -45,6 +45,7 @@ import { AnalysisAggregator } from "../../services/analysisAggregator";
 import ClassroomSeatingAI from "../classroom/ClassroomSeatingAI";
 import Footer from "../ui/Footer";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
+import ConnectionStatusBanner from "../ui/ConnectionStatusBanner";
 
 // Use environment variable or config file for API URL
 // UPDATED 2025-10-10 - V5 WITH CORS HEADERS FIXED!
@@ -514,6 +515,7 @@ const FuturisticTeacherDashboard = () => {
   const [selectedClass, setSelectedClass] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
+  const [connectionError, setConnectionError] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
@@ -600,6 +602,7 @@ const FuturisticTeacherDashboard = () => {
   // Fetch real data from backend - defined at component level for reuse
   const loadData = async () => {
     setLoading(true);
+    setConnectionError(null); // Clear previous errors
     try {
       // Fetch students and stats in parallel
       const [studentsData, statsData] = await Promise.all([
@@ -634,6 +637,7 @@ const FuturisticTeacherDashboard = () => {
         });
       } catch (error) {
         console.error("Error loading dashboard data:", error);
+        setConnectionError(error);
       } finally {
         setLoading(false);
       }
@@ -923,6 +927,13 @@ const FuturisticTeacherDashboard = () => {
       <main className="px-5 pb-5 relative z-10" style={{ paddingTop: "130px" }}>
         {activeView === "dashboard" && (
           <>
+            {/* Connection Status Banner */}
+            <ConnectionStatusBanner
+              error={connectionError}
+              isLoading={loading && !students.length}
+              hasData={students.length > 0}
+            />
+
             {/* Overview Stats Section */}
             <FuturisticOverview
               stats={stats}

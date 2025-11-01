@@ -83,12 +83,18 @@ export function generateCSPHeader(directives: CSPDirectives): string {
 
 /**
  * Apply CSP meta tag to document
+ * Note: frame-ancestors is removed as it only works in HTTP headers
  */
 export function applyCSPMetaTag(isDevelopment = false): void {
   if (typeof document === 'undefined') return;
 
   const directives = getCSPDirectives(isDevelopment);
-  const cspContent = generateCSPHeader(directives);
+
+  // Remove frame-ancestors (only works in HTTP headers, not meta tags)
+  const metaDirectives = { ...directives };
+  delete (metaDirectives as any)['frame-ancestors'];
+
+  const cspContent = generateCSPHeader(metaDirectives);
 
   // Remove existing CSP meta tag if present
   const existingMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
@@ -102,7 +108,9 @@ export function applyCSPMetaTag(isDevelopment = false): void {
   meta.content = cspContent;
   document.head.appendChild(meta);
 
-  console.log('🔒 CSP applied:', cspContent.substring(0, 100) + '...');
+  if (isDevelopment) {
+    console.log('🔒 CSP applied:', cspContent.substring(0, 100) + '...');
+  }
 }
 
 /**
