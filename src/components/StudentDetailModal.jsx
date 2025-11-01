@@ -113,7 +113,7 @@ const StudentDetailModal = ({ student, onClose, darkMode, theme }) => {
       tabIndex={-1}
     >
       <div
-        className={`relative w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl ${
+        className={`relative w-full max-w-[95vw] max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl ${
           darkMode ? 'bg-gray-900' : 'bg-white'
         }`}
         onClick={(e) => e.stopPropagation()}
