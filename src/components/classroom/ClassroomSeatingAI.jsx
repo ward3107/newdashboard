@@ -65,6 +65,8 @@ const SEATING_SHAPES = {
     bestFor: 'דיונים, פעילויות קבוצתיות, סמינרים',
     layout: 'uShape',
     positions: 32,
+    rows: 4,  // Virtual grid for CSP optimizer
+    cols: 4,  // Virtual grid for CSP optimizer
     emoji: '💬',
     capacity: 32
   },
@@ -78,6 +80,8 @@ const SEATING_SHAPES = {
     layout: 'clusters',
     clusters: 8,
     studentsPerCluster: 4,
+    rows: 4,  // Virtual grid for CSP optimizer
+    cols: 4,  // Virtual grid for CSP optimizer
     emoji: '👥',
     capacity: 32 // 8 clusters x 4 students = 32 students
   },
@@ -90,6 +94,8 @@ const SEATING_SHAPES = {
     bestFor: 'דיונים סוקרטיים, שיתוף רגשי, בניית קהילה',
     layout: 'circle',
     positions: 32,
+    rows: 4,  // Virtual grid for CSP optimizer
+    cols: 4,  // Virtual grid for CSP optimizer
     emoji: '⭕',
     capacity: 32
   },
@@ -102,6 +108,8 @@ const SEATING_SHAPES = {
     bestFor: 'למידה מותאמת אישית, תחנות, פעילויות מגוונות',
     layout: 'flexible',
     stations: 4,
+    rows: 4,  // Virtual grid for CSP optimizer
+    cols: 4,  // Virtual grid for CSP optimizer
     emoji: '🎯',
     capacity: 32 // 4 stations x ~8 students = 32 students
   }
@@ -2129,6 +2137,43 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                 )}
               </div>
             </div>
+
+            {/* CSP Genetic Algorithm Metadata */}
+            {cspMetadata && (
+              <div className={`flex items-center justify-between mt-2 pt-2 border-t ${darkMode ? 'border-white/10' : 'border-white/20'}`}>
+                <div className="flex items-center gap-2">
+                  <div className={`w-6 h-6 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center`}>
+                    <Brain className="text-white" size={12} />
+                  </div>
+                  <div>
+                    <h3 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      אלגוריתם גנטי למיקום אופטימלי
+                    </h3>
+                    <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      💡 העבר עכבר מעל שולחן לראות ניתוח תואמות
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <div className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון כולל</div>
+                    <div className={`text-lg font-bold ${
+                      cspMetadata.finalScore > 75 ? 'text-green-500' :
+                      cspMetadata.finalScore > 50 ? 'text-yellow-500' : 'text-orange-500'
+                    }`}>
+                      {cspMetadata.finalScore ? cspMetadata.finalScore.toFixed(1) : 0}%
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>דורות</div>
+                    <div className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {cspMetadata.generations || 0}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -2215,51 +2260,6 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           </p>
         </div>
       </div>
-
-      {/* CSP Metadata - Compact Summary */}
-      {cspMetadata && selectedShape === 'rows' && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`backdrop-blur-xl ${
-            darkMode ? 'bg-white/5' : 'bg-white/40'
-          } rounded-xl p-3 border ${darkMode ? 'border-white/10' : 'border-white/30'} shadow-xl`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className={`w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center`}>
-                <Brain className="text-white" size={16} />
-              </div>
-              <div>
-                <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  אלגוריתם גנטי למיקום אופטימלי
-                </h3>
-                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  💡 העבר עכבר מעל שולחן לראות ניתוח תואמות מפורט
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון כולל</div>
-                <div className={`text-2xl font-bold ${
-                  cspMetadata.finalScore > 75 ? 'text-green-500' :
-                  cspMetadata.finalScore > 50 ? 'text-yellow-500' : 'text-orange-500'
-                }`}>
-                  {cspMetadata.finalScore ? cspMetadata.finalScore.toFixed(1) : 0}%
-                </div>
-              </div>
-              <div className="text-right">
-                <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>דורות</div>
-                <div className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {cspMetadata.generations || 0}
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       {/* Shape Selector */}
       <div className={`backdrop-blur-xl ${
