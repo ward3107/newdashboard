@@ -1719,12 +1719,71 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     }
   }, [students.length]);
 
+  // Convert CSP desk arrangement to layout-specific format
+  const convertCSPToLayoutFormat = (cspArrangement, layoutType) => {
+    const allStudents = [];
+    cspArrangement.forEach(desk => {
+      if (desk.leftStudent) allStudents.push(desk.leftStudent);
+      if (desk.rightStudent) allStudents.push(desk.rightStudent);
+    });
+
+    switch (layoutType) {
+      case 'clusters': {
+        const clusters = [];
+        const studentsPerCluster = 4;
+        const numClusters = 8;
+        for (let i = 0; i < numClusters; i++) {
+          const clusterStudents = allStudents.slice(i * studentsPerCluster, (i + 1) * studentsPerCluster);
+          clusters.push({
+            id: `cluster-${i}`,
+            students: clusterStudents,
+            reasoning: 'קבוצה מאוזנת עם תלמידים בעלי כישורים משלימים (CSP)'
+          });
+        }
+        return clusters;
+      }
+
+      case 'uShape':
+      case 'circle': {
+        const positions = [];
+        allStudents.forEach((student, i) => {
+          positions.push({
+            id: `position-${i}`,
+            student: student,
+            position: i,
+            reasoning: 'מיקום מותאם לפי אלגוריתם גנטי (CSP)'
+          });
+        });
+        return positions;
+      }
+
+      case 'flexible': {
+        const stations = [];
+        const numStations = 4;
+        const studentsPerStation = Math.ceil(allStudents.length / numStations);
+        for (let i = 0; i < numStations; i++) {
+          const stationStudents = allStudents.slice(i * studentsPerStation, (i + 1) * studentsPerStation);
+          stations.push({
+            id: `station-${i}`,
+            students: stationStudents,
+            type: ['reading', 'writing', 'collaboration', 'individual'][i % 4],
+            reasoning: 'תחנה מותאמת לפי אלגוריתם גנטי (CSP)'
+          });
+        }
+        return stations;
+      }
+
+      default:
+        return cspArrangement; // For grid/rows, return as-is
+    }
+  };
+
   // Generate arrangement when shape changes
   useEffect(() => {
     if (analyzedStudents.length > 0) {
       const shape = SEATING_SHAPES[selectedShape];
 
-      // Only use CSP solver for rows layout (which has rows/cols)
+      // Use CSP solver for ALL layouts now (they all have rows/cols)
       if (shape.rows && shape.cols) {
         const result = solveSeatingCSP(analyzedStudents, shape, {
           populationSize: 50,
@@ -1732,19 +1791,26 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           mutationRate: 0.2
         });
 
-        setArrangement(result.arrangement);
+        // Convert to appropriate format based on layout type
+        const convertedArrangement = shape.layout === 'grid'
+          ? result.arrangement
+          : convertCSPToLayoutFormat(result.arrangement, shape.layout);
+
+        setArrangement(convertedArrangement);
         setCspMetadata(result.metadata);
 
         console.log('🎯 CSP Solution:', {
+          layout: shape.layout,
           score: result.score,
           violations: result.violations,
-          metadata: result.metadata
+          metadata: result.metadata,
+          converted: shape.layout !== 'grid'
         });
       } else {
-        // For other layouts, use simple random arrangement
+        // Fallback to simple arrangement if no rows/cols (shouldn't happen now)
         const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
         setArrangement(simpleArrangement);
-        setCspMetadata(null); // No CSP metadata for non-optimized layouts
+        setCspMetadata(null);
       }
     }
   }, [selectedShape, students.length]);
@@ -1817,7 +1883,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     setTimeout(() => {
       const shape = SEATING_SHAPES[selectedShape];
 
-      // Only use CSP solver for rows layout
+      // Use CSP solver for ALL layouts
       if (shape.rows && shape.cols) {
         const result = solveSeatingCSP(analyzedStudents, shape, {
           populationSize: 50,
@@ -1825,15 +1891,22 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           mutationRate: 0.2
         });
 
-        setArrangement(result.arrangement);
+        // Convert to appropriate format based on layout type
+        const convertedArrangement = shape.layout === 'grid'
+          ? result.arrangement
+          : convertCSPToLayoutFormat(result.arrangement, shape.layout);
+
+        setArrangement(convertedArrangement);
         setCspMetadata(result.metadata);
 
         console.log('🔄 Regenerated CSP Solution:', {
+          layout: shape.layout,
           score: result.score,
-          violations: result.violations
+          violations: result.violations,
+          converted: shape.layout !== 'grid'
         });
       } else {
-        // For other layouts, regenerate simple arrangement
+        // Fallback to simple arrangement if no rows/cols (shouldn't happen now)
         const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
         setArrangement(simpleArrangement);
         setCspMetadata(null);
@@ -2149,7 +2222,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                     <h3 className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       אלגוריתם גנטי למיקום אופטימלי
                     </h3>
-                    <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                       💡 העבר עכבר מעל שולחן לראות ניתוח תואמות
                     </p>
                   </div>
@@ -2157,7 +2230,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <div className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון כולל</div>
+                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון כולל</div>
                     <div className={`text-lg font-bold ${
                       cspMetadata.finalScore > 75 ? 'text-green-500' :
                       cspMetadata.finalScore > 50 ? 'text-yellow-500' : 'text-orange-500'
@@ -2166,7 +2239,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>דורות</div>
+                    <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>דורות</div>
                     <div className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       {cspMetadata.generations || 0}
                     </div>
@@ -2387,7 +2460,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
                         <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
                         <span className={`text-sm font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
-                        <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
+                        <span className={`text-xs ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
                     </div>
 
@@ -2694,7 +2767,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
                         <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
                         <span className={`text-sm font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
-                        <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
+                        <span className={`text-xs ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
                     </div>
 
@@ -2781,7 +2854,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
                         <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
                         <span className={`text-sm font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
-                        <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
+                        <span className={`text-xs ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
                     </div>
 
@@ -2861,7 +2934,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
                         <DoorOpen className={`${darkMode ? 'text-green-300' : 'text-green-600'}`} size={28} />
                         <span className={`text-sm font-medium mt-2 ${darkMode ? 'text-green-200' : 'text-green-700'}`}>דלת</span>
-                        <span className={`text-[9px] ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
+                        <span className={`text-xs ${darkMode ? 'text-green-300' : 'text-green-600'} text-center mt-1`}>כניסה/יציאה</span>
                       </div>
                     </div>
 
