@@ -1,0 +1,74 @@
+ISHEBOT - Intelligent Student Holistic Evaluation & Behavior Optimization Tool
+Copyright (c) 2025 Waseem Abu Akel
+All Rights Reserved
+
+================================================================================
+
+PROPRIETARY SOFTWARE NOTICE
+
+This software and all associated files are the exclusive property of Waseem Abu Akel.
+This software is protected by copyright laws and international copyright treaties,
+as well as other intellectual property laws and treaties.
+
+================================================================================
+
+ATTRIBUTION REQUIREMENTS
+
+If you have obtained a valid commercial license to use this software, you MUST:
+
+1. RETAIN all copyright notices in the software source code
+2. DISPLAY the following attribution in any user-facing interface:
+   "Powered by ISHEBOT™ - © 2025 Waseem Abu Akel"
+3. NOT remove or modify any proprietary notices or labels
+4. NOT claim ownership or authorship of this software
+5. ACKNOWLEDGE that this software is licensed, not sold
+
+================================================================================
+
+THIRD-PARTY COMPONENTS
+
+This software includes the following open-source components, each subject to
+their own license terms:
+
+- React (MIT License) - Copyright (c) Meta Platforms, Inc.
+- Vite (MIT License) - Copyright (c) Evan You
+- Tailwind CSS (MIT License) - Copyright (c) Tailwind Labs
+- Chart.js (MIT License) - Copyright (c) Chart.js Contributors
+- Framer Motion (MIT License) - Copyright (c) Framer
+- Lucide Icons (ISC License) - Copyright (c) Lucide Contributors
+- React Router (MIT License) - Copyright (c) Remix Software Inc.
+- Axios (MIT License) - Copyright (c) Matt Zabriskie
+- date-fns (MIT License) - Copyright (c) Sasha Koss
+- Recharts (MIT License) - Copyright (c) Recharts Contributors
+- Firebase (Apache 2.0) - Copyright (c) Google LLC
+- i18next (MIT License) - Copyright (c) i18next
+
+The use of these third-party components does NOT grant any rights to the
+proprietary ISHEBOT software itself.
+
+Full license texts for third-party components can be found in their respective
+package directories under node_modules/.
+
+================================================================================
+
+DISCLAIMER
+
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+
+================================================================================
+
+CONTACT INFORMATION
+
+For licensing, support, or inquiries:
+
+Owner: Waseem Abu Akel
+Email: wardwas3107@gmail.com
+Business Hours: 10:00 - 19:00 (Israel Time)
+
+================================================================================
+
+ISHEBOT™ is a trademark of Waseem Abu Akel.
+All trademarks, service marks, and trade names referenced herein are the
+property of their respective owners.
