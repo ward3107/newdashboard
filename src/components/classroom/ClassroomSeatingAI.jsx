@@ -2020,15 +2020,17 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
   return (
     <div className="space-y-3">
-      {/* Combined Header with AI Recommendation */}
-      {aiRecommendation && showRecommendations && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`backdrop-blur-xl ${
-            darkMode ? 'bg-white/5' : 'bg-white/40'
-          } rounded-xl p-3 border ${darkMode ? 'border-white/10' : 'border-white/30'} shadow-xl`}
-        >
+      {/* AI Recommendation and Color Legend - Side by Side */}
+      <div className="flex flex-col lg:flex-row gap-3">
+        {/* Combined Header with AI Recommendation */}
+        {aiRecommendation && showRecommendations && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`flex-1 backdrop-blur-xl ${
+              darkMode ? 'bg-white/5' : 'bg-white/40'
+            } rounded-xl p-3 border ${darkMode ? 'border-white/10' : 'border-white/30'} shadow-xl`}
+          >
           {/* Header Section */}
           <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/20">
             <div className="flex items-center gap-2">
@@ -2130,7 +2132,90 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           </motion.div>
         )}
 
-      {/* CSP Placement Analysis Panel */}
+        {/* Color Legend */}
+        <div className={`flex-1 backdrop-blur-xl ${
+          darkMode ? 'bg-white/10' : 'bg-white/40'
+        } rounded-3xl p-3 border border-white/20 shadow-2xl`}>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              מקרא צבעים
+            </h3>
+            <Info className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`} size={18} />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
+            {/* Red: At-risk */}
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/50 border-2 border-red-300 relative">
+                <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
+                  🔴
+                </div>
+              </div>
+              <div>
+                <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>סיכון גבוה</p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ אתגרים</p>
+              </div>
+            </div>
+
+            {/* Yellow: Moderate support */}
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/50 border-2 border-yellow-300 relative">
+                <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
+                  🟡
+                </div>
+              </div>
+              <div>
+                <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>דורש תמיכה</p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>2-4 אתגרים</p>
+              </div>
+            </div>
+
+            {/* Green: High performer */}
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/50 border-2 border-green-300 relative">
+                <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
+                  🟢
+                </div>
+              </div>
+              <div>
+                <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מצטיין</p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ חוזקות</p>
+              </div>
+            </div>
+
+            {/* Blue: Balanced */}
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/50 border-2 border-blue-300 relative">
+                <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
+                  🔵
+                </div>
+              </div>
+              <div>
+                <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מאוזן</p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ביניים</p>
+              </div>
+            </div>
+
+            {/* Gray: Not analyzed */}
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center shadow-lg shadow-gray-500/50 border-2 border-gray-300 relative">
+                <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
+                  ⚪
+                </div>
+              </div>
+              <div>
+                <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>לא נותח</p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אין נתונים</p>
+              </div>
+            </div>
+          </div>
+
+          <p className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center`}>
+            העבר עכבר מעל תלמיד לראות פרטים מלאים • הצבעים מבוססים על ניתוח ISHEBOT AI
+          </p>
+        </div>
+      </div>
+
       {/* CSP Metadata - Compact Summary */}
       {cspMetadata && selectedShape === 'rows' && (
         <motion.div
@@ -2253,89 +2338,6 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
             </p>
           </motion.div>
         )}
-      </div>
-
-      {/* Color Legend */}
-      <div className={`backdrop-blur-xl ${
-        darkMode ? 'bg-white/10' : 'bg-white/40'
-      } rounded-3xl p-3 border border-white/20 shadow-2xl`}>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            מקרא צבעים
-          </h3>
-          <Info className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`} size={18} />
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-          {/* Red: At-risk */}
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/50 border-2 border-red-300 relative">
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
-                🔴
-              </div>
-            </div>
-            <div>
-              <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>סיכון גבוה</p>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ אתגרים</p>
-            </div>
-          </div>
-
-          {/* Yellow: Moderate support */}
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/50 border-2 border-yellow-300 relative">
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
-                🟡
-              </div>
-            </div>
-            <div>
-              <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>דורש תמיכה</p>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>2-4 אתגרים</p>
-            </div>
-          </div>
-
-          {/* Green: High performer */}
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/50 border-2 border-green-300 relative">
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
-                🟢
-              </div>
-            </div>
-            <div>
-              <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מצטיין</p>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ חוזקות</p>
-            </div>
-          </div>
-
-          {/* Blue: Balanced */}
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/50 border-2 border-blue-300 relative">
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
-                🔵
-              </div>
-            </div>
-            <div>
-              <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מאוזן</p>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ביניים</p>
-            </div>
-          </div>
-
-          {/* Gray: Not analyzed */}
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center shadow-lg shadow-gray-500/50 border-2 border-gray-300 relative">
-              <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
-                ⚪
-              </div>
-            </div>
-            <div>
-              <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>לא נותח</p>
-              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אין נתונים</p>
-            </div>
-          </div>
-        </div>
-
-        <p className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center`}>
-          העבר עכבר מעל תלמיד לראות פרטים מלאים • הצבעים מבוססים על ניתוח ISHEBOT AI
-        </p>
       </div>
 
       {/* Seating Arrangement Visualization */}
