@@ -1,4 +1,18 @@
 /**
+ * ISHEBOT - Intelligent Student Holistic Evaluation & Behavior Optimization Tool
+ *
+ * Copyright (c) 2025 Waseem Abu Akel - All Rights Reserved
+ *
+ * PROPRIETARY AND CONFIDENTIAL
+ *
+ * This file is part of ISHEBOT proprietary software. Unauthorized copying,
+ * modification, distribution, or use of this file, via any medium, is strictly
+ * prohibited without the express written permission of the copyright holder.
+ *
+ * For licensing inquiries: wardwas3107@gmail.com
+ *
+ * ---
+ *
  * ISHEBOT WebApp Client
  * Calls GAS doGet endpoints using token auth.
  * Supports JSON and optional JSONP fallback if you hit CORS.
