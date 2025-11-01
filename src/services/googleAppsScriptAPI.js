@@ -29,8 +29,8 @@ export const getAllStudents = async () => {
         uniqueStudentsMap.set(student.studentCode, {
           ...student,
           name: typeof student.name === 'number'
-            ? `Student ${student.studentCode}`
-            : student.name || `Student ${student.studentCode}`,
+            ? `תלמיד ${student.studentCode}`
+            : student.name || `תלמיד ${student.studentCode}`,
           // Use consistent avatar based on student code
           avatar: (parseInt(student.studentCode) % 4) + 1
         });
