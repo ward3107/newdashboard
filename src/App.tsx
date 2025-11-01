@@ -18,7 +18,7 @@ import AccessibilityWidget from './components/ui/AccessibilityWidget';
 import LanguageSwitcher from './components/ui/LanguageSwitcher';
 
 // Lazy load components for code splitting with preload hints
-const LandingPage = lazy(() => import(/* webpackChunkName: "landing" */ './pages/LandingPage'));
+const LandingPage = lazy(() => import(/* webpackChunkName: "landing" */ './pages/HtmlLandingRedirect'));
 const Dashboard = lazy(() => import(/* webpackChunkName: "dashboard" */ './components/dashboard/Dashboard'));
 const FuturisticDashboard = lazy(() => import(/* webpackChunkName: "futuristic-dashboard" */ './components/dashboard/FuturisticDashboard'));
 const StudentDetail = lazy(() => import(/* webpackChunkName: "student-detail" */ './components/student/StudentDetail'));
@@ -60,8 +60,8 @@ function App() {
     // Real User Monitoring
     initializeRUM();
 
-    // Note: PWA and Service Worker are temporarily disabled
-    // See vite.config.js for details
+    // PWA and Service Worker are enabled
+    // Auto-registered via VitePWA plugin in vite.config.js
   }, []);
 
   return (

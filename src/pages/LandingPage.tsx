@@ -19,6 +19,16 @@ import {
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const VIDEO_SEEN_KEY = 'ishebot-video-seen';
+
+  // Check if user has already seen the video
+  const hasSeenVideo = React.useMemo(() => {
+    return localStorage.getItem(VIDEO_SEEN_KEY) === 'true';
+  }, []);
+
+  const [showVideoModal, setShowVideoModal] = React.useState(!hasSeenVideo);
+  const [showPlayButton, setShowPlayButton] = React.useState(false);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -34,8 +44,105 @@ const LandingPage: React.FC = () => {
     }
   };
 
+  // Handle video autoplay and end
+  React.useEffect(() => {
+    const video = videoRef.current;
+    if (video && showVideoModal) {
+      // Try to autoplay with sound
+      video.muted = false;
+      const playPromise = video.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay with sound blocked, try muted
+          video.muted = true;
+          video.play().then(() => {
+            // Show unmute button
+            setShowPlayButton(true);
+          });
+        });
+      }
+
+      const handleEnded = () => {
+        setShowVideoModal(false);
+        localStorage.setItem(VIDEO_SEEN_KEY, 'true');
+      };
+      video.addEventListener('ended', handleEnded);
+      return () => video.removeEventListener('ended', handleEnded);
+    }
+  }, [showVideoModal, VIDEO_SEEN_KEY]);
+
+  const handlePlayClick = () => {
+    const video = videoRef.current;
+    if (video) {
+      video.muted = false;
+      setShowPlayButton(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowVideoModal(false);
+    localStorage.setItem(VIDEO_SEEN_KEY, 'true');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" dir="rtl">
+      {/* Video Modal Popup */}
+      {showVideoModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          onClick={handleCloseModal}
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="relative max-w-6xl w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <video
+              ref={videoRef}
+              playsInline
+              controls
+              className="w-full h-full object-contain"
+            >
+              <source src="/hero-video.mp4" type="video/mp4" />
+            </video>
+
+            {/* Unmute button overlay (shown if autoplay is muted) */}
+            {showPlayButton && (
+              <div
+                onClick={handlePlayClick}
+                className="absolute inset-0 flex items-center justify-center bg-black/70 cursor-pointer z-10"
+              >
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+                    <svg className="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                  </div>
+                  <p className="text-white text-lg font-bold">לחץ להפעלת סאונד</p>
+                </div>
+              </div>
+            )}
+
+            {/* Close button */}
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-full transition-all duration-300 text-white"
+              aria-label="Close video"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10" />

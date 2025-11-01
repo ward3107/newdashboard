@@ -14,7 +14,8 @@
     "import": "Import",
     "settings": "Settings",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "student": "Student"
   },
   "nav": {
     "dashboard": "Dashboard",

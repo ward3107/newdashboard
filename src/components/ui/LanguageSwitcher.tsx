@@ -117,14 +117,13 @@ const LanguageSwitcher: React.FC = () => {
             setIsOpen(!isOpen);
             setAnnouncement(isOpen ? t('language.announcements.closed') : t('language.announcements.opened'));
           }}
-          className="p-2 rounded-xl backdrop-blur-md bg-white/30 hover:bg-white/50 transition-all duration-300 flex items-center gap-1.5"
+          className="p-2 rounded-xl backdrop-blur-md bg-white/30 hover:bg-white/50 hover:scale-110 transition-all duration-300 flex items-center justify-center"
           aria-label={`${t('language.current')}: ${getCurrentLang()?.nativeName}. ${isOpen ? t('common.close') : t('language.change')}`}
           aria-expanded={isOpen}
           aria-haspopup="true"
           title={t('language.change')}
         >
-          <Globe className="w-4 h-4" aria-hidden="true" />
-          <span className="font-medium text-xl">{getCurrentLang()?.flag}</span>
+          <span className="text-3xl">{getCurrentLang()?.flag}</span>
         </button>
 
         {/* Language Menu */}

@@ -620,7 +620,7 @@ const QuickActionCard: React.FC<{
               return (
                 <div key={idx} className={`text-xs p-2 rounded ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
                   <p className={`font-medium text-right ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    {identifier.displayName || 'Student'}
+                    {identifier.displayName || t('common.student')}
                   </p>
                   {identifier.code && (
                     <p className={`text-right text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -738,7 +738,7 @@ const WeeklySummary: React.FC<{
                       return (
                         <div key={idx} className={`text-xs p-2 rounded ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
                           <p className={`font-medium text-right ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {identifier.displayName || 'Student'}
+                            {identifier.displayName || t('common.student')}
                           </p>
                           {identifier.code && (
                             <p className={`text-right text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
