@@ -2677,6 +2677,14 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
               {currentShape.layout === 'clusters' && (
                 <div className="space-y-6">
+                  {/* Board at the top */}
+                  <div className="flex justify-center mb-6">
+                    <div className={`inline-block px-8 py-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg`}>
+                      <div className="text-3xl mb-1">📋</div>
+                      <div>לוח</div>
+                    </div>
+                  </div>
+
                   {/* Classroom with Door on Left and Windows on Right */}
                   <div className="flex gap-4">
                     {/* Door on the Left Side */}
@@ -2742,16 +2750,16 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
               {(currentShape.layout === 'uShape' || currentShape.layout === 'circle') && (
                 <div className="space-y-6">
+                  {/* Board at the top - shown for both uShape and circle */}
+                  <div className="flex justify-center mb-6">
+                    <div className={`inline-block px-8 py-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg`}>
+                      <div className="text-3xl mb-1">📋</div>
+                      <div>לוח</div>
+                    </div>
+                  </div>
+
                   {currentShape.layout === 'uShape' && (
                     <>
-                      {/* Board at the top */}
-                      <div className="flex justify-center mb-6">
-                        <div className={`inline-block px-8 py-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg`}>
-                          <div className="text-3xl mb-1">📋</div>
-                          <div>לוח</div>
-                        </div>
-                      </div>
-
                       {/* Teacher's Desk for U-Shape */}
                       <div className="flex justify-center mb-6">
                         <div className={`px-6 py-3 rounded-2xl ${darkMode ? 'bg-gradient-to-r from-purple-600/30 to-pink-600/30 border-purple-400/40' : 'bg-gradient-to-r from-purple-100 to-pink-100 border-purple-300'} border-2 shadow-xl`}>
@@ -2836,6 +2844,14 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
               {currentShape.layout === 'flexible' && (
                 <div className="space-y-6">
+                  {/* Board at the top */}
+                  <div className="flex justify-center mb-6">
+                    <div className={`inline-block px-8 py-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg`}>
+                      <div className="text-3xl mb-1">📋</div>
+                      <div>לוח</div>
+                    </div>
+                  </div>
+
                   {/* Classroom with Door on Left and Windows on Right */}
                   <div className="flex gap-4">
                     {/* Door on the Left Side */}
