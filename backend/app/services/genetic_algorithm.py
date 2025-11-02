@@ -62,7 +62,9 @@ class ClassroomOptimizer:
         self.toolbox = base.Toolbox()
 
         # Register functions
-        self.toolbox.register("indices", random.sample, range(len(self.students)), len(self.students))
+        # Create a function that returns a random permutation of student indices
+        num_students = len(self.students)
+        self.toolbox.register("indices", lambda: random.sample(range(num_students), num_students))
         self.toolbox.register("individual", tools.initIterate, creator.Individual, self.toolbox.indices)
         self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 

@@ -49,6 +49,12 @@ async def optimize_classroom(request: OptimizeClassroomRequest):
                 detail="No students provided"
             )
 
+        if len(request.students) < 2:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Genetic algorithm requires at least 2 students for optimization"
+            )
+
         total_seats = request.rows * request.cols
         if len(request.students) > total_seats:
             raise HTTPException(
