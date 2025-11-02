@@ -71,9 +71,7 @@ const convertStudentToBackendFormat = (student) => {
     requires_quiet_area: focus < 40,
     has_mobility_issues: false,
     primary_language: student.language || 'Hebrew',
-    is_bilingual: student.isB
-
-ilingual || false,
+    is_bilingual: student.isBilingual || false,
     notes: student.keyNotes || ''
   };
 };
