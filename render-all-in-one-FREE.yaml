@@ -1,0 +1,160 @@
+# ============================================================================
+# RENDER ALL-IN-ONE DEPLOYMENT - 100% FREE VERSION
+# ============================================================================
+# This deploys your entire ISHEBOT platform on Render for FREE:
+# - Frontend (React/Vite) - FREE
+# - Backend (Python FastAPI) - FREE (sleeps after 15 min)
+# - Database (Firebase) - FREE
+# - Auth (Firebase) - FREE
+#
+# Total Cost: $0/month
+#
+# Trade-off: Backend sleeps after 15 min inactivity (30s cold start)
+
+services:
+  # ============================================================================
+  # FRONTEND - React + Vite Dashboard (FREE)
+  # ============================================================================
+  - type: web
+    name: ishebot-dashboard
+    env: static
+    region: frankfurt
+    plan: free  # ← FREE PLAN
+    branch: main
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      # Firebase Configuration (keep your existing Firebase)
+      - key: VITE_FIREBASE_API_KEY
+        sync: false # Set manually in Render dashboard
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: VITE_FIREBASE_PROJECT_ID
+        sync: false
+      - key: VITE_FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: VITE_FIREBASE_MESSAGING_SENDER_ID
+        sync: false
+      - key: VITE_FIREBASE_APP_ID
+        sync: false
+
+      # Backend API URL (will be automatically set to backend service URL)
+      - key: VITE_OPTIMIZATION_API_URL
+        fromService:
+          type: web
+          name: ishebot-optimization-api
+          property: host
+
+      # Feature Flags
+      - key: VITE_ENABLE_AI_ANALYSIS
+        value: true
+      - key: VITE_ENABLE_ANALYTICS
+        value: true
+      - key: VITE_ENABLE_EXPORT
+        value: true
+
+  # ============================================================================
+  # BACKEND - Python FastAPI Optimization API (FREE - with sleep)
+  # ============================================================================
+  - type: web
+    name: ishebot-optimization-api
+    env: python
+    region: frankfurt
+    plan: free  # ← FREE PLAN (sleeps after 15 min)
+    branch: main
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+
+      # Application Settings
+      - key: DEBUG
+        value: false
+      - key: APP_NAME
+        value: ISHEBOT Optimization API
+      - key: APP_VERSION
+        value: 1.0.0
+      - key: HOST
+        value: 0.0.0.0
+
+      # CORS - Allow frontend to connect
+      - key: ALLOWED_ORIGINS
+        fromService:
+          type: web
+          name: ishebot-dashboard
+          property: host
+
+      # Genetic Algorithm Settings
+      - key: GA_POPULATION_SIZE
+        value: 100
+      - key: GA_GENERATIONS
+        value: 100
+      - key: GA_MUTATION_RATE
+        value: 0.1
+      - key: GA_CROSSOVER_RATE
+        value: 0.8
+
+      # Security - SET THIS MANUALLY!
+      - key: SECRET_KEY
+        sync: false # IMPORTANT: Generate and set in Render dashboard
+      - key: ALGORITHM
+        value: HS256
+
+      # Logging
+      - key: LOG_LEVEL
+        value: INFO
+
+# ============================================================================
+# NOTES - FREE VERSION
+# ============================================================================
+#
+# Monthly Cost: $0
+#
+# What This Gives You:
+# ✅ Frontend: Fast, always available
+# ✅ Backend: Works perfectly, but sleeps after 15 min
+# ✅ Database: Firebase FREE tier (generous)
+# ✅ Auth: Firebase Auth (unlimited users)
+#
+# The Sleep Behavior:
+# - Backend goes to sleep after 15 minutes of inactivity
+# - First request after sleep takes ~30 seconds to wake up
+# - Subsequent requests are instant
+# - If used regularly, users rarely notice
+#
+# Perfect For:
+# - Development and testing
+# - Demos and presentations
+# - Low-traffic applications
+# - Personal projects
+#
+# Upgrade to $7/month (Starter Plan):
+# - Change "plan: free" to "plan: starter" for backend
+# - No sleep, always instant
+# - Just $7/month total
+#
+# Manual Setup Required:
+# 1. Generate SECRET_KEY: python -c "import secrets; print(secrets.token_hex(32))"
+# 2. Set Firebase environment variables in Render dashboard
+# 3. Set SECRET_KEY in backend environment variables
+#
+# Auto-Configured:
+# - Frontend automatically gets backend URL
+# - Backend automatically allows frontend origin
