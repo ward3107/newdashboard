@@ -4,7 +4,7 @@ Manages all settings using Pydantic BaseSettings
 """
 
 from pydantic_settings import BaseSettings
-from typing import List, Union
+from typing import List, Union, Optional
 import os
 
 
@@ -29,10 +29,43 @@ class Settings(BaseSettings):
 
     @property
     def allowed_origins_list(self) -> List[str]:
-        """Convert ALLOWED_ORIGINS to list if it's a string"""
+        """Convert ALLOWED_ORIGINS to list if it's a string, excluding wildcards"""
+        origins = []
         if isinstance(self.ALLOWED_ORIGINS, str):
-            return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(',')]
-        return self.ALLOWED_ORIGINS
+            origins = [origin.strip() for origin in self.ALLOWED_ORIGINS.split(',')]
+        else:
+            origins = self.ALLOWED_ORIGINS
+
+        # Filter out wildcard patterns (they'll be handled by allowed_origins_regex)
+        return [origin for origin in origins if '*' not in origin]
+
+    @property
+    def allowed_origins_regex(self) -> Optional[str]:
+        """
+        Convert wildcard patterns to regex for CORS middleware
+        Converts https://*.vercel.app to https://.*\.vercel\.app
+        """
+        origins = []
+        if isinstance(self.ALLOWED_ORIGINS, str):
+            origins = [origin.strip() for origin in self.ALLOWED_ORIGINS.split(',')]
+        else:
+            origins = self.ALLOWED_ORIGINS
+
+        # Find wildcard patterns and convert to regex
+        wildcard_patterns = [origin for origin in origins if '*' in origin]
+
+        if not wildcard_patterns:
+            return None
+
+        # Convert wildcards to regex patterns
+        regex_parts = []
+        for pattern in wildcard_patterns:
+            # Escape special regex characters except *
+            escaped = pattern.replace('.', r'\.').replace('*', '.*')
+            regex_parts.append(escaped)
+
+        # Combine all patterns with | (OR)
+        return '|'.join(regex_parts)
 
     # Genetic Algorithm
     GA_POPULATION_SIZE: int = 100
