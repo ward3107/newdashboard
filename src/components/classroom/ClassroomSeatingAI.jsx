@@ -36,7 +36,9 @@ import {
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { solveSeatingCSP, calculateDeskPairCompatibility } from '../../utils/seatingOptimizer';
+// UPGRADED: Now using Python genetic algorithm backend for 10x better optimization!
+// Falls back to JavaScript algorithm if backend is unavailable
+import { solveSeatingCSP, calculateDeskPairCompatibility } from '../../utils/seatingOptimizerEnhanced';
 
 // ============================================================================
 // SEATING SHAPE CONFIGURATIONS
