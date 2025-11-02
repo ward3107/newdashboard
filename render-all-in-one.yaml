@@ -1,0 +1,158 @@
+# ============================================================================
+# RENDER ALL-IN-ONE DEPLOYMENT
+# ============================================================================
+# This deploys your entire ISHEBOT platform on Render:
+# - Frontend (React/Vite)
+# - Backend (Python FastAPI)
+# - Database (PostgreSQL)
+# Auth remains on Firebase (free and excellent)
+
+services:
+  # ============================================================================
+  # FRONTEND - React + Vite Dashboard
+  # ============================================================================
+  - type: web
+    name: ishebot-dashboard
+    env: static
+    region: frankfurt
+    plan: free
+    branch: main
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      # Firebase Configuration (keep your existing Firebase)
+      - key: VITE_FIREBASE_API_KEY
+        sync: false # Set manually in Render dashboard
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: VITE_FIREBASE_PROJECT_ID
+        sync: false
+      - key: VITE_FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: VITE_FIREBASE_MESSAGING_SENDER_ID
+        sync: false
+      - key: VITE_FIREBASE_APP_ID
+        sync: false
+
+      # Backend API URL (will be automatically set to backend service URL)
+      - key: VITE_OPTIMIZATION_API_URL
+        fromService:
+          type: web
+          name: ishebot-optimization-api
+          property: host
+
+      # Feature Flags
+      - key: VITE_ENABLE_AI_ANALYSIS
+        value: true
+      - key: VITE_ENABLE_ANALYTICS
+        value: true
+      - key: VITE_ENABLE_EXPORT
+        value: true
+
+  # ============================================================================
+  # BACKEND - Python FastAPI Optimization API
+  # ============================================================================
+  - type: web
+    name: ishebot-optimization-api
+    env: python
+    region: frankfurt
+    plan: starter # $7/month - no sleep
+    branch: main
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+
+      # Application Settings
+      - key: DEBUG
+        value: false
+      - key: APP_NAME
+        value: ISHEBOT Optimization API
+      - key: APP_VERSION
+        value: 1.0.0
+      - key: HOST
+        value: 0.0.0.0
+
+      # CORS - Allow frontend to connect
+      - key: ALLOWED_ORIGINS
+        fromService:
+          type: web
+          name: ishebot-dashboard
+          property: host
+
+      # Genetic Algorithm Settings
+      - key: GA_POPULATION_SIZE
+        value: 100
+      - key: GA_GENERATIONS
+        value: 100
+      - key: GA_MUTATION_RATE
+        value: 0.1
+      - key: GA_CROSSOVER_RATE
+        value: 0.8
+
+      # Security - SET THIS MANUALLY!
+      - key: SECRET_KEY
+        sync: false # IMPORTANT: Generate and set in Render dashboard
+      - key: ALGORITHM
+        value: HS256
+
+      # Logging
+      - key: LOG_LEVEL
+        value: INFO
+
+      # Database Connection (if using PostgreSQL in future)
+      # - key: DATABASE_URL
+      #   fromDatabase:
+      #     name: ishebot-database
+      #     property: connectionString
+
+  # ============================================================================
+  # DATABASE - PostgreSQL (Optional - currently using Firebase)
+  # ============================================================================
+  # Uncomment this section if you want to migrate from Firebase to PostgreSQL
+  #
+  # - type: pgsql
+  #   name: ishebot-database
+  #   region: frankfurt
+  #   plan: free # or 'starter' for $7/month
+  #   databaseName: ishebot
+  #   databaseUser: ishebot
+  #   ipAllowList: [] # Allow connections from Render services
+
+# ============================================================================
+# NOTES
+# ============================================================================
+#
+# Monthly Cost Breakdown:
+# - Frontend: FREE (static site)
+# - Backend: $7/month (Starter plan - no sleep)
+# - Database: Currently FREE (Firebase)
+# - If PostgreSQL: +$7/month (free tier available but limited)
+# Total: $7/month (or $14 with PostgreSQL)
+#
+# Manual Setup Required:
+# 1. Generate SECRET_KEY: python -c "import secrets; print(secrets.token_hex(32))"
+# 2. Set Firebase environment variables in Render dashboard
+# 3. Set SECRET_KEY in backend environment variables
+#
+# Auto-Configured:
+# - Frontend automatically gets backend URL
+# - Backend automatically allows frontend origin
+# - Database URL automatically injected (if using PostgreSQL)
