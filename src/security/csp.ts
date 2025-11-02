@@ -52,7 +52,12 @@ export function getCSPDirectives(isDevelopment = false): CSPDirectives {
       'https://fonts.googleapis.com',
       'https://fonts.gstatic.com',
       isDevelopment ? 'ws://localhost:*' : '', // WebSocket for HMR
-      isDevelopment ? 'http://localhost:*' : '',
+      isDevelopment ? 'http://localhost:*' : '', // Development APIs
+      isDevelopment ? 'ws://127.0.0.1:*' : '',
+      isDevelopment ? 'http://127.0.0.1:*' : '',
+      // Optimization backend (Python FastAPI)
+      'http://localhost:8000',
+      'http://127.0.0.1:8000',
     ].filter(Boolean),
     'font-src': [
       "'self'",
