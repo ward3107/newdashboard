@@ -1787,27 +1787,40 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
       // Use CSP solver for ALL layouts now (they all have rows/cols)
       if (shape.rows && shape.cols) {
-        const result = solveSeatingCSP(analyzedStudents, shape, {
-          populationSize: 50,
-          generations: 100,
-          mutationRate: 0.2
-        });
+        // Handle async optimization
+        const runOptimization = async () => {
+          try {
+            const result = await solveSeatingCSP(analyzedStudents, shape, {
+              populationSize: 50,
+              generations: 100,
+              mutationRate: 0.2
+            });
 
-        // Convert to appropriate format based on layout type
-        const convertedArrangement = shape.layout === 'grid'
-          ? result.arrangement
-          : convertCSPToLayoutFormat(result.arrangement, shape.layout);
+            // Convert to appropriate format based on layout type
+            const convertedArrangement = shape.layout === 'grid'
+              ? result.arrangement
+              : convertCSPToLayoutFormat(result.arrangement, shape.layout);
 
-        setArrangement(convertedArrangement);
-        setCspMetadata(result.metadata);
+            setArrangement(convertedArrangement);
+            setCspMetadata(result.metadata);
 
-        console.log('🎯 CSP Solution:', {
-          layout: shape.layout,
-          score: result.score,
-          violations: result.violations,
-          metadata: result.metadata,
-          converted: shape.layout !== 'grid'
-        });
+            console.log('🎯 CSP Solution:', {
+              layout: shape.layout,
+              score: result.score,
+              violations: result.violations,
+              metadata: result.metadata,
+              converted: shape.layout !== 'grid'
+            });
+          } catch (error) {
+            console.error('❌ Optimization failed:', error);
+            // Fallback to simple arrangement on error
+            const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+            setArrangement(simpleArrangement);
+            setCspMetadata(null);
+          }
+        };
+
+        runOptimization();
       } else {
         // Fallback to simple arrangement if no rows/cols (shouldn't happen now)
         const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
