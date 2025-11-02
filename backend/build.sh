@@ -8,10 +8,7 @@ set -e  # Exit on error
 echo "📦 Upgrading pip..."
 pip install --upgrade pip
 
-echo "🔢 Installing numpy and scipy from binary wheels..."
-pip install numpy==1.26.2 scipy==1.11.4 --only-binary :all:
-
-echo "📚 Installing remaining dependencies..."
-pip install -r requirements.txt
+echo "📚 Installing dependencies (using Python 3.13-compatible versions)..."
+pip install -r requirements.txt --only-binary :all:
 
 echo "✅ Build complete!"
