@@ -1,8 +1,12 @@
 [phases.setup]
-nixPkgs = ["python312", "gcc"]
+nixPkgs = ["python312", "gcc", "gfortran", "pkg-config"]
 
 [phases.install]
-cmds = ["pip install -r requirements.txt"]
+cmds = [
+  "pip install --upgrade pip",
+  "pip install numpy scipy --only-binary :all:",
+  "pip install -r requirements.txt"
+]
 
 [phases.build]
 cmds = []
