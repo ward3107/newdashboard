@@ -203,11 +203,14 @@ export const solveSeatingCSP = async (students, shape, options = {}) => {
     const backendStudents = students.map(convertStudentToBackendFormat);
 
     // Prepare optimization request
+    // IMPORTANT: Frontend uses 'cols' for DESKS (2 students each)
+    // Backend uses 'cols' for SEATS (individual seats)
+    // So we multiply cols by 2 to convert desks to seats
     const request = {
       students: backendStudents,
       layout_type: 'rows',
       rows: shape.rows,
-      cols: shape.cols,
+      cols: shape.cols * 2,  // Convert desk columns to seat columns
       max_generations: options.generations || 100,
       objectives: {
         academic_balance: 0.35,
