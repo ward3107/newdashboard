@@ -70,6 +70,8 @@ const LandingPage: React.FC = () => {
       video.addEventListener('ended', handleEnded);
       return () => video.removeEventListener('ended', handleEnded);
     }
+    // Return undefined when video is not present
+    return undefined;
   }, [showVideoModal, VIDEO_SEEN_KEY]);
 
   const handlePlayClick = () => {

@@ -48,7 +48,7 @@ const useSafeNavigate = () => {
   } catch {
     // Return a fallback function that uses window.location
     return (path) => {
-      console.log('Using fallback navigation to:', path);
+      // console.log('Using fallback navigation to:', path);
       window.location.href = path;
     };
   }
@@ -899,7 +899,7 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
                 if (navigate && student.studentCode) {
                   navigate(`/student/${student.studentCode}`);
                 } else {
-                  console.error('Cannot navigate: Missing navigate function or student code');
+                  // console.error('Cannot navigate: Missing navigate function or student code');
                 }
               }}
             >
@@ -1555,7 +1555,7 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
   const placementReason = generateDetailedPlacementReason(student, row, col, totalRows);
 
   // Debug: Log to verify different positions generate different reasons
-  console.log(`Student ${student.studentCode} at row ${row}, col ${col} | Strengths: ${student.strengthsCount || 0}, Challenges: ${student.challengesCount || 0}:`, placementReason.mainReason);
+  // console.log(`Student ${student.studentCode} at row ${row}, col ${col} | Strengths: ${student.strengthsCount || 0}, Challenges: ${student.challengesCount || 0}:`, placementReason.mainReason);
 
   // Determine student color based on needs and performance
   const getStudentColor = () => {
