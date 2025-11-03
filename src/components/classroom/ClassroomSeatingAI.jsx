@@ -1452,13 +1452,46 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
 
               {/* Refresh/Regenerate */}
               <button
-                onClick={() => {
-                  alert('יצירת סידור חדש תתבצע בקרוב');
+                onClick={async () => {
+                  if (analyzedStudents.length < 2) {
+                    alert('נדרשים לפחות 2 תלמידים לאופטימיזציה');
+                    return;
+                  }
+
+                  setIsGenerating(true);
+                  const shape = SEATING_SHAPES[selectedShape];
+
+                  try {
+                    console.log('🚀 Starting Python optimization...');
+                    const result = await solveSeatingCSP(analyzedStudents, shape, {
+                      populationSize: 50,
+                      generations: 100,
+                      mutationRate: 0.2
+                    });
+
+                    const convertedArrangement = shape.layout === 'grid'
+                      ? result.arrangement
+                      : convertCSPToLayoutFormat(result.arrangement, shape.layout);
+
+                    setArrangement(convertedArrangement);
+                    setCspMetadata(result.metadata);
+
+                    console.log('✅ Optimization complete!', result);
+                  } catch (error) {
+                    console.error('❌ Optimization failed:', error);
+                    alert('אופטימיזציה נכשלה - משתמש בסידור פשוט');
+                    const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+                    setArrangement(simpleArrangement);
+                    setCspMetadata(null);
+                  } finally {
+                    setIsGenerating(false);
+                  }
                 }}
-                className={`${darkMode ? 'bg-orange-600 hover:bg-orange-700' : 'bg-orange-500 hover:bg-orange-600'} text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1`}
+                disabled={isGenerating}
+                className={`${darkMode ? 'bg-orange-600 hover:bg-orange-700' : 'bg-orange-500 hover:bg-orange-600'} text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <RefreshCw size={14} />
-                סדר מחדש
+                <RefreshCw size={14} className={isGenerating ? 'animate-spin' : ''} />
+                {isGenerating ? 'מחשב...' : 'סדר מחדש'}
               </button>
             </div>
 
@@ -1780,53 +1813,17 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     }
   };
 
-  // Generate arrangement when shape changes
+  // Generate SIMPLE arrangement when shape changes (FAST - no backend call)
   useEffect(() => {
     if (analyzedStudents.length > 0) {
       const shape = SEATING_SHAPES[selectedShape];
 
-      // Use CSP solver for ALL layouts now (they all have rows/cols)
-      if (shape.rows && shape.cols) {
-        // Handle async optimization
-        const runOptimization = async () => {
-          try {
-            const result = await solveSeatingCSP(analyzedStudents, shape, {
-              populationSize: 50,
-              generations: 100,
-              mutationRate: 0.2
-            });
+      // Always start with simple arrangement (instant display)
+      const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+      setArrangement(simpleArrangement);
+      setCspMetadata(null);
 
-            // Convert to appropriate format based on layout type
-            const convertedArrangement = shape.layout === 'grid'
-              ? result.arrangement
-              : convertCSPToLayoutFormat(result.arrangement, shape.layout);
-
-            setArrangement(convertedArrangement);
-            setCspMetadata(result.metadata);
-
-            console.log('🎯 CSP Solution:', {
-              layout: shape.layout,
-              score: result.score,
-              violations: result.violations,
-              metadata: result.metadata,
-              converted: shape.layout !== 'grid'
-            });
-          } catch (error) {
-            console.error('❌ Optimization failed:', error);
-            // Fallback to simple arrangement on error
-            const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
-            setArrangement(simpleArrangement);
-            setCspMetadata(null);
-          }
-        };
-
-        runOptimization();
-      } else {
-        // Fallback to simple arrangement if no rows/cols (shouldn't happen now)
-        const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
-        setArrangement(simpleArrangement);
-        setCspMetadata(null);
-      }
+      console.log('📊 Simple arrangement generated - use "ארגן מחדש" button for AI optimization');
     }
   }, [selectedShape, students.length]);
 
