@@ -1,0 +1,243 @@
+rules_version = '2';
+
+/**
+ * Firestore Security Rules
+ * Secure access to student data based on user roles
+ *
+ * Role Hierarchy:
+ * - super_admin: Full access to all schools
+ * - school_admin: Full access to their school
+ * - teacher: Access to assigned students/classes only
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ========================================================================
+    // HELPER FUNCTIONS
+    // ========================================================================
+
+    /**
+     * Check if user is authenticated
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Get user data from Firestore
+     */
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    /**
+     * Check if user is super admin
+     */
+    function isSuperAdmin() {
+      return isSignedIn() && getUserData().role == 'super_admin';
+    }
+
+    /**
+     * Check if user is school admin
+     */
+    function isSchoolAdmin(schoolId) {
+      return isSignedIn() &&
+             getUserData().role == 'school_admin' &&
+             getUserData().schoolId == schoolId;
+    }
+
+    /**
+     * Check if user is teacher in this school
+     */
+    function isTeacher(schoolId) {
+      return isSignedIn() &&
+             getUserData().role == 'teacher' &&
+             getUserData().schoolId == schoolId;
+    }
+
+    /**
+     * Check if user has access to this school
+     */
+    function hasSchoolAccess(schoolId) {
+      return isSuperAdmin() ||
+             isSchoolAdmin(schoolId) ||
+             isTeacher(schoolId);
+    }
+
+    /**
+     * Check if teacher has access to this class
+     */
+    function hasClassAccess(schoolId, classId) {
+      let userData = getUserData();
+      return isSuperAdmin() ||
+             isSchoolAdmin(schoolId) ||
+             (isTeacher(schoolId) &&
+              (userData.assignedClasses == null ||
+               classId in userData.assignedClasses));
+    }
+
+    /**
+     * Check if teacher has access to this student
+     */
+    function hasStudentAccess(schoolId, studentCode) {
+      let userData = getUserData();
+      return isSuperAdmin() ||
+             isSchoolAdmin(schoolId) ||
+             (isTeacher(schoolId) &&
+              (userData.assignedStudentIds == null ||
+               studentCode in userData.assignedStudentIds));
+    }
+
+    /**
+     * Check if user is active
+     */
+    function isActiveUser() {
+      return isSignedIn() && getUserData().isActive == true;
+    }
+
+    // ========================================================================
+    // USERS COLLECTION
+    // ========================================================================
+
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isSignedIn() && request.auth.uid == userId;
+
+      // Super admin can read all users
+      allow read: if isSuperAdmin();
+
+      // School admin can read users in their school
+      allow read: if isSignedIn() &&
+                     getUserData().schoolId == resource.data.schoolId &&
+                     getUserData().role == 'school_admin';
+
+      // Users can update their own profile (limited fields)
+      allow update: if isSignedIn() &&
+                       request.auth.uid == userId &&
+                       !request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['role', 'schoolId', 'isActive', 'createdAt']);
+
+      // Only super admin can create users
+      allow create: if isSuperAdmin();
+
+      // Only super admin can delete users
+      allow delete: if isSuperAdmin();
+    }
+
+    // ========================================================================
+    // SCHOOLS COLLECTION
+    // ========================================================================
+
+    match /schools/{schoolId} {
+      // Users can read their school
+      allow read: if hasSchoolAccess(schoolId);
+
+      // Only super admin can create/update/delete schools
+      allow write: if isSuperAdmin();
+
+      // ======================================================================
+      // STUDENTS SUBCOLLECTION
+      // ======================================================================
+
+      match /students/{studentCode} {
+        // Read: Anyone with school access can read students
+        allow read: if hasSchoolAccess(schoolId);
+
+        // Create: School admin and super admin can create students
+        allow create: if (isSuperAdmin() || isSchoolAdmin(schoolId)) &&
+                         request.resource.data.schoolId == schoolId &&
+                         request.resource.data.studentCode == studentCode;
+
+        // Update: School admin and super admin can update students
+        allow update: if (isSuperAdmin() || isSchoolAdmin(schoolId)) &&
+                         request.resource.data.schoolId == schoolId;
+
+        // Delete: Only super admin and school admin can delete
+        allow delete: if isSuperAdmin() || isSchoolAdmin(schoolId);
+      }
+
+      // ======================================================================
+      // RESPONSES SUBCOLLECTION
+      // ======================================================================
+
+      match /responses/{responseId} {
+        // Read: Anyone with school access can read responses
+        allow read: if hasSchoolAccess(schoolId);
+
+        // Create: Anyone can create responses (for public questionnaire)
+        // But schoolId must match
+        allow create: if request.resource.data.schoolId == schoolId &&
+                         request.resource.data.status == 'submitted';
+
+        // Update: School admin and super admin can update
+        allow update: if isSuperAdmin() || isSchoolAdmin(schoolId);
+
+        // Delete: Only super admin and school admin can delete
+        allow delete: if isSuperAdmin() || isSchoolAdmin(schoolId);
+      }
+
+      // ======================================================================
+      // ANALYSES SUBCOLLECTION
+      // ======================================================================
+
+      match /analyses/{analysisId} {
+        // Read: Anyone with school access can read analyses
+        allow read: if hasSchoolAccess(schoolId);
+
+        // Create: School admin and super admin can create analyses
+        allow create: if (isSuperAdmin() || isSchoolAdmin(schoolId)) &&
+                         request.resource.data.schoolId == schoolId;
+
+        // Update: School admin and super admin can update analyses
+        allow update: if isSuperAdmin() || isSchoolAdmin(schoolId);
+
+        // Delete: Only super admin and school admin can delete
+        allow delete: if isSuperAdmin() || isSchoolAdmin(schoolId);
+      }
+
+      // ======================================================================
+      // CLASSROOMS SUBCOLLECTION
+      // ======================================================================
+
+      match /classrooms/{classId} {
+        // Read: Anyone with school access can read classrooms
+        allow read: if hasSchoolAccess(schoolId);
+
+        // Create: School admin and super admin can create classrooms
+        allow create: if (isSuperAdmin() || isSchoolAdmin(schoolId)) &&
+                         request.resource.data.schoolId == schoolId;
+
+        // Update: School admin and super admin can update classrooms
+        allow update: if isSuperAdmin() || isSchoolAdmin(schoolId);
+
+        // Delete: Only super admin and school admin can delete
+        allow delete: if isSuperAdmin() || isSchoolAdmin(schoolId);
+      }
+
+      // ======================================================================
+      // QUESTIONNAIRES SUBCOLLECTION (Future feature)
+      // ======================================================================
+
+      match /questionnaires/{questionnaireId} {
+        // Read: Anyone can read active questionnaires (for public forms)
+        allow read: if resource.data.isActive == true;
+
+        // Read: School users can read all questionnaires
+        allow read: if hasSchoolAccess(schoolId);
+
+        // Create/Update/Delete: School admin and super admin only
+        allow write: if isSuperAdmin() || isSchoolAdmin(schoolId);
+      }
+    }
+
+    // ========================================================================
+    // DEFAULT DENY
+    // ========================================================================
+
+    // Deny all other access by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
