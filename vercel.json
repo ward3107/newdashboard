@@ -1,7 +1,27 @@
 {
   "rewrites": [
     {
-      "source": "/((?!manifest\\.webmanifest|sw\\.js|workbox-.*\\.js|favicon\\.svg|assets/).*)",
+      "source": "/manifest.webmanifest",
+      "destination": "/manifest.webmanifest"
+    },
+    {
+      "source": "/sw.js",
+      "destination": "/sw.js"
+    },
+    {
+      "source": "/workbox-*.js",
+      "destination": "/workbox-$1.js"
+    },
+    {
+      "source": "/favicon.svg",
+      "destination": "/favicon.svg"
+    },
+    {
+      "source": "/assets/*",
+      "destination": "/assets/$1"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
@@ -25,11 +45,15 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
         }
       ]
     },
     {
-      "source": "/(sw|workbox-.*).js",
+      "source": "/(sw|workbox-.*)\\.js",
       "headers": [
         {
           "key": "Content-Type",
@@ -45,5 +69,6 @@
         }
       ]
     }
-  ]
+  ],
+  "public": true
 }
