@@ -106,6 +106,10 @@ workbox-*.js
 *secret-key*
 *access-token*
 
+# Firebase credentials (NEVER COMMIT)
+firebase-service-account.json
+*service-account*.json
+
 # Database credentials (NEVER COMMIT)
 *database.json
 *db-config*

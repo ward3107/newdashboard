@@ -28,6 +28,22 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Load .env file
+const envPath = path.join(__dirname, '..', '.env');
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf-8');
+  envContent.split('\n').forEach(line => {
+    const match = line.match(/^([^=:#]+)=(.*)$/);
+    if (match) {
+      const key = match[1].trim();
+      const value = match[2].trim().replace(/^["']|["']$/g, '');
+      if (!process.env[key]) {
+        process.env[key] = value;
+      }
+    }
+  });
+}
+
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
