@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users,
@@ -881,8 +882,12 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
             <button
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
               onClick={() => {
-                // This would navigate to full analysis - placeholder for now
-                console.log('View full analysis for', student.studentCode);
+                // Navigate to student detail page
+                if (navigate && student.studentCode) {
+                  navigate(`/student/${student.studentCode}`);
+                } else {
+                  console.error('Cannot navigate: Missing navigate function or student code');
+                }
               }}
             >
               <BookOpen size={18} />
@@ -898,7 +903,7 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
 // STUDENT INFO SIDE PANEL COMPONENT
 // ============================================================================
 
-const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShape = 'rows', cspMetadata = null, arrangement = [], onOpenDeskPopup = null }) => {
+const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShape = 'rows', cspMetadata = null, arrangement = [], onOpenDeskPopup = null, navigate }) => {
   if (!studentData) return null;
 
   const student = studentData.student || studentData; // Support both formats
@@ -1722,6 +1727,7 @@ const generateSimpleArrangement = (students, shape) => {
 // ============================================================================
 
 const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => {
+  const navigate = useNavigate();
   const [selectedShape, setSelectedShape] = useState('rows');
   const [arrangement, setArrangement] = useState([]);
   const [aiRecommendation, setAiRecommendation] = useState(null);
@@ -3118,6 +3124,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
             cspMetadata={cspMetadata}
             arrangement={arrangement}
             onOpenDeskPopup={(deskId) => setHoveredDesk(deskId)}
+            navigate={navigate}
           />
         )}
       </AnimatePresence>

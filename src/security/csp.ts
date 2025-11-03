@@ -165,6 +165,13 @@ export function setupCSPReporting(): void {
  */
 export function initializeCSP(): void {
   const isDevelopment = import.meta.env.DEV;
+
+  // Skip CSP in development to avoid blocking development features
+  if (isDevelopment) {
+    console.log('🔓 CSP disabled in development mode');
+    return;
+  }
+
   applyCSPMetaTag(isDevelopment);
   setupCSPReporting();
 }
