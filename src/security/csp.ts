@@ -68,10 +68,20 @@ export function getCSPDirectives(isDevelopment = false): CSPDirectives {
     ],
     'object-src': ["'none'"],
     'media-src': ["'self'"],
-    'frame-src': ["'none'"],
+    'frame-src': [
+      "'self'",
+      'https://vercel.live',
+      'https://*.vercel.live',
+      isDevelopment ? 'http://localhost:*' : '',
+    ].filter(Boolean),
     'worker-src': ["'self'", 'blob:'],
     'form-action': ["'self'"],
-    'frame-ancestors': ["'none'"],
+    'frame-ancestors': [
+      "'self'",
+      'https://vercel.com',
+      'https://*.vercel.app',
+      'https://*.vercel.live',
+    ],
     'base-uri': ["'self'"],
     'manifest-src': ["'self'"]
   };
