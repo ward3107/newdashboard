@@ -41,6 +41,19 @@ import { CSS } from '@dnd-kit/utilities';
 // Falls back to JavaScript algorithm if backend is unavailable
 import { solveSeatingCSP, calculateDeskPairCompatibility } from '../../utils/seatingOptimizerEnhanced';
 
+// Custom hook to safely use navigation
+const useSafeNavigate = () => {
+  try {
+    return useNavigate();
+  } catch {
+    // Return a fallback function that uses window.location
+    return (path) => {
+      console.log('Using fallback navigation to:', path);
+      window.location.href = path;
+    };
+  }
+};
+
 // ============================================================================
 // SEATING SHAPE CONFIGURATIONS
 // ============================================================================
@@ -1727,7 +1740,7 @@ const generateSimpleArrangement = (students, shape) => {
 // ============================================================================
 
 const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => {
-  const navigate = useNavigate();
+  const navigate = useSafeNavigate();
   const [selectedShape, setSelectedShape] = useState('rows');
   const [arrangement, setArrangement] = useState([]);
   const [aiRecommendation, setAiRecommendation] = useState(null);
