@@ -69,7 +69,8 @@
       "Bash(npm run migrate:backup:*)",
       "WebFetch(domain:console.firebase.google.com)",
       "Bash(firebase init:*)",
-      "Bash(firebase:*)"
+      "Bash(firebase:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

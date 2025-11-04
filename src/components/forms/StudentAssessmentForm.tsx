@@ -3,13 +3,14 @@
  * Supports Hebrew, English, Arabic, Russian with RTL/LTR
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '../../services/firebase';
 import { ASSESSMENT_QUESTIONS, DOMAIN_LABELS, type Language } from '../../data/assessmentQuestions';
 import { FORM_TRANSLATIONS, LANGUAGE_NAMES, t } from '../../i18n/formTranslations';
 import toast from 'react-hot-toast';
 import { Globe } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 interface FormData {
   studentCode: string;
@@ -24,6 +25,8 @@ export function StudentAssessmentForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showEncouragement, setShowEncouragement] = useState(false);
+  const [encouragementMessage, setEncouragementMessage] = useState('');
   const [formData, setFormData] = useState<FormData>({
     studentCode: '',
     name: '',
@@ -35,9 +38,85 @@ export function StudentAssessmentForm() {
   const totalSteps = ASSESSMENT_QUESTIONS.length + 1; // +1 for basic info
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
+  // Encouraging messages for different milestones
+  const encouragingMessages = {
+    25: {
+      he: '🌟 כל הכבוד! רבע מהדרך הושלם!',
+      en: '🌟 Great job! Quarter of the way done!',
+      ar: '🌟 عمل رائع! تم إكمال ربع الطريق!',
+      ru: '🌟 Отличная работа! Четверть пути пройдена!'
+    },
+    50: {
+      he: '🎯 מעולה! עברת את חצי הדרך!',
+      en: '🎯 Excellent! You\'re halfway there!',
+      ar: '🎯 ممتاز! أنت في منتصف الطريق!',
+      ru: '🎯 Отлично! Ты на полпути!'
+    },
+    75: {
+      he: '🚀 כמעט סיימת! עוד קצת!',
+      en: '🚀 Almost done! Just a bit more!',
+      ar: '🚀 أوشكت على الانتهاء! القليل فقط!',
+      ru: '🚀 Почти готово! Еще немного!'
+    },
+    100: {
+      he: '🎉 מדהים! סיימת את כל השאלות!',
+      en: '🎉 Amazing! You finished all questions!',
+      ar: '🎉 رائع! لقد أنهيت جميع الأسئلة!',
+      ru: '🎉 Потрясающе! Вы ответили на все вопросы!'
+    }
+  };
+
   // RTL languages
   const isRTL = language === 'he' || language === 'ar';
   const dirClass = isRTL ? 'rtl' : 'ltr';
+
+  // Show encouraging messages at milestones
+  useEffect(() => {
+    const progressRounded = Math.floor(progress);
+
+    // Check if we hit a milestone
+    if ([25, 50, 75, 100].includes(progressRounded)) {
+      const message = encouragingMessages[progressRounded as keyof typeof encouragingMessages][language];
+      setEncouragementMessage(message);
+      setShowEncouragement(true);
+
+      // Hide after 2 seconds
+      setTimeout(() => {
+        setShowEncouragement(false);
+      }, 2000);
+    }
+  }, [progress, language]);
+
+  // Trigger confetti when form is submitted
+  useEffect(() => {
+    if (submitted) {
+      // Celebrate with confetti!
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+
+      // Extra burst after a delay
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+      }, 250);
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+      }, 400);
+    }
+  }, [submitted]);
 
   // Handle language change
   const handleLanguageChange = (newLang: Language) => {
@@ -108,37 +187,29 @@ export function StudentAssessmentForm() {
 
   // Submit form
   const handleSubmit = async () => {
-    setLoading(true);
+    // Show thank you page immediately - no loading state for students
+    setSubmitted(true);
 
+    // Process in background without waiting
     try {
-      toast.loading(t('messages.processing', language), { id: 'processing' });
-
-      // Call Cloud Function
+      // Call Cloud Function in background
       const processStudent = httpsCallable(functions, 'processStudentAssessment');
 
-      const result = await processStudent({
+      processStudent({
         studentCode: formData.studentCode,
         name: formData.name,
         classId: formData.classId,
         answers: formData.answers,
         schoolId: 'ishebott',
         language: language, // Send language to Cloud Function
+      }).catch((error: any) => {
+        console.error('Background submission error:', error);
+        // Silent failure - student already sees thank you page
       });
-
-      toast.success(t('messages.success', language), { id: 'processing' });
-
-      // Show thank you page
-      setSubmitted(true);
 
     } catch (error: any) {
       console.error('Submission error:', error);
-      toast.error(t('messages.error', language), { id: 'processing' });
-
-      if (error.code === 'resource-exhausted') {
-        toast.error(t('messages.tooManyRequests', language));
-      }
-    } finally {
-      setLoading(false);
+      // Silent failure - student already sees thank you page
     }
   };
 
@@ -385,19 +456,41 @@ export function StudentAssessmentForm() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="max-w-2xl mx-auto p-6 relative">
       {/* Language Selector */}
       <LanguageSelector />
 
-      {/* Progress Bar */}
+      {/* Enhanced Progress Bar */}
       <div className="mb-8">
-        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-gray-600">
+            {language === 'he' && 'התקדמות'}
+            {language === 'en' && 'Progress'}
+            {language === 'ar' && 'التقدم'}
+            {language === 'ru' && 'Прогресс'}
+          </span>
+          <span className="text-sm font-bold text-blue-600">
+            {Math.floor(progress)}%
+          </span>
+        </div>
+        <div className="h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
           <div
-            className="h-full bg-blue-600 transition-all duration-300"
+            className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-500 ease-out relative"
             style={{ width: `${progress}%` }}
-          />
+          >
+            <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+          </div>
         </div>
       </div>
+
+      {/* Encouragement Message Overlay */}
+      {showEncouragement && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 animate-bounce">
+          <div className="bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-500 text-white px-8 py-4 rounded-full shadow-2xl text-xl font-bold">
+            {encouragementMessage}
+          </div>
+        </div>
+      )}
 
       {/* Form Content */}
       <div className="bg-white rounded-xl shadow-lg p-8">

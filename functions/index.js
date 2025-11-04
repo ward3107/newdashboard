@@ -139,7 +139,8 @@ exports.processStudentAssessment = functions.https.onCall(async (data, context) 
       name,
       answers,
       analysis,
-      userId
+      userId,
+      language
     );
 
     // ========================================
@@ -240,7 +241,7 @@ ${answersText}
 /**
  * Transform AI analysis to Firestore format
  */
-function transformAnalysisToFirestore(studentCode, classId, name, answers, analysis, userId) {
+function transformAnalysisToFirestore(studentCode, classId, name, answers, analysis, userId, language) {
   return {
     studentCode: studentCode,
     name: name,
@@ -256,8 +257,8 @@ function transformAnalysisToFirestore(studentCode, classId, name, answers, analy
     strengthsCount: analysis.strengths?.length || 0,
     challengesCount: analysis.challenges?.length || 0,
 
-    // Detailed data
-    studentSummary: {
+    // Detailed data - using underscores to match existing structure
+    student_summary: {
       learning_style: analysis.learning_style || '',
       key_notes: analysis.key_notes || '',
       strengths: analysis.strengths || [],
@@ -265,8 +266,8 @@ function transformAnalysisToFirestore(studentCode, classId, name, answers, analy
     },
 
     insights: analysis.insights || [],
-    immediateActions: analysis.immediate_actions || [],
-    seatingArrangement: analysis.seating_arrangement || {},
+    immediate_actions: analysis.immediate_actions || [],
+    seating_arrangement: analysis.seating_arrangement || {},
 
     // Metadata
     createdBy: userId,
