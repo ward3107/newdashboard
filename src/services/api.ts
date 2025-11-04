@@ -193,8 +193,7 @@ async function fetchWithTimeout(url: string, timeout: number = API_TIMEOUT): Pro
 async function apiCall<T>(action: string, params?: Record<string, string>): Promise<ApiResponse<T>> {
   // Use mock data in development
   if (USE_MOCK_DATA) {
-    if (process.env.NODE_ENV === 'development') {
-    }
+    // Mock data enabled - bypassing API calls for development
     return handleMockResponse<T>(action, params);
   }
 
@@ -211,8 +210,7 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
 
   try {
     const url = buildUrl(action, params);
-    if (process.env.NODE_ENV === 'development') {
-    }
+    // Development logging removed - monitor network tab for API calls
 
     const response = await fetchWithTimeout(url);
 
@@ -227,9 +225,7 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
       throw new Error(data.error);
     }
 
-    if (process.env.NODE_ENV === 'development') {
-    }
-
+    // API call successful - returning data
     return {
       success: true,
       data: data as T,

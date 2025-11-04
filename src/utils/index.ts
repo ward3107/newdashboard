@@ -319,11 +319,8 @@ export const throttle = <T extends (...args: never[]) => unknown>(
 
 // Analytics utilities
 export const trackEvent = (eventName: string, properties?: Record<string, string | number | boolean>): void => {
-  // This would typically integrate with your analytics service
-  if (process.env.NODE_ENV === 'development') {
-  }
-
-  // Example: Google Analytics, Mixpanel, etc.
+  // This would typically integrate with your analytics service (e.g., Google Analytics, Mixpanel)
+  // Development tracking disabled - implement analytics integration here
   // gtag('event', eventName, properties);
 };
 

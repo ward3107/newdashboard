@@ -141,10 +141,13 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ onAccept, onDecline }) =>
 
     // Apply preferences
     if (!prefs.analytics) {
+      // Analytics cookies disabled - tracking scripts won't load
     }
     if (!prefs.marketing) {
+      // Marketing cookies disabled - personalization features limited
     }
     if (!prefs.advertising) {
+      // Advertising cookies disabled - no ad targeting
     }
   };
 

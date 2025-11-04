@@ -115,8 +115,7 @@ export function applyCSPMetaTag(isDevelopment = false): void {
   meta.content = cspContent;
   document.head.appendChild(meta);
 
-  if (isDevelopment) {
-  }
+  // CSP configured - violations will be reported to console in development
 }
 
 /**

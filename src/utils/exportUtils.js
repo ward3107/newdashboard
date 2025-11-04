@@ -328,6 +328,7 @@ export const preloadExportLibraries = async () => {
       });
     }
   } catch (error) {
+    // Preloading failed - modules will be loaded on-demand when export functions are called
   }
 };
 

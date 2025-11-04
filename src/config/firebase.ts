@@ -82,12 +82,6 @@ export const firebaseInfo = {
   isEmulator: import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true',
 };
 
-// Log Firebase initialization in development
-if (import.meta.env.DEV) {
-    projectId: firebaseInfo.projectId,
-    authDomain: firebaseInfo.authDomain,
-    emulator: firebaseInfo.isEmulator,
-  });
-}
+// Firebase initialized - configuration available in firebaseInfo object
 
 export default app;

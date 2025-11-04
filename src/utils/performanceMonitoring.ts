@@ -135,9 +135,7 @@ export function initPerformanceMonitoring() {
   // Custom metrics
   measureCustomMetrics();
 
-  // Log initial performance summary
-  if (import.meta.env.DEV) {
-  }
+  // Performance metrics collected - view in browser DevTools Performance tab
 }
 
 /**

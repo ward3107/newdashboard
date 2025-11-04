@@ -229,5 +229,4 @@ self.addEventListener('push', (event: PushEvent) => {
   );
 });
 
-if (process.env.NODE_ENV === 'development') {
-}
+// Service worker configured - see workbox settings above for cache strategies

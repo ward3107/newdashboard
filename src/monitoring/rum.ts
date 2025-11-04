@@ -223,9 +223,7 @@ class RealUserMonitoring {
       // Send to monitoring endpoint
       await this.sendToServer(data);
 
-      // Also log to console in development
-      if (import.meta.env.DEV) {
-      }
+      // Development logging disabled - data sent to monitoring endpoint only
     } catch (error) {
       console.error('Failed to send RUM data:', error);
       // Re-add data to buffers if send failed

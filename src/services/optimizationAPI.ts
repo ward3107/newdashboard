@@ -186,8 +186,7 @@ async function optimizationApiCall<T>(
   try {
     const url = `${OPTIMIZATION_API_URL}${endpoint}`;
 
-    if (process.env.NODE_ENV === 'development') {
-    }
+    // Development logging removed - monitor network tab for API calls
 
     const response = await fetchWithTimeout(url, {
       ...options,
@@ -206,9 +205,7 @@ async function optimizationApiCall<T>(
 
     const data = await response.json();
 
-    if (process.env.NODE_ENV === 'development') {
-    }
-
+    // API call successful - returning optimization data
     return {
       success: true,
       data: data as T,
