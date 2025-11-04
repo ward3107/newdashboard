@@ -916,6 +916,19 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
 // ============================================================================
 
 const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShape = 'rows', cspMetadata = null, arrangement = [], onOpenDeskPopup = null, navigate }) => {
+  // Add keyboard listener for Escape key (must be before early return)
+  React.useEffect(() => {
+    if (!studentData) return; // Don't add listener if no data
+
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose, studentData]);
+
   if (!studentData) return null;
 
   const student = studentData.student || studentData; // Support both formats
@@ -958,17 +971,6 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
   const challenges = student.challengesCount || 0;
   const strengths = student.strengthsCount || 0;
   const grade = student.grade || 0;
-
-  // Add keyboard listener for Escape key
-  React.useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
 
   // Parse strengths and challenges from analysis
   const getTopItems = (text, count = 3) => {
@@ -1528,11 +1530,7 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
 // ============================================================================
 
 const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 0, totalRows = 4, darkMode = false }) => {
-  // Safety check - if student is undefined, return null
-  if (!student || !student.studentCode) {
-    return null;
-  }
-
+  // useSortable must be called before early return (Rules of Hooks)
   const {
     attributes,
     listeners,
@@ -1540,7 +1538,15 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
     transform,
     transition,
     isDragging
-  } = useSortable({ id: student.studentCode, disabled: !isDraggable });
+  } = useSortable({
+    id: student?.studentCode || 'placeholder',
+    disabled: !isDraggable || !student?.studentCode
+  });
+
+  // Safety check - if student is undefined, return null
+  if (!student || !student.studentCode) {
+    return null;
+  }
 
   const style = {
     transform: CSS.Transform.toString(transform),
