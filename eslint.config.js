@@ -32,6 +32,7 @@ export default [
       'public/**',
       'google-apps-scripts/**',
       'scripts/**',
+      'functions/**', // Firebase Cloud Functions use CommonJS
     ],
   },
   // Base config
