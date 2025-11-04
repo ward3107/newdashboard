@@ -75,6 +75,7 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
         onKeyDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
+        tabIndex={-1}
       >
         {/* Header */}
         <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>

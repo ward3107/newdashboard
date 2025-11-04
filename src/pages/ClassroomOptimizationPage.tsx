@@ -236,10 +236,11 @@ const ClassroomOptimizationPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {/* Layout Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="layout-type" className="block text-sm font-medium text-gray-700 mb-2">
                 Layout Type
               </label>
               <select
+                id="layout-type"
                 value={layoutType}
                 onChange={(e) => setLayoutType(e.target.value as LayoutType)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -255,10 +256,11 @@ const ClassroomOptimizationPage: React.FC = () => {
 
             {/* Rows */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="rows-input" className="block text-sm font-medium text-gray-700 mb-2">
                 Rows
               </label>
               <input
+                id="rows-input"
                 type="number"
                 min="1"
                 max="10"
@@ -270,10 +272,11 @@ const ClassroomOptimizationPage: React.FC = () => {
 
             {/* Columns */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="cols-input" className="block text-sm font-medium text-gray-700 mb-2">
                 Columns
               </label>
               <input
+                id="cols-input"
                 type="number"
                 min="1"
                 max="10"

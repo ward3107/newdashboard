@@ -192,11 +192,12 @@ const DataConnectionSetup = ({ onConnectionSuccess, currentConfig }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="webapp-url" className="block text-sm font-medium text-gray-700 mb-2">
                   URL של Google Apps Script Web App
                 </label>
                 <div className="relative">
                   <input
+                    id="webapp-url"
                     type={showUrls ? 'text' : 'password'}
                     value={config.webAppUrl}
                     onChange={(e) => setConfig(prev => ({ ...prev, webAppUrl: e.target.value }))}
@@ -328,10 +329,11 @@ const DataConnectionSetup = ({ onConnectionSuccess, currentConfig }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="spreadsheet-url" className="block text-sm font-medium text-gray-700 mb-2">
                   קישור ל-Google Sheets
                 </label>
                 <input
+                  id="spreadsheet-url"
                   type="url"
                   value={config.spreadsheetUrl || ''}
                   onChange={(e) => handleSpreadsheetUrlChange(e.target.value)}

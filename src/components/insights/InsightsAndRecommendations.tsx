@@ -373,10 +373,11 @@ const InsightsAndRecommendations: React.FC<Props> = ({
           <div>
             {/* Student Selector */}
             <div className="mb-6">
-              <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              <label htmlFor="student-selector" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 בחר תלמיד:
               </label>
               <select
+                id="student-selector"
                 value={selectedStudent}
                 onChange={(e) => setSelectedStudent(e.target.value)}
                 className={`w-full md:w-auto px-4 py-2 rounded-lg border ${

@@ -120,6 +120,7 @@ const StudentDetailModal = ({ student, onClose, darkMode, theme }) => {
         onKeyDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
+        tabIndex={-1}
       >
         {/* Header with gradient */}
         <div className={`relative h-48 bg-gradient-to-r ${getLearningStyleColor(student.learningStyle)} p-8`}>

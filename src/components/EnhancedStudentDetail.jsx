@@ -818,6 +818,7 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
         onKeyDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
+        tabIndex={-1}
       >
         {/* Header */}
         <div className={`relative h-32 bg-gradient-to-r ${theme.primary} p-6`}>
