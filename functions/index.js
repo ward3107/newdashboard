@@ -191,51 +191,63 @@ exports.processStudentAssessment = functions.https.onCall(async (data, context) 
 function generateStudentAnalysisPrompt(studentCode, classId, name, answers) {
   const answersText = answers.map(a => `שאלה ${a.q}: ${a.a}`).join('\n');
 
-  return `נתח את התלמיד הבא:
+  return `נתח את התלמיד הבא בצורה מעמיקה ומקצועית:
 
 קוד תלמיד: ${studentCode}
 כיתה: ${classId}
 שם: ${name}
 
-תשובות לשאלון:
+תשובות לשאלון (28 שאלות):
 ${answersText}
 
-הפק ניתוח מקצועי בפורמט JSON הבא:
+הפק ניתוח מקצועי בפורמט JSON המדויק הבא:
 {
-  "learning_style": "תיאור סגנון הלמידה",
-  "key_notes": "נקודות מפתח",
-  "strengths": ["חוזקה 1", "חוזקה 2", ...],
+  "learning_style": "תיאור מפורט של סגנון הלמידה (ויזואלי/אודיטורי/קינסטטי וכו')",
+  "key_notes": "נקודות מפתח חשובות על התלמיד",
+  "strengths": ["חוזקה 1", "חוזקה 2", "חוזקה 3", ...],
   "challenges": ["אתגר 1", "אתגר 2", ...],
   "insights": [
     {
-      "category": "קוגניטיבי/רגשי/חברתי/מוטיבציה",
-      "icon": "brain/heart/users/star",
-      "finding": "ממצא",
+      "id": "insight_1",
+      "title": "כותרת קצרה של התובנה",
+      "summary": "סיכום מפורט של התובנה",
+      "domain": "cognitive|emotional|social|self-regulation|environmental",
+      "confidence": 0.85,
+      "evidence": {
+        "from_questions": [4, 9, 24],
+        "patterns": ["דפוס שזוהה בתשובות", "דפוס נוסף"]
+      },
       "recommendations": [
         {
-          "action": "פעולה",
-          "how_to": "כיצד לבצע",
-          "time_needed": "זמן נדרש",
-          "examples": "דוגמאות",
-          "priority": "high/medium/low"
+          "action": "פעולה ספציפית למורה",
+          "how_to": "איך לבצע את הפעולה בפועל",
+          "when": "מתי לבצע (במהלך השיעורים/שבועי/מתמשך)",
+          "duration": "משך זמן משוער",
+          "audience": "teacher",
+          "category": "instruction|motivation|behavior|environment|collaboration",
+          "priority": "high|medium|low",
+          "materials": ["חומר 1", "חומר 2"],
+          "follow_up_metric": "איך למדוד הצלחה",
+          "confidence_score": {
+            "value": 0.9,
+            "impact": "high|medium|low",
+            "effort": "low|medium|high"
+          }
         }
       ]
     }
   ],
-  "immediate_actions": [
-    {
-      "what": "מה לעשות",
-      "how": "איך לעשות",
-      "when": "מתי",
-      "time": "זמן"
-    }
-  ],
-  "seating_arrangement": {
-    "location": "מיקום מומלץ",
-    "partner_type": "סוג שותף",
-    "avoid": "ממה להימנע"
-  }
-}`;
+  "immediate_actions": [],
+  "seating_arrangement": null
+}
+
+חשוב:
+- צור 4-5 תובנות (insights) מפורטות
+- כל תובנה צריכה להיות מבוססת על שאלות ספציפיות מהשאלון
+- תן confidence score מציאותי (0.7-0.95)
+- כל recommendation צריכה להיות מעשית וברורה
+- domain חייב להיות אחד מהערכים: cognitive, emotional, social, self-regulation, environmental
+- category חייב להיות אחד מהערכים: instruction, motivation, behavior, environment, collaboration`;
 }
 
 /**
@@ -257,7 +269,7 @@ function transformAnalysisToFirestore(studentCode, classId, name, answers, analy
     strengthsCount: analysis.strengths?.length || 0,
     challengesCount: analysis.challenges?.length || 0,
 
-    // Detailed data - using underscores to match existing structure
+    // Detailed data - using exact structure from Firestore
     student_summary: {
       learning_style: analysis.learning_style || '',
       key_notes: analysis.key_notes || '',
@@ -265,9 +277,13 @@ function transformAnalysisToFirestore(studentCode, classId, name, answers, analy
       challenges: analysis.challenges || []
     },
 
+    // Insights - full detailed structure with evidence, recommendations, etc.
     insights: analysis.insights || [],
-    immediate_actions: analysis.immediate_actions || [],
-    seating_arrangement: analysis.seating_arrangement || {},
+
+    // These are not used but kept for compatibility
+    immediateActions: analysis.immediate_actions || [],
+    seatingArrangement: analysis.seating_arrangement || null,
+    studentSummary: null,
 
     // Metadata
     createdBy: userId,
