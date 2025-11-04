@@ -9,16 +9,12 @@
       "destination": "/sw.js"
     },
     {
-      "source": "/workbox-*.js",
-      "destination": "/workbox-$1.js"
-    },
-    {
       "source": "/favicon.svg",
       "destination": "/favicon.svg"
     },
     {
-      "source": "/assets/*",
-      "destination": "/assets/$1"
+      "source": "/assets/:path*",
+      "destination": "/assets/:path*"
     },
     {
       "source": "/(.*)",
