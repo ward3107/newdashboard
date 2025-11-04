@@ -60,10 +60,13 @@ export function getCSPDirectives(isDevelopment = false): CSPDirectives {
       isDevelopment ? 'ws://127.0.0.1:*' : '',
       isDevelopment ? 'http://127.0.0.1:*' : '',
       // Optimization backend (Python FastAPI)
-      isDevelopment ? 'http://localhost:8000' : '',
-      isDevelopment ? 'http://127.0.0.1:8000' : '',
+      // Optimization backend (Python FastAPI) - allow in both dev and prod
+      'http://localhost:8000',
+      'http://127.0.0.1:8000',
+      'https://localhost:8000',
       // Production optimization backend (Render)
       'https://*.onrender.com',
+      'https://*.render.com',
     ].filter(Boolean),
     'font-src': [
       "'self'",
