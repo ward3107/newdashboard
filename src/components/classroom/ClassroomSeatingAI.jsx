@@ -48,7 +48,6 @@ const useSafeNavigate = () => {
   } catch {
     // Return a fallback function that uses window.location
     return (path) => {
-      // console.log('Using fallback navigation to:', path);
       window.location.href = path;
     };
   }
@@ -1480,7 +1479,6 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
                   const shape = SEATING_SHAPES[selectedShape];
 
                   try {
-                    console.log('🚀 Starting Python optimization...');
                     const result = await solveSeatingCSP(analyzedStudents, shape, {
                       populationSize: 50,
                       generations: 100,
@@ -1494,7 +1492,6 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
                     setArrangement(convertedArrangement);
                     setCspMetadata(result.metadata);
 
-                    console.log('✅ Optimization complete!', result);
                   } catch (error) {
                     console.error('❌ Optimization failed:', error);
                     alert('אופטימיזציה נכשלה - משתמש בסידור פשוט');
@@ -1555,7 +1552,6 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
   const placementReason = generateDetailedPlacementReason(student, row, col, totalRows);
 
   // Debug: Log to verify different positions generate different reasons
-  // console.log(`Student ${student.studentCode} at row ${row}, col ${col} | Strengths: ${student.strengthsCount || 0}, Challenges: ${student.challengesCount || 0}:`, placementReason.mainReason);
 
   // Determine student color based on needs and performance
   const getStudentColor = () => {
@@ -1842,7 +1838,6 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
       setArrangement(simpleArrangement);
       setCspMetadata(null);
 
-      console.log('📊 Simple arrangement generated - use "ארגן מחדש" button for AI optimization');
     }
   }, [selectedShape, students.length]);
 
@@ -1930,12 +1925,6 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
         setArrangement(convertedArrangement);
         setCspMetadata(result.metadata);
 
-        console.log('🔄 Regenerated CSP Solution:', {
-          layout: shape.layout,
-          score: result.score,
-          violations: result.violations,
-          converted: shape.layout !== 'grid'
-        });
       } else {
         // Fallback to simple arrangement if no rows/cols (shouldn't happen now)
         const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
@@ -2104,7 +2093,6 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           setArrangement(newArrangement);
         }
 
-        console.log('Swap evaluated:', evaluation);
       }
     }
   };

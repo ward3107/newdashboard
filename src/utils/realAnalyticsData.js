@@ -13,11 +13,6 @@ export const aggregateRealAnalytics = (students = []) => {
     !s.needsAnalysis || s.strengthsCount > 0
   );
 
-  console.log('🔍 Real Analytics - Student Analysis:', {
-    totalStudents: students.length,
-    analyzedCount: analyzedStudents.length,
-    sampleStudent: students[0]
-  });
 
   if (analyzedStudents.length === 0) {
     console.warn('⚠️ No analyzed students found. All students need analysis.');
