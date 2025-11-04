@@ -69,7 +69,7 @@ const LanguageSwitcher: React.FC = () => {
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
+  }, [isOpen, t]);
 
   const applyLanguage = async (lang: Language) => {
     const langOption = languages.find(l => l.code === lang);
@@ -81,7 +81,6 @@ const LanguageSwitcher: React.FC = () => {
     // - Save to localStorage (via our i18n.ts listener)
     await i18n.changeLanguage(lang);
 
-    console.log(`Language changed to: ${langOption.nativeName}`);
   };
 
   const handleLanguageChange = async (lang: Language) => {

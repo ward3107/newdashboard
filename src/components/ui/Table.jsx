@@ -120,29 +120,29 @@ const Table = ({ data, columns, onRowClick }) => {
             </tr>
           </thead>
           <tbody>
-            {sortedData.map((row, index) => {
-              const [isHovered, setIsHovered] = React.useState(false);
-
-              return (
-                <tr
-                  key={index}
-                  style={{
-                    backgroundColor: isHovered ? 'var(--color-primary-50)' : (index % 2 === 0 ? 'var(--bg-primary)' : 'var(--color-gray-50)'),
-                    cursor: onRowClick ? 'pointer' : 'default',
-                    transition: 'all var(--transition-fast)'
-                  }}
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                  onClick={() => onRowClick && onRowClick(row)}
-                >
-                  {columns.map((column) => (
-                    <td key={column.key} style={tdStyles}>
-                      {column.render ? column.render(row[column.key], row) : row[column.key]}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
+            {sortedData.map((row, index) => (
+              <tr
+                key={index}
+                style={{
+                  backgroundColor: index % 2 === 0 ? 'var(--bg-primary)' : 'var(--color-gray-50)',
+                  cursor: onRowClick ? 'pointer' : 'default',
+                  transition: 'all var(--transition-fast)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-primary-50)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'var(--bg-primary)' : 'var(--color-gray-50)';
+                }}
+                onClick={() => onRowClick && onRowClick(row)}
+              >
+                {columns.map((column) => (
+                  <td key={column.key} style={tdStyles}>
+                    {column.render ? column.render(row[column.key], row) : row[column.key]}
+                  </td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

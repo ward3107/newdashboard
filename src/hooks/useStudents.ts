@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 
@@ -75,12 +75,12 @@ export const useStudents = (): UseStudentsHook & {
     }
   }, [students]);
 
-  // Debounced search function
-  const debouncedSearch = useCallback(
-    debounce((query: string) => {
+  // Debounced search function (useMemo for stable reference)
+  const debouncedSearch = useMemo(
+    () => debounce((query: string) => {
       trackEvent('search_query', { query: query.length > 0 ? 'has_query' : 'cleared' });
     }, 300),
-    []
+    []  // Empty deps is correct - we want this created once
   );
 
   // Search query setter with debouncing
@@ -126,7 +126,7 @@ export const useStudents = (): UseStudentsHook & {
     setSortBy('name');
     setSortOrder('asc');
     trackEvent('filters_cleared');
-  }, []);
+  }, [setSearchQuery]);
 
   // Export filtered data
   const exportData = useCallback(() => {

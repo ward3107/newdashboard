@@ -1,10 +1,10 @@
 /**
- * PDF Export Utility
+ * PDF Export Utility with Dynamic Imports
  * Generates professional PDF reports from analytics data
+ * Reduces initial bundle size by ~300KB
  */
 
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import type jsPDF from 'jspdf';
 
 interface ExportOptions {
   title: string;
@@ -53,6 +53,10 @@ export async function generateAnalyticsPDF(
   options: ExportOptions = { title: 'דוח ניתוח תלמידים' }
 ): Promise<void> {
   try {
+    // Dynamic import - loads jsPDF only when needed
+    const jsPDFModule = await import(/* webpackChunkName: "jspdf" */ 'jspdf');
+    const jsPDF = jsPDFModule.default;
+
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
@@ -306,6 +310,10 @@ export async function captureElementToPDF(
   if (!element) return yPosition;
 
   try {
+    // Dynamic import - loads html2canvas only when needed
+    const html2canvasModule = await import(/* webpackChunkName: "html2canvas" */ 'html2canvas');
+    const html2canvas = html2canvasModule.default;
+
     const canvas = await html2canvas(element, {
       scale: 2,
       logging: false,

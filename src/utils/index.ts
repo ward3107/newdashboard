@@ -294,7 +294,7 @@ export const debounce = <T extends (...args: never[]) => unknown>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {
-  let timeout: NodeJS.Timeout;
+  let timeout: ReturnType<typeof setTimeout>;
 
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
@@ -319,12 +319,8 @@ export const throttle = <T extends (...args: never[]) => unknown>(
 
 // Analytics utilities
 export const trackEvent = (eventName: string, properties?: Record<string, string | number | boolean>): void => {
-  // This would typically integrate with your analytics service
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Analytics Event:', eventName, properties);
-  }
-
-  // Example: Google Analytics, Mixpanel, etc.
+  // This would typically integrate with your analytics service (e.g., Google Analytics, Mixpanel)
+  // Development tracking disabled - implement analytics integration here
   // gtag('event', eventName, properties);
 };
 

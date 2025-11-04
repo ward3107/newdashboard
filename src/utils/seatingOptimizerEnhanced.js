@@ -173,9 +173,6 @@ const findStudentAtPosition = (studentSeats, students, targetRow, targetCol) => 
  * @returns {Promise<Object>} Optimal arrangement with metadata
  */
 export const solveSeatingCSP = async (students, shape, options = {}) => {
-  console.log(`🚀 Starting ENHANCED seating optimizer with Python backend...`);
-  console.log(`📊 Students: ${students.length}, Shape: ${shape.rows}x${shape.cols}`);
-
   // Validate inputs
   if (!students || students.length === 0) {
     console.warn('⚠️ No students provided');
@@ -199,7 +196,6 @@ export const solveSeatingCSP = async (students, shape, options = {}) => {
 
   try {
     // Convert students to backend format
-    console.log('🔄 Converting student data to backend format...');
     const backendStudents = students.map(convertStudentToBackendFormat);
 
     // Prepare optimization request
@@ -220,21 +216,15 @@ export const solveSeatingCSP = async (students, shape, options = {}) => {
       }
     };
 
-    console.log('📡 Calling Python genetic algorithm backend...');
     const response = await optimizeClassroom(request);
 
     if (!response.success || !response.data) {
       throw new Error(response.error || 'Backend optimization failed');
     }
 
-    console.log('✅ Backend optimization successful!');
-    console.log(`📈 Fitness: ${(response.data.result.fitness_score * 100).toFixed(1)}%`);
-    console.log(`⏱️  Time: ${response.data.result.computation_time.toFixed(2)}s`);
-
     // Convert response back to UI format
     const uiFormat = convertBackendResponseToUIFormat(response.data, students, shape);
 
-    console.log('✨ Enhanced optimization complete!');
     return uiFormat;
 
   } catch (error) {
@@ -242,7 +232,6 @@ export const solveSeatingCSP = async (students, shape, options = {}) => {
     console.warn(`Error: ${error.message}`);
 
     // Fall back to original JavaScript implementation
-    console.log('🔄 Using local JavaScript genetic algorithm...');
     return fallbackSolver(students, shape, options);
   }
 };

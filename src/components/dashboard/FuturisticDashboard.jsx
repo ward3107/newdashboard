@@ -60,22 +60,7 @@ const API_URL =
 // Fetch all students from backend (now supports mock data)
 const fetchStudents = async () => {
   try {
-    console.log("🔍 Fetching students (with mock data support)...");
     const students = await StudentAPI.getAllStudents();
-    console.log("✅ Students data received:", students);
-
-    // 🔍 DEBUG: Check needsAnalysis field
-    console.log('🔍 DEBUG - Student Analysis:', {
-      total: students?.length || 0,
-      sampleStudents: students?.slice(0, 5).map(s => ({
-        code: s.studentCode,
-        needsAnalysis: s.needsAnalysis,
-        strengthsCount: s.strengthsCount,
-        hasAnalysisData: s.strengthsCount > 0
-      })),
-      analyzed: students?.filter(s => !s.needsAnalysis).length || 0,
-      unanalyzed: students?.filter(s => s.needsAnalysis).length || 0
-    });
 
     // Ensure students have avatar property
     const studentsWithAvatars = (students || []).map((student) => ({
@@ -88,7 +73,6 @@ const fetchStudents = async () => {
       avatar: student.avatar || (parseInt(student.studentCode) % 4) + 1,
     }));
 
-    console.log(`📊 Returning ${studentsWithAvatars.length} students`);
 
     return studentsWithAvatars;
   } catch (error) {
@@ -100,9 +84,7 @@ const fetchStudents = async () => {
 // Fetch stats from backend (now supports mock data)
 const fetchStats = async () => {
   try {
-    console.log("🔍 Fetching stats (with mock data support)...");
     const stats = await StudentAPI.getStats();
-    console.log("✅ Stats received:", stats);
     return stats;
   } catch (error) {
     console.error("Error fetching stats:", error);
@@ -1776,21 +1758,6 @@ const FuturisticStudents = ({
   // Separate students into analyzed and unanalyzed
   const analyzedStudents = students.filter((s) => !s.needsAnalysis);
   const unanalyzedStudents = students.filter((s) => s.needsAnalysis);
-
-  // 🔍 DEBUG: Log student filtering
-  console.log('🔍 DEBUG - Student Filtering:', {
-    totalStudents: students.length,
-    analyzedCount: analyzedStudents.length,
-    unanalyzedCount: unanalyzedStudents.length,
-    firstStudent: students[0],
-    firstAnalyzed: analyzedStudents[0],
-    firstUnanalyzed: unanalyzedStudents[0],
-    allStudentNeedsAnalysis: students.map(s => ({
-      code: s.studentCode,
-      needsAnalysis: s.needsAnalysis,
-      strengthsCount: s.strengthsCount
-    }))
-  });
 
   // Filter students based on search term and selected class
   const filterStudents = (studentsList) => {

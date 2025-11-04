@@ -15,12 +15,10 @@ export class EnhancedAnalysisService {
   generateEnhancedAnalysis(studentData) {
     // Check if we have real AI insights from Google Sheets
     if (studentData.insights && Array.isArray(studentData.insights) && studentData.insights.length > 0) {
-      console.log('📊 Using REAL AI insights from analysis');
       return this.useRealAIInsights(studentData);
     }
 
     // Fallback to pattern-based insights if no AI analysis available
-    console.log('⚠️ No AI insights found, using pattern-based fallback');
     const analysis = {
       insights: [],
       recommendations: [],

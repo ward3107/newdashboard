@@ -72,6 +72,7 @@ const AdminPanel = ({ darkMode, theme, onClose, onDataUpdate, onSmartAnalysis })
           darkMode ? 'bg-gray-900/95' : 'bg-white/95'
         } rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden border border-white/20 shadow-2xl`}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >

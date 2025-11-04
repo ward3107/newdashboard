@@ -45,7 +45,6 @@ function sendToAnalytics(data: PerformanceData) {
   // Log to console in development
   if (import.meta.env.DEV) {
     const emoji = data.rating === 'good' ? '✅' : data.rating === 'poor' ? '❌' : '⚠️';
-    console.log(`${emoji} ${data.metric}: ${data.value.toFixed(2)}ms (${data.rating})`);
   }
 
   // Send to your analytics service (Google Analytics, etc.)
@@ -136,11 +135,7 @@ export function initPerformanceMonitoring() {
   // Custom metrics
   measureCustomMetrics();
 
-  // Log initial performance summary
-  if (import.meta.env.DEV) {
-    console.log('🚀 Performance monitoring initialized');
-    console.log('📊 Tracking: LCP, CLS, FCP, INP, TTFB');
-  }
+  // Performance metrics collected - view in browser DevTools Performance tab
 }
 
 /**

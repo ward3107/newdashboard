@@ -431,7 +431,6 @@ export const solveSeatingCSP = (students, shape, options = {}) => {
       eliteSize = 5
     } = options;
 
-    console.log(`🧬 Starting CSP solver with ${students.length} students...`);
 
     // Generate initial population
     let population = [];
@@ -458,7 +457,6 @@ export const solveSeatingCSP = (students, shape, options = {}) => {
       if (evaluated[0].score > bestScore) {
         bestScore = evaluated[0].score;
         bestSolution = evaluated[0];
-        console.log(`📈 Gen ${generation}: Best score = ${bestScore.toFixed(2)}`);
       }
 
       // Create next generation
@@ -484,12 +482,10 @@ export const solveSeatingCSP = (students, shape, options = {}) => {
 
       // Early stopping if we found a great solution
       if (bestScore > 95) {
-        console.log(`✅ Found excellent solution at generation ${generation}`);
         break;
       }
     }
 
-    console.log(`✨ Final best score: ${bestScore.toFixed(2)} after ${generation + 1} generations`);
 
     // Add compatibility metadata to desks
     const enhancedArrangement = bestSolution.arrangement.map(desk => {

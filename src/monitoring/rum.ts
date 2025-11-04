@@ -223,10 +223,7 @@ class RealUserMonitoring {
       // Send to monitoring endpoint
       await this.sendToServer(data);
 
-      // Also log to console in development
-      if (import.meta.env.DEV) {
-        console.log('📊 RUM Data:', data);
-      }
+      // Development logging disabled - data sent to monitoring endpoint only
     } catch (error) {
       console.error('Failed to send RUM data:', error);
       // Re-add data to buffers if send failed
@@ -253,7 +250,6 @@ class RealUserMonitoring {
         localStorage.setItem('rum_data', JSON.stringify(rumData));
       } catch (err) {
         // Silently fail if localStorage is not available
-        console.debug('RUM: localStorage not available');
       }
     }
 
@@ -294,7 +290,6 @@ let rumInstance: RealUserMonitoring | null = null;
 export function initializeRUM(): RealUserMonitoring {
   if (!rumInstance && typeof window !== 'undefined') {
     rumInstance = new RealUserMonitoring();
-    console.log('📊 Real User Monitoring initialized');
   }
   return rumInstance!;
 }
