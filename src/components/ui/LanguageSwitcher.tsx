@@ -69,7 +69,7 @@ const LanguageSwitcher: React.FC = () => {
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
+  }, [isOpen, t]);
 
   const applyLanguage = async (lang: Language) => {
     const langOption = languages.find(l => l.code === lang);
