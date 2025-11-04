@@ -192,6 +192,12 @@ export function StudentAssessmentForm() {
 
     // Process in background without waiting
     try {
+      // Check if functions is available
+      if (!functions) {
+        console.error('Firebase functions not initialized');
+        return;
+      }
+
       // Call Cloud Function in background
       const processStudent = httpsCallable(functions, 'processStudentAssessment');
 
