@@ -40,7 +40,7 @@ async function runAccessibilityTests() {
     console.log(`Testing route: ${route}`);
 
     try {
-      await page.goto(`http://localhost:3000${route}`, {
+      await page.goto(`http://localhost:5173${route}`, {
         waitUntil: 'networkidle',
       });
 
@@ -103,7 +103,7 @@ async function runAccessibilityTests() {
   });
 
   const rtlPage = await rtlContext.newPage();
-  await rtlPage.goto('http://localhost:3000', { waitUntil: 'networkidle' });
+  await rtlPage.goto('http://localhost:5173', { waitUntil: 'networkidle' });
 
   const rtlResults = await new AxeBuilder({ rtlPage })
     .withTags(WCAG_STANDARDS)
@@ -124,7 +124,7 @@ async function runAccessibilityTests() {
   });
 
   const darkPage = await darkContext.newPage();
-  await darkPage.goto('http://localhost:3000', { waitUntil: 'networkidle' });
+  await darkPage.goto('http://localhost:5173', { waitUntil: 'networkidle' });
 
   const darkResults = await new AxeBuilder({ darkPage })
     .withTags(WCAG_STANDARDS)

@@ -44,7 +44,7 @@ async function runPerformanceTests() {
     console.log(`Testing route: ${route}`);
 
     const chrome = await chromeLauncher.launch({ chromeFlags: ['--headless'] });
-    const url = `http://localhost:3000${route}`;
+    const url = `http://localhost:5173${route}`;
 
     try {
       const runnerResult = await lighthouse(url, {
@@ -184,7 +184,7 @@ async function testAPIPerformance() {
       const start = Date.now();
 
       try {
-        await fetch(`http://localhost:3000/api?${endpoint}`);
+        await fetch(`http://localhost:5173/api?${endpoint}`);
         results.push(Date.now() - start);
       } catch (error) {
         console.error('API test failed:', error.message);
