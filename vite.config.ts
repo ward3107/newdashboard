@@ -128,32 +128,32 @@ export default defineConfig({
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
 
           // Data visualization
-          'charts': ['recharts', 'd3-array', 'd3-color', 'd3-format', 'd3-interpolate', 'd3-path', 'd3-scale', 'd3-shape', 'd3-time', 'd3-time-format'],
+          'charts': ['recharts', 'chart.js', 'react-chartjs-2'],
 
           // UI libraries
-          'ui-vendor': ['framer-motion', '@headlessui/react', 'react-hot-toast'],
+          'ui-vendor': ['framer-motion', 'react-hot-toast'],
 
           // State management and data fetching
-          'data-vendor': ['@tanstack/react-query', 'axios', 'zustand'],
+          'data-vendor': ['@tanstack/react-query', 'axios'],
 
           // Icons
-          'icons': ['lucide-react', '@radix-ui/react-icons'],
+          'icons': ['lucide-react'],
 
-          // Export libraries (heavy)
+          // Export libraries (heavy) - NOW WITH DYNAMIC IMPORTS!
           'export-xlsx': ['xlsx'],
           'export-pdf': ['jspdf', 'html2canvas'],
 
           // Localization
-          'i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector', 'i18next-http-backend'],
-
-          // Analytics and monitoring
-          'analytics': ['react-ga4'],
+          'i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
 
           // Form handling
-          'forms': ['react-hook-form', '@hookform/resolvers', 'yup'],
+          'forms': ['@hookform/resolvers'],
 
           // Date utilities
           'date-utils': ['date-fns'],
+
+          // DnD Kit
+          'dnd': ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
         },
 
         // Asset naming
