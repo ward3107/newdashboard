@@ -38,8 +38,9 @@ import {
 } from "lucide-react";
 import AdminPanel from "../AdminPanel";
 import EnhancedStudentDetail from "../EnhancedStudentDetail";
-import * as API from "../../services/googleAppsScriptAPI";
-import * as StudentAPI from "../../api/studentAPI";
+// UPDATED: Use new unified API that supports both Firebase and Google Sheets
+import * as API from "../../services/api";
+import * as StudentAPI from "../../services/api";
 import EnhancedAnalyticsDashboard from "../analytics/EnhancedAnalyticsDashboard";
 import { AnalysisAggregator } from "../../services/analysisAggregator";
 import ClassroomSeatingAI from "../classroom/ClassroomSeatingAI";
@@ -60,7 +61,13 @@ const API_URL =
 // Fetch all students from backend (now supports mock data)
 const fetchStudents = async () => {
   try {
-    const students = await StudentAPI.getAllStudents();
+    // New API returns ApiResponse<{ students: Student[] }>
+    const response = await StudentAPI.getAllStudents();
+
+    // Extract students from response
+    const students = response.success && response.data?.students
+      ? response.data.students
+      : [];
 
     // Ensure students have avatar property
     const studentsWithAvatars = (students || []).map((student) => ({
@@ -84,8 +91,9 @@ const fetchStudents = async () => {
 // Fetch stats from backend (now supports mock data)
 const fetchStats = async () => {
   try {
-    const stats = await StudentAPI.getStats();
-    return stats;
+    // New API returns ApiResponse<DashboardStats>
+    const response = await StudentAPI.getStats();
+    return response.success && response.data ? response.data : null;
   } catch (error) {
     console.error("Error fetching stats:", error);
     return null;
