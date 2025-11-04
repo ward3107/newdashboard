@@ -1788,7 +1788,9 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   const [selectedStudent, setSelectedStudent] = useState(null); // Selected student for side panel
 
   // Filter analyzed students only
+  // IMPORTANT: If no analyzed students, use all students as fallback
   const analyzedStudents = students.filter(s => !s.needsAnalysis);
+  const studentsToUse = analyzedStudents.length > 0 ? analyzedStudents : students;
 
   // Sensors for drag and drop
   const sensors = useSensors(
@@ -1801,12 +1803,12 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
   // Generate AI recommendation on mount and when students change
   useEffect(() => {
-    if (analyzedStudents.length > 0) {
-      const recommendation = analyzeClassForSeating(analyzedStudents);
+    if (studentsToUse.length > 0) {
+      const recommendation = analyzeClassForSeating(studentsToUse);
       setAiRecommendation(recommendation);
       setSelectedShape(recommendation.recommendedShape);
     }
-  }, [students.length]);
+  }, [studentsToUse.length]);
 
   // Convert CSP desk arrangement to layout-specific format
   const convertCSPToLayoutFormat = (cspArrangement, layoutType) => {
@@ -1870,11 +1872,17 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   // Generate SIMPLE arrangement when shape changes (FAST - no backend call)
   // Then automatically optimize with CSP solver in the background
   useEffect(() => {
-    if (analyzedStudents.length > 0) {
+    if (studentsToUse.length > 0) {
       const shape = SEATING_SHAPES[selectedShape];
 
       // Step 1: Show simple arrangement instantly (good UX)
-      const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+      const simpleArrangement = generateSimpleArrangement(studentsToUse, shape);
+      console.log('📊 Simple arrangement generated:', {
+        shape: shape.id,
+        layout: shape.layout,
+        students: studentsToUse.length,
+        arrangementLength: simpleArrangement.length
+      });
       setArrangement(simpleArrangement);
       setCspMetadata(null);
 
@@ -1884,23 +1892,31 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
         setIsGenerating(true);
 
         // Run CSP optimization asynchronously
-        solveSeatingCSP(analyzedStudents, shape, {
+        solveSeatingCSP(studentsToUse, shape, {
           populationSize: 50,
           generations: 100,
           mutationRate: 0.2
         }).then(result => {
+          console.log('✅ CSP optimization complete:', {
+            arrangement: result.arrangement.length,
+            score: result.score
+          });
           // Replace simple arrangement with optimized one
           setArrangement(result.arrangement);
           setCspMetadata(result.metadata);
         }).catch(error => {
-          console.warn('Auto-optimization failed, keeping simple arrangement:', error);
+          console.warn('⚠️ Auto-optimization failed, keeping simple arrangement:', error);
           // Keep the simple arrangement if optimization fails
         }).finally(() => {
           setIsGenerating(false);
         });
       }
+    } else {
+      // No students - clear arrangement
+      setArrangement([]);
+      setCspMetadata(null);
     }
-  }, [selectedShape, students.length]);
+  }, [selectedShape, studentsToUse.length]);
 
   // Get location-based reasoning for a student placement
   const getLocationReasoning = (row, col, student, totalRows, totalCols) => {
@@ -1973,10 +1989,20 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
       // Use CSP solver for ALL layouts
       if (shape.rows && shape.cols) {
-        const result = await solveSeatingCSP(analyzedStudents, shape, {
+        console.log('🔄 Regenerating with CSP solver...', {
+          students: studentsToUse.length,
+          shape: shape.id
+        });
+
+        const result = await solveSeatingCSP(studentsToUse, shape, {
           populationSize: 50,
           generations: 100,
           mutationRate: 0.2
+        });
+
+        console.log('✅ Regeneration complete:', {
+          arrangementLength: result.arrangement.length,
+          score: result.score
         });
 
         // Convert to appropriate format based on layout type
@@ -1989,15 +2015,17 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
       } else {
         // Fallback to simple arrangement if no rows/cols (shouldn't happen now)
-        const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+        const simpleArrangement = generateSimpleArrangement(studentsToUse, shape);
         setArrangement(simpleArrangement);
         setCspMetadata(null);
       }
     } catch (error) {
       console.error('❌ Regenerate failed:', error);
+      console.error('Error details:', error.message, error.stack);
       // Fallback to simple arrangement on error
       const shape = SEATING_SHAPES[selectedShape];
-      const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+      const simpleArrangement = generateSimpleArrangement(studentsToUse, shape);
+      console.log('⚠️ Using fallback simple arrangement:', simpleArrangement.length);
       setArrangement(simpleArrangement);
       setCspMetadata(null);
     } finally {
