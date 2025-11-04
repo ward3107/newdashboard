@@ -16,10 +16,14 @@
     "@tanstack/react-query": "^5.90.2",
     "@types/react-window": "^1.8.8",
     "axios": "^1.6.2",
+    "canvas-confetti": "^1.9.4",
     "chart.js": "^4.5.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
     "exceljs": "^4.4.0",
-    "firebase": "^12.4.0",
+    "firebase": "^12.5.0",
+    "firebase-admin": "^13.5.0",
+    "follow-redirects": "^1.15.11",
     "framer-motion": "^12.23.22",
     "html2canvas": "^1.4.1",
     "i18next": "^25.6.0",
@@ -63,7 +67,10 @@
     "precommit": "npm run lint && npm run typecheck && npm run test",
     "ci": "npm run clean && npm run lint && npm run typecheck && npm run test:coverage && npm run e2e && npm run a11y && npm run scan:deps",
     "ci:full": "npm run clean && npm run lint && npm run typecheck && npm run test:coverage && npm run test:int && npm run e2e && npm run a11y && npm run scan:deps",
-    "reports": "node scripts/generate-reports.cjs"
+    "reports": "node scripts/generate-reports.cjs",
+    "migrate:dry-run": "node scripts/migrate-to-firebase.js --dry-run",
+    "migrate": "node scripts/migrate-to-firebase.js",
+    "migrate:backup": "node scripts/migrate-to-firebase.js --backup"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.8.0",
