@@ -51,6 +51,10 @@ export function getCSPDirectives(isDevelopment = false): CSPDirectives {
       'https://apis.google.com',
       'https://fonts.googleapis.com',
       'https://fonts.gstatic.com',
+      'https://firestore.googleapis.com',
+      'https://us-central1-ishebott.cloudfunctions.net',
+      'https://*.firebaseapp.com',
+      'https://*.firebase.google.com',
       isDevelopment ? 'ws://localhost:*' : '', // WebSocket for HMR
       isDevelopment ? 'http://localhost:*' : '',
     ].filter(Boolean),
