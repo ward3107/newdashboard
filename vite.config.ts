@@ -140,7 +140,7 @@ export default defineConfig({
           'icons': ['lucide-react'],
 
           // Export libraries (heavy) - NOW WITH DYNAMIC IMPORTS!
-          'export-xlsx': ['xlsx'],
+          'export-xlsx': ['exceljs'],
           'export-pdf': ['jspdf', 'html2canvas'],
 
           // Localization

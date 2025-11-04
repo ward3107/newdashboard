@@ -1,12 +1,9 @@
 /**
  * Optimized Export Utilities with Dynamic Imports
- * This reduces the initial bundle size by ~600KB
+ * This reduces the initial bundle size by dynamically loading export libraries
  *
- * SECURITY NOTE: xlsx@0.18.5 has known vulnerabilities (Prototype Pollution, ReDoS).
- * However, this library is ONLY used for EXPORTING data (output), never for parsing
- * untrusted Excel files (input). The risk is minimal as we only generate Excel files
- * from trusted application data. Monitor https://github.com/advisories/GHSA-4r6h-8v6p-xvw6
- * for updates.
+ * SECURITY: Migrated from xlsx to exceljs to eliminate known vulnerabilities.
+ * ExcelJS is actively maintained and has no known security issues.
  */
 
 import { EXPORT_CONFIG } from '../config';
@@ -29,51 +26,62 @@ export const exportToExcel = async (students) => {
     document.body.appendChild(loadingToast);
 
     // Dynamic import - loads only when needed
-    const XLSX = await import(/* webpackChunkName: "xlsx" */ 'xlsx');
+    const ExcelJS = await import(/* webpackChunkName: "exceljs" */ 'exceljs');
 
     // Remove loading indicator
     document.body.removeChild(loadingToast);
 
-    // Prepare data for Excel
+    // Create workbook and worksheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(EXPORT_CONFIG.EXCEL.SHEET_NAME);
+
+    // Define columns with headers and widths
+    worksheet.columns = [
+      { header: 'קוד תלמיד', key: 'studentCode', width: 15 },
+      { header: 'כיתה', key: 'classId', width: 10 },
+      { header: 'רבעון', key: 'quarter', width: 10 },
+      { header: 'תאריך עדכון', key: 'date', width: 15 },
+      { header: 'סגנונות למידה', key: 'learningStyle', width: 30 },
+      { header: 'מספר חוזקות', key: 'strengthsCount', width: 15 },
+      { header: 'מספר אתגרים', key: 'challengesCount', width: 15 },
+      { header: 'הערות מפתח', key: 'keyNotes', width: 40 }
+    ];
+
+    // Prepare and add data rows
     const excelData = students.map(student => ({
-      'קוד תלמיד': student.studentCode,
-      'כיתה': student.classId,
-      'רבעון': student.quarter,
-      'תאריך עדכון': student.date,
-      'סגנונות למידה': student.learningStyle?.replace(/\n/g, ', ').replace(/• /g, '') || '',
-      'מספר חוזקות': student.strengthsCount || 0,
-      'מספר אתגרים': student.challengesCount || 0,
-      'הערות מפתח': student.keyNotes || ''
+      studentCode: student.studentCode,
+      classId: student.classId,
+      quarter: student.quarter,
+      date: student.date,
+      learningStyle: student.learningStyle?.replace(/\n/g, ', ').replace(/• /g, '') || '',
+      strengthsCount: student.strengthsCount || 0,
+      challengesCount: student.challengesCount || 0,
+      keyNotes: student.keyNotes || ''
     }));
 
-    // Create workbook
-    const wb = XLSX.utils.book_new();
+    worksheet.addRows(excelData);
 
-    // Create worksheet
-    const ws = XLSX.utils.json_to_sheet(excelData);
-
-    // Set column widths
-    const colWidths = [
-      { wch: 15 }, // קוד תלמיד
-      { wch: 10 }, // כיתה
-      { wch: 10 }, // רבעון
-      { wch: 15 }, // תאריך עדכון
-      { wch: 30 }, // סגנונות למידה
-      { wch: 15 }, // מספר חוזקות
-      { wch: 15 }, // מספר אתגרים
-      { wch: 40 }  // הערות מפתח
-    ];
-    ws['!cols'] = colWidths;
-
-    // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(wb, ws, EXPORT_CONFIG.EXCEL.SHEET_NAME);
+    // Style the header row
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFE0E0E0' }
+    };
 
     // Generate filename with timestamp
     const timestamp = new Date().toISOString().slice(0, 10);
     const filename = `${EXPORT_CONFIG.EXCEL.FILE_NAME.replace('.xlsx', '')}_${timestamp}.xlsx`;
 
-    // Write and download file
-    XLSX.writeFile(wb, filename);
+    // Write to buffer and download
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    window.URL.revokeObjectURL(url);
 
     return { success: true, filename };
   } catch (error) {
@@ -306,7 +314,7 @@ export const exportStudentDetailToPDF = async (studentData) => {
 /**
  * Check if export libraries are already loaded
  */
-let xlsxLoaded = false;
+let exceljsLoaded = false;
 let pdfLoaded = false;
 
 /**
@@ -317,9 +325,9 @@ export const preloadExportLibraries = async () => {
     // Preload in background when idle
     if ('requestIdleCallback' in window) {
       window.requestIdleCallback(async () => {
-        if (!xlsxLoaded) {
-          await import(/* webpackChunkName: "xlsx", webpackPreload: true */ 'xlsx');
-          xlsxLoaded = true;
+        if (!exceljsLoaded) {
+          await import(/* webpackChunkName: "exceljs", webpackPreload: true */ 'exceljs');
+          exceljsLoaded = true;
         }
         if (!pdfLoaded) {
           await import(/* webpackChunkName: "jspdf", webpackPreload: true */ 'jspdf');
