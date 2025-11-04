@@ -178,7 +178,6 @@ const StatCard = ({ card, index }) => {
         borderRadius: '12px',
         padding: 'var(--space-6)',
         transition: 'all var(--transition-base)',
-        cursor: 'pointer',
         boxShadow: isHovered ? '0 8px 16px rgba(0, 0, 0, 0.15)' : '0 2px 8px rgba(0, 0, 0, 0.1)',
         transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
         animation: `fadeInUp ${0.3 + index * 0.1}s ease-out`,

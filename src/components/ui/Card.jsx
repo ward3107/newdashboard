@@ -86,11 +86,19 @@ const Card = ({
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (clickable && onClick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onClick(e);
+    }
+  };
+
   return (
     <div
       style={cardStyles}
       className={className}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       onMouseEnter={() => (hoverable || clickable) && setIsHovered(true)}
       onMouseLeave={() => (hoverable || clickable) && setIsHovered(false)}
       role={clickable ? 'button' : undefined}

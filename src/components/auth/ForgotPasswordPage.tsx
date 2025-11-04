@@ -142,7 +142,6 @@ export const ForgotPasswordPage: React.FC = () => {
                     } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none`}
                     placeholder="teacher@school.com"
                     disabled={isSubmitting}
-                    autoFocus
                   />
                   {errors.email && (
                     <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>

@@ -1030,7 +1030,6 @@ const FuturisticTeacherDashboard = () => {
                         ? "border-gray-600 bg-gray-800 text-white"
                         : "border-gray-300 bg-white text-gray-900"
                   } focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors`}
-                  autoFocus
                   autoComplete="current-password"
                 />
                 {passwordError && (

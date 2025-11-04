@@ -119,6 +119,10 @@ const LandingPage: React.FC = () => {
             {showPlayButton && (
               <div
                 onClick={handlePlayClick}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), handlePlayClick())}
+                role="button"
+                tabIndex={0}
+                aria-label="Unmute video"
                 className="absolute inset-0 flex items-center justify-center bg-black/70 cursor-pointer z-10"
               >
                 <div className="flex flex-col items-center gap-4">
