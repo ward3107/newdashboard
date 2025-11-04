@@ -328,7 +328,6 @@ export const preloadExportLibraries = async () => {
       });
     }
   } catch (error) {
-    console.log('Export libraries preload skipped:', error);
   }
 };
 

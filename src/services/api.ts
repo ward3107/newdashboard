@@ -194,7 +194,6 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
   // Use mock data in development
   if (USE_MOCK_DATA) {
     if (process.env.NODE_ENV === 'development') {
-      console.log(`🔧 Using mock data for action: ${action}`);
     }
     return handleMockResponse<T>(action, params);
   }
@@ -213,7 +212,6 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
   try {
     const url = buildUrl(action, params);
     if (process.env.NODE_ENV === 'development') {
-      console.log(`📡 API Call: ${action}`, params);
     }
 
     const response = await fetchWithTimeout(url);
@@ -230,7 +228,6 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
     }
 
     if (process.env.NODE_ENV === 'development') {
-      console.log(`✅ API Success: ${action}`, data);
     }
 
     return {

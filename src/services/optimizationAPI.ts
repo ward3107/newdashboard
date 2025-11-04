@@ -187,7 +187,6 @@ async function optimizationApiCall<T>(
     const url = `${OPTIMIZATION_API_URL}${endpoint}`;
 
     if (process.env.NODE_ENV === 'development') {
-      console.log(`📡 Optimization API Call: ${endpoint}`);
     }
 
     const response = await fetchWithTimeout(url, {
@@ -208,7 +207,6 @@ async function optimizationApiCall<T>(
     const data = await response.json();
 
     if (process.env.NODE_ENV === 'development') {
-      console.log(`✅ Optimization API Success: ${endpoint}`, data);
     }
 
     return {

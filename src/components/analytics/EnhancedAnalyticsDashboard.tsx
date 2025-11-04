@@ -132,7 +132,6 @@ const EnhancedAnalyticsDashboard: React.FC<Props> = ({ students, darkMode = fals
         darkMode,
       });
       // Success notification could be added here
-      console.log('✅ PDF exported successfully');
     } catch (error) {
       console.error('❌ Error exporting PDF:', error);
       alert(t('analytics.export.error'));

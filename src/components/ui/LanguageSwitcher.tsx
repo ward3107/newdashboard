@@ -81,7 +81,6 @@ const LanguageSwitcher: React.FC = () => {
     // - Save to localStorage (via our i18n.ts listener)
     await i18n.changeLanguage(lang);
 
-    console.log(`Language changed to: ${langOption.nativeName}`);
   };
 
   const handleLanguageChange = async (lang: Language) => {

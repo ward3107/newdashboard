@@ -230,5 +230,4 @@ self.addEventListener('push', (event: PushEvent) => {
 });
 
 if (process.env.NODE_ENV === 'development') {
-  console.log('⚡ Enhanced Service Worker loaded with offline support');
 }

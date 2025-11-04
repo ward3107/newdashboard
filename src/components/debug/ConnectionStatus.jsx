@@ -21,12 +21,10 @@ const ConnectionStatus = () => {
     // Test real API
     try {
       const url = `${API_CONFIG.BASE_URL}?action=test`;
-      console.log('Testing connection to:', url);
 
       const response = await fetch(url);
       const result = await response.json();
 
-      console.log('Connection test result:', result);
 
       if (result.success) {
         setStatus('connected');

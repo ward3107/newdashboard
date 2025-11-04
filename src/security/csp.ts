@@ -116,7 +116,6 @@ export function applyCSPMetaTag(isDevelopment = false): void {
   document.head.appendChild(meta);
 
   if (isDevelopment) {
-    console.log('🔒 CSP applied:', cspContent.substring(0, 100) + '...');
   }
 }
 
@@ -168,7 +167,6 @@ export function initializeCSP(): void {
 
   // Skip CSP in development to avoid blocking development features
   if (isDevelopment) {
-    console.log('🔓 CSP disabled in development mode');
     return;
   }
 

@@ -169,18 +169,15 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
       try {
         // Aggregate real analytics data from ISHEBOT-analyzed students
         if (analyzedStudents.length > 0) {
-          console.log('📊 Aggregating real analytics from', analyzedStudents.length, 'analyzed students');
           const data = aggregateRealAnalytics(analyzedStudents);
 
           if (data) {
-            console.log('✅ Real analytics data aggregated successfully:', data);
             setAnalyticsData(data);
           } else {
             console.warn('⚠️ No ISHEBOT analysis data found in students');
             setAnalyticsData(null);
           }
         } else {
-          console.log('📭 No analyzed students available');
           setAnalyticsData(null);
         }
       } catch (error) {
