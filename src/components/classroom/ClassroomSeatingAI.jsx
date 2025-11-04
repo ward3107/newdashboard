@@ -1910,14 +1910,15 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     }, 300);
   };
 
-  const handleRegenerateArrangement = () => {
+  const handleRegenerateArrangement = async () => {
     setIsGenerating(true);
-    setTimeout(() => {
+
+    try {
       const shape = SEATING_SHAPES[selectedShape];
 
       // Use CSP solver for ALL layouts
       if (shape.rows && shape.cols) {
-        const result = solveSeatingCSP(analyzedStudents, shape, {
+        const result = await solveSeatingCSP(analyzedStudents, shape, {
           populationSize: 50,
           generations: 100,
           mutationRate: 0.2
@@ -1937,9 +1938,16 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
         setArrangement(simpleArrangement);
         setCspMetadata(null);
       }
-
+    } catch (error) {
+      console.error('❌ Regenerate failed:', error);
+      // Fallback to simple arrangement on error
+      const shape = SEATING_SHAPES[selectedShape];
+      const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+      setArrangement(simpleArrangement);
+      setCspMetadata(null);
+    } finally {
       setIsGenerating(false);
-    }, 500);
+    }
   };
 
   /**
