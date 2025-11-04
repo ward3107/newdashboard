@@ -75,7 +75,7 @@ export function getCSPDirectives(isDevelopment = false): CSPDirectives {
     ],
     'object-src': ["'none'"],
     'media-src': ["'self'"],
-    'frame-src': ["'none'"],
+    'frame-src': ["'self'", 'https://vercel.live'],
     'worker-src': ["'self'", 'blob:'],
     'form-action': ["'self'"],
     'frame-ancestors': ["'none'"],
