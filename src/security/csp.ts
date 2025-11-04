@@ -52,9 +52,15 @@ export function getCSPDirectives(isDevelopment = false): CSPDirectives {
       'https://fonts.googleapis.com',
       'https://fonts.gstatic.com',
       'https://firestore.googleapis.com',
+      'https://*.googleapis.com',
+      'https://identitytoolkit.googleapis.com',
+      'https://securetoken.googleapis.com',
       'https://us-central1-ishebott.cloudfunctions.net',
+      'https://*.cloudfunctions.net',
       'https://*.firebaseapp.com',
       'https://*.firebase.google.com',
+      'https://*.firebaseio.com',
+      'wss://*.firebaseio.com',
       isDevelopment ? 'ws://localhost:*' : '', // WebSocket for HMR
       isDevelopment ? 'http://localhost:*' : '', // Development APIs
       isDevelopment ? 'ws://127.0.0.1:*' : '',
@@ -75,7 +81,11 @@ export function getCSPDirectives(isDevelopment = false): CSPDirectives {
     ],
     'object-src': ["'none'"],
     'media-src': ["'self'"],
-    'frame-src': ["'none'"],
+    'frame-src': [
+      "'self'",
+      'https://vercel.live',
+      'https://*.vercel.live',
+    ],
     'worker-src': ["'self'", 'blob:'],
     'form-action': ["'self'"],
     'frame-ancestors': ["'none'"],
