@@ -63,7 +63,13 @@
       "Bash(npx eslint:*)",
       "Bash(node -e:*)",
       "Bash(npm run lint)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(git pull:*)",
+      "Bash(npm run migrate:dry-run:*)",
+      "Bash(npm run migrate:backup:*)",
+      "WebFetch(domain:console.firebase.google.com)",
+      "Bash(firebase init:*)",
+      "Bash(firebase:*)"
     ],
     "deny": [],
     "ask": []

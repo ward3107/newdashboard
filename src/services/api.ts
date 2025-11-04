@@ -1,7 +1,15 @@
 /**
  * API Service for ISHEBOT Student Dashboard
- * Connects to Google Apps Script Web App
+ * Supports both Google Apps Script and Firebase Firestore
  */
+
+import { firestoreApi } from './firestoreApi';
+
+// ====================================
+// DATA SOURCE CONFIGURATION
+// ====================================
+
+const USE_FIRESTORE = import.meta.env.VITE_USE_FIRESTORE === 'true';
 
 // ====================================
 // TYPE DEFINITIONS
@@ -303,22 +311,43 @@ function handleMockResponse<T>(action: string, params?: Record<string, string>):
 
 /**
  * Get dashboard statistics
+ * Routes to Firestore or Google Sheets based on configuration
  */
 export async function getStats(): Promise<ApiResponse<DashboardStats>> {
+  if (USE_FIRESTORE) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📊 Fetching stats from Firestore');
+    }
+    return firestoreApi.getStats();
+  }
   return apiCall<DashboardStats>('getStats');
 }
 
 /**
  * Get all students (summary data)
+ * Routes to Firestore or Google Sheets based on configuration
  */
 export async function getAllStudents(): Promise<ApiResponse<{ students: Student[] }>> {
+  if (USE_FIRESTORE) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('👥 Fetching students from Firestore');
+    }
+    return firestoreApi.getAllStudents();
+  }
   return apiCall<{ students: Student[] }>('getAllStudents');
 }
 
 /**
  * Get detailed student information
+ * Routes to Firestore or Google Sheets based on configuration
  */
 export async function getStudent(studentId: string): Promise<ApiResponse<DetailedStudent>> {
+  if (USE_FIRESTORE) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🔍 Fetching student ${studentId} from Firestore`);
+    }
+    return firestoreApi.getStudent(studentId);
+  }
   return apiCall<DetailedStudent>('getStudent', { studentId });
 }
 
@@ -345,6 +374,7 @@ export async function analyzeStudent(studentId: string): Promise<ApiResponse<{ s
 
 /**
  * Test API connection
+ * Tests either Firestore or Google Sheets based on configuration
  */
 export async function testConnection(): Promise<ApiResponse<{
   message: string;
@@ -361,6 +391,12 @@ export async function testConnection(): Promise<ApiResponse<{
     };
   }
 
+  // Use Firestore if configured
+  if (USE_FIRESTORE) {
+    return firestoreApi.testConnection();
+  }
+
+  // Fall back to Google Apps Script
   if (!API_URL || API_URL.includes('YOUR_DEPLOYMENT_ID')) {
     return {
       success: false,
@@ -382,7 +418,7 @@ export async function testConnection(): Promise<ApiResponse<{
       success: true,
       data: {
         message: 'API connected successfully',
-        mode: 'LIVE',
+        mode: 'GOOGLE_SHEETS',
         stats: data,
       },
     };

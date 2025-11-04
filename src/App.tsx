@@ -25,6 +25,9 @@ const TestAnalytics = lazy(() => import(/* webpackChunkName: "test-analytics" */
 const ApiTestPage = lazy(() => import(/* webpackChunkName: "api-test" */ './pages/ApiTestPage'));
 const AdminControlPanel = lazy(() => import(/* webpackChunkName: "admin-control" */ './components/AdminControlPanel'));
 
+// Assessment Form
+const AssessmentPage = lazy(() => import(/* webpackChunkName: "assessment" */ './pages/AssessmentPage'));
+
 // Legal pages
 const PrivacyPolicyPage = lazy(() => import(/* webpackChunkName: "privacy-policy" */ './pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import(/* webpackChunkName: "terms" */ './pages/TermsPage'));
@@ -145,6 +148,9 @@ function App() {
 
                       {/* Admin Control Panel */}
                       <Route path="/admin" element={<AdminControlPanel />} />
+
+                      {/* Assessment Form */}
+                      <Route path="/assessment" element={<AssessmentPage />} />
 
                       {/* API Test Page */}
                       <Route path="/api-test" element={<ApiTestPage />} />
