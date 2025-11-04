@@ -1683,6 +1683,39 @@ const generateSimpleArrangement = (students, shape) => {
   const shuffled = [...students].sort(() => Math.random() - 0.5);
 
   switch (shape.layout) {
+    case 'grid': {
+      // Generate desk-based arrangement for rows layout
+      const desks = [];
+      const rows = shape.rows || 4;
+      const cols = shape.cols || 4; // cols represents DESKS (each desk has 2 students)
+
+      let studentIndex = 0;
+
+      for (let row = 0; row < rows; row++) {
+        for (let desk = 0; desk < cols; desk++) {
+          const leftStudent = studentIndex < shuffled.length ? shuffled[studentIndex++] : null;
+          const rightStudent = studentIndex < shuffled.length ? shuffled[studentIndex++] : null;
+
+          // Calculate compatibility if both students present
+          let compatibility = null;
+          if (leftStudent && rightStudent) {
+            compatibility = calculateDeskPairCompatibility(leftStudent, rightStudent);
+          }
+
+          desks.push({
+            id: `${row}-${desk}`,
+            row,
+            desk,
+            leftStudent,
+            rightStudent,
+            compatibility
+          });
+        }
+      }
+
+      return desks;
+    }
+
     case 'clusters': {
       const clusters = [];
       const studentsPerCluster = shape.studentsPerCluster || 4;
@@ -1835,15 +1868,37 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   };
 
   // Generate SIMPLE arrangement when shape changes (FAST - no backend call)
+  // Then automatically optimize with CSP solver in the background
   useEffect(() => {
     if (analyzedStudents.length > 0) {
       const shape = SEATING_SHAPES[selectedShape];
 
-      // Always start with simple arrangement (instant display)
+      // Step 1: Show simple arrangement instantly (good UX)
       const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
       setArrangement(simpleArrangement);
       setCspMetadata(null);
 
+      // Step 2: Automatically optimize with CSP in the background (for better results)
+      // Only do this for grid layout, other layouts don't need CSP optimization
+      if (shape.layout === 'grid' && shape.rows && shape.cols) {
+        setIsGenerating(true);
+
+        // Run CSP optimization asynchronously
+        solveSeatingCSP(analyzedStudents, shape, {
+          populationSize: 50,
+          generations: 100,
+          mutationRate: 0.2
+        }).then(result => {
+          // Replace simple arrangement with optimized one
+          setArrangement(result.arrangement);
+          setCspMetadata(result.metadata);
+        }).catch(error => {
+          console.warn('Auto-optimization failed, keeping simple arrangement:', error);
+          // Keep the simple arrangement if optimization fails
+        }).finally(() => {
+          setIsGenerating(false);
+        });
+      }
     }
   }, [selectedShape, students.length]);
 
