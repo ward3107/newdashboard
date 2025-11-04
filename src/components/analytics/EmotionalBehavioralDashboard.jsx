@@ -4,55 +4,29 @@ import {
   Heart,
   Users,
   Activity,
-  Eye,
   Smile,
   Frown,
   AlertTriangle,
   Shield,
   Zap,
   Target,
-  Sparkles,
-  UserCheck,
-  UserX,
-  Clock,
-  Calendar,
   TrendingUp,
   TrendingDown,
-  ChevronRight,
-  Filter,
-  Download,
-  RefreshCw,
-  MapPin,
-  Layout,
-  Grid3x3,
-  Move,
-  Compass,
-  Navigation,
-  Map,
   Home,
-  School,
   BookOpen,
-  MessageSquare,
-  Volume2,
-  VolumeX,
-  Sun,
-  Moon,
-  Cloud,
-  Wind,
-  Layers
+  Sun
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // ============================================================================
 // EMOTIONAL-BEHAVIORAL-COGNITIVE DASHBOARD
 // ============================================================================
 
 const EmotionalBehavioralDashboard = ({ students = [], darkMode, theme, selectedView }) => {
-  const [selectedTimeRange, setSelectedTimeRange] = useState('week');
+  const [selectedTimeRange] = useState('week');
   const [currentView, setCurrentView] = useState(selectedView || 'overview');
   const [analysisData, setAnalysisData] = useState(null);
   const [seatingRecommendations, setSeatingRecommendations] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   // Update view when prop changes
   useEffect(() => {
@@ -70,14 +44,6 @@ const EmotionalBehavioralDashboard = ({ students = [], darkMode, theme, selected
       setSeatingRecommendations(seating);
     }
   }, [students, selectedTimeRange]);
-
-  const viewOptions = [
-    { id: 'overview', label: 'סקירה כללית', icon: Eye },
-    { id: 'emotional', label: 'רגשי', icon: Heart },
-    { id: 'behavioral', label: 'התנהגותי', icon: Activity },
-    { id: 'cognitive', label: 'קוגניטיבי', icon: Brain },
-    { id: 'seating', label: 'המלצות ישיבה', icon: Grid3x3 }
-  ];
 
   if (!analysisData) {
     return (
@@ -232,7 +198,6 @@ const CognitiveAnalysisSection = ({ data, darkMode, theme }) => {
 
 const ClassroomSeatingSection = ({ recommendations, students, darkMode, theme }) => {
   const [selectedLayout, setSelectedLayout] = useState('optimal');
-  const [showDetails, setShowDetails] = useState(false);
 
   const layouts = [
     { id: 'optimal', name: 'אופטימלי', description: 'סידור מומלץ על פי כל הפרמטרים' },
@@ -300,9 +265,6 @@ const ClassroomSeatingSection = ({ recommendations, students, darkMode, theme })
 // ============================================================================
 
 const ClassroomLayout = ({ layout, students, darkMode, theme }) => {
-  const rows = 6;
-  const cols = 5;
-
   return (
     <div className={`backdrop-blur-xl ${
       darkMode ? 'bg-white/10' : 'bg-white/40'
@@ -853,7 +815,6 @@ const calculateEBCMetrics = (students) => {
   // Calculate emotional metrics from strengthsCount/challengesCount
   // High strengths = better emotional regulation
   const avgStrengths = analyzedStudents.reduce((sum, s) => sum + (s.strengthsCount || 0), 0) / analyzedStudents.length;
-  const avgChallenges = analyzedStudents.reduce((sum, s) => sum + (s.challengesCount || 0), 0) / analyzedStudents.length;
 
   // Convert to 0-1 scale (assuming max 5 strengths/challenges)
   const avgEmotionalRegulation = avgStrengths / 5;
@@ -978,123 +939,6 @@ const calculateEBCMetrics = (students) => {
   };
 };
 
-// Helper functions to extract data from insights
-function extractTriggersFromInsights(students) {
-  const triggers = new Set();
-  students.forEach(student => {
-    student.insights?.forEach(insight => {
-      if (insight.domain === 'emotional' || insight.domain === 'רגשי') {
-        const summary = (insight.summary || '').toLowerCase();
-        if (summary.includes('מבחן') || summary.includes('בחינ')) triggers.add('מבחנים');
-        if (summary.includes('שינוי') || summary.includes('חדש')) triggers.add('שינויים');
-        if (summary.includes('רעש') || summary.includes('קול')) triggers.add('רעש');
-        if (summary.includes('לחץ')) triggers.add('לחץ');
-      }
-    });
-  });
-  return Array.from(triggers).slice(0, 5);
-}
-
-function extractPatternsFromInsights(students) {
-  const patterns = new Set();
-  students.forEach(student => {
-    student.insights?.forEach(insight => {
-      if (insight.title) {
-        patterns.add(insight.title);
-      }
-    });
-  });
-  return Array.from(patterns).slice(0, 3);
-}
-
-function extractInterventionsFromInsights(students) {
-  const interventions = [];
-  students.forEach(student => {
-    student.insights?.forEach(insight => {
-      insight.recommendations?.forEach(rec => {
-        if (rec.priority === 'high' || rec.priority === 'גבוה') {
-          interventions.push({
-            student: student.name || `תלמיד ${student.studentCode}`,
-            recommendation: rec.action || rec.description || 'המלצה',
-            priority: 'high'
-          });
-        }
-      });
-    });
-  });
-  return interventions.slice(0, 10);
-}
-
-function extractProcessingStyles(insights) {
-  const styles = {};
-  insights.forEach(insight => {
-    const text = ((insight.title || '') + ' ' + (insight.summary || '')).toLowerCase();
-    if (text.includes('ויזואל') || text.includes('חזות')) {
-      styles['חזותי'] = (styles['חזותי'] || 0) + 1;
-    }
-    if (text.includes('שמיע') || text.includes('אודיו')) {
-      styles['שמיעתי'] = (styles['שמיעתי'] || 0) + 1;
-    }
-    if (text.includes('קינסתט') || text.includes('פיזי')) {
-      styles['קינסתטי'] = (styles['קינסתטי'] || 0) + 1;
-    }
-  });
-  return Object.entries(styles).map(([style, count]) => ({ style, count }));
-}
-
-function extractEnvironmentalPreferences(insights) {
-  if (insights.length === 0) {
-    return {
-      'אור טבעי': 70,
-      'שקט': 65,
-      'קרבה לחבר': 75,
-      'מרחב אישי': 70,
-      'גישה למורה': 60
-    };
-  }
-
-  const prefs = {
-    'אור טבעי': 0,
-    'שקט': 0,
-    'קרבה לחבר': 0,
-    'מרחב אישי': 0,
-    'גישה למורה': 0
-  };
-
-  insights.forEach(insight => {
-    const text = ((insight.title || '') + ' ' + (insight.summary || '')).toLowerCase();
-    if (text.includes('אור') || text.includes('חלון')) prefs['אור טבעי'] += 10;
-    if (text.includes('שקט') || text.includes('רעש')) prefs['שקט'] += 10;
-    if (text.includes('חבר') || text.includes('חברתי')) prefs['קרבה לחבר'] += 10;
-    if (text.includes('מרחב') || text.includes('פרטיות')) prefs['מרחב אישי'] += 10;
-    if (text.includes('מורה') || text.includes('תמיכה')) prefs['גישה למורה'] += 10;
-  });
-
-  // Normalize to percentages
-  const maxValue = Math.max(...Object.values(prefs), 1);
-  Object.keys(prefs).forEach(key => {
-    prefs[key] = Math.min(Math.round((prefs[key] / maxValue) * 80) + 20, 100);
-  });
-
-  return prefs;
-}
-
-function extractCognitiveProfile(student) {
-  const cognitiveInsights = student.insights?.filter(i =>
-    i.domain === 'cognitive' || i.domain === 'קוגניטיבי'
-  ) || [];
-
-  if (cognitiveInsights.length === 0) return 'balanced';
-
-  const text = cognitiveInsights.map(i => (i.title || '') + ' ' + (i.summary || '')).join(' ').toLowerCase();
-
-  if (text.includes('ויזואל') || text.includes('חזות')) return 'visual';
-  if (text.includes('שמיע') || text.includes('אודיו')) return 'auditory';
-  if (text.includes('קינסתט') || text.includes('פיזי')) return 'kinesthetic';
-
-  return 'balanced';
-}
-
 const generateSeatingRecommendations = (data) => {
   const createSeats = () => {
     const seats = [];
@@ -1127,21 +971,6 @@ const generateSeatingRecommendations = (data) => {
     focus: { seats: createSeats(), recommendations: [], placements: [] },
     support: { seats: createSeats(), recommendations: [], placements: [] }
   };
-};
-
-const LoadingState = ({ darkMode }) => {
-  return (
-    <div className="flex items-center justify-center h-64">
-      <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 mb-4">
-          <div className="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
-        </div>
-        <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-          טוען נתונים רגשיים-התנהגותיים...
-        </p>
-      </div>
-    </div>
-  );
 };
 
 // ============================================================================
