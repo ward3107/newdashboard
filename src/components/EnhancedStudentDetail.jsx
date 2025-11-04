@@ -807,7 +807,7 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
         }
       }}
       role="button"
-      tabIndex={-1}
+      tabIndex={0}
       aria-label="Close modal"
     >
       <div

@@ -39,7 +39,11 @@ import {
   UserCheck,
   UserMinus,
   Percent,
-  Timer
+  Timer,
+  Sparkles,
+  Moon,
+  Map,
+  Compass
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -1946,7 +1950,7 @@ const NoAnalyzedStudentsState = ({ darkMode, theme }) => {
               לוח הבקרה מציג רק נתונים של תלמידים שעברו ניתוח מעמיק.
             </p>
             <p className="text-base">
-              כדי לצפות בנתונים כאן, עליך תחילה לנתח תלמידים באמצעות כפתור "AI חכם" בתפריט הראשי.
+              כדי לצפות בנתונים כאן, עליך תחילה לנתח תלמידים באמצעות כפתור &quot;AI חכם&quot; בתפריט הראשי.
             </p>
           </div>
 
@@ -1984,7 +1988,7 @@ const NoAnalyzedStudentsState = ({ darkMode, theme }) => {
                   מוכן להתחיל?
                 </p>
                 <p className={`text-sm ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
-                  לחץ על "AI חכם" בתפריט העליון כדי לנתח תלמידים
+                  לחץ על &quot;AI חכם&quot; בתפריט העליון כדי לנתח תלמידים
                 </p>
               </div>
             </div>
