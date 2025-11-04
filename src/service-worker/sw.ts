@@ -219,8 +219,8 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
 self.addEventListener('push', (event: PushEvent) => {
   const options = {
     body: event.data?.text() || 'New update available',
-    icon: '/icon-192x192.png',
-    badge: '/icon-192x192.png',
+    icon: '/favicon.svg',
+    badge: '/favicon.svg',
     vibrate: [200, 100, 200]
   };
 
