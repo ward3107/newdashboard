@@ -581,6 +581,14 @@ const QuickActionCard: React.FC<{
   return (
     <div
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      role="button"
+      tabIndex={0}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
       className={`p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.02] relative ${
@@ -711,7 +719,7 @@ const WeeklySummary: React.FC<{
               key={index}
               onMouseEnter={() => setHoveredItem(index)}
               onMouseLeave={() => setHoveredItem(null)}
-              className={`p-3 rounded-lg ${item.bg} border ${darkMode ? 'border-gray-700' : 'border-gray-200'} relative cursor-pointer transition-all hover:scale-[1.02]`}
+              className={`p-3 rounded-lg ${item.bg} border ${darkMode ? 'border-gray-700' : 'border-gray-200'} relative transition-all hover:scale-[1.02]`}
             >
               <div className="flex items-center justify-between mb-1">
                 <ItemIcon size={18} className={item.color} />

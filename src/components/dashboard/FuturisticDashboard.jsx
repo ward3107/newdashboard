@@ -1007,6 +1007,7 @@ const FuturisticTeacherDashboard = () => {
             <div className="space-y-2">
               <div>
                 <label
+                  htmlFor="admin-password"
                   className={`block text-sm font-medium mb-2 ${
                     darkMode ? "text-gray-300" : "text-gray-700"
                   }`}
@@ -2107,7 +2108,13 @@ const StudentCard = ({ student, darkMode, theme, onClick }) => {
   const studentAvatar = "🎓";
 
   return (
-    <div onClick={onClick} className="group relative cursor-pointer">
+    <div
+      onClick={onClick}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onClick())}
+      role="button"
+      tabIndex={0}
+      className="group relative cursor-pointer"
+    >
       <div
         className={`absolute inset-0 bg-gradient-to-r ${gradient} rounded-2xl blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300`}
       ></div>
@@ -2254,7 +2261,7 @@ const CircularProgress = ({
     <div
       className={`relative backdrop-blur-xl ${
         darkMode ? "bg-white/10" : "bg-white/40"
-      } rounded-2xl p-4 border border-white/20 shadow-xl hover:scale-105 transition-transform cursor-pointer z-10 hover:z-[100]`}
+      } rounded-2xl p-4 border border-white/20 shadow-xl hover:scale-105 transition-transform z-10 hover:z-[100]`}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >

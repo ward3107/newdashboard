@@ -760,6 +760,14 @@ const Dashboard = () => {
               setShowConnectionSetup(false);
             }
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setShowConnectionSetup(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          tabIndex={-1}
         >
           <div
             style={{
