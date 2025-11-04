@@ -23,8 +23,8 @@ import {
   Lightbulb
 } from 'lucide-react';
 
-// API
-import { getStudent } from '../../api/studentAPI';
+// API - Using new unified API that supports both Firebase and Google Sheets
+import { getStudent } from '../../services/api';
 
 // Utils
 import { exportStudentDetailToPDF, generatePrintHTML } from '../../utils/exportUtils';
