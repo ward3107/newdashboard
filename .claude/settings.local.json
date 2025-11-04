@@ -72,7 +72,13 @@
       "Bash(venv/Scripts/python.exe:*)",
       "Bash(git update-index:*)",
       "Bash(git rm:*)",
-      "Bash(venvScriptspython.exe -c \"from app.services.genetic_algorithm import ClassroomOptimizer; from app.models.student import Student, GenderType, BehaviorLevel, AcademicLevel; from app.models.classroom import OptimizationObjectives, LayoutType; s = Student(id=''S001'', name=''Test'', gender=GenderType.MALE, academic_level=AcademicLevel.PROFICIENT, academic_score=85, behavior_level=BehaviorLevel.GOOD, behavior_score=90, is_leader=True, is_shy=False, friends_ids=[], incompatible_ids=[], special_needs=[], requires_front_row=False, requires_quiet_area=False, has_mobility_issues=False, is_bilingual=False); opt = ClassroomOptimizer([s], LayoutType.ROWS, 5, 6, OptimizationObjectives()); print(''Optimizer created''); result = opt.optimize(max_generations=10); print(''Success!'')\")"
+      "Bash(venvScriptspython.exe -c \"from app.services.genetic_algorithm import ClassroomOptimizer; from app.models.student import Student, GenderType, BehaviorLevel, AcademicLevel; from app.models.classroom import OptimizationObjectives, LayoutType; s = Student(id=''S001'', name=''Test'', gender=GenderType.MALE, academic_level=AcademicLevel.PROFICIENT, academic_score=85, behavior_level=BehaviorLevel.GOOD, behavior_score=90, is_leader=True, is_shy=False, friends_ids=[], incompatible_ids=[], special_needs=[], requires_front_row=False, requires_quiet_area=False, has_mobility_issues=False, is_bilingual=False); opt = ClassroomOptimizer([s], LayoutType.ROWS, 5, 6, OptimizationObjectives()); print(''Optimizer created''); result = opt.optimize(max_generations=10); print(''Success!'')\")",
+      "Bash(npm run migrate:dry-run:*)",
+      "Bash(npm run migrate:backup:*)",
+      "WebFetch(domain:console.firebase.google.com)",
+      "Bash(firebase init:*)",
+      "Bash(firebase:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

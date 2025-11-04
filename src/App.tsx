@@ -41,6 +41,9 @@ const ApiTestPage = lazy(() => import(/* webpackChunkName: "api-test" */ './page
 const AdminControlPanel = lazy(() => import(/* webpackChunkName: "admin-control" */ './components/AdminControlPanel'));
 const ClassroomOptimizationPage = lazy(() => import(/* webpackChunkName: "classroom-optimization" */ './pages/ClassroomOptimizationPage'));
 
+// Assessment Form
+const AssessmentPage = lazy(() => import(/* webpackChunkName: "assessment" */ './pages/AssessmentPage'));
+
 // Legal pages
 const PrivacyPolicyPage = lazy(() => import(/* webpackChunkName: "privacy-policy" */ './pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import(/* webpackChunkName: "terms" */ './pages/TermsPage'));
@@ -157,6 +160,7 @@ function App() {
                       <Route path="/test-analytics" element={<TestAnalytics />} />
                       <Route path="/admin" element={<AdminControlPanel />} />
                       <Route path="/api-test" element={<ApiTestPage />} />
+                      <Route path="/assessment" element={<AssessmentPage />} />
                       <Route path="/classroom-optimization" element={<ClassroomOptimizationPage />} />
 
                       <Route path="*" element={<NotFound />} />

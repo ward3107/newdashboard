@@ -112,6 +112,10 @@ workbox-*.js
 .pgpass
 *.sql
 
+# Firebase credentials (NEVER COMMIT)
+firebase-service-account.json
+*firebase-adminsdk*.json
+
 # Local development only
 .vscode/settings.json
 .idea/workspace.xml
