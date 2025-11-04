@@ -252,10 +252,12 @@ export function StudentAssessmentForm() {
           </h2>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="studentCode" className="block text-sm font-medium text-gray-700 mb-2">
               {t('basicInfo.studentCode', language)} {t('basicInfo.required', language)}
             </label>
             <input
+              id="studentCode"
+              name="studentCode"
               type="text"
               value={formData.studentCode}
               onChange={(e) => setFormData({ ...formData, studentCode: e.target.value })}
@@ -264,14 +266,17 @@ export function StudentAssessmentForm() {
               required
               maxLength={10}
               dir="ltr"
+              autoComplete="off"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="studentName" className="block text-sm font-medium text-gray-700 mb-2">
               {t('basicInfo.studentName', language)} {t('basicInfo.required', language)}
             </label>
             <input
+              id="studentName"
+              name="name"
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -279,18 +284,22 @@ export function StudentAssessmentForm() {
               placeholder={t('basicInfo.studentNamePlaceholder', language)}
               required
               maxLength={100}
+              autoComplete="name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="classId" className="block text-sm font-medium text-gray-700 mb-2">
               {t('basicInfo.classId', language)} {t('basicInfo.required', language)}
             </label>
             <select
+              id="classId"
+              name="classId"
               value={formData.classId}
               onChange={(e) => setFormData({ ...formData, classId: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
+              autoComplete="off"
             >
               <option value="">{t('basicInfo.selectClass', language)}</option>
               <option value="ז1">ז1</option>
