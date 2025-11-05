@@ -703,8 +703,22 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
     return lines.slice(0, count);
   };
 
-  const topStrengths = getTopItems(student.keyStrengths, 3);
-  const topChallenges = getTopItems(student.keyChallenges, 3);
+  // Handle both basic Student and DetailedStudent types
+  // Basic Student: only has keyNotes (not split into strengths/challenges)
+  // DetailedStudent: has student_summary with strengths[] and challenges[]
+  let topStrengths = [];
+  let topChallenges = [];
+
+  if (student.student_summary) {
+    // DetailedStudent - use arrays from student_summary
+    topStrengths = (student.student_summary.strengths || []).slice(0, 3);
+    topChallenges = (student.student_summary.challenges || []).slice(0, 3);
+  } else if (student.keyStrengths || student.keyChallenges) {
+    // Legacy format - parse from text
+    topStrengths = getTopItems(student.keyStrengths, 3);
+    topChallenges = getTopItems(student.keyChallenges, 3);
+  }
+  // else: Basic Student - no detailed data available, use empty arrays
 
   // Determine color scheme
   const getColorScheme = () => {
@@ -979,8 +993,22 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
     return lines.slice(0, count);
   };
 
-  const topStrengths = getTopItems(student.keyStrengths, 3);
-  const topChallenges = getTopItems(student.keyChallenges, 3);
+  // Handle both basic Student and DetailedStudent types
+  // Basic Student: only has keyNotes (not split into strengths/challenges)
+  // DetailedStudent: has student_summary with strengths[] and challenges[]
+  let topStrengths = [];
+  let topChallenges = [];
+
+  if (student.student_summary) {
+    // DetailedStudent - use arrays from student_summary
+    topStrengths = (student.student_summary.strengths || []).slice(0, 3);
+    topChallenges = (student.student_summary.challenges || []).slice(0, 3);
+  } else if (student.keyStrengths || student.keyChallenges) {
+    // Legacy format - parse from text
+    topStrengths = getTopItems(student.keyStrengths, 3);
+    topChallenges = getTopItems(student.keyChallenges, 3);
+  }
+  // else: Basic Student - no detailed data available, use empty arrays
 
   // Determine color scheme
   const getColorScheme = () => {
