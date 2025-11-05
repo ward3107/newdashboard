@@ -8,10 +8,12 @@ export default defineConfig({
   plugins: [
     react(),
 
-    // PWA Configuration
+    // PWA Configuration - Disabled to prevent manifest 401 errors
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'script-defer',
+      // Disable manifest generation to prevent 401 errors
+      manifest: false,
       workbox: {
         maximumFileSizeToCacheInBytes: 3000000,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
@@ -44,25 +46,6 @@ export default defineConfig({
                 statuses: [0, 200],
               },
             },
-          },
-        ],
-      },
-      manifest: {
-        name: 'ISHEBOT Student Dashboard',
-        short_name: 'ISHEBOT',
-        description: 'AI-Powered Student Analysis Dashboard',
-        theme_color: '#3B82F6',
-        background_color: '#F3F4F6',
-        display: 'standalone',
-        orientation: 'any',
-        dir: 'rtl',
-        lang: 'he',
-        icons: [
-          {
-            src: '/favicon.svg',
-            sizes: '192x192 512x512',
-            type: 'image/svg+xml',
-            purpose: 'any maskable',
           },
         ],
       },
