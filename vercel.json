@@ -7,11 +7,31 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/favicon.ico",
+      "source": "/manifest.webmanifest",
+      "destination": "/manifest.webmanifest"
+    },
+    {
+      "source": "/sw.js",
+      "destination": "/sw.js"
+    },
+    {
+      "source": "/workbox-:hash.js",
+      "destination": "/workbox-:hash.js"
+    },
+    {
+      "source": "/favicon.svg",
       "destination": "/favicon.svg"
     },
     {
-      "source": "/((?!manifest\\.webmanifest$|sw\\.js$|workbox-.*\\.js$|favicon\\.svg$|favicon\\.ico$|assets/).*)",
+      "source": "/favicon.ico",
+      "destination": "/favicon.ico"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
