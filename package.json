@@ -45,6 +45,7 @@
     "dev": "vite",
     "prebuild": "npm run lint:errors && npm run typecheck",
     "build": "vite build",
+    "build:prod": "vite build",
     "build:analyze": "vite build --mode production && node analyze-bundle.js",
     "preview": "vite preview",
     "clean": "rimraf dist coverage reports .turbo",
