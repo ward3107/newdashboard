@@ -27,9 +27,10 @@ const SCHOOL_ID = import.meta.env.VITE_SCHOOL_ID || 'ishebott';
  */
 export async function getStatsFromFirestore(): Promise<ApiResponse<DashboardStats>> {
   if (!isFirebaseConfigured || !db) {
+    console.warn('⚠️ Firebase not configured. Check Vercel environment variables.');
     return {
       success: false,
-      error: 'Firebase not configured',
+      error: 'Firebase not configured. Please set VITE_FIREBASE_* environment variables in Vercel dashboard.',
     };
   }
 
@@ -86,9 +87,10 @@ export async function getStatsFromFirestore(): Promise<ApiResponse<DashboardStat
  */
 export async function getAllStudentsFromFirestore(): Promise<ApiResponse<{ students: Student[] }>> {
   if (!isFirebaseConfigured || !db) {
+    console.warn('⚠️ Firebase not configured. Check Vercel environment variables.');
     return {
       success: false,
-      error: 'Firebase not configured',
+      error: 'Firebase not configured. Please set VITE_FIREBASE_* environment variables in Vercel dashboard.',
     };
   }
 
