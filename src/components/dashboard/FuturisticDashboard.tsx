@@ -5,7 +5,6 @@
 
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
   Search,
   Filter,
@@ -117,11 +116,7 @@ const FuturisticDashboard: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <div className="mb-8 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
               ISHEBOT
@@ -130,14 +125,10 @@ const FuturisticDashboard: React.FC = () => {
           <p className="text-gray-600 text-lg">
             מערכת חכמה לניתוח והערכה הוליסטית של תלמידים
           </p>
-        </motion.div>
+        </div>
 
         {/* Stats Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 animate-fade-in-up">
           <StatsCard
             icon={<Users className="w-6 h-6" />}
             label="סך התלמידים"
@@ -162,15 +153,10 @@ const FuturisticDashboard: React.FC = () => {
             value={stats.avgChallenges}
             color="orange"
           />
-        </motion.div>
+        </div>
 
         {/* Search and Filters Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-lg p-6 mb-6"
-        >
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 animate-fade-in-up">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search Input */}
             <div className="flex-1 relative">
@@ -231,12 +217,7 @@ const FuturisticDashboard: React.FC = () => {
 
           {/* Filters Panel */}
           {showFilters && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mt-6 pt-6 border-t border-gray-200"
-            >
+            <div className="mt-6 pt-6 border-t border-gray-200 animate-slide-down">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Class Filter */}
                 <div>
@@ -307,27 +288,19 @@ const FuturisticDashboard: React.FC = () => {
                   מציג {totalCount} מתוך {students.length} תלמידים
                 </span>
               </div>
-            </motion.div>
+            </div>
           )}
-        </motion.div>
+        </div>
 
         {/* Error Message */}
         {error && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6"
-          >
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 animate-fade-in-up">
             <p className="text-red-800">{error}</p>
-          </motion.div>
+          </div>
         )}
 
         {/* Student List */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
+        <div className="animate-fade-in-up">
           {filteredStudents.length > 0 ? (
             <VirtualStudentList
               students={filteredStudents}
@@ -354,7 +327,7 @@ const FuturisticDashboard: React.FC = () => {
               </button>
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </div>
   );
