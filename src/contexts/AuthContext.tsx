@@ -64,6 +64,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Fetch user data from Firestore
    */
   const fetchUserData = useCallback(async (firebaseUser: FirebaseUser): Promise<User | null> => {
+    if (!db) {
+      console.warn('⚠️ Firestore not available - skipping user data fetch');
+      return null;
+    }
+
     try {
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
 
@@ -99,6 +104,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Update last login timestamp
    */
   const updateLastLogin = useCallback(async (uid: string) => {
+    if (!db) {
+      console.warn('⚠️ Firestore not available - skipping last login update');
+      return;
+    }
+
     try {
       await updateDoc(doc(db, 'users', uid), {
         lastLogin: serverTimestamp(),
@@ -112,32 +122,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Listen to auth state changes
    */
   useEffect(() => {
-    console.log('🔐 AuthContext: Setting up auth listener');
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log('🔐 AuthContext: Auth state changed', { firebaseUser: firebaseUser?.email || 'none' });
+    if (!auth) {
+      console.warn('⚠️ Firebase Auth not available - skipping auth state listener');
+      setLoading(false);
+      return;
+    }
 
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         // User is signed in
-        console.log('🔐 AuthContext: User is signed in, fetching data');
         const userData = await fetchUserData(firebaseUser);
 
         if (userData) {
-          console.log('🔐 AuthContext: User data found', { email: userData.email, role: userData.role });
           setUser(userData);
           await updateLastLogin(firebaseUser.uid);
         } else {
           // User exists in Firebase Auth but not in Firestore
-          console.log('🔐 AuthContext: User data NOT found in Firestore');
           setUser(null);
           setError('User data not found. Please contact support.');
         }
       } else {
         // User is signed out
-        console.log('🔐 AuthContext: No user signed in');
         setUser(null);
       }
 
-      console.log('🔐 AuthContext: Setting loading to false');
       setLoading(false);
     }, (error) => {
       console.error('🔐 AuthContext: Auth listener error', error);
@@ -152,6 +160,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Login with email and password
    */
   const login = useCallback(async (credentials: LoginCredentials) => {
+    if (!auth) {
+      throw new Error('Authentication service not available. Please check your configuration.');
+    }
+
     try {
       setError(null);
       setLoading(true);
@@ -212,6 +224,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Login with Google
    */
   const loginWithGoogle = useCallback(async () => {
+    if (!auth) {
+      throw new Error('Authentication service not available. Please check your configuration.');
+    }
+
     try {
       setError(null);
       setLoading(true);
@@ -257,6 +273,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Logout
    */
   const logout = useCallback(async () => {
+    if (!auth) {
+      throw new Error('Authentication service not available. Please check your configuration.');
+    }
+
     try {
       setError(null);
       await signOut(auth);
@@ -272,6 +292,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Signup (for admins to create accounts)
    */
   const signup = useCallback(async (data: SignupData) => {
+    if (!auth || !db) {
+      throw new Error('Authentication service not available. Please check your configuration.');
+    }
+
     try {
       setError(null);
       setLoading(true);
@@ -309,8 +333,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Sign out (require email verification before login)
       await signOut(auth);
-
-      console.log('User created successfully. Please verify email.');
     } catch (err: any) {
       console.error('Signup error:', err);
 
@@ -337,6 +359,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Reset password
    */
   const resetPassword = useCallback(async (email: string) => {
+    if (!auth) {
+      throw new Error('Authentication service not available. Please check your configuration.');
+    }
+
     try {
       setError(null);
       await sendPasswordResetEmail(auth, email);
@@ -362,6 +388,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Update user profile
    */
   const updateProfile = useCallback(async (data: Partial<User>) => {
+    if (!auth || !db) {
+      throw new Error('Authentication service not available. Please check your configuration.');
+    }
+
     try {
       setError(null);
 

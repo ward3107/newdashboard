@@ -46,6 +46,7 @@
     "node_modules",
     "coverage",
     "*.config.js",
-    "scripts/*.js"
+    "scripts/*.js",
+    "functions"
   ]
 }

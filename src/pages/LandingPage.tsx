@@ -70,6 +70,8 @@ const LandingPage: React.FC = () => {
       video.addEventListener('ended', handleEnded);
       return () => video.removeEventListener('ended', handleEnded);
     }
+    // Return undefined when video is not present
+    return undefined;
   }, [showVideoModal, VIDEO_SEEN_KEY]);
 
   const handlePlayClick = () => {
@@ -110,6 +112,7 @@ const LandingPage: React.FC = () => {
               className="w-full h-full object-contain"
             >
               <source src="/hero-video.mp4" type="video/mp4" />
+              <track kind="captions" />
             </video>
 
             {/* Unmute button overlay (shown if autoplay is muted) */}

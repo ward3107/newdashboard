@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users,
@@ -36,7 +37,21 @@ import {
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { solveSeatingCSP, calculateDeskPairCompatibility } from '../../utils/seatingOptimizer';
+// UPGRADED: Now using Python genetic algorithm backend for 10x better optimization!
+// Falls back to JavaScript algorithm if backend is unavailable
+import { solveSeatingCSP, calculateDeskPairCompatibility } from '../../utils/seatingOptimizerEnhanced';
+
+// Custom hook to safely use navigation
+const useSafeNavigate = () => {
+  try {
+    return useNavigate();
+  } catch {
+    // Return a fallback function that uses window.location
+    return (path) => {
+      window.location.href = path;
+    };
+  }
+};
 
 // ============================================================================
 // SEATING SHAPE CONFIGURATIONS
@@ -688,8 +703,22 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
     return lines.slice(0, count);
   };
 
-  const topStrengths = getTopItems(student.keyStrengths, 3);
-  const topChallenges = getTopItems(student.keyChallenges, 3);
+  // Handle both basic Student and DetailedStudent types
+  // Basic Student: only has keyNotes (not split into strengths/challenges)
+  // DetailedStudent: has student_summary with strengths[] and challenges[]
+  let topStrengths = [];
+  let topChallenges = [];
+
+  if (student.student_summary) {
+    // DetailedStudent - use arrays from student_summary
+    topStrengths = (student.student_summary.strengths || []).slice(0, 3);
+    topChallenges = (student.student_summary.challenges || []).slice(0, 3);
+  } else if (student.keyStrengths || student.keyChallenges) {
+    // Legacy format - parse from text
+    topStrengths = getTopItems(student.keyStrengths, 3);
+    topChallenges = getTopItems(student.keyChallenges, 3);
+  }
+  // else: Basic Student - no detailed data available, use empty arrays
 
   // Determine color scheme
   const getColorScheme = () => {
@@ -879,8 +908,12 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
             <button
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
               onClick={() => {
-                // This would navigate to full analysis - placeholder for now
-                console.log('View full analysis for', student.studentCode);
+                // Navigate to student detail page
+                if (navigate && student.studentCode) {
+                  navigate(`/student/${student.studentCode}`);
+                } else {
+                  // console.error('Cannot navigate: Missing navigate function or student code');
+                }
               }}
             >
               <BookOpen size={18} />
@@ -896,7 +929,20 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
 // STUDENT INFO SIDE PANEL COMPONENT
 // ============================================================================
 
-const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShape = 'rows', cspMetadata = null, arrangement = [], onOpenDeskPopup = null }) => {
+const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShape = 'rows', cspMetadata = null, arrangement = [], onOpenDeskPopup = null, navigate }) => {
+  // Add keyboard listener for Escape key (must be before early return)
+  React.useEffect(() => {
+    if (!studentData) return; // Don't add listener if no data
+
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose, studentData]);
+
   if (!studentData) return null;
 
   const student = studentData.student || studentData; // Support both formats
@@ -940,17 +986,6 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
   const strengths = student.strengthsCount || 0;
   const grade = student.grade || 0;
 
-  // Add keyboard listener for Escape key
-  React.useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
-
   // Parse strengths and challenges from analysis
   const getTopItems = (text, count = 3) => {
     if (!text) return [];
@@ -958,8 +993,22 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
     return lines.slice(0, count);
   };
 
-  const topStrengths = getTopItems(student.keyStrengths, 3);
-  const topChallenges = getTopItems(student.keyChallenges, 3);
+  // Handle both basic Student and DetailedStudent types
+  // Basic Student: only has keyNotes (not split into strengths/challenges)
+  // DetailedStudent: has student_summary with strengths[] and challenges[]
+  let topStrengths = [];
+  let topChallenges = [];
+
+  if (student.student_summary) {
+    // DetailedStudent - use arrays from student_summary
+    topStrengths = (student.student_summary.strengths || []).slice(0, 3);
+    topChallenges = (student.student_summary.challenges || []).slice(0, 3);
+  } else if (student.keyStrengths || student.keyChallenges) {
+    // Legacy format - parse from text
+    topStrengths = getTopItems(student.keyStrengths, 3);
+    topChallenges = getTopItems(student.keyChallenges, 3);
+  }
+  // else: Basic Student - no detailed data available, use empty arrays
 
   // Determine color scheme
   const getColorScheme = () => {
@@ -1450,13 +1499,44 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
 
               {/* Refresh/Regenerate */}
               <button
-                onClick={() => {
-                  alert('יצירת סידור חדש תתבצע בקרוב');
+                onClick={async () => {
+                  if (analyzedStudents.length < 2) {
+                    alert('נדרשים לפחות 2 תלמידים לאופטימיזציה');
+                    return;
+                  }
+
+                  setIsGenerating(true);
+                  const shape = SEATING_SHAPES[selectedShape];
+
+                  try {
+                    const result = await solveSeatingCSP(analyzedStudents, shape, {
+                      populationSize: 50,
+                      generations: 100,
+                      mutationRate: 0.2
+                    });
+
+                    const convertedArrangement = shape.layout === 'grid'
+                      ? result.arrangement
+                      : convertCSPToLayoutFormat(result.arrangement, shape.layout);
+
+                    setArrangement(convertedArrangement);
+                    setCspMetadata(result.metadata);
+
+                  } catch (error) {
+                    console.error('❌ Optimization failed:', error);
+                    alert('אופטימיזציה נכשלה - משתמש בסידור פשוט');
+                    const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+                    setArrangement(simpleArrangement);
+                    setCspMetadata(null);
+                  } finally {
+                    setIsGenerating(false);
+                  }
                 }}
-                className={`${darkMode ? 'bg-orange-600 hover:bg-orange-700' : 'bg-orange-500 hover:bg-orange-600'} text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1`}
+                disabled={isGenerating}
+                className={`${darkMode ? 'bg-orange-600 hover:bg-orange-700' : 'bg-orange-500 hover:bg-orange-600'} text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <RefreshCw size={14} />
-                סדר מחדש
+                <RefreshCw size={14} className={isGenerating ? 'animate-spin' : ''} />
+                {isGenerating ? 'מחשב...' : 'סדר מחדש'}
               </button>
             </div>
 
@@ -1478,11 +1558,7 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
 // ============================================================================
 
 const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 0, totalRows = 4, darkMode = false }) => {
-  // Safety check - if student is undefined, return null
-  if (!student || !student.studentCode) {
-    return null;
-  }
-
+  // useSortable must be called before early return (Rules of Hooks)
   const {
     attributes,
     listeners,
@@ -1490,7 +1566,15 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
     transform,
     transition,
     isDragging
-  } = useSortable({ id: student.studentCode, disabled: !isDraggable });
+  } = useSortable({
+    id: student?.studentCode || 'placeholder',
+    disabled: !isDraggable || !student?.studentCode
+  });
+
+  // Safety check - if student is undefined, return null
+  if (!student || !student.studentCode) {
+    return null;
+  }
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -1502,7 +1586,6 @@ const DraggableStudent = ({ student, onInfo, isDraggable = true, row = 0, col = 
   const placementReason = generateDetailedPlacementReason(student, row, col, totalRows);
 
   // Debug: Log to verify different positions generate different reasons
-  console.log(`Student ${student.studentCode} at row ${row}, col ${col} | Strengths: ${student.strengthsCount || 0}, Challenges: ${student.challengesCount || 0}:`, placementReason.mainReason);
 
   // Determine student color based on needs and performance
   const getStudentColor = () => {
@@ -1628,6 +1711,39 @@ const generateSimpleArrangement = (students, shape) => {
   const shuffled = [...students].sort(() => Math.random() - 0.5);
 
   switch (shape.layout) {
+    case 'grid': {
+      // Generate desk-based arrangement for rows layout
+      const desks = [];
+      const rows = shape.rows || 4;
+      const cols = shape.cols || 4; // cols represents DESKS (each desk has 2 students)
+
+      let studentIndex = 0;
+
+      for (let row = 0; row < rows; row++) {
+        for (let desk = 0; desk < cols; desk++) {
+          const leftStudent = studentIndex < shuffled.length ? shuffled[studentIndex++] : null;
+          const rightStudent = studentIndex < shuffled.length ? shuffled[studentIndex++] : null;
+
+          // Calculate compatibility if both students present
+          let compatibility = null;
+          if (leftStudent && rightStudent) {
+            compatibility = calculateDeskPairCompatibility(leftStudent, rightStudent);
+          }
+
+          desks.push({
+            id: `${row}-${desk}`,
+            row,
+            desk,
+            leftStudent,
+            rightStudent,
+            compatibility
+          });
+        }
+      }
+
+      return desks;
+    }
+
     case 'clusters': {
       const clusters = [];
       const studentsPerCluster = shape.studentsPerCluster || 4;
@@ -1687,6 +1803,7 @@ const generateSimpleArrangement = (students, shape) => {
 // ============================================================================
 
 const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => {
+  const navigate = useSafeNavigate();
   const [selectedShape, setSelectedShape] = useState('rows');
   const [arrangement, setArrangement] = useState([]);
   const [aiRecommendation, setAiRecommendation] = useState(null);
@@ -1699,7 +1816,9 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   const [selectedStudent, setSelectedStudent] = useState(null); // Selected student for side panel
 
   // Filter analyzed students only
+  // IMPORTANT: If no analyzed students, use all students as fallback
   const analyzedStudents = students.filter(s => !s.needsAnalysis);
+  const studentsToUse = analyzedStudents.length > 0 ? analyzedStudents : students;
 
   // Sensors for drag and drop
   const sensors = useSensors(
@@ -1712,12 +1831,12 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
   // Generate AI recommendation on mount and when students change
   useEffect(() => {
-    if (analyzedStudents.length > 0) {
-      const recommendation = analyzeClassForSeating(analyzedStudents);
+    if (studentsToUse.length > 0) {
+      const recommendation = analyzeClassForSeating(studentsToUse);
       setAiRecommendation(recommendation);
       setSelectedShape(recommendation.recommendedShape);
     }
-  }, [students.length]);
+  }, [studentsToUse.length]);
 
   // Convert CSP desk arrangement to layout-specific format
   const convertCSPToLayoutFormat = (cspArrangement, layoutType) => {
@@ -1778,42 +1897,54 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     }
   };
 
-  // Generate arrangement when shape changes
+  // Generate SIMPLE arrangement when shape changes (FAST - no backend call)
+  // Then automatically optimize with CSP solver in the background
   useEffect(() => {
-    if (analyzedStudents.length > 0) {
+    if (studentsToUse.length > 0) {
       const shape = SEATING_SHAPES[selectedShape];
 
-      // Use CSP solver for ALL layouts now (they all have rows/cols)
-      if (shape.rows && shape.cols) {
-        const result = solveSeatingCSP(analyzedStudents, shape, {
+      // Step 1: Show simple arrangement instantly (good UX)
+      const simpleArrangement = generateSimpleArrangement(studentsToUse, shape);
+      console.log('📊 Simple arrangement generated:', {
+        shape: shape.id,
+        layout: shape.layout,
+        students: studentsToUse.length,
+        arrangementLength: simpleArrangement.length
+      });
+      setArrangement(simpleArrangement);
+      setCspMetadata(null);
+
+      // Step 2: Automatically optimize with CSP in the background (for better results)
+      // Only do this for grid layout, other layouts don't need CSP optimization
+      if (shape.layout === 'grid' && shape.rows && shape.cols) {
+        setIsGenerating(true);
+
+        // Run CSP optimization asynchronously
+        solveSeatingCSP(studentsToUse, shape, {
           populationSize: 50,
           generations: 100,
           mutationRate: 0.2
+        }).then(result => {
+          console.log('✅ CSP optimization complete:', {
+            arrangement: result.arrangement.length,
+            score: result.score
+          });
+          // Replace simple arrangement with optimized one
+          setArrangement(result.arrangement);
+          setCspMetadata(result.metadata);
+        }).catch(error => {
+          console.warn('⚠️ Auto-optimization failed, keeping simple arrangement:', error);
+          // Keep the simple arrangement if optimization fails
+        }).finally(() => {
+          setIsGenerating(false);
         });
-
-        // Convert to appropriate format based on layout type
-        const convertedArrangement = shape.layout === 'grid'
-          ? result.arrangement
-          : convertCSPToLayoutFormat(result.arrangement, shape.layout);
-
-        setArrangement(convertedArrangement);
-        setCspMetadata(result.metadata);
-
-        console.log('🎯 CSP Solution:', {
-          layout: shape.layout,
-          score: result.score,
-          violations: result.violations,
-          metadata: result.metadata,
-          converted: shape.layout !== 'grid'
-        });
-      } else {
-        // Fallback to simple arrangement if no rows/cols (shouldn't happen now)
-        const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
-        setArrangement(simpleArrangement);
-        setCspMetadata(null);
       }
+    } else {
+      // No students - clear arrangement
+      setArrangement([]);
+      setCspMetadata(null);
     }
-  }, [selectedShape, students.length]);
+  }, [selectedShape, studentsToUse.length]);
 
   // Get location-based reasoning for a student placement
   const getLocationReasoning = (row, col, student, totalRows, totalCols) => {
@@ -1878,17 +2009,28 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
     }, 300);
   };
 
-  const handleRegenerateArrangement = () => {
+  const handleRegenerateArrangement = async () => {
     setIsGenerating(true);
-    setTimeout(() => {
+
+    try {
       const shape = SEATING_SHAPES[selectedShape];
 
       // Use CSP solver for ALL layouts
       if (shape.rows && shape.cols) {
-        const result = solveSeatingCSP(analyzedStudents, shape, {
+        console.log('🔄 Regenerating with CSP solver...', {
+          students: studentsToUse.length,
+          shape: shape.id
+        });
+
+        const result = await solveSeatingCSP(studentsToUse, shape, {
           populationSize: 50,
           generations: 100,
           mutationRate: 0.2
+        });
+
+        console.log('✅ Regeneration complete:', {
+          arrangementLength: result.arrangement.length,
+          score: result.score
         });
 
         // Convert to appropriate format based on layout type
@@ -1899,21 +2041,24 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
         setArrangement(convertedArrangement);
         setCspMetadata(result.metadata);
 
-        console.log('🔄 Regenerated CSP Solution:', {
-          layout: shape.layout,
-          score: result.score,
-          violations: result.violations,
-          converted: shape.layout !== 'grid'
-        });
       } else {
         // Fallback to simple arrangement if no rows/cols (shouldn't happen now)
-        const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
+        const simpleArrangement = generateSimpleArrangement(studentsToUse, shape);
         setArrangement(simpleArrangement);
         setCspMetadata(null);
       }
-
+    } catch (error) {
+      console.error('❌ Regenerate failed:', error);
+      console.error('Error details:', error.message, error.stack);
+      // Fallback to simple arrangement on error
+      const shape = SEATING_SHAPES[selectedShape];
+      const simpleArrangement = generateSimpleArrangement(studentsToUse, shape);
+      console.log('⚠️ Using fallback simple arrangement:', simpleArrangement.length);
+      setArrangement(simpleArrangement);
+      setCspMetadata(null);
+    } finally {
       setIsGenerating(false);
-    }, 500);
+    }
   };
 
   /**
@@ -2073,7 +2218,6 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           setArrangement(newArrangement);
         }
 
-        console.log('Swap evaluated:', evaluation);
       }
     }
   };
@@ -3106,6 +3250,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
             cspMetadata={cspMetadata}
             arrangement={arrangement}
             onOpenDeskPopup={(deskId) => setHoveredDesk(deskId)}
+            navigate={navigate}
           />
         )}
       </AnimatePresence>

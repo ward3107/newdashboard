@@ -152,7 +152,6 @@ const ClassroomSeating = () => {
   const handleStudentClick = (studentId) => {
     setSelectedStudent(studentId);
     // You can add navigation to student detail page here
-    console.log('Student clicked:', studentId);
   };
 
   const handleCloseModal = () => {

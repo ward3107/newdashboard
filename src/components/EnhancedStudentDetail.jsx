@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import * as API from '../services/googleAppsScriptAPI';
+import * as API from '../services/api';
 import EnhancedAnalysisDisplay from './EnhancedAnalysisDisplay';
 
 const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
@@ -43,15 +43,32 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
   };
 
   useEffect(() => {
+    // Safety check: ensure student object exists
+    if (!student) {
+      setLoading(false);
+      return;
+    }
+
     // Fetch complete student data
     const fetchStudentDetails = async () => {
       try {
-        const result = await API.getStudent(student.studentCode);
+        // Safely get student code
+        const studentCode = student.studentCode || student.code || student.id;
 
-        if (result.success) {
-          setFullData(result.student);
+        if (!studentCode) {
+          // If no student code, use the student data directly
+          setFullData(student);
+          generateAITasks(student);
+          setLoading(false);
+          return;
+        }
+
+        const result = await API.getStudent(studentCode);
+
+        if (result.success && result.data) {
+          setFullData(result.data);
           // Generate AI tasks based on analysis
-          generateAITasks(result.student);
+          generateAITasks(result.data);
         } else {
           setFullData(student);
           generateAITasks(student);
@@ -69,7 +86,7 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
     };
 
     fetchStudentDetails();
-  }, [student.studentCode]);
+  }, [student]);
 
   // Generate AI-suggested tasks based on student analysis
   const generateAITasks = (studentData) => {
@@ -797,6 +814,27 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
     }
   };
 
+  // Safety check: if student is null or undefined, show error
+  if (!student) {
+    return (
+      <div
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
+        onClick={onClose}
+      >
+        <div className={`p-8 rounded-3xl ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
+          <h2 className="text-xl font-bold mb-4">שגיאה</h2>
+          <p>לא ניתן לטעון את פרטי התלמיד</p>
+          <button
+            onClick={onClose}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            סגור
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
@@ -807,7 +845,7 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
         }
       }}
       role="button"
-      tabIndex={-1}
+      tabIndex={0}
       aria-label="Close modal"
     >
       <div

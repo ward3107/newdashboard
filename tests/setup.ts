@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
-import { afterEach, beforeAll, afterAll, vi } from 'vitest';
+import { afterEach, beforeAll, afterAll, vi, expect } from 'vitest';
 import { server } from './mocks/server';
 
 // Mock environment variables for tests

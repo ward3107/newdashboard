@@ -28,7 +28,6 @@ export const analyzeStudentWithISHEBOT = async (studentData) => {
       premium: false // Use gpt-4o-mini by default
     };
 
-    console.log('🧠 Sending to ISHEBOT:', requestBody);
 
     const response = await fetch(`${ISHEBOT_API_URL}/analyze`, {
       method: 'POST',
@@ -49,7 +48,6 @@ export const analyzeStudentWithISHEBOT = async (studentData) => {
       throw new Error('פורמט תשובה לא תקין מ-ISHEBOT');
     }
 
-    console.log('✅ ISHEBOT Analysis Complete:', result);
 
     return {
       success: true,

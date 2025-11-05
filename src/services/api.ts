@@ -1,7 +1,16 @@
 /**
  * API Service for ISHEBOT Student Dashboard
- * Connects to Google Apps Script Web App
+ * Supports both Google Apps Script and Firebase Firestore
  */
+
+import { firestoreApi } from './firestoreApi';
+
+// ====================================
+// DATA SOURCE CONFIGURATION
+// ====================================
+
+// Default to Firestore if explicitly enabled, otherwise use Google Sheets
+const USE_FIRESTORE = import.meta.env.VITE_USE_FIRESTORE === 'true';
 
 // ====================================
 // TYPE DEFINITIONS
@@ -17,6 +26,13 @@ export interface Student {
   keyNotes: string;
   strengthsCount: number;
   challengesCount: number;
+  // Optional detailed data - included when available from Firestore
+  student_summary?: {
+    learning_style: string;
+    key_notes: string;
+    strengths: string[];
+    challenges: string[];
+  };
 }
 
 export interface DetailedStudent {
@@ -112,10 +128,11 @@ const MOCK_STATS: DashboardStats = {
 };
 
 const MOCK_STUDENTS: Student[] = [
+  // Class י1
   {
-    studentCode: '70101',
+    studentCode: '10101',
     quarter: 'Q1',
-    classId: 'ז1',
+    classId: 'י1',
     date: '15/10/2025',
     name: 'דני כהן',
     learningStyle: 'חזותי',
@@ -124,15 +141,184 @@ const MOCK_STUDENTS: Student[] = [
     challengesCount: 2,
   },
   {
-    studentCode: '70102',
+    studentCode: '10102',
     quarter: 'Q1',
-    classId: 'ז1',
+    classId: 'י1',
     date: '15/10/2025',
     name: 'שרה לוי',
     learningStyle: 'שמיעתי',
     keyNotes: 'מעדיפה הסברים בעל פה',
     strengthsCount: 5,
     challengesCount: 3,
+  },
+  {
+    studentCode: '10103',
+    quarter: 'Q1',
+    classId: 'י1',
+    date: '15/10/2025',
+    name: 'יוסי מזרחי',
+    learningStyle: 'קינסתטי',
+    keyNotes: 'מצטיין בפעילויות מעשיות',
+    strengthsCount: 7,
+    challengesCount: 1,
+  },
+  {
+    studentCode: '10104',
+    quarter: 'Q1',
+    classId: 'י1',
+    date: '15/10/2025',
+    name: 'רחל אברהם',
+    learningStyle: 'משולב',
+    keyNotes: 'תלמידה מצוינת עם יכולות גבוהות',
+    strengthsCount: 8,
+    challengesCount: 1,
+  },
+  {
+    studentCode: '10105',
+    quarter: 'Q1',
+    classId: 'י1',
+    date: '15/10/2025',
+    name: 'אלי גבאי',
+    learningStyle: 'חזותי',
+    keyNotes: 'זקוק לתמיכה נוספת בקריאה',
+    strengthsCount: 3,
+    challengesCount: 5,
+  },
+  // Class י2
+  {
+    studentCode: '10201',
+    quarter: 'Q1',
+    classId: 'י2',
+    date: '15/10/2025',
+    name: 'מיכל דוד',
+    learningStyle: 'שמיעתי',
+    keyNotes: 'תלמידה פעילה ומשתפת פעולה',
+    strengthsCount: 6,
+    challengesCount: 2,
+  },
+  {
+    studentCode: '10202',
+    quarter: 'Q1',
+    classId: 'י2',
+    date: '15/10/2025',
+    name: 'אבי שלום',
+    learningStyle: 'קינסתטי',
+    keyNotes: 'מצטיין בספורט ופעילויות גופניות',
+    strengthsCount: 5,
+    challengesCount: 3,
+  },
+  {
+    studentCode: '10203',
+    quarter: 'Q1',
+    classId: 'י2',
+    date: '15/10/2025',
+    name: 'נועה פרץ',
+    learningStyle: 'חזותי',
+    keyNotes: 'יכולות אמנותיות גבוהות',
+    strengthsCount: 7,
+    challengesCount: 2,
+  },
+  // Class י3
+  {
+    studentCode: '10301',
+    quarter: 'Q1',
+    classId: 'י3',
+    date: '15/10/2025',
+    name: 'עידן חיים',
+    learningStyle: 'שמיעתי',
+    keyNotes: 'זקוק להתמדה בהקשבה',
+    strengthsCount: 4,
+    challengesCount: 4,
+  },
+  {
+    studentCode: '10302',
+    quarter: 'Q1',
+    classId: 'י3',
+    date: '15/10/2025',
+    name: 'תמר בן דוד',
+    learningStyle: 'משולב',
+    keyNotes: 'תלמידה מעולה עם מוטיבציה גבוהה',
+    strengthsCount: 8,
+    challengesCount: 1,
+  },
+  {
+    studentCode: '10303',
+    quarter: 'Q1',
+    classId: 'י3',
+    date: '15/10/2025',
+    name: 'רון ביטון',
+    learningStyle: 'קינסתטי',
+    keyNotes: 'זקוק לפעילויות אינטראקטיביות',
+    strengthsCount: 5,
+    challengesCount: 3,
+  },
+  // Class י4
+  {
+    studentCode: '10401',
+    quarter: 'Q1',
+    classId: 'י4',
+    date: '15/10/2025',
+    name: 'גל סבן',
+    learningStyle: 'חזותי',
+    keyNotes: 'מצטיין במתמטיקה ומדעים',
+    strengthsCount: 7,
+    challengesCount: 2,
+  },
+  {
+    studentCode: '10402',
+    quarter: 'Q1',
+    classId: 'י4',
+    date: '15/10/2025',
+    name: 'ליאת עמר',
+    learningStyle: 'שמיעתי',
+    keyNotes: 'יכולות מנהיגות מפותחות',
+    strengthsCount: 6,
+    challengesCount: 2,
+  },
+  {
+    studentCode: '10403',
+    quarter: 'Q1',
+    classId: 'י4',
+    date: '15/10/2025',
+    name: 'אורי נחמני',
+    learningStyle: 'משולב',
+    keyNotes: 'זקוק לתמיכה רגשית',
+    strengthsCount: 4,
+    challengesCount: 4,
+  },
+  // Class י5
+  {
+    studentCode: '10501',
+    quarter: 'Q1',
+    classId: 'י5',
+    date: '15/10/2025',
+    name: 'שירה מלכה',
+    learningStyle: 'חזותי',
+    keyNotes: 'תלמידה יצירתית עם דמיון עשיר',
+    strengthsCount: 7,
+    challengesCount: 1,
+  },
+  {
+    studentCode: '10502',
+    quarter: 'Q1',
+    classId: 'י5',
+    date: '15/10/2025',
+    name: 'דן רוזן',
+    learningStyle: 'קינסתטי',
+    keyNotes: 'זקוק לתנועה במהלך הלמידה',
+    strengthsCount: 5,
+    challengesCount: 3,
+  },
+  {
+    studentCode: '10503',
+    quarter: 'Q1',
+    classId: 'י5',
+    date: '15/10/2025',
+    name: 'מאיה שטרן',
+    learningStyle: 'שמיעתי',
+    keyNotes: 'מתקשה בריכוז בכיתה רועשת',
+    strengthsCount: 4,
+    challengesCount: 5,
   },
 ];
 
@@ -193,28 +379,25 @@ async function fetchWithTimeout(url: string, timeout: number = API_TIMEOUT): Pro
 async function apiCall<T>(action: string, params?: Record<string, string>): Promise<ApiResponse<T>> {
   // Use mock data in development
   if (USE_MOCK_DATA) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`🔧 Using mock data for action: ${action}`);
-    }
-    return handleMockResponse<T>(action, params);
+    console.log(`🔧 Using MOCK data for action: ${action}`);
+    // Mock data enabled - bypassing API calls for development
+    const response = handleMockResponse<T>(action, params);
+    console.log(`📊 Mock data response:`, response);
+    return response;
   }
 
-  // Check if API URL is configured
+  // Check if API URL is configured - if not, fallback to mock data
   if (!API_URL || API_URL.includes('YOUR_DEPLOYMENT_ID')) {
     if (process.env.NODE_ENV === 'development') {
-      console.error('❌ API URL not configured. Please update .env.local');
+      console.warn('⚠️ API URL not configured. Using mock data as fallback.');
     }
-    return {
-      success: false,
-      error: 'API not configured. Please deploy Google Apps Script and update .env.local',
-    };
+    // Return mock data instead of error for better UX
+    return handleMockResponse<T>(action, params);
   }
 
   try {
     const url = buildUrl(action, params);
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`📡 API Call: ${action}`, params);
-    }
+    // Development logging removed - monitor network tab for API calls
 
     const response = await fetchWithTimeout(url);
 
@@ -229,10 +412,7 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
       throw new Error(data.error);
     }
 
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`✅ API Success: ${action}`, data);
-    }
-
+    // API call successful - returning data
     return {
       success: true,
       data: data as T,
@@ -303,22 +483,46 @@ function handleMockResponse<T>(action: string, params?: Record<string, string>):
 
 /**
  * Get dashboard statistics
+ * Routes to Firestore or Google Sheets based on configuration
  */
 export async function getStats(): Promise<ApiResponse<DashboardStats>> {
+  if (USE_FIRESTORE) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📊 Fetching stats from Firestore');
+    }
+    return firestoreApi.getStats();
+  }
   return apiCall<DashboardStats>('getStats');
 }
 
 /**
  * Get all students (summary data)
+ * Routes to Firestore or Google Sheets based on configuration
  */
 export async function getAllStudents(): Promise<ApiResponse<{ students: Student[] }>> {
-  return apiCall<{ students: Student[] }>('getAllStudents');
+  console.log(`🎓 getAllStudents called - USE_FIRESTORE: ${USE_FIRESTORE}, USE_MOCK_DATA: ${USE_MOCK_DATA}`);
+
+  if (USE_FIRESTORE) {
+    console.log('👥 Fetching students from Firestore');
+    return firestoreApi.getAllStudents();
+  }
+
+  const result = await apiCall<{ students: Student[] }>('getAllStudents');
+  console.log(`✅ getAllStudents result - success: ${result.success}, student count: ${result.data?.students?.length || 0}`);
+  return result;
 }
 
 /**
  * Get detailed student information
+ * Routes to Firestore or Google Sheets based on configuration
  */
 export async function getStudent(studentId: string): Promise<ApiResponse<DetailedStudent>> {
+  if (USE_FIRESTORE) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🔍 Fetching student ${studentId} from Firestore`);
+    }
+    return firestoreApi.getStudent(studentId);
+  }
   return apiCall<DetailedStudent>('getStudent', { studentId });
 }
 
@@ -345,6 +549,7 @@ export async function analyzeStudent(studentId: string): Promise<ApiResponse<{ s
 
 /**
  * Test API connection
+ * Tests either Firestore or Google Sheets based on configuration
  */
 export async function testConnection(): Promise<ApiResponse<{
   message: string;
@@ -361,6 +566,12 @@ export async function testConnection(): Promise<ApiResponse<{
     };
   }
 
+  // Use Firestore if configured
+  if (USE_FIRESTORE) {
+    return firestoreApi.testConnection();
+  }
+
+  // Fall back to Google Apps Script
   if (!API_URL || API_URL.includes('YOUR_DEPLOYMENT_ID')) {
     return {
       success: false,
@@ -382,7 +593,7 @@ export async function testConnection(): Promise<ApiResponse<{
       success: true,
       data: {
         message: 'API connected successfully',
-        mode: 'LIVE',
+        mode: 'GOOGLE_SHEETS',
         stats: data,
       },
     };

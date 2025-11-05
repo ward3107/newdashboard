@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Require authentication for all school data access
+    // Users must be logged in to view student data and school metadata
+    match /schools/{schoolId}/students/{studentId} {
+      allow read: if request.auth != null; // Authenticated users only
+      allow write: if request.auth != null; // Authenticated users can write
+    }
+
+    match /schools/{schoolId} {
+      allow read: if request.auth != null; // Authenticated users only
+      allow write: if request.auth != null; // Authenticated users can write
+    }
+
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

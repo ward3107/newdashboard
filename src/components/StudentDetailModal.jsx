@@ -24,7 +24,7 @@ import {
   Printer,
   Users
 } from 'lucide-react';
-import * as API from '../services/googleAppsScriptAPI';
+import * as API from '../services/api';
 
 const StudentDetailModal = ({ student, onClose, darkMode, theme }) => {
   const [fullData, setFullData] = useState(null);
@@ -36,8 +36,8 @@ const StudentDetailModal = ({ student, onClose, darkMode, theme }) => {
     const fetchStudentDetails = async () => {
       try {
         const result = await API.getStudent(student.studentCode);
-        if (result.success) {
-          setFullData(result.student);
+        if (result.success && result.data) {
+          setFullData(result.data);
         } else {
           // Use the data we already have
           setFullData(student);
@@ -108,9 +108,9 @@ const StudentDetailModal = ({ student, onClose, darkMode, theme }) => {
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
       onClick={onClose}
       onKeyDown={(e) => (e.key === 'Escape') && onClose()}
-      role="dialog"
-      aria-modal="true"
-      tabIndex={-1}
+      role="button"
+      aria-label="Close modal"
+      tabIndex={0}
     >
       <div
         className={`relative w-full max-w-[95vw] max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl ${
@@ -118,6 +118,8 @@ const StudentDetailModal = ({ student, onClose, darkMode, theme }) => {
         }`}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
       >
         {/* Header with gradient */}
         <div className={`relative h-48 bg-gradient-to-r ${getLearningStyleColor(student.learningStyle)} p-8`}>

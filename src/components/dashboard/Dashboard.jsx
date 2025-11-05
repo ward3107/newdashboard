@@ -69,7 +69,6 @@ const Dashboard = () => {
     const handleStorageChange = (e) => {
       // Check if the dashboardRefreshTrigger was updated
       if (e.key === 'dashboardRefreshTrigger' || e.storageArea === localStorage) {
-        console.log('Dashboard refresh triggered by admin panel');
         toast.success('נתוח תלמיד חדש! מרענן את הנתונים...');
         loadData();
       }
@@ -80,7 +79,6 @@ const Dashboard = () => {
 
     // Also check for changes in the same tab using custom event
     const handleCustomRefresh = () => {
-      console.log('Dashboard refresh triggered (same tab)');
       toast.success('נתוח תלמיד חדש! מרענן את הנתונים...');
       loadData();
     };

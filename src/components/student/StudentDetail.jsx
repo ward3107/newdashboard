@@ -23,8 +23,8 @@ import {
   Lightbulb
 } from 'lucide-react';
 
-// API
-import { getStudent } from '../../api/studentAPI';
+// API - Using new unified API that supports both Firebase and Google Sheets
+import { getStudent } from '../../services/api';
 
 // Utils
 import { exportStudentDetailToPDF, generatePrintHTML } from '../../utils/exportUtils';
@@ -58,8 +58,15 @@ const StudentDetail = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getStudent(studentId);
-      setStudent(data);
+
+      // getStudent returns ApiResponse<DetailedStudent>
+      const response = await getStudent(studentId);
+
+      if (response.success && response.data) {
+        setStudent(response.data);
+      } else {
+        throw new Error(response.error || 'Failed to load student data');
+      }
     } catch (err) {
       console.error('Error loading student:', err);
       setError(err.message);

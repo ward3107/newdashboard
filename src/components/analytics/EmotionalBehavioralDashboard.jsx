@@ -844,12 +844,6 @@ const calculateEBCMetrics = (students) => {
     !s.needsAnalysis || s.strengthsCount > 0
   );
 
-  console.log('🔍 EmotionalBehavioralDashboard - Analyzing students:', {
-    totalStudents: students.length,
-    analyzedCount: analyzedStudents.length,
-    sampleStudent: students[0]
-  });
-
   if (analyzedStudents.length === 0) {
     console.warn('⚠️ EmotionalBehavioralDashboard: No analyzed students found');
     // Return null to prevent showing mock data

@@ -216,7 +216,6 @@ export function setupAdminPanelVanilla() {
   const out = (data) => {
     const el = document.querySelector("#output");
     if (!el) {
-      console.log("OUT:", data);
       return;
     }
     el.textContent =

@@ -11,9 +11,7 @@ const ApiTestPage: React.FC = () => {
     setResult(null);
 
     try {
-      console.log(`Running test: ${testName}`);
       const response = await testFn();
-      console.log(`Test result:`, response);
       setResult(response);
     } catch (error: any) {
       console.error(`Test failed:`, error);

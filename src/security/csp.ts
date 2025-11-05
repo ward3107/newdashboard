@@ -51,8 +51,22 @@ export function getCSPDirectives(isDevelopment = false): CSPDirectives {
       'https://apis.google.com',
       'https://fonts.googleapis.com',
       'https://fonts.gstatic.com',
+      'https://firestore.googleapis.com',
+      'https://us-central1-ishebott.cloudfunctions.net',
+      'https://*.firebaseapp.com',
+      'https://*.firebase.google.com',
       isDevelopment ? 'ws://localhost:*' : '', // WebSocket for HMR
-      isDevelopment ? 'http://localhost:*' : '',
+      isDevelopment ? 'http://localhost:*' : '', // Development APIs
+      isDevelopment ? 'ws://127.0.0.1:*' : '',
+      isDevelopment ? 'http://127.0.0.1:*' : '',
+      // Optimization backend (Python FastAPI)
+      // Optimization backend (Python FastAPI) - allow in both dev and prod
+      'http://localhost:8000',
+      'http://127.0.0.1:8000',
+      'https://localhost:8000',
+      // Production optimization backend (Render)
+      'https://*.onrender.com',
+      'https://*.render.com',
     ].filter(Boolean),
     'font-src': [
       "'self'",
@@ -61,7 +75,7 @@ export function getCSPDirectives(isDevelopment = false): CSPDirectives {
     ],
     'object-src': ["'none'"],
     'media-src': ["'self'"],
-    'frame-src': ["'none'"],
+    'frame-src': ["'self'", 'https://vercel.live'],
     'worker-src': ["'self'", 'blob:'],
     'form-action': ["'self'"],
     'frame-ancestors': ["'none'"],
@@ -108,9 +122,7 @@ export function applyCSPMetaTag(isDevelopment = false): void {
   meta.content = cspContent;
   document.head.appendChild(meta);
 
-  if (isDevelopment) {
-    console.log('🔒 CSP applied:', cspContent.substring(0, 100) + '...');
-  }
+  // CSP configured - violations will be reported to console in development
 }
 
 /**
@@ -158,6 +170,12 @@ export function setupCSPReporting(): void {
  */
 export function initializeCSP(): void {
   const isDevelopment = import.meta.env.DEV;
+
+  // Skip CSP in development to avoid blocking development features
+  if (isDevelopment) {
+    return;
+  }
+
   applyCSPMetaTag(isDevelopment);
   setupCSPReporting();
 }

@@ -16,7 +16,7 @@ node_modules/
 .env.development.local
 .env.test.local
 .env.production.local
-.env.production
+# .env.production is allowed - contains only public API URLs, no secrets
 .env.docker
 
 # Logs
@@ -111,6 +111,10 @@ workbox-*.js
 *db-config*
 .pgpass
 *.sql
+
+# Firebase credentials (NEVER COMMIT)
+firebase-service-account.json
+*firebase-adminsdk*.json
 
 # Local development only
 .vscode/settings.json

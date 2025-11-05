@@ -5,16 +5,56 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import compression from 'vite-plugin-compression';
 
 export default defineConfig({
+  // Base URL - ensures proper asset loading
+  base: '/',
+
   plugins: [
     react(),
 
-    // PWA Configuration
+    // PWA Configuration - Re-enabled with proper settings
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'script-defer',
+      devOptions: {
+        enabled: false, // Disable in development to prevent issues
+      },
+      // Re-enable manifest with proper configuration
+      manifest: {
+        name: 'Dashboard',
+        short_name: 'Dashboard',
+        description: 'Modern Dashboard Application',
+        theme_color: '#1a1a1a',
+        background_color: '#1a1a1a',
+        display: 'standalone',
+        scope: '/',
+        start_url: '/',
+        orientation: 'portrait-primary',
+        icons: [
+          {
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+        ],
+      },
       workbox: {
         maximumFileSizeToCacheInBytes: 3000000,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
+        // Exclude dynamic chunks that are loaded on-demand to prevent 404 errors in service worker
+        globIgnores: [
+          '**/exportUtils-*.js',
+          '**/export-xlsx-*.js',
+          '**/export-pdf-*.js',
+          '**/node_modules/**',
+          '**/stats.html',
+        ],
+        // Add navigation fallback to handle SPA routing
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api/, /\.[^\/]+$/],
+        // Skip waiting to activate new service worker immediately
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -44,30 +84,6 @@ export default defineConfig({
                 statuses: [0, 200],
               },
             },
-          },
-        ],
-      },
-      manifest: {
-        name: 'ISHEBOT Student Dashboard',
-        short_name: 'ISHEBOT',
-        description: 'AI-Powered Student Analysis Dashboard',
-        theme_color: '#3B82F6',
-        background_color: '#F3F4F6',
-        display: 'standalone',
-        orientation: 'any',
-        dir: 'rtl',
-        lang: 'he',
-        icons: [
-          {
-            src: '/android-chrome-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: '/android-chrome-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
           },
         ],
       },
@@ -128,32 +144,32 @@ export default defineConfig({
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
 
           // Data visualization
-          'charts': ['recharts', 'd3-array', 'd3-color', 'd3-format', 'd3-interpolate', 'd3-path', 'd3-scale', 'd3-shape', 'd3-time', 'd3-time-format'],
+          'charts': ['recharts', 'chart.js', 'react-chartjs-2'],
 
           // UI libraries
-          'ui-vendor': ['framer-motion', '@headlessui/react', 'react-hot-toast'],
+          'ui-vendor': ['framer-motion', 'react-hot-toast'],
 
           // State management and data fetching
-          'data-vendor': ['@tanstack/react-query', 'axios', 'zustand'],
+          'data-vendor': ['@tanstack/react-query', 'axios'],
 
           // Icons
-          'icons': ['lucide-react', '@radix-ui/react-icons'],
+          'icons': ['lucide-react'],
 
-          // Export libraries (heavy)
-          'export-xlsx': ['xlsx'],
+          // Export libraries (heavy) - NOW WITH DYNAMIC IMPORTS!
+          'export-xlsx': ['exceljs'],
           'export-pdf': ['jspdf', 'html2canvas'],
 
           // Localization
-          'i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector', 'i18next-http-backend'],
-
-          // Analytics and monitoring
-          'analytics': ['react-ga4'],
+          'i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
 
           // Form handling
-          'forms': ['react-hook-form', '@hookform/resolvers', 'yup'],
+          'forms': ['@hookform/resolvers'],
 
           // Date utilities
           'date-utils': ['date-fns'],
+
+          // DnD Kit
+          'dnd': ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
         },
 
         // Asset naming

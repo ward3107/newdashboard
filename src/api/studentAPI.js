@@ -84,29 +84,17 @@ const normalizeStudentData = (rawStudent) => {
  * @returns {Promise<Array>} Array of student objects
  */
 export const getAllStudents = async () => {
-  console.log('🔍 getAllStudents called');
-  console.log('📊 ENABLE_MOCK_DATA:', FEATURES.ENABLE_MOCK_DATA);
 
   if (FEATURES.ENABLE_MOCK_DATA) {
-    console.log('📦 Using mock data');
     await mockDelay();
     return MOCK_DATA.students;
   }
 
-  console.log('🌐 Fetching from API:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GET_ALL_STUDENTS}`);
 
   return retryRequest(async () => {
     const response = await api.get(
       `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GET_ALL_STUDENTS}`
     );
-
-    console.log('✅ API Response:', response.data);
-    console.log('🔍 Response structure:', {
-      hasStudents: !!response.data?.students,
-      hasData: !!response.data?.data,
-      isArray: Array.isArray(response.data),
-      keys: Object.keys(response.data || {})
-    });
 
     // Handle different API response formats
     let studentsArray = null;
@@ -123,7 +111,6 @@ export const getAllStudents = async () => {
     }
 
     if (studentsArray && Array.isArray(studentsArray)) {
-      console.log(`📊 Found ${studentsArray.length} students`);
       // Normalize the data from Google Forms format
       return studentsArray.map(normalizeStudentData);
     }

@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: ishebot-optimization-api
+    env: python
+    region: frankfurt # Closest to Israel for better latency
+    plan: free # Change to 'starter' for production ($7/month)
+    branch: main
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: DEBUG
+        value: false
+      - key: APP_NAME
+        value: ISHEBOT Optimization API
+      - key: APP_VERSION
+        value: 1.0.0
+      - key: HOST
+        value: 0.0.0.0
+      - key: GA_POPULATION_SIZE
+        value: 100
+      - key: GA_GENERATIONS
+        value: 100
+      - key: GA_MUTATION_RATE
+        value: 0.1
+      - key: GA_CROSSOVER_RATE
+        value: 0.8
+      - key: LOG_LEVEL
+        value: INFO
+      - key: ALGORITHM
+        value: HS256
+      # These need to be set manually in Render dashboard:
+      # - SECRET_KEY (generate with: python -c "import secrets; print(secrets.token_hex(32))")
+      # - ALLOWED_ORIGINS (your Vercel frontend URL)

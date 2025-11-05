@@ -38,8 +38,9 @@ import {
 } from "lucide-react";
 import AdminPanel from "../AdminPanel";
 import EnhancedStudentDetail from "../EnhancedStudentDetail";
-import * as API from "../../services/googleAppsScriptAPI";
-import * as StudentAPI from "../../api/studentAPI";
+// UPDATED: Use new unified API that supports both Firebase and Google Sheets
+import * as API from "../../services/api";
+import * as StudentAPI from "../../services/api";
 import EnhancedAnalyticsDashboard from "../analytics/EnhancedAnalyticsDashboard";
 import { AnalysisAggregator } from "../../services/analysisAggregator";
 import ClassroomSeatingAI from "../classroom/ClassroomSeatingAI";
@@ -59,22 +60,20 @@ const API_URL =
 
 // Fetch all students from backend (now supports mock data)
 const fetchStudents = async () => {
+  console.log('🎯 fetchStudents: Starting fetch...');
   try {
-    console.log("🔍 Fetching students (with mock data support)...");
-    const students = await StudentAPI.getAllStudents();
-    console.log("✅ Students data received:", students);
+    // New API returns ApiResponse<{ students: Student[] }>
+    const response = await StudentAPI.getAllStudents();
+    console.log('📥 fetchStudents: Received API response:', response);
 
-    // 🔍 DEBUG: Check needsAnalysis field
-    console.log('🔍 DEBUG - Student Analysis:', {
-      total: students?.length || 0,
-      sampleStudents: students?.slice(0, 5).map(s => ({
-        code: s.studentCode,
-        needsAnalysis: s.needsAnalysis,
-        strengthsCount: s.strengthsCount,
-        hasAnalysisData: s.strengthsCount > 0
-      })),
-      analyzed: students?.filter(s => !s.needsAnalysis).length || 0,
-      unanalyzed: students?.filter(s => s.needsAnalysis).length || 0
+    // Extract students from response
+    const students = response.success && response.data?.students
+      ? response.data.students
+      : [];
+
+    console.log('📊 fetchStudents: Extracted students array:', {
+      count: students.length,
+      firstStudent: students[0]
     });
 
     // Ensure students have avatar property
@@ -88,11 +87,14 @@ const fetchStudents = async () => {
       avatar: student.avatar || (parseInt(student.studentCode) % 4) + 1,
     }));
 
-    console.log(`📊 Returning ${studentsWithAvatars.length} students`);
+    console.log('✅ fetchStudents: Returning students with avatars:', {
+      count: studentsWithAvatars.length,
+      sample: studentsWithAvatars[0]
+    });
 
     return studentsWithAvatars;
   } catch (error) {
-    console.error("Error fetching students:", error);
+    console.error("❌ Error fetching students:", error);
     return [];
   }
 };
@@ -100,10 +102,9 @@ const fetchStudents = async () => {
 // Fetch stats from backend (now supports mock data)
 const fetchStats = async () => {
   try {
-    console.log("🔍 Fetching stats (with mock data support)...");
-    const stats = await StudentAPI.getStats();
-    console.log("✅ Stats received:", stats);
-    return stats;
+    // New API returns ApiResponse<DashboardStats>
+    const response = await StudentAPI.getStats();
+    return response.success && response.data ? response.data : null;
   } catch (error) {
     console.error("Error fetching stats:", error);
     return null;
@@ -601,6 +602,7 @@ const FuturisticTeacherDashboard = () => {
 
   // Fetch real data from backend - defined at component level for reuse
   const loadData = async () => {
+    console.log('🔄 FuturisticDashboard: Starting loadData...');
     setLoading(true);
     setConnectionError(null); // Clear previous errors
     try {
@@ -609,6 +611,11 @@ const FuturisticTeacherDashboard = () => {
         fetchStudents(),
         fetchStats(),
       ]);
+
+      console.log('📚 FuturisticDashboard: Received students data:', {
+        count: studentsData?.length || 0,
+        students: studentsData
+      });
 
       setStudents(studentsData);
 
@@ -1776,21 +1783,6 @@ const FuturisticStudents = ({
   // Separate students into analyzed and unanalyzed
   const analyzedStudents = students.filter((s) => !s.needsAnalysis);
   const unanalyzedStudents = students.filter((s) => s.needsAnalysis);
-
-  // 🔍 DEBUG: Log student filtering
-  console.log('🔍 DEBUG - Student Filtering:', {
-    totalStudents: students.length,
-    analyzedCount: analyzedStudents.length,
-    unanalyzedCount: unanalyzedStudents.length,
-    firstStudent: students[0],
-    firstAnalyzed: analyzedStudents[0],
-    firstUnanalyzed: unanalyzedStudents[0],
-    allStudentNeedsAnalysis: students.map(s => ({
-      code: s.studentCode,
-      needsAnalysis: s.needsAnalysis,
-      strengthsCount: s.strengthsCount
-    }))
-  });
 
   // Filter students based on search term and selected class
   const filterStudents = (studentsList) => {

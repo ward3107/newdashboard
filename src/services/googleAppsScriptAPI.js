@@ -40,7 +40,6 @@ export const getAllStudents = async () => {
     // Convert map back to array
     const students = Array.from(uniqueStudentsMap.values());
 
-    console.log(`API: Fetched ${data.students?.length || 0} records, ${students.length} unique students after deduplication`);
 
     return { success: true, students };
   } catch (error) {
@@ -54,12 +53,10 @@ export const getStudent = async (studentCode) => {
     // NOTE: Using 'studentId' instead of 'studentCode' because the deployed Google Apps Script
     // expects 'studentId' parameter. Update this to 'studentCode' after redeploying the script.
     const url = `${API_URL}?action=getStudent&studentId=${studentCode}`;
-    console.log(`📡 Calling API: ${url}`);
 
     const response = await fetch(url);
     const data = await response.json();
 
-    console.log("📦 Raw API response:", data);
 
     // Check if the API returned an error
     if (data.error) {
@@ -67,8 +64,6 @@ export const getStudent = async (studentCode) => {
       return { success: false, error: data.error };
     }
 
-    console.log("✅ API returned student data successfully");
-    console.log("🔍 Has insights?", data.insights ? `YES (${data.insights.length})` : "NO");
     return { success: true, student: data };
   } catch (error) {
     console.error("❌ Error fetching student:", error);
