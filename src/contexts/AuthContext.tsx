@@ -64,6 +64,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Fetch user data from Firestore
    */
   const fetchUserData = useCallback(async (firebaseUser: FirebaseUser): Promise<User | null> => {
+    if (!db) {
+      console.error('Firestore not initialized');
+      return null;
+    }
+
     try {
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
 
@@ -99,6 +104,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Update last login timestamp
    */
   const updateLastLogin = useCallback(async (uid: string) => {
+    if (!db) {
+      console.error('Firestore not initialized');
+      return;
+    }
+
     try {
       await updateDoc(doc(db, 'users', uid), {
         lastLogin: serverTimestamp(),
@@ -112,6 +122,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Listen to auth state changes
    */
   useEffect(() => {
+    if (!auth) {
+      console.error('Firebase Auth not initialized');
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         // User is signed in
@@ -144,6 +160,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Login with email and password
    */
   const login = useCallback(async (credentials: LoginCredentials) => {
+    if (!auth) {
+      throw new Error('Authentication not initialized. Please check Firebase configuration.');
+    }
+
     try {
       setError(null);
       setLoading(true);
@@ -204,6 +224,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Login with Google
    */
   const loginWithGoogle = useCallback(async () => {
+    if (!auth) {
+      throw new Error('Authentication not initialized. Please check Firebase configuration.');
+    }
+
     try {
       setError(null);
       setLoading(true);
@@ -249,6 +273,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Logout
    */
   const logout = useCallback(async () => {
+    if (!auth) {
+      throw new Error('Authentication not initialized. Please check Firebase configuration.');
+    }
+
     try {
       setError(null);
       await signOut(auth);
@@ -264,6 +292,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Signup (for admins to create accounts)
    */
   const signup = useCallback(async (data: SignupData) => {
+    if (!auth || !db) {
+      throw new Error('Firebase not initialized. Please check Firebase configuration.');
+    }
+
     try {
       setError(null);
       setLoading(true);
@@ -327,6 +359,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Reset password
    */
   const resetPassword = useCallback(async (email: string) => {
+    if (!auth) {
+      throw new Error('Authentication not initialized. Please check Firebase configuration.');
+    }
+
     try {
       setError(null);
       await sendPasswordResetEmail(auth, email);
@@ -352,6 +388,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Update user profile
    */
   const updateProfile = useCallback(async (data: Partial<User>) => {
+    if (!auth || !db) {
+      throw new Error('Firebase not initialized. Please check Firebase configuration.');
+    }
+
     try {
       setError(null);
 

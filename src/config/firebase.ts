@@ -22,9 +22,9 @@ const firebaseConfig = {
 };
 
 /**
- * Validate Firebase configuration
+ * Check if Firebase configuration is complete
  */
-function validateConfig() {
+function isFirebaseConfigured() {
   const requiredKeys = [
     'apiKey',
     'authDomain',
@@ -34,61 +34,58 @@ function validateConfig() {
     'appId',
   ];
 
-  const missingKeys = requiredKeys.filter(
-    (key) => !firebaseConfig[key as keyof typeof firebaseConfig]
+  return requiredKeys.every(
+    (key) => firebaseConfig[key as keyof typeof firebaseConfig]
   );
-
-  if (missingKeys.length > 0) {
-    throw new Error(
-      `Missing Firebase configuration: ${missingKeys.join(', ')}\n` +
-      'Please check your .env file and ensure all VITE_FIREBASE_* variables are set.\n' +
-      'See docs/FIREBASE_SETUP_GUIDE.md for instructions.'
-    );
-  }
 }
 
-// Validate configuration before initializing
-validateConfig();
+const firebaseConfigured = isFirebaseConfigured();
+
+// Only warn during development, not during build
+if (!firebaseConfigured && import.meta.env.DEV) {
+  console.warn(
+    '⚠️ Firebase not configured. Set VITE_FIREBASE_* environment variables.\n' +
+    'See docs/FIREBASE_SETUP_GUIDE.md for instructions.'
+  );
+}
 
 /**
- * Initialize Firebase App
+ * Initialize Firebase App (only if configured)
  */
-export const app = initializeApp(firebaseConfig);
+export const app = firebaseConfigured ? initializeApp(firebaseConfig) : null;
 
 /**
- * Initialize Firebase Authentication
+ * Initialize Firebase Authentication (only if configured)
  */
-export const auth = getAuth(app);
+export const auth = app ? getAuth(app) : null;
 
 /**
- * Initialize Firestore Database
+ * Initialize Firestore Database (only if configured)
  */
-export const db = getFirestore(app);
+export const db = app ? getFirestore(app) : null;
 
 /**
- * Initialize Firebase Cloud Functions
+ * Initialize Firebase Cloud Functions (only if configured)
  */
-export const functions = getFunctions(app);
+export const functions = app ? getFunctions(app) : null;
 
 /**
  * Connect to Firebase Emulators (for local development)
- * Uncomment these lines if you want to use Firebase Emulators
  */
-if (import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true') {
-  connectAuthEmulator(auth, 'http://localhost:9099');
-  connectFirestoreEmulator(db, 'localhost', 8080);
-  connectFunctionsEmulator(functions, 'localhost', 5001);
+if (app && import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true') {
+  if (auth) connectAuthEmulator(auth, 'http://localhost:9099');
+  if (db) connectFirestoreEmulator(db, 'localhost', 8080);
+  if (functions) connectFunctionsEmulator(functions, 'localhost', 5001);
 }
 
 /**
  * Firebase configuration info (for debugging)
  */
 export const firebaseInfo = {
-  projectId: firebaseConfig.projectId,
-  authDomain: firebaseConfig.authDomain,
+  configured: firebaseConfigured,
+  projectId: firebaseConfig.projectId || null,
+  authDomain: firebaseConfig.authDomain || null,
   isEmulator: import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true',
 };
-
-// Firebase initialized - configuration available in firebaseInfo object
 
 export default app;
