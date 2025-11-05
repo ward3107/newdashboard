@@ -1,0 +1,53 @@
+// Firestore Security Rules for Student Dashboard
+// Copy and paste this into Firebase Console > Firestore Database > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Students collection rules
+    match /schools/{schoolId}/students/{studentId} {
+      // Allow public read access (for demo/testing)
+      // Change this to require authentication in production
+      allow read: if true;
+
+      // Prevent all writes from client
+      // Only allow writes through Admin SDK or Cloud Functions
+      allow write: if false;
+    }
+
+    // Optional: Add rules for other collections if needed
+    // match /schools/{schoolId}/classes/{classId} {
+    //   allow read: if true;
+    //   allow write: if false;
+    // }
+  }
+}
+
+// ============================================================
+// PRODUCTION SECURITY OPTIONS (choose one when ready)
+// ============================================================
+
+// Option 1: Require Authentication (Recommended)
+// allow read: if request.auth != null;
+
+// Option 2: Specific User Only
+// allow read: if request.auth.uid == "YOUR_ADMIN_UID";
+
+// Option 3: Custom Claims (most secure)
+// allow read: if request.auth.token.admin == true;
+
+// Option 4: API Key Validation (custom solution)
+// allow read: if request.headers['X-API-Key'] == 'your-secret-key';
+// Note: This requires Firebase Functions to validate
+
+// ============================================================
+// HOW TO APPLY THESE RULES
+// ============================================================
+// 1. Go to: https://console.firebase.google.com/
+// 2. Select your project
+// 3. Click "Firestore Database" in left sidebar
+// 4. Click "Rules" tab
+// 5. Copy the rules above (lines 4-26)
+// 6. Paste into the editor
+// 7. Click "Publish"
