@@ -57,11 +57,7 @@ const StudentRow = memo<RowComponentProps<{
 
   return (
     <div style={style} className="px-4" {...ariaAttributes}>
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.2, delay: index * 0.01 }}
-        whileHover={{ scale: 1.02 }}
+      <div
         onClick={() => onStudentClick?.(student)}
         className={`
           relative overflow-hidden rounded-lg border-2 p-4 mb-2
@@ -171,7 +167,7 @@ const StudentRow = memo<RowComponentProps<{
             <span className="text-xs text-gray-500 mt-1">חוזקות</span>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 });
