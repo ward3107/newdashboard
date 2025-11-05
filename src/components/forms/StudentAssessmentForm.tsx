@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { httpsCallable } from 'firebase/functions';
-import { functions } from '../../services/firebase';
+import { functions } from '../../config/firebase';
 import { ASSESSMENT_QUESTIONS, DOMAIN_LABELS, type Language } from '../../data/assessmentQuestions';
 import { FORM_TRANSLATIONS, LANGUAGE_NAMES, t } from '../../i18n/formTranslations';
 import toast from 'react-hot-toast';

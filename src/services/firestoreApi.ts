@@ -12,7 +12,7 @@ import {
   orderBy,
   Timestamp,
 } from 'firebase/firestore';
-import db, { isFirebaseConfigured } from './firebase';
+import { db } from '../config/firebase';
 import type {
   Student,
   DetailedStudent,
@@ -26,7 +26,7 @@ const SCHOOL_ID = import.meta.env.VITE_SCHOOL_ID || 'ishebott';
  * Get dashboard statistics from Firestore
  */
 export async function getStatsFromFirestore(): Promise<ApiResponse<DashboardStats>> {
-  if (!isFirebaseConfigured || !db) {
+  if (!db) {
     console.warn('⚠️ Firebase not configured. Check Vercel environment variables.');
     return {
       success: false,
@@ -86,7 +86,7 @@ export async function getStatsFromFirestore(): Promise<ApiResponse<DashboardStat
  * Get all students from Firestore
  */
 export async function getAllStudentsFromFirestore(): Promise<ApiResponse<{ students: Student[] }>> {
-  if (!isFirebaseConfigured || !db) {
+  if (!db) {
     console.warn('⚠️ Firebase not configured. Check Vercel environment variables.');
     return {
       success: false,
@@ -132,7 +132,7 @@ export async function getAllStudentsFromFirestore(): Promise<ApiResponse<{ stude
  * Get detailed student information from Firestore
  */
 export async function getStudentFromFirestore(studentId: string): Promise<ApiResponse<DetailedStudent>> {
-  if (!isFirebaseConfigured || !db) {
+  if (!db) {
     return {
       success: false,
       error: 'Firebase not configured',
@@ -158,7 +158,7 @@ export async function getStudentFromFirestore(studentId: string): Promise<ApiRes
       classId: data.classId || '',
       date: data.date || '',
       name: data.name?.toString() || '',
-      student_summary: data.studentSummary || {
+      student_summary: data.student_summary || {
         learning_style: data.learningStyle || '',
         key_notes: data.keyNotes || '',
         strengths: [],
@@ -195,7 +195,7 @@ export async function testFirestoreConnection(): Promise<ApiResponse<{
   mode: string;
   stats?: DashboardStats;
 }>> {
-  if (!isFirebaseConfigured || !db) {
+  if (!db) {
     return {
       success: false,
       error: 'Firebase not configured',

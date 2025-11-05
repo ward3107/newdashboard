@@ -2,16 +2,16 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow read access to all school data (students are not sensitive personal data in this context)
-    // You can add authentication later if needed
+    // Require authentication for all school data access
+    // Users must be logged in to view student data and school metadata
     match /schools/{schoolId}/students/{studentId} {
-      allow read: if true; // Public read access
-      allow write: if false; // No client-side writes (only via migration script)
+      allow read: if request.auth != null; // Authenticated users only
+      allow write: if request.auth != null; // Authenticated users can write
     }
 
     match /schools/{schoolId} {
-      allow read: if true; // Public read access to school metadata
-      allow write: if false; // No client-side writes
+      allow read: if request.auth != null; // Authenticated users only
+      allow write: if request.auth != null; // Authenticated users can write
     }
 
     // Deny all other access
