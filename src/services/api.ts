@@ -9,6 +9,7 @@ import { firestoreApi } from './firestoreApi';
 // DATA SOURCE CONFIGURATION
 // ====================================
 
+// Default to Firestore if explicitly enabled, otherwise use Google Sheets
 const USE_FIRESTORE = import.meta.env.VITE_USE_FIRESTORE === 'true';
 
 // ====================================
@@ -205,15 +206,13 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
     return handleMockResponse<T>(action, params);
   }
 
-  // Check if API URL is configured
+  // Check if API URL is configured - if not, fallback to mock data
   if (!API_URL || API_URL.includes('YOUR_DEPLOYMENT_ID')) {
     if (process.env.NODE_ENV === 'development') {
-      console.error('❌ API URL not configured. Please update .env.local');
+      console.warn('⚠️ API URL not configured. Using mock data as fallback.');
     }
-    return {
-      success: false,
-      error: 'API not configured. Please deploy Google Apps Script and update .env.local',
-    };
+    // Return mock data instead of error for better UX
+    return handleMockResponse<T>(action, params);
   }
 
   try {
