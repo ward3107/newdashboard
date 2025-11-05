@@ -34,16 +34,13 @@ exports.processStudentAssessment = functions.https.onCall(async (data, context) 
   // SECURITY CHECK 1: Authentication
   // ========================================
 
-  // For now, allow unauthenticated (we'll add auth later)
-  // Uncomment this when Firebase Auth is set up:
-  /*
+  // Require authentication for all assessment submissions
   if (!context.auth) {
     throw new functions.https.HttpsError(
       'unauthenticated',
       'User must be authenticated to submit assessments'
     );
   }
-  */
 
   // ========================================
   // SECURITY CHECK 2: Input Validation
@@ -281,10 +278,9 @@ function transformAnalysisToFirestore(studentCode, classId, name, answers, analy
     // Insights - full detailed structure with evidence, recommendations, etc.
     insights: analysis.insights || [],
 
-    // These are not used but kept for compatibility
+    // Additional fields
     immediateActions: analysis.immediate_actions || [],
     seatingArrangement: analysis.seating_arrangement || null,
-    studentSummary: null,
 
     // Metadata
     createdBy: userId,
