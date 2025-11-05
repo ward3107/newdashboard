@@ -25,8 +25,8 @@ export const exportToExcel = async (students) => {
     loadingToast.textContent = 'טוען רכיב ייצוא Excel...';
     document.body.appendChild(loadingToast);
 
-    // Dynamic import - loads only when needed
-    const ExcelJS = await import(/* webpackChunkName: "exceljs" */ 'exceljs');
+    // Dynamic import - loads only when needed (Vite will auto-chunk this)
+    const ExcelJS = await import('exceljs');
 
     // Remove loading indicator
     document.body.removeChild(loadingToast);
@@ -107,8 +107,8 @@ export const exportToPDF = async (students) => {
     loadingToast.textContent = 'טוען רכיב ייצוא PDF...';
     document.body.appendChild(loadingToast);
 
-    // Dynamic import - loads only when needed
-    const jsPDFModule = await import(/* webpackChunkName: "jspdf" */ 'jspdf');
+    // Dynamic import - loads only when needed (Vite will auto-chunk this)
+    const jsPDFModule = await import('jspdf');
     const jsPDF = jsPDFModule.default || jsPDFModule.jsPDF;
 
     // Remove loading indicator
@@ -260,8 +260,8 @@ export const exportStudentDetailToPDF = async (studentData) => {
     loadingToast.textContent = 'טוען רכיב ייצוא PDF...';
     document.body.appendChild(loadingToast);
 
-    // Dynamic import
-    const jsPDFModule = await import(/* webpackChunkName: "jspdf" */ 'jspdf');
+    // Dynamic import (Vite will auto-chunk this)
+    const jsPDFModule = await import('jspdf');
     const jsPDF = jsPDFModule.default || jsPDFModule.jsPDF;
 
     // Remove loading indicator
@@ -326,11 +326,11 @@ export const preloadExportLibraries = async () => {
     if ('requestIdleCallback' in window) {
       window.requestIdleCallback(async () => {
         if (!exceljsLoaded) {
-          await import(/* webpackChunkName: "exceljs", webpackPreload: true */ 'exceljs');
+          await import('exceljs');
           exceljsLoaded = true;
         }
         if (!pdfLoaded) {
-          await import(/* webpackChunkName: "jspdf", webpackPreload: true */ 'jspdf');
+          await import('jspdf');
           pdfLoaded = true;
         }
       });

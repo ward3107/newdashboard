@@ -17,6 +17,8 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 3000000,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
+        // Exclude dynamic chunks that are loaded on-demand to prevent 404 errors in service worker
+        globIgnores: ['**/exportUtils-*.js', '**/export-xlsx-*.js', '**/export-pdf-*.js'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
