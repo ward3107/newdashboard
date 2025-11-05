@@ -24,7 +24,7 @@ const firebaseConfig = {
 /**
  * Validate Firebase configuration
  */
-function validateConfig() {
+function validateConfig(): boolean {
   const requiredKeys = [
     'apiKey',
     'authDomain',
@@ -39,46 +39,63 @@ function validateConfig() {
   );
 
   if (missingKeys.length > 0) {
-    throw new Error(
-      `Missing Firebase configuration: ${missingKeys.join(', ')}\n` +
-      'Please check your .env file and ensure all VITE_FIREBASE_* variables are set.\n' +
+    console.warn(
+      `⚠️ Missing Firebase configuration: ${missingKeys.join(', ')}\n` +
+      'Firestore features will be disabled. App will use mock data.\n' +
+      'To enable Firestore, set all VITE_FIREBASE_* variables in your environment.\n' +
       'See docs/FIREBASE_SETUP_GUIDE.md for instructions.'
     );
+    return false;
   }
+  return true;
 }
 
 // Validate configuration before initializing
-validateConfig();
+const isConfigValid = validateConfig();
 
 /**
- * Initialize Firebase App
+ * Initialize Firebase App (only if config is valid)
  */
-export const app = initializeApp(firebaseConfig);
+export let app: ReturnType<typeof initializeApp> | null = null;
+export let auth: ReturnType<typeof getAuth> | null = null;
+export let db: ReturnType<typeof getFirestore> | null = null;
+export let functions: ReturnType<typeof getFunctions> | null = null;
 
-/**
- * Initialize Firebase Authentication
- */
-export const auth = getAuth(app);
-
-/**
- * Initialize Firestore Database
- */
-export const db = getFirestore(app);
-
-/**
- * Initialize Firebase Cloud Functions
- */
-export const functions = getFunctions(app);
+try {
+  if (isConfigValid) {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    functions = getFunctions(app);
+    console.log('✅ Firebase initialized successfully');
+  } else {
+    console.warn('⚠️ Firebase not initialized - using mock data mode');
+  }
+} catch (error) {
+  console.error('❌ Firebase initialization failed:', error);
+  console.warn('⚠️ Falling back to mock data mode');
+  app = null;
+  auth = null;
+  db = null;
+  functions = null;
+}
 
 /**
  * Connect to Firebase Emulators (for local development)
  * Uncomment these lines if you want to use Firebase Emulators
  */
-if (import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true') {
+if (import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true' && auth && db && functions) {
   connectAuthEmulator(auth, 'http://localhost:9099');
   connectFirestoreEmulator(db, 'localhost', 8080);
   connectFunctionsEmulator(functions, 'localhost', 5001);
 }
+
+/**
+ * Check if Firebase is properly initialized
+ */
+export const isFirebaseAvailable = (): boolean => {
+  return app !== null && db !== null;
+};
 
 /**
  * Firebase configuration info (for debugging)
@@ -87,6 +104,7 @@ export const firebaseInfo = {
   projectId: firebaseConfig.projectId,
   authDomain: firebaseConfig.authDomain,
   isEmulator: import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true',
+  isAvailable: isFirebaseAvailable(),
 };
 
 // Firebase initialized - configuration available in firebaseInfo object
