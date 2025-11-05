@@ -1,5 +1,15 @@
 # 🎓 Student Analytics & Classroom Management Dashboard
 
+> ⚠️ **IMPORTANT SECURITY & LEGAL NOTICE**
+>
+> This repository is **PUBLIC for transparency** but remains **PROPRIETARY SOFTWARE**.
+> - ❌ **DO NOT** clone, copy, or use this code without a valid commercial license
+> - ❌ **DO NOT** commit actual credentials, API keys, student data, or secrets
+> - ✅ **READ** the [LICENSE](./LICENSE), [Terms of Service](./TERMS_OF_SERVICE.md), and [Security Policy](./SECURITY.md)
+> - 📧 **Contact** wardwas3107@gmail.com for licensing inquiries
+>
+> **Unauthorized use is illegal and will result in legal action.**
+
 A comprehensive web-based dashboard designed for **teachers, school managers, and educational consultants** to track student performance, analyze behavioral patterns, and optimize classroom seating arrangements using AI-powered insights.
 
 ---
@@ -199,6 +209,28 @@ This dashboard is specifically designed for:
 This software is commercial property. Unauthorized copying, distribution, modification, or use is strictly prohibited without explicit written permission.
 
 For licensing inquiries, please contact: wardwas3107@gmail.com
+
+---
+
+## 📜 Legal & Security Documentation
+
+**Before using this software, you MUST read and agree to:**
+
+- **[LICENSE](./LICENSE)** - Full proprietary license agreement with legal terms
+- **[Terms of Service](./TERMS_OF_SERVICE.md)** - Prohibited activities, restrictions, and consequences
+- **[Security Policy](./SECURITY.md)** - Vulnerability reporting and security best practices
+- **[Anti-Abuse Guidelines](./ANTI_ABUSE.md)** - What constitutes abuse and how to report it
+- **[NOTICE](./NOTICE)** - Copyright notices and third-party attributions
+
+**Additional Resources:**
+- **[Security Checklist](./docs/security/SECURITY_CHECKLIST.md)** - Pre-deployment security verification
+- **[Deployment Security Guide](./docs/security/DEPLOYMENT_SECURITY.md)** - Production security measures
+- **[Incident Response](./docs/security/INCIDENT_RESPONSE.md)** - What to do in case of security breach
+
+**Reporting:**
+- 🚨 **Security Vulnerabilities:** wardwas3107@gmail.com with subject `[SECURITY]`
+- 🚫 **Code Theft/Abuse:** wardwas3107@gmail.com with subject `[VIOLATION]`
+- 💼 **Licensing Inquiries:** wardwas3107@gmail.com with subject `[LICENSE]`
 
 ---
 
