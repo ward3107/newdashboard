@@ -5,10 +5,15 @@
   "installCommand": "npm install",
   "cleanUrls": true,
   "trailingSlash": false,
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/favicon.ico", "dest": "/favicon.svg" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.svg"
+    },
+    {
+      "source": "/((?!manifest\\.webmanifest$|sw\\.js$|workbox-.*\\.js$|favicon\\.svg$|favicon\\.ico$|assets/).*)",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
