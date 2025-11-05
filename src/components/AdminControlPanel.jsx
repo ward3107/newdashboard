@@ -19,7 +19,7 @@ import {
   FileText,
   Zap
 } from 'lucide-react';
-import * as API from '../services/googleAppsScriptAPI';
+import * as API from '../services/api';
 
 const AdminControlPanel = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -41,13 +41,18 @@ const AdminControlPanel = () => {
 
   const loadDashboardData = async () => {
     try {
-      const [statsRes, healthRes] = await Promise.all([
-        API.getStats(),
-        API.healthCheck()
-      ]);
+      const statsRes = await API.getStats();
 
-      if (statsRes.success) setStats(statsRes.stats);
-      if (healthRes) setHealth(healthRes);
+      if (statsRes.success && statsRes.data) {
+        setStats(statsRes.data);
+      }
+
+      // healthCheck is only available with Google Apps Script API
+      // When using Firestore, skip health check
+      if (API.healthCheck) {
+        const healthRes = await API.healthCheck();
+        if (healthRes) setHealth(healthRes);
+      }
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error loading dashboard data:', error);

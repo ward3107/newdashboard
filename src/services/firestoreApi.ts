@@ -101,16 +101,29 @@ export async function getAllStudentsFromFirestore(): Promise<ApiResponse<{ stude
 
     const students: Student[] = snapshot.docs.map(doc => {
       const data = doc.data();
+
+      // Extract strengths and challenges from student_summary if available
+      const summary = data.student_summary || {};
+      const strengths = summary.strengths || [];
+      const challenges = summary.challenges || [];
+
       return {
         studentCode: data.studentCode || doc.id,
         quarter: data.quarter || 'Q1',
         classId: data.classId || '',
         date: data.date || '',
         name: data.name?.toString() || '',
-        learningStyle: data.learningStyle || '',
-        keyNotes: data.keyNotes || '',
-        strengthsCount: data.strengthsCount || 0,
-        challengesCount: data.challengesCount || 0,
+        learningStyle: data.learningStyle || summary.learning_style || '',
+        keyNotes: data.keyNotes || summary.key_notes || '',
+        strengthsCount: data.strengthsCount || strengths.length || 0,
+        challengesCount: data.challengesCount || challenges.length || 0,
+        // Include student_summary for detailed views
+        student_summary: summary.strengths || summary.challenges ? {
+          learning_style: summary.learning_style || data.learningStyle || '',
+          key_notes: summary.key_notes || data.keyNotes || '',
+          strengths: strengths,
+          challenges: challenges,
+        } : undefined,
       };
     });
 
