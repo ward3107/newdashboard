@@ -60,14 +60,21 @@ const API_URL =
 
 // Fetch all students from backend (now supports mock data)
 const fetchStudents = async () => {
+  console.log('🎯 fetchStudents: Starting fetch...');
   try {
     // New API returns ApiResponse<{ students: Student[] }>
     const response = await StudentAPI.getAllStudents();
+    console.log('📥 fetchStudents: Received API response:', response);
 
     // Extract students from response
     const students = response.success && response.data?.students
       ? response.data.students
       : [];
+
+    console.log('📊 fetchStudents: Extracted students array:', {
+      count: students.length,
+      firstStudent: students[0]
+    });
 
     // Ensure students have avatar property
     const studentsWithAvatars = (students || []).map((student) => ({
@@ -80,10 +87,14 @@ const fetchStudents = async () => {
       avatar: student.avatar || (parseInt(student.studentCode) % 4) + 1,
     }));
 
+    console.log('✅ fetchStudents: Returning students with avatars:', {
+      count: studentsWithAvatars.length,
+      sample: studentsWithAvatars[0]
+    });
 
     return studentsWithAvatars;
   } catch (error) {
-    console.error("Error fetching students:", error);
+    console.error("❌ Error fetching students:", error);
     return [];
   }
 };
@@ -591,6 +602,7 @@ const FuturisticTeacherDashboard = () => {
 
   // Fetch real data from backend - defined at component level for reuse
   const loadData = async () => {
+    console.log('🔄 FuturisticDashboard: Starting loadData...');
     setLoading(true);
     setConnectionError(null); // Clear previous errors
     try {
@@ -599,6 +611,11 @@ const FuturisticTeacherDashboard = () => {
         fetchStudents(),
         fetchStats(),
       ]);
+
+      console.log('📚 FuturisticDashboard: Received students data:', {
+        count: studentsData?.length || 0,
+        students: studentsData
+      });
 
       setStudents(studentsData);
 
