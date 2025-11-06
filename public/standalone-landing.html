@@ -3859,8 +3859,8 @@
 
             // Generate grade checkboxes
             const gradeCheckboxesHTML = hebrewGrades.map(grade => `
-                <label class="grade-checkbox-label">
-                    <input type="checkbox" name="grade" value="${grade}" class="grade-checkbox">
+                <label class="grade-checkbox-label" for="grade-${grade}">
+                    <input type="checkbox" id="grade-${grade}" name="grade" value="${grade}" class="grade-checkbox">
                     <span class="grade-checkbox-custom">כיתה ${grade}</span>
                 </label>
             `).join('');
@@ -3892,13 +3892,13 @@
                         <label>בחר את תתי-הכיתות הקיימות *</label>
                         <p class="form-help-text">סמן את תתי-הכיתות שקיימות במוסד שלך</p>
                         <div class="subclass-selection-grid" id="subclass-grid-${grade}">
-                            <label class="subclass-checkbox-label">
-                                <input type="checkbox" name="subclass-${grade}" value="0" class="subclass-checkbox" data-grade="${grade}">
+                            <label class="subclass-checkbox-label" for="subclass-${grade}-0">
+                                <input type="checkbox" id="subclass-${grade}-0" name="subclass-${grade}" value="0" class="subclass-checkbox" data-grade="${grade}">
                                 <span class="subclass-checkbox-custom">כיתה ${grade}</span>
                             </label>
                             ${Array.from({length: 10}, (_, i) => i + 1).map(num => `
-                                <label class="subclass-checkbox-label">
-                                    <input type="checkbox" name="subclass-${grade}" value="${num}" class="subclass-checkbox" data-grade="${grade}">
+                                <label class="subclass-checkbox-label" for="subclass-${grade}-${num}">
+                                    <input type="checkbox" id="subclass-${grade}-${num}" name="subclass-${grade}" value="${num}" class="subclass-checkbox" data-grade="${grade}">
                                     <span class="subclass-checkbox-custom">${grade}${num}</span>
                                 </label>
                             `).join('')}
