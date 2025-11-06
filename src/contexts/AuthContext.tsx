@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const fetchUserData = useCallback(async (firebaseUser: FirebaseUser): Promise<User | null> => {
     if (!db) {
-      console.warn('⚠️ Firestore not available - skipping user data fetch');
+      console.error('Firestore not initialized');
       return null;
     }
 
@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const updateLastLogin = useCallback(async (uid: string) => {
     if (!db) {
-      console.warn('⚠️ Firestore not available - skipping last login update');
+      console.error('Firestore not initialized');
       return;
     }
 
@@ -123,7 +123,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   useEffect(() => {
     if (!auth) {
-      console.warn('⚠️ Firebase Auth not available - skipping auth state listener');
+      console.error('Firebase Auth not initialized');
       setLoading(false);
       return;
     }
@@ -161,7 +161,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const login = useCallback(async (credentials: LoginCredentials) => {
     if (!auth) {
-      throw new Error('Authentication service not available. Please check your configuration.');
+      throw new Error('Authentication not initialized. Please check Firebase configuration.');
     }
 
     try {
@@ -225,7 +225,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const loginWithGoogle = useCallback(async () => {
     if (!auth) {
-      throw new Error('Authentication service not available. Please check your configuration.');
+      throw new Error('Authentication not initialized. Please check Firebase configuration.');
     }
 
     try {
@@ -274,6 +274,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const logout = useCallback(async () => {
     if (!auth) {
+      throw new Error('Authentication not initialized. Please check Firebase configuration.');
       throw new Error('Authentication service not available. Please check your configuration.');
     }
 
@@ -293,6 +294,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const signup = useCallback(async (data: SignupData) => {
     if (!auth || !db) {
+      throw new Error('Firebase not initialized. Please check Firebase configuration.');
       throw new Error('Authentication service not available. Please check your configuration.');
     }
 
@@ -360,6 +362,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const resetPassword = useCallback(async (email: string) => {
     if (!auth) {
+      throw new Error('Authentication not initialized. Please check Firebase configuration.');
       throw new Error('Authentication service not available. Please check your configuration.');
     }
 
@@ -389,7 +392,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const updateProfile = useCallback(async (data: Partial<User>) => {
     if (!auth || !db) {
-      throw new Error('Authentication service not available. Please check your configuration.');
+      throw new Error('Firebase not initialized. Please check Firebase configuration.');
     }
 
     try {
