@@ -126,6 +126,34 @@
             color: var(--primary);
         }
 
+        /* Active navigation link */
+        .nav-links a.active {
+            color: var(--primary);
+            font-weight: 600;
+            position: relative;
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
         .nav-cta {
             background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
             color: white !important;
@@ -748,6 +776,69 @@
         .feature-card:hover {
             transform: translateY(-20px) scale(1.05) rotateX(2deg);
             box-shadow: 0 30px 60px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Mobile-friendly: Disable hover effects on touch devices */
+        @media (hover: none) {
+            .feature-card {
+                /* Show gradient border by default on mobile */
+                border: 3px solid transparent;
+                background-image:
+                    linear-gradient(var(--white), var(--white)),
+                    linear-gradient(135deg, #3B82F6, #8B5CF6, #EC4899);
+                background-origin: padding-box, border-box;
+                background-clip: padding-box, border-box;
+            }
+
+            .feature-card::before {
+                display: none; /* Remove gradient border animation */
+            }
+
+            .feature-card::after {
+                display: none; /* Remove shine effect */
+            }
+
+            .feature-card:hover {
+                transform: none; /* Disable 3D transforms on mobile */
+                box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* Keep default shadow */
+            }
+
+            /* Add subtle tap feedback for mobile */
+            .feature-card:active {
+                transform: scale(0.98);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+        }
+
+        /* Additional media query for small screens (phones) */
+        @media (max-width: 768px) {
+            .feature-card {
+                /* Show gradient border by default on mobile */
+                border: 3px solid transparent;
+                background-image:
+                    linear-gradient(var(--white), var(--white)),
+                    linear-gradient(135deg, #3B82F6, #8B5CF6, #EC4899);
+                background-origin: padding-box, border-box;
+                background-clip: padding-box, border-box;
+            }
+
+            .feature-card::before {
+                display: none;
+            }
+
+            .feature-card::after {
+                display: none;
+            }
+
+            .feature-card:hover {
+                transform: none;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            }
+
+            .feature-card:active {
+                transform: scale(0.98);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
         }
 
         .feature-icon {
@@ -2685,14 +2776,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
+            font-size: 1.2rem;
             transition: all 0.3s ease;
             line-height: 1;
         }
 
         .lang-toggle #currentLangFlag {
             display: block;
-            font-size: 2.5rem;
+            font-size: 1.2rem;
             line-height: 1;
         }
 
@@ -2746,7 +2837,7 @@
         }
 
         .language-btn .lang-flag {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             line-height: 1;
             display: block;
         }
@@ -5362,6 +5453,87 @@
                     videoPlayButton.click();
                 }
             });
+        // Enhanced Navigation with Scroll-Spy
+        (function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+
+            // Function to remove active class from all links
+            function removeActiveClasses() {
+                navLinks.forEach(link => link.classList.remove('active'));
+            }
+
+            // Function to add active class to matching links
+            function setActiveLink(sectionId) {
+                removeActiveClasses();
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === '#' + sectionId ||
+                        link.getAttribute('data-section') === sectionId) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            // Scroll-spy functionality
+            function scrollSpy() {
+                const scrollPosition = window.scrollY + 150; // Offset for header
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+                    const sectionId = section.getAttribute('id');
+
+                    if (scrollPosition >= sectionTop &&
+                        scrollPosition < sectionTop + sectionHeight) {
+                        setActiveLink(sectionId);
+                    }
+                });
+            }
+
+            // Smooth scrolling for navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+
+                    if (targetSection) {
+                        const offsetTop = targetSection.offsetTop - 80;
+                        window.scrollTo({
+                            top: offsetTop,
+                            behavior: 'smooth'
+                        });
+
+                        // Update active state immediately
+                        setActiveLink(targetId);
+                    }
+                });
+            });
+
+            // Enhanced scroll to top button
+            const scrollToTopBtn = document.getElementById('scrollToTop');
+            if (scrollToTopBtn) {
+                // Improve styling for the button
+                scrollToTopBtn.style.fontSize = '24px';
+                scrollToTopBtn.style.width = '50px';
+                scrollToTopBtn.style.height = '50px';
+                scrollToTopBtn.style.display = 'flex';
+                scrollToTopBtn.style.alignItems = 'center';
+                scrollToTopBtn.style.justifyContent = 'center';
+                scrollToTopBtn.innerHTML = `
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+                    </svg>
+                `;
+            }
+
+            // Run scroll-spy on scroll and load
+            window.addEventListener('scroll', scrollSpy);
+            window.addEventListener('load', scrollSpy);
+
+            // Run scroll-spy initially
+            scrollSpy();
+        })();
         }
     </script>
 </body>

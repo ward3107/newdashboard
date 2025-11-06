@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import {
   X,
   User,
@@ -33,6 +34,8 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
   const [tasks, setTasks] = useState([]);
   const [customTask, setCustomTask] = useState('');
   const [reminder, setReminder] = useState({ enabled: false, date: '' });
+  const [showStrengthsPopup, setShowStrengthsPopup] = useState(false);
+  const [showChallengesPopup, setShowChallengesPopup] = useState(false);
 
   // Tab names for print/download
   const tabNames = {
@@ -87,6 +90,24 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
 
     fetchStudentDetails();
   }, [student]);
+
+  // Handle ESC key to close popups
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        if (showStrengthsPopup) setShowStrengthsPopup(false);
+        if (showChallengesPopup) setShowChallengesPopup(false);
+      }
+    };
+
+    if (showStrengthsPopup || showChallengesPopup) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [showStrengthsPopup, showChallengesPopup]);
 
   // Generate AI-suggested tasks based on student analysis
   const generateAITasks = (studentData) => {
@@ -849,7 +870,7 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
       aria-label="Close modal"
     >
       <div
-        className={`relative w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl ${
+        className={`relative w-full max-w-[85vw] max-h-[95vh] overflow-hidden rounded-3xl shadow-2xl ${
           darkMode ? 'bg-gray-900' : 'bg-white'
         }`}
         onClick={(e) => e.stopPropagation()}
@@ -924,7 +945,7 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
         </div>
 
         {/* Content area */}
-        <div className={`p-6 overflow-y-auto max-h-[calc(90vh-14rem)] ${
+        <div className={`p-6 overflow-y-auto max-h-[calc(95vh-14rem)] ${
           darkMode ? 'bg-gray-900' : 'bg-white'
         }`}>
           {loading ? (
@@ -938,7 +959,10 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
                 <div className="space-y-6">
                   {/* Quick Stats */}
                   <div className="grid grid-cols-3 gap-4">
-                    <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <div
+                      onClick={() => setShowStrengthsPopup(true)}
+                      className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'} border ${darkMode ? 'border-gray-700' : 'border-gray-200'} cursor-pointer transition-all hover:scale-105 hover:shadow-lg`}
+                    >
                       <div className="flex items-center gap-2 mb-2">
                         <Award className="text-green-500" size={20} />
                         <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>חוזקות</span>
@@ -947,7 +971,10 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
                         {student.strengthsCount || 0}
                       </p>
                     </div>
-                    <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <div
+                      onClick={() => setShowChallengesPopup(true)}
+                      className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'} border ${darkMode ? 'border-gray-700' : 'border-gray-200'} cursor-pointer transition-all hover:scale-105 hover:shadow-lg`}
+                    >
                       <div className="flex items-center gap-2 mb-2">
                         <Target className="text-amber-500" size={20} />
                         <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אתגרים</span>
@@ -1189,6 +1216,108 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
           )}
         </div>
       </div>
+
+      {/* Strengths Popup */}
+      {showStrengthsPopup && ReactDOM.createPortal(
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]"
+          onClick={() => setShowStrengthsPopup(false)}
+        >
+          <div
+            className={`${darkMode ? 'bg-gray-900' : 'bg-white'} rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
+              <h3 className={`text-2xl font-bold flex items-center gap-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <Award className="text-green-500" size={28} />
+                חוזקות ({(fullData?.student_summary?.strengths || fullData?.keyStrengths?.split(', ') || []).length})
+              </h3>
+              <button
+                onClick={() => setShowStrengthsPopup(false)}
+                className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-600'}`}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              <ol className={`space-y-3 list-decimal list-inside ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                {(() => {
+                  let strengthsList = [];
+                  if (fullData?.student_summary?.strengths) {
+                    strengthsList = fullData.student_summary.strengths;
+                  } else if (fullData?.keyStrengths) {
+                    strengthsList = fullData.keyStrengths.split(', ');
+                  } else if (student.strengthsCount > 0) {
+                    strengthsList = [`התלמיד/ה מצטיינ/ת ב-${student.strengthsCount} תחומים שונים`];
+                  }
+
+                  return strengthsList.length > 0 ? (
+                    strengthsList.map((strength, index) => (
+                      <li key={index} className={`p-4 rounded-lg ${darkMode ? 'bg-green-900/20' : 'bg-green-50'} border ${darkMode ? 'border-green-700/30' : 'border-green-200'}`}>
+                        {strength}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-center py-8 opacity-60">לא נמצאו נתונים</li>
+                  );
+                })()}
+              </ol>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Challenges Popup */}
+      {showChallengesPopup && ReactDOM.createPortal(
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]"
+          onClick={() => setShowChallengesPopup(false)}
+        >
+          <div
+            className={`${darkMode ? 'bg-gray-900' : 'bg-white'} rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
+              <h3 className={`text-2xl font-bold flex items-center gap-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <Target className="text-amber-500" size={28} />
+                אתגרים ({(fullData?.student_summary?.challenges || fullData?.keyChallenges?.split(', ') || []).length})
+              </h3>
+              <button
+                onClick={() => setShowChallengesPopup(false)}
+                className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-600'}`}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              <ol className={`space-y-3 list-decimal list-inside ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                {(() => {
+                  let challengesList = [];
+                  if (fullData?.student_summary?.challenges) {
+                    challengesList = fullData.student_summary.challenges;
+                  } else if (fullData?.keyChallenges) {
+                    challengesList = fullData.keyChallenges.split(', ');
+                  } else if (student.challengesCount > 0) {
+                    challengesList = [`התלמיד/ה נתקל/ת ב-${student.challengesCount} אתגרים שונים`];
+                  }
+
+                  return challengesList.length > 0 ? (
+                    challengesList.map((challenge, index) => (
+                      <li key={index} className={`p-4 rounded-lg ${darkMode ? 'bg-amber-900/20' : 'bg-amber-50'} border ${darkMode ? 'border-amber-700/30' : 'border-amber-200'}`}>
+                        {challenge}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-center py-8 opacity-60">לא נמצאו נתונים</li>
+                  );
+                })()}
+              </ol>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };

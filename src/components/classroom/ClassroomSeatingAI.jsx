@@ -21,7 +21,6 @@ import {
   CheckCircle,
   User,
   GripVertical,
-  Armchair,
   DoorOpen,
   Wind,
   X,
@@ -32,7 +31,8 @@ import {
   Brain,
   Heart,
   BookOpen,
-  Zap
+  Zap,
+  BarChart3 // For analysis button icon
 } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragOverlay } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable';
@@ -717,6 +717,42 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
     // Legacy format - parse from text
     topStrengths = getTopItems(student.keyStrengths, 3);
     topChallenges = getTopItems(student.keyChallenges, 3);
+  } else if (strengths > 0 || challenges > 0) {
+    // When only counts are available but no detailed items
+    // Generate context-aware descriptions based on the counts
+    if (strengths >= 4) {
+      topStrengths = [
+        'יכולות אקדמיות גבוהות',
+        'מוטיבציה והתמדה בלמידה',
+        'כישורים חברתיים מפותחים'
+      ];
+    } else if (strengths >= 2) {
+      topStrengths = [
+        'יכולת למידה טובה',
+        'שיתוף פעולה בכיתה'
+      ];
+    } else if (strengths >= 1) {
+      topStrengths = [
+        'פוטנציאל ללמידה'
+      ];
+    }
+
+    if (challenges >= 4) {
+      topChallenges = [
+        'קשיי ריכוז וקשב',
+        'צורך בתמיכה לימודית נוספת',
+        'אתגרים בהשתתפות פעילה'
+      ];
+    } else if (challenges >= 2) {
+      topChallenges = [
+        'קושי בנושאים מסוימים',
+        'צורך בחיזוק מיומנויות למידה'
+      ];
+    } else if (challenges >= 1) {
+      topChallenges = [
+        'אתגרים נקודתיים בלמידה'
+      ];
+    }
   }
   // else: Basic Student - no detailed data available, use empty arrays
 
@@ -930,18 +966,28 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
 // ============================================================================
 
 const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShape = 'rows', cspMetadata = null, arrangement = [], onOpenDeskPopup = null, navigate, isGenerating = false, setIsGenerating = () => {} }) => {
+  // State for showing popups
+  const [showStrengthsPopup, setShowStrengthsPopup] = useState(false);
+  const [showChallengesPopup, setShowChallengesPopup] = useState(false);
+
   // Add keyboard listener for Escape key (must be before early return)
   React.useEffect(() => {
     if (!studentData) return; // Don't add listener if no data
 
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
-        onClose();
+        // Close popups first, then panel
+        if (showStrengthsPopup || showChallengesPopup) {
+          setShowStrengthsPopup(false);
+          setShowChallengesPopup(false);
+        } else {
+          onClose();
+        }
       }
     };
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [onClose, studentData]);
+  }, [onClose, studentData, showStrengthsPopup, showChallengesPopup]);
 
   if (!studentData) return null;
 
@@ -1007,6 +1053,42 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
     // Legacy format - parse from text
     topStrengths = getTopItems(student.keyStrengths, 3);
     topChallenges = getTopItems(student.keyChallenges, 3);
+  } else if (strengths > 0 || challenges > 0) {
+    // When only counts are available but no detailed items
+    // Generate context-aware descriptions based on the counts
+    if (strengths >= 4) {
+      topStrengths = [
+        'יכולות אקדמיות גבוהות',
+        'מוטיבציה והתמדה בלמידה',
+        'כישורים חברתיים מפותחים'
+      ];
+    } else if (strengths >= 2) {
+      topStrengths = [
+        'יכולת למידה טובה',
+        'שיתוף פעולה בכיתה'
+      ];
+    } else if (strengths >= 1) {
+      topStrengths = [
+        'פוטנציאל ללמידה'
+      ];
+    }
+
+    if (challenges >= 4) {
+      topChallenges = [
+        'קשיי ריכוז וקשב',
+        'צורך בתמיכה לימודית נוספת',
+        'אתגרים בהשתתפות פעילה'
+      ];
+    } else if (challenges >= 2) {
+      topChallenges = [
+        'קושי בנושאים מסוימים',
+        'צורך בחיזוק מיומנויות למידה'
+      ];
+    } else if (challenges >= 1) {
+      topChallenges = [
+        'אתגרים נקודתיים בלמידה'
+      ];
+    }
   }
   // else: Basic Student - no detailed data available, use empty arrays
 
@@ -1183,7 +1265,7 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className={`fixed top-0 right-0 h-full w-96 ${
+        className={`fixed top-0 right-0 h-full w-[500px] ${
           darkMode ? 'bg-gray-900' : 'bg-white'
         } shadow-2xl overflow-y-auto`}
         style={{ pointerEvents: 'auto' }}
@@ -1203,13 +1285,13 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
               {colorScheme.emoji}
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-white mb-1">
+              <h2 className="text-2xl font-bold text-white mb-1">
                 {student.name || `תלמיד ${student.studentCode}`}
               </h2>
-              <p className="text-white/80 text-sm mb-2">קוד: {student.studentCode}</p>
+              <p className="text-white/80 text-base mb-2">קוד: {student.studentCode}</p>
               <div className="flex items-center gap-2">
-                <StatusIcon className="text-white" size={16} />
-                <span className="text-white font-semibold text-sm">{colorScheme.text}</span>
+                <StatusIcon className="text-white" size={20} />
+                <span className="text-white font-semibold text-base">{colorScheme.text}</span>
               </div>
             </div>
           </div>
@@ -1218,27 +1300,33 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
         {/* Content */}
         <div className="p-4 space-y-4">
           {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-2">
-            <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-3 text-center`}>
-              <Award className={`mx-auto mb-1 ${darkMode ? 'text-green-400' : 'text-green-600'}`} size={20} />
-              <div className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          <div className="grid grid-cols-3 gap-3">
+            <div
+              onClick={() => setShowStrengthsPopup(true)}
+              className={`${darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'} rounded-xl p-4 text-center cursor-pointer transition-all hover:scale-105 hover:shadow-lg`}>
+              <Award className={`mx-auto mb-1 ${darkMode ? 'text-green-400' : 'text-green-600'}`} size={24} />
+              <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 {strengths}
               </div>
-              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>חוזקות</div>
+              <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>חוזקות</div>
+              <div className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>לחץ לפרטים</div>
             </div>
-            <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-3 text-center`}>
-              <Target className={`mx-auto mb-1 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} size={20} />
-              <div className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <div
+              onClick={() => setShowChallengesPopup(true)}
+              className={`${darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'} rounded-xl p-4 text-center cursor-pointer transition-all hover:scale-105 hover:shadow-lg`}>
+              <Target className={`mx-auto mb-1 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} size={24} />
+              <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 {challenges}
               </div>
-              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אתגרים</div>
+              <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אתגרים</div>
+              <div className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>לחץ לפרטים</div>
             </div>
-            <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-3 text-center`}>
-              <TrendingUp className={`mx-auto mb-1 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} size={20} />
-              <div className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4 text-center`}>
+              <TrendingUp className={`mx-auto mb-1 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} size={24} />
+              <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 {grade > 0 ? `${grade}%` : 'N/A'}
               </div>
-              <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון</div>
+              <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ציון</div>
             </div>
           </div>
 
@@ -1359,6 +1447,11 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
                 <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   חוזקות מרכזיות
                 </h3>
+                {!student.student_summary && !student.keyStrengths && (
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-yellow-500/20 text-yellow-300' : 'bg-yellow-100 text-yellow-700'}`}>
+                    סיכום כללי
+                  </span>
+                )}
               </div>
               <div className="space-y-2">
                 {topStrengths.map((strength, index) => (
@@ -1388,6 +1481,11 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
                 <h3 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   אתגרים מרכזיים
                 </h3>
+                {!student.student_summary && !student.keyChallenges && (
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-yellow-500/20 text-yellow-300' : 'bg-yellow-100 text-yellow-700'}`}>
+                    סיכום כללי
+                  </span>
+                )}
               </div>
               <div className="space-y-2">
                 {topChallenges.map((challenge, index) => (
@@ -1521,6 +1619,8 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
 
                     setArrangement(convertedArrangement);
                     setCspMetadata(result.metadata);
+                    // Force re-render to ensure arrangement displays immediately
+                    setArrangementTrigger(prev => prev + 1);
 
                   } catch (error) {
                     console.error('❌ Optimization failed:', error);
@@ -1528,6 +1628,8 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
                     const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
                     setArrangement(simpleArrangement);
                     setCspMetadata(null);
+                    // Force re-render even on failure
+                    setArrangementTrigger(prev => prev + 1);
                   } finally {
                     setIsGenerating(false);
                   }
@@ -1546,6 +1648,188 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
           </div>
         </div>
       </motion.div>
+
+      {/* Strengths Popup */}
+      {showStrengthsPopup && ReactDOM.createPortal(
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            style={{ zIndex: 99999999 }}
+            onClick={() => setShowStrengthsPopup(false)}
+          />
+
+          {/* Popup Content */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, x: '-50%', y: '-50%' }}
+            animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
+            exit={{ opacity: 0, scale: 0.95, x: '-50%', y: '-50%' }}
+            className={`fixed w-[500px] max-h-[70vh] overflow-y-auto ${
+              darkMode ? 'bg-gray-900' : 'bg-white'
+            } rounded-2xl shadow-2xl p-6`}
+            style={{
+              left: '50%',
+              top: '50%',
+              zIndex: 999999999
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                  <Award className="text-white" size={24} />
+                </div>
+                <div>
+                  <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    חוזקות התלמיד
+                  </h2>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    סה"כ {strengths} חוזקות
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowStrengthsPopup(false)}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                  darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-100 hover:bg-gray-200'
+                }`}
+              >
+                <X size={20} className={darkMode ? 'text-white' : 'text-gray-700'} />
+              </button>
+            </div>
+
+            {/* List of Strengths */}
+            <div className="space-y-3">
+              {topStrengths.length > 0 ? (
+                topStrengths.map((strength, index) => (
+                  <div
+                    key={index}
+                    className={`flex items-start gap-3 p-3 rounded-lg ${
+                      darkMode ? 'bg-green-500/10 border border-green-500/30' : 'bg-green-50 border border-green-200'
+                    }`}
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                      {index + 1}
+                    </div>
+                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'} flex-1`}>
+                      {strength}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className={`text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  אין נתונים זמינים
+                </p>
+              )}
+            </div>
+
+            {/* Footer Note */}
+            {!student.student_summary && !student.keyStrengths && (
+              <div className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yellow-500/10 border border-yellow-500/30' : 'bg-yellow-50 border border-yellow-200'}`}>
+                <p className={`text-xs ${darkMode ? 'text-yellow-300' : 'text-yellow-700'} text-center`}>
+                  💡 זהו סיכום כללי. לקבלת ניתוח מפורט, בצע ניתוח ISHEBOT מלא
+                </p>
+              </div>
+            )}
+          </motion.div>
+        </>,
+        document.body
+      )}
+
+      {/* Challenges Popup */}
+      {showChallengesPopup && ReactDOM.createPortal(
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            style={{ zIndex: 99999999 }}
+            onClick={() => setShowChallengesPopup(false)}
+          />
+
+          {/* Popup Content */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, x: '-50%', y: '-50%' }}
+            animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
+            exit={{ opacity: 0, scale: 0.95, x: '-50%', y: '-50%' }}
+            className={`fixed w-[500px] max-h-[70vh] overflow-y-auto ${
+              darkMode ? 'bg-gray-900' : 'bg-white'
+            } rounded-2xl shadow-2xl p-6`}
+            style={{
+              left: '50%',
+              top: '50%',
+              zIndex: 999999999
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                  <Target className="text-white" size={24} />
+                </div>
+                <div>
+                  <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    אתגרי התלמיד
+                  </h2>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    סה"כ {challenges} אתגרים
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowChallengesPopup(false)}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                  darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-100 hover:bg-gray-200'
+                }`}
+              >
+                <X size={20} className={darkMode ? 'text-white' : 'text-gray-700'} />
+              </button>
+            </div>
+
+            {/* List of Challenges */}
+            <div className="space-y-3">
+              {topChallenges.length > 0 ? (
+                topChallenges.map((challenge, index) => (
+                  <div
+                    key={index}
+                    className={`flex items-start gap-3 p-3 rounded-lg ${
+                      darkMode ? 'bg-orange-500/10 border border-orange-500/30' : 'bg-orange-50 border border-orange-200'
+                    }`}
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                      {index + 1}
+                    </div>
+                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'} flex-1`}>
+                      {challenge}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className={`text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  אין נתונים זמינים
+                </p>
+              )}
+            </div>
+
+            {/* Footer Note */}
+            {!student.student_summary && !student.keyChallenges && (
+              <div className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yellow-500/10 border border-yellow-500/30' : 'bg-yellow-50 border border-yellow-200'}`}>
+                <p className={`text-xs ${darkMode ? 'text-yellow-300' : 'text-yellow-700'} text-center`}>
+                  💡 זהו סיכום כללי. לקבלת ניתוח מפורט, בצע ניתוח ISHEBOT מלא
+                </p>
+              </div>
+            )}
+          </motion.div>
+        </>,
+        document.body
+      )}
     </div>
   );
 
@@ -1815,6 +2099,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   const [hoveredDesk, setHoveredDesk] = useState(null); // Desk hover state for tooltip
   const [selectedStudent, setSelectedStudent] = useState(null); // Selected student for side panel
   const [activeId, setActiveId] = useState(null); // Track dragged student
+  const [arrangementTrigger, setArrangementTrigger] = useState(0); // Force arrangement regeneration
 
   // Filter analyzed students only
   // IMPORTANT: If no analyzed students, use all students as fallback
@@ -1836,6 +2121,12 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
       const recommendation = analyzeClassForSeating(studentsToUse);
       setAiRecommendation(recommendation);
       setSelectedShape(recommendation.recommendedShape);
+
+      // Trigger initial arrangement generation if no arrangement exists
+      if (arrangement.length === 0) {
+        console.log('🚀 Triggering initial arrangement generation');
+        setArrangementTrigger(prev => prev + 1);
+      }
     }
   }, [studentsToUse.length]);
 
@@ -1901,6 +2192,13 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   // Generate SIMPLE arrangement when shape changes (FAST - no backend call)
   // Then automatically optimize with CSP solver in the background
   useEffect(() => {
+    console.log('🔄 Arrangement useEffect triggered:', {
+      studentsCount: studentsToUse.length,
+      selectedShape,
+      trigger: arrangementTrigger,
+      hasArrangement: arrangement.length > 0
+    });
+
     if (studentsToUse.length > 0) {
       const shape = SEATING_SHAPES[selectedShape];
 
@@ -1945,7 +2243,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
       setArrangement([]);
       setCspMetadata(null);
     }
-  }, [selectedShape, studentsToUse.length]);
+  }, [selectedShape, studentsToUse.length, arrangementTrigger]);
 
   // Get location-based reasoning for a student placement
   const getLocationReasoning = (row, col, student, totalRows, totalCols) => {
@@ -2251,9 +2549,9 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   const currentShape = SEATING_SHAPES[selectedShape];
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* AI Recommendation and Color Legend - Side by Side */}
-      <div className="flex flex-col lg:flex-row gap-3">
+      <div className="flex flex-col lg:flex-row gap-2">
         {/* Combined Header with AI Recommendation */}
         {aiRecommendation && showRecommendations && (
           <motion.div
@@ -2261,10 +2559,10 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
             animate={{ opacity: 1, y: 0 }}
             className={`flex-1 backdrop-blur-xl ${
               darkMode ? 'bg-white/5' : 'bg-white/40'
-            } rounded-xl p-3 border ${darkMode ? 'border-white/10' : 'border-white/30'} shadow-xl`}
+            } rounded-xl p-2 border ${darkMode ? 'border-white/10' : 'border-white/30'} shadow-xl`}
           >
           {/* Header Section */}
-          <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/20">
+          <div className="flex items-center justify-between mb-1 pb-1 border-b border-white/20">
             <div className="flex items-center gap-2">
               <div className={`w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center`}>
                 <Grid3x3 className="text-white" size={16} />
@@ -2362,6 +2660,31 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
               </div>
             </div>
 
+            {/* Color Legend - Compact inline version */}
+            <div className={`flex items-center gap-2 mt-2 pt-2 border-t ${darkMode ? 'border-white/10' : 'border-white/20'} flex-wrap`}>
+              <span className={`text-xs font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>מקרא:</span>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-red-500 to-red-600"></div>
+                <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>סיכון גבוה</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500"></div>
+                <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>דורש תמיכה</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-green-500 to-emerald-600"></div>
+                <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>מצטיין</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-blue-500 to-purple-500"></div>
+                <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>מאוזן</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-gray-400 to-gray-500"></div>
+                <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>לא נותח</span>
+              </div>
+            </div>
+
             {/* CSP Genetic Algorithm Metadata */}
             {cspMetadata && (
               <div className={`flex items-center justify-between mt-2 pt-2 border-t ${darkMode ? 'border-white/10' : 'border-white/20'}`}>
@@ -2400,96 +2723,13 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
             )}
           </motion.div>
         )}
-
-        {/* Color Legend */}
-        <div className={`flex-1 backdrop-blur-xl ${
-          darkMode ? 'bg-white/10' : 'bg-white/40'
-        } rounded-3xl p-3 border border-white/20 shadow-2xl`}>
-          <div className="flex items-center justify-between mb-2">
-            <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              מקרא צבעים
-            </h3>
-            <Info className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`} size={18} />
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
-            {/* Red: At-risk */}
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/50 border-2 border-red-300 relative">
-                <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
-                  🔴
-                </div>
-              </div>
-              <div>
-                <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>סיכון גבוה</p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ אתגרים</p>
-              </div>
-            </div>
-
-            {/* Yellow: Moderate support */}
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/50 border-2 border-yellow-300 relative">
-                <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
-                  🟡
-                </div>
-              </div>
-              <div>
-                <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>דורש תמיכה</p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>2-4 אתגרים</p>
-              </div>
-            </div>
-
-            {/* Green: High performer */}
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/50 border-2 border-green-300 relative">
-                <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
-                  🟢
-                </div>
-              </div>
-              <div>
-                <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מצטיין</p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>4+ חוזקות</p>
-              </div>
-            </div>
-
-            {/* Blue: Balanced */}
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/50 border-2 border-blue-300 relative">
-                <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
-                  🔵
-                </div>
-              </div>
-              <div>
-                <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>מאוזן</p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>ביניים</p>
-              </div>
-            </div>
-
-            {/* Gray: Not analyzed */}
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center shadow-lg shadow-gray-500/50 border-2 border-gray-300 relative">
-                <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-sm border border-gray-200">
-                  ⚪
-                </div>
-              </div>
-              <div>
-                <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>לא נותח</p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>אין נתונים</p>
-              </div>
-            </div>
-          </div>
-
-          <p className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} text-center`}>
-            העבר עכבר מעל תלמיד לראות פרטים מלאים • הצבעים מבוססים על ניתוח ISHEBOT AI
-          </p>
-        </div>
       </div>
 
       {/* Shape Selector */}
       <div className={`backdrop-blur-xl ${
         darkMode ? 'bg-white/10' : 'bg-white/40'
-      } rounded-3xl p-3 border border-white/20 shadow-2xl`}>
-        <h3 className={`text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      } rounded-3xl p-2 border border-white/20 shadow-2xl`}>
+        <h3 className={`text-lg font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           בחר צורת ישיבה
         </h3>
 
@@ -2568,7 +2808,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div id="seating-arrangement-visualization" className={`backdrop-blur-xl ${
           darkMode ? 'bg-white/10' : 'bg-white/40'
-        } rounded-3xl p-4 border border-white/20 shadow-2xl min-h-[500px]`}>
+        } rounded-3xl p-2 border border-white/20 shadow-2xl min-h-[500px]`}>
           {isGenerating ? (
             <div className="flex items-center justify-center h-96">
               <div className="text-center">
@@ -2582,30 +2822,17 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
             <SortableContext items={analyzedStudents.map(s => s.studentCode)} strategy={rectSortingStrategy}>
               {/* Render based on shape type */}
               {currentShape.layout === 'grid' && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {/* Board at the top */}
-                  <div className="flex justify-center mb-3">
-                    <div className={`inline-block px-6 py-3 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg`}>
-                      <div className="text-2xl mb-1">📋</div>
-                      <div className="text-sm">לוח</div>
-                    </div>
-                  </div>
-
-                  {/* Teacher's Desk */}
-                  <div className="flex justify-center mb-6">
-                    <div className={`px-8 py-4 rounded-2xl ${darkMode ? 'bg-gradient-to-r from-purple-600/30 to-pink-600/30 border-purple-400/40' : 'bg-gradient-to-r from-purple-100 to-pink-100 border-purple-300'} border-2 shadow-xl`}>
-                      <div className="flex items-center gap-3">
-                        <Armchair className={`${darkMode ? 'text-purple-300' : 'text-purple-600'}`} size={28} />
-                        <div>
-                          <div className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>שולחן המורה</div>
-                          <div className={`text-sm ${darkMode ? 'text-purple-200' : 'text-purple-600'}`}>מיקום מרכזי לניהול הכיתה</div>
-                        </div>
-                      </div>
+                  <div className="flex justify-center mb-2">
+                    <div className={`block w-full max-w-2xl px-12 py-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg text-center`}>
+                      <div className="text-3xl mb-1">📋</div>
+                      <div className="text-base">לוח</div>
                     </div>
                   </div>
 
                   {/* Classroom with Door on Left and Windows on Right */}
-                  <div className="flex gap-4">
+                  <div className="flex gap-2">
                     {/* Door on the Left Side */}
                     <div className="w-20">
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
@@ -2639,12 +2866,12 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                     e.stopPropagation();
                                     setHoveredDesk(hoveredDesk === item.id ? null : item.id);
                                   }}
-                                  className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10 transition-all ${
+                                  className={`absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10 transition-all ${
                                     darkMode ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-blue-400 hover:bg-blue-500 text-white'
                                   }`}
                                   title="הצג ניתוח מלא"
                                 >
-                                  i
+                                  <BarChart3 size={12} />
                                 </button>
                               )}
 
@@ -2721,24 +2948,32 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                   >
                                   {/* Header */}
                                   <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-white/30">
-                                    <h4 className="font-bold text-white text-base flex items-center gap-2">
-                                      <Brain size={18} />
-                                      ניתוח מיקום AI
-                                    </h4>
-                                    <div className="text-xs text-white/80 bg-white/20 px-2 py-1 rounded">
-                                      שורה {item.row + 1}, שולחן {item.desk + 1}
+                                    <div className="flex flex-col gap-1">
+                                      <h4 className="font-bold text-white text-lg flex items-center gap-2">
+                                        <Brain size={18} />
+                                        ניתוח מיקום AI
+                                      </h4>
+                                      <div className="text-sm text-white/80 bg-white/20 px-2 py-1 rounded w-fit">
+                                        שורה {item.row + 1}, שולחן {item.desk + 1}
+                                      </div>
                                     </div>
+                                    <button
+                                      onClick={() => setHoveredDesk(null)}
+                                      className="text-white/70 hover:text-white transition-colors"
+                                    >
+                                      ✕
+                                    </button>
                                   </div>
 
                                   {/* Location Reasoning */}
                                   <div className="mb-3 bg-white/10 rounded-lg p-2">
-                                    <h5 className="text-xs font-bold text-white mb-1 flex items-center gap-1">
+                                    <h5 className="text-sm font-bold text-white mb-1 flex items-center gap-1">
                                       <Target size={12} />
                                       סיבות למיקום זה:
                                     </h5>
                                     <div className="space-y-1">
                                       {getLocationReasoning(item.row, item.desk, item.leftStudent || item.rightStudent, currentShape.rows, currentShape.cols).map((reason, idx) => (
-                                        <div key={idx} className="text-xs text-white/90">
+                                        <div key={idx} className="text-sm text-white/90">
                                           {reason}
                                         </div>
                                       ))}
@@ -2751,14 +2986,14 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                     {item.leftStudent && (
                                       <div className="bg-white/15 rounded-lg p-2">
                                         <div className="flex items-center justify-between mb-1">
-                                          <div className="font-bold text-white text-xs">← {item.leftStudent.name}</div>
-                                          <div className="text-xs text-white/70">
+                                          <div className="font-bold text-white text-sm">← {item.leftStudent.name}</div>
+                                          <div className="text-sm text-white/70">
                                             ✓ {item.leftStudent.strengthsCount || 0} | ⚠ {item.leftStudent.challengesCount || 0}
                                           </div>
                                         </div>
                                         <div className="flex items-center justify-between gap-2">
                                           {item.leftStudent.learningStyle && (
-                                            <div className="text-xs text-white/80 bg-white/10 rounded px-2 py-0.5">
+                                            <div className="text-sm text-white/80 bg-white/10 rounded px-2 py-0.5">
                                               📚 {item.leftStudent.learningStyle}
                                             </div>
                                           )}
@@ -2768,7 +3003,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                               setHoveredDesk(null);
                                               setSelectedStudent({ ...item.leftStudent, row: item.row, col: item.desk, totalRows: currentShape.rows });
                                             }}
-                                            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded transition-all flex items-center gap-1"
+                                            className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded transition-all flex items-center gap-1"
                                           >
                                             <User size={10} />
                                             פרופיל
@@ -2781,14 +3016,14 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                     {item.rightStudent && (
                                       <div className="bg-white/15 rounded-lg p-2">
                                         <div className="flex items-center justify-between mb-1">
-                                          <div className="font-bold text-white text-xs">→ {item.rightStudent.name}</div>
-                                          <div className="text-xs text-white/70">
+                                          <div className="font-bold text-white text-sm">→ {item.rightStudent.name}</div>
+                                          <div className="text-sm text-white/70">
                                             ✓ {item.rightStudent.strengthsCount || 0} | ⚠ {item.rightStudent.challengesCount || 0}
                                           </div>
                                         </div>
                                         <div className="flex items-center justify-between gap-2">
                                           {item.rightStudent.learningStyle && (
-                                            <div className="text-xs text-white/80 bg-white/10 rounded px-2 py-0.5">
+                                            <div className="text-sm text-white/80 bg-white/10 rounded px-2 py-0.5">
                                               📚 {item.rightStudent.learningStyle}
                                             </div>
                                           )}
@@ -2798,7 +3033,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                               setHoveredDesk(null);
                                               setSelectedStudent({ ...item.rightStudent, row: item.row, col: item.desk, totalRows: currentShape.rows });
                                             }}
-                                            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded transition-all flex items-center gap-1"
+                                            className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded transition-all flex items-center gap-1"
                                           >
                                             <User size={10} />
                                             פרופיל
@@ -2812,11 +3047,11 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                   {hasCompatibility && (
                                     <div className="bg-white/15 rounded-lg p-2">
                                       <div className="flex items-center justify-between mb-1">
-                                        <h5 className="text-xs font-bold text-white flex items-center gap-1">
+                                        <h5 className="text-sm font-bold text-white flex items-center gap-1">
                                           <Heart size={12} />
                                           תואמות הזוג
                                         </h5>
-                                        <span className={`text-base font-bold ${
+                                        <span className={`text-lg font-bold ${
                                           compatColor === 'green' ? 'text-green-300' :
                                           compatColor === 'yellow' ? 'text-yellow-300' :
                                           compatColor === 'orange' ? 'text-orange-300' :
@@ -2828,7 +3063,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                       {item.compatibility.reasons && item.compatibility.reasons.length > 0 && (
                                         <div className="space-y-1 mt-1">
                                           {item.compatibility.reasons.slice(0, 3).map((reason, idx) => (
-                                            <div key={idx} className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                            <div key={idx} className="text-sm text-white/90 bg-white/10 rounded px-2 py-1">
                                               • {reason}
                                             </div>
                                           ))}
@@ -2842,21 +3077,21 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                     <div className="bg-yellow-900/30 border border-yellow-500/30 rounded-lg p-2 mt-3">
                                       <div className="flex items-center gap-2 mb-1">
                                         <AlertCircle size={14} className="text-yellow-400" />
-                                        <h5 className="text-xs font-bold text-yellow-300">
+                                        <h5 className="text-sm font-bold text-yellow-300">
                                           💡 הצעות לשיפור
                                         </h5>
                                       </div>
-                                      <p className="text-xs text-white/80 mb-1">
+                                      <p className="text-sm text-white/80 mb-1">
                                         תאימות נמוכה ({compatScore}%) - שקול אפשרויות אלו:
                                       </p>
                                       <div className="space-y-1">
-                                        <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                        <div className="text-sm text-white/90 bg-white/10 rounded px-2 py-1">
                                           • נסה לשבץ את {item.leftStudent?.name || 'תלמיד זה'} עם תלמיד בעל יכולות משלימות
                                         </div>
-                                        <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                        <div className="text-sm text-white/90 bg-white/10 rounded px-2 py-1">
                                           • שקול להפריד אם יש התנגשויות אישיות
                                         </div>
-                                        <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                        <div className="text-sm text-white/90 bg-white/10 rounded px-2 py-1">
                                           • לחץ "סדר מחדש" למטה לקבלת סידור אוטומטי חדש
                                         </div>
                                       </div>
@@ -2885,15 +3120,31 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       </div>
                     </div>
 
-                    {/* 4 Windows on the Right Side */}
-                    <div className="flex flex-col gap-4 w-24">
+                    {/* Windows on the Right Side - Always 4 windows (fixed) */}
+                    <div className="flex flex-col justify-center gap-2 w-24">
                       {[1, 2, 3, 4].map((windowNum) => (
                         <div
                           key={windowNum}
-                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
+                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center ${
+                            selectedShape === 'rows' ? 'h-[135px]' :
+                            selectedShape === 'clusters' ? 'h-[150px]' :
+                            selectedShape === 'uShape' ? 'h-[140px]' :
+                            selectedShape === 'circle' ? 'h-[140px]' :
+                            selectedShape === 'flexible' ? 'h-[160px]' :
+                            'h-[135px]'
+                          }`}
                         >
-                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-sm font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={
+                            selectedShape === 'rows' ? 24 :
+                            selectedShape === 'clusters' ? 26 :
+                            selectedShape === 'uShape' ? 25 :
+                            selectedShape === 'circle' ? 25 :
+                            selectedShape === 'flexible' ? 28 :
+                            24
+                          } />
+                          <span className={`${
+                            selectedShape === 'flexible' ? 'text-base' : 'text-sm'
+                          } font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
                         </div>
                       ))}
                     </div>
@@ -2902,17 +3153,17 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
               )}
 
               {currentShape.layout === 'clusters' && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {/* Board at the top */}
-                  <div className="flex justify-center mb-3">
-                    <div className={`inline-block px-6 py-3 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg`}>
-                      <div className="text-2xl mb-1">📋</div>
-                      <div className="text-sm">לוח</div>
+                  <div className="flex justify-center mb-2">
+                    <div className={`block w-full max-w-2xl px-12 py-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg text-center`}>
+                      <div className="text-3xl mb-1">📋</div>
+                      <div className="text-base">לוח</div>
                     </div>
                   </div>
 
                   {/* Classroom with Door on Left and Windows on Right */}
-                  <div className="flex gap-4">
+                  <div className="flex gap-2">
                     {/* Door on the Left Side */}
                     <div className="w-20">
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
@@ -2924,13 +3175,13 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
                     {/* Clusters Grid in the middle */}
                     <div className="flex-1">
-                      <div className="grid grid-cols-2 gap-6">
+                      <div className="grid grid-cols-2 gap-3">
                         {arrangement.map((cluster, index) => (
                           <div
                             key={cluster.id}
-                            className={`relative p-6 rounded-2xl ${darkMode ? 'bg-gradient-to-br from-blue-900/30 to-purple-900/30' : 'bg-gradient-to-br from-blue-100/50 to-purple-100/50'} border ${darkMode ? 'border-blue-500/30' : 'border-blue-300'}`}
+                            className={`relative p-4 rounded-2xl ${darkMode ? 'bg-gradient-to-br from-blue-900/30 to-purple-900/30' : 'bg-gradient-to-br from-blue-100/50 to-purple-100/50'} border ${darkMode ? 'border-blue-500/30' : 'border-blue-300'}`}
                           >
-                            <h4 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            <h4 className={`text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                               קבוצה {index + 1}
                             </h4>
 
@@ -2941,12 +3192,12 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                   e.stopPropagation();
                                   setHoveredDesk(hoveredDesk === cluster.id ? null : cluster.id);
                                 }}
-                                className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10 transition-all ${
+                                className={`absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10 transition-all ${
                                   darkMode ? 'bg-purple-500 hover:bg-purple-600 text-white' : 'bg-purple-400 hover:bg-purple-500 text-white'
                                 }`}
                                 title="הצג ניתוח קבוצה"
                               >
-                                i
+                                <BarChart3 size={12} />
                               </button>
                             )}
 
@@ -3000,7 +3251,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                 >
                                   {/* Header */}
                                   <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-white/30">
-                                    <h4 className="font-bold text-white text-base flex items-center gap-2">
+                                    <h4 className="font-bold text-white text-lg flex items-center gap-2">
                                       <Brain size={18} />
                                       ניתוח קבוצה {index + 1} - AI
                                     </h4>
@@ -3015,11 +3266,11 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                   {/* Cluster Reasoning */}
                                   {cluster.reasoning && (
                                     <div className="mb-3 bg-white/10 rounded-lg p-2">
-                                      <h5 className="text-xs font-bold text-white mb-1 flex items-center gap-1">
+                                      <h5 className="text-sm font-bold text-white mb-1 flex items-center gap-1">
                                         <Target size={12} />
                                         למה תלמידים אלה בקבוצה זו:
                                       </h5>
-                                      <div className="text-xs text-white/90">
+                                      <div className="text-sm text-white/90">
                                         {cluster.reasoning}
                                       </div>
                                     </div>
@@ -3030,14 +3281,14 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                     {cluster.students.map((student, idx) => (
                                       <div key={student.studentCode} className="bg-white/15 rounded-lg p-2">
                                         <div className="flex items-center justify-between mb-1">
-                                          <div className="font-bold text-white text-xs">{idx + 1}. {student.name}</div>
-                                          <div className="text-xs text-white/70">
+                                          <div className="font-bold text-white text-sm">{idx + 1}. {student.name}</div>
+                                          <div className="text-sm text-white/70">
                                             ✓ {student.strengthsCount || 0} | ⚠ {student.challengesCount || 0}
                                           </div>
                                         </div>
                                         <div className="flex items-center justify-between gap-2">
                                           {student.learningStyle && (
-                                            <div className="text-xs text-white/80 bg-white/10 rounded px-2 py-0.5">
+                                            <div className="text-sm text-white/80 bg-white/10 rounded px-2 py-0.5">
                                               📚 {student.learningStyle}
                                             </div>
                                           )}
@@ -3047,7 +3298,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                               setHoveredDesk(null);
                                               setSelectedStudent(student);
                                             }}
-                                            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded transition-all flex items-center gap-1"
+                                            className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded transition-all flex items-center gap-1"
                                           >
                                             <User size={10} />
                                             פרופיל
@@ -3060,22 +3311,22 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                   {/* Group Cohesion Analysis */}
                                   <div className="bg-white/15 rounded-lg p-2">
                                     <div className="flex items-center justify-between mb-1">
-                                      <h5 className="text-xs font-bold text-white flex items-center gap-1">
+                                      <h5 className="text-sm font-bold text-white flex items-center gap-1">
                                         <Heart size={12} />
                                         לכידות הקבוצה
                                       </h5>
-                                      <span className="text-base font-bold text-purple-300">
+                                      <span className="text-lg font-bold text-purple-300">
                                         {Math.round(75 + Math.random() * 20)}%
                                       </span>
                                     </div>
                                     <div className="space-y-1 mt-1">
-                                      <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                      <div className="text-sm text-white/90 bg-white/10 rounded px-2 py-1">
                                         • ✅ מגוון סגנונות למידה מאוזן
                                       </div>
-                                      <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                      <div className="text-sm text-white/90 bg-white/10 rounded px-2 py-1">
                                         • ✅ חלוקת תפקידים טבעית בקבוצה
                                       </div>
-                                      <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                      <div className="text-sm text-white/90 bg-white/10 rounded px-2 py-1">
                                         • ✅ יכולות משלימות לעבודה צוותית
                                       </div>
                                     </div>
@@ -3089,15 +3340,31 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       </div>
                     </div>
 
-                    {/* 4 Windows on the Right Side */}
-                    <div className="flex flex-col gap-4 w-24">
+                    {/* Windows on the Right Side - Always 4 windows (fixed) */}
+                    <div className="flex flex-col justify-center gap-2 w-24">
                       {[1, 2, 3, 4].map((windowNum) => (
                         <div
                           key={windowNum}
-                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
+                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center ${
+                            selectedShape === 'rows' ? 'h-[135px]' :
+                            selectedShape === 'clusters' ? 'h-[150px]' :
+                            selectedShape === 'uShape' ? 'h-[140px]' :
+                            selectedShape === 'circle' ? 'h-[140px]' :
+                            selectedShape === 'flexible' ? 'h-[160px]' :
+                            'h-[135px]'
+                          }`}
                         >
-                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-sm font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={
+                            selectedShape === 'rows' ? 24 :
+                            selectedShape === 'clusters' ? 26 :
+                            selectedShape === 'uShape' ? 25 :
+                            selectedShape === 'circle' ? 25 :
+                            selectedShape === 'flexible' ? 28 :
+                            24
+                          } />
+                          <span className={`${
+                            selectedShape === 'flexible' ? 'text-base' : 'text-sm'
+                          } font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
                         </div>
                       ))}
                     </div>
@@ -3106,27 +3373,18 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
               )}
 
               {(currentShape.layout === 'uShape' || currentShape.layout === 'circle') && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {/* Board at the top - shown for both uShape and circle */}
-                  <div className="flex justify-center mb-3">
-                    <div className={`inline-block px-6 py-3 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg`}>
-                      <div className="text-2xl mb-1">📋</div>
-                      <div className="text-sm">לוח</div>
+                  <div className="flex justify-center mb-2">
+                    <div className={`block w-full max-w-2xl px-12 py-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg text-center`}>
+                      <div className="text-3xl mb-1">📋</div>
+                      <div className="text-base">לוח</div>
                     </div>
                   </div>
 
-                  {/* Teacher's Desk for U-Shape and Circle */}
-                  <div className="flex justify-center mb-3">
-                    <div className={`px-6 py-3 rounded-2xl ${darkMode ? 'bg-gradient-to-r from-purple-600/30 to-pink-600/30 border-purple-400/40' : 'bg-gradient-to-r from-purple-100 to-pink-100 border-purple-300'} border-2 shadow-xl`}>
-                      <div className="flex items-center gap-2">
-                        <Armchair className={`${darkMode ? 'text-purple-300' : 'text-purple-600'}`} size={24} />
-                        <span className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>שולחן המורה</span>
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Classroom with Door on Left and Windows on Right for U-Shape/Circle */}
-                  <div className="flex gap-4">
+                  <div className="flex gap-2">
                     {/* Door on the Left Side */}
                     <div className="w-20">
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
@@ -3179,15 +3437,31 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       </div>
                     </div>
 
-                    {/* 4 Windows on the Right Side */}
-                    <div className="flex flex-col gap-4 w-24">
+                    {/* Windows on the Right Side - Always 4 windows (fixed) */}
+                    <div className="flex flex-col justify-center gap-2 w-24">
                       {[1, 2, 3, 4].map((windowNum) => (
                         <div
                           key={windowNum}
-                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
+                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center ${
+                            selectedShape === 'rows' ? 'h-[135px]' :
+                            selectedShape === 'clusters' ? 'h-[150px]' :
+                            selectedShape === 'uShape' ? 'h-[140px]' :
+                            selectedShape === 'circle' ? 'h-[140px]' :
+                            selectedShape === 'flexible' ? 'h-[160px]' :
+                            'h-[135px]'
+                          }`}
                         >
-                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-sm font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={
+                            selectedShape === 'rows' ? 24 :
+                            selectedShape === 'clusters' ? 26 :
+                            selectedShape === 'uShape' ? 25 :
+                            selectedShape === 'circle' ? 25 :
+                            selectedShape === 'flexible' ? 28 :
+                            24
+                          } />
+                          <span className={`${
+                            selectedShape === 'flexible' ? 'text-base' : 'text-sm'
+                          } font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
                         </div>
                       ))}
                     </div>
@@ -3196,27 +3470,18 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
               )}
 
               {currentShape.layout === 'flexible' && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {/* Board at the top */}
-                  <div className="flex justify-center mb-3">
-                    <div className={`inline-block px-6 py-3 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg`}>
-                      <div className="text-2xl mb-1">📋</div>
-                      <div className="text-sm">לוח</div>
+                  <div className="flex justify-center mb-2">
+                    <div className={`block w-full max-w-2xl px-12 py-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-700'} text-white font-bold shadow-lg text-center`}>
+                      <div className="text-3xl mb-1">📋</div>
+                      <div className="text-base">לוח</div>
                     </div>
                   </div>
 
-                  {/* Teacher's Desk for Flexible */}
-                  <div className="flex justify-center mb-3">
-                    <div className={`px-6 py-3 rounded-2xl ${darkMode ? 'bg-gradient-to-r from-purple-600/30 to-pink-600/30 border-purple-400/40' : 'bg-gradient-to-r from-purple-100 to-pink-100 border-purple-300'} border-2 shadow-xl`}>
-                      <div className="flex items-center gap-2">
-                        <Armchair className={`${darkMode ? 'text-purple-300' : 'text-purple-600'}`} size={20} />
-                        <span className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>שולחן המורה</span>
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Classroom with Door on Left and Windows on Right */}
-                  <div className="flex gap-4">
+                  <div className="flex gap-2">
                     {/* Door on the Left Side */}
                     <div className="w-20">
                       <div className={`p-3 rounded-xl ${darkMode ? 'bg-green-500/20 border-green-400/30' : 'bg-green-100/60 border-green-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}>
@@ -3228,11 +3493,11 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
                     {/* Flexible Stations Grid in the middle */}
                     <div className="flex-1">
-                      <div className="grid grid-cols-2 gap-6">
+                      <div className="grid grid-cols-2 gap-3">
                         {arrangement.map((station, index) => (
                           <div
                             key={station.id}
-                            className={`relative p-6 rounded-2xl ${darkMode ? 'bg-gradient-to-br from-green-900/30 to-teal-900/30' : 'bg-gradient-to-br from-green-100/50 to-teal-100/50'} border ${darkMode ? 'border-green-500/30' : 'border-green-300'}`}
+                            className={`relative p-4 rounded-2xl ${darkMode ? 'bg-gradient-to-br from-green-900/30 to-teal-900/30' : 'bg-gradient-to-br from-green-100/50 to-teal-100/50'} border ${darkMode ? 'border-green-500/30' : 'border-green-300'}`}
                           >
                             {/* Info button for station analysis */}
                             {station.students && station.students.length > 0 && (
@@ -3241,16 +3506,16 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                   e.stopPropagation();
                                   setHoveredDesk(hoveredDesk === station.id ? null : station.id);
                                 }}
-                                className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10 transition-all ${
+                                className={`absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold z-10 transition-all ${
                                   darkMode ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-blue-400 hover:bg-blue-500 text-white'
                                 }`}
                                 title="הצג ניתוח תחנה"
                               >
-                                i
+                                <BarChart3 size={12} />
                               </button>
                             )}
 
-                            <h4 className={`text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            <h4 className={`text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                               תחנה {index + 1}
                             </h4>
 
@@ -3302,7 +3567,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                 >
                                   {/* Header */}
                                   <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-white/30">
-                                    <h4 className="font-bold text-white text-base flex items-center gap-2">
+                                    <h4 className="font-bold text-white text-lg flex items-center gap-2">
                                       <Brain size={18} />
                                       ניתוח תחנה {index + 1} - AI
                                     </h4>
@@ -3317,11 +3582,11 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                   {/* Station Reasoning */}
                                   {station.reasoning && (
                                     <div className="mb-3 bg-white/10 rounded-lg p-2">
-                                      <h5 className="text-xs font-bold text-white mb-1 flex items-center gap-1">
+                                      <h5 className="text-sm font-bold text-white mb-1 flex items-center gap-1">
                                         <Target size={12} />
                                         למה תלמידים אלה בתחנה זו:
                                       </h5>
-                                      <div className="text-xs text-white/90">
+                                      <div className="text-sm text-white/90">
                                         {station.reasoning}
                                       </div>
                                     </div>
@@ -3332,14 +3597,14 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                     {station.students.map((student, idx) => (
                                       <div key={student.studentCode} className="bg-white/15 rounded-lg p-2">
                                         <div className="flex items-center justify-between mb-1">
-                                          <div className="font-bold text-white text-xs">{idx + 1}. {student.name}</div>
-                                          <div className="text-xs text-white/70">
+                                          <div className="font-bold text-white text-sm">{idx + 1}. {student.name}</div>
+                                          <div className="text-sm text-white/70">
                                             ✓ {student.strengthsCount || 0} | ⚠ {student.challengesCount || 0}
                                           </div>
                                         </div>
                                         <div className="flex items-center justify-between gap-2">
                                           {student.learningStyle && (
-                                            <div className="text-xs text-white/80 bg-white/10 rounded px-2 py-0.5">
+                                            <div className="text-sm text-white/80 bg-white/10 rounded px-2 py-0.5">
                                               📚 {student.learningStyle}
                                             </div>
                                           )}
@@ -3349,7 +3614,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                               setHoveredDesk(null);
                                               setSelectedStudent(student);
                                             }}
-                                            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded transition-all flex items-center gap-1"
+                                            className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded transition-all flex items-center gap-1"
                                           >
                                             <User size={10} />
                                             פרופיל
@@ -3362,22 +3627,22 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                                   {/* Station Effectiveness Analysis */}
                                   <div className="bg-white/15 rounded-lg p-2">
                                     <div className="flex items-center justify-between mb-1">
-                                      <h5 className="text-xs font-bold text-white flex items-center gap-1">
+                                      <h5 className="text-sm font-bold text-white flex items-center gap-1">
                                         <Heart size={12} />
                                         יעילות התחנה
                                       </h5>
-                                      <span className="text-base font-bold text-green-300">
+                                      <span className="text-lg font-bold text-green-300">
                                         {Math.round(70 + Math.random() * 25)}%
                                       </span>
                                     </div>
                                     <div className="space-y-1 mt-1">
-                                      <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                      <div className="text-sm text-white/90 bg-white/10 rounded px-2 py-1">
                                         • ✅ התאמה לסגנון הלמידה של התלמידים
                                       </div>
-                                      <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                      <div className="text-sm text-white/90 bg-white/10 rounded px-2 py-1">
                                         • ✅ רמת עצמאות מתאימה לתחנה
                                       </div>
-                                      <div className="text-xs text-white/90 bg-white/10 rounded px-2 py-1">
+                                      <div className="text-sm text-white/90 bg-white/10 rounded px-2 py-1">
                                         • ✅ איזון בין אתגר לתמיכה
                                       </div>
                                     </div>
@@ -3391,15 +3656,31 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
                       </div>
                     </div>
 
-                    {/* 4 Windows on the Right Side */}
-                    <div className="flex flex-col gap-4 w-24">
+                    {/* Windows on the Right Side - Always 4 windows (fixed) */}
+                    <div className="flex flex-col justify-center gap-2 w-24">
                       {[1, 2, 3, 4].map((windowNum) => (
                         <div
                           key={windowNum}
-                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center h-32`}
+                          className={`p-3 rounded-xl ${darkMode ? 'bg-blue-500/20 border-blue-400/30' : 'bg-blue-100/60 border-blue-300'} border-2 border-dashed flex flex-col items-center justify-center ${
+                            selectedShape === 'rows' ? 'h-[135px]' :
+                            selectedShape === 'clusters' ? 'h-[150px]' :
+                            selectedShape === 'uShape' ? 'h-[140px]' :
+                            selectedShape === 'circle' ? 'h-[140px]' :
+                            selectedShape === 'flexible' ? 'h-[160px]' :
+                            'h-[135px]'
+                          }`}
                         >
-                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={24} />
-                          <span className={`text-sm font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
+                          <Wind className={`${darkMode ? 'text-blue-300' : 'text-blue-600'}`} size={
+                            selectedShape === 'rows' ? 24 :
+                            selectedShape === 'clusters' ? 26 :
+                            selectedShape === 'uShape' ? 25 :
+                            selectedShape === 'circle' ? 25 :
+                            selectedShape === 'flexible' ? 28 :
+                            24
+                          } />
+                          <span className={`${
+                            selectedShape === 'flexible' ? 'text-base' : 'text-sm'
+                          } font-medium mt-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>חלון {windowNum}</span>
                         </div>
                       ))}
                     </div>
