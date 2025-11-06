@@ -5,20 +5,56 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import compression from 'vite-plugin-compression';
 
 export default defineConfig({
+  // Base URL - ensures proper asset loading
+  base: '/',
+
   plugins: [
     react(),
 
-    // PWA Configuration - Disabled to prevent manifest 401 errors
+    // PWA Configuration - Re-enabled with proper settings
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'script-defer',
-      // Disable manifest generation to prevent 401 errors
-      manifest: false,
+      devOptions: {
+        enabled: false, // Disable in development to prevent issues
+      },
+      // Re-enable manifest with proper configuration
+      manifest: {
+        name: 'Dashboard',
+        short_name: 'Dashboard',
+        description: 'Modern Dashboard Application',
+        theme_color: '#1a1a1a',
+        background_color: '#1a1a1a',
+        display: 'standalone',
+        scope: '/',
+        start_url: '/',
+        orientation: 'portrait-primary',
+        icons: [
+          {
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+        ],
+      },
       workbox: {
         maximumFileSizeToCacheInBytes: 3000000,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
         // Exclude dynamic chunks that are loaded on-demand to prevent 404 errors in service worker
-        globIgnores: ['**/exportUtils-*.js', '**/export-xlsx-*.js', '**/export-pdf-*.js'],
+        globIgnores: [
+          '**/exportUtils-*.js',
+          '**/export-xlsx-*.js',
+          '**/export-pdf-*.js',
+          '**/node_modules/**',
+          '**/stats.html',
+        ],
+        // Add navigation fallback to handle SPA routing
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api/, /\.[^\/]+$/],
+        // Skip waiting to activate new service worker immediately
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

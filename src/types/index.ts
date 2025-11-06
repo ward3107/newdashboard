@@ -10,6 +10,8 @@ export interface Student {
   keyNotes: string;
   strengthsCount: number;
   challengesCount: number;
+  // Optional detailed data - included when available from Firestore
+  student_summary?: StudentSummary;
 }
 
 export interface StudentSummary {

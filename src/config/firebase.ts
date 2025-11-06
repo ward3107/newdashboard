@@ -79,6 +79,13 @@ if (app && import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATORS ==
 }
 
 /**
+ * Check if Firebase is properly initialized
+ */
+export const isFirebaseAvailable = (): boolean => {
+  return app !== null && db !== null;
+};
+
+/**
  * Firebase configuration info (for debugging)
  */
 export const firebaseInfo = {
@@ -86,6 +93,7 @@ export const firebaseInfo = {
   projectId: firebaseConfig.projectId || null,
   authDomain: firebaseConfig.authDomain || null,
   isEmulator: import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true',
+  isAvailable: isFirebaseAvailable(),
 };
 
 export default app;

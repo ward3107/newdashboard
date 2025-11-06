@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import * as API from '../services/googleAppsScriptAPI';
+import * as API from '../services/api';
 import {
   Settings,
   Database,

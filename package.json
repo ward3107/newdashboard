@@ -45,6 +45,7 @@
     "dev": "vite",
     "prebuild": "npm run lint:errors && npm run typecheck",
     "build": "vite build",
+    "build:prod": "vite build",
     "build:analyze": "vite build --mode production && node analyze-bundle.js",
     "preview": "vite preview",
     "clean": "rimraf dist coverage reports .turbo",
@@ -64,13 +65,13 @@
     "perf": "node scripts/run-perf.js",
     "scan:deps": "npm audit --audit-level=moderate && npx better-npm-audit audit",
     "scan:security": "node scripts/security-scan.cjs",
+    "security:audit": "bash scripts/security-audit.sh",
+    "security:install-hook": "cp scripts/pre-commit-hook.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit && echo 'Pre-commit hook installed successfully!'",
+    "security:check-secrets": "bash scripts/pre-commit-hook.sh",
     "precommit": "npm run lint && npm run typecheck && npm run test",
     "ci": "npm run clean && npm run lint && npm run typecheck && npm run test:coverage && npm run e2e && npm run a11y && npm run scan:deps",
-    "ci:full": "npm run clean && npm run lint && npm run typecheck && npm run test:coverage && npm run test:int && npm run e2e && npm run a11y && npm run scan:deps",
-    "reports": "node scripts/generate-reports.cjs",
-    "migrate:dry-run": "node scripts/migrate-to-firebase.js --dry-run",
-    "migrate": "node scripts/migrate-to-firebase.js",
-    "migrate:backup": "node scripts/migrate-to-firebase.js --backup"
+    "ci:full": "npm run clean && npm run lint && npm run typecheck && npm run test:coverage && npm run test:int && npm run e2e && npm run a11y && npm run scan:deps && npm run security:audit",
+    "reports": "node scripts/generate-reports.cjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.8.0",

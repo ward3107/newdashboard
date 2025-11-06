@@ -24,7 +24,7 @@ import {
   Printer,
   Users
 } from 'lucide-react';
-import * as API from '../services/googleAppsScriptAPI';
+import * as API from '../services/api';
 
 const StudentDetailModal = ({ student, onClose, darkMode, theme }) => {
   const [fullData, setFullData] = useState(null);
@@ -36,8 +36,8 @@ const StudentDetailModal = ({ student, onClose, darkMode, theme }) => {
     const fetchStudentDetails = async () => {
       try {
         const result = await API.getStudent(student.studentCode);
-        if (result.success) {
-          setFullData(result.student);
+        if (result.success && result.data) {
+          setFullData(result.data);
         } else {
           // Use the data we already have
           setFullData(student);

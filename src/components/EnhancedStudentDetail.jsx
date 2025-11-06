@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import * as API from '../services/googleAppsScriptAPI';
+import * as API from '../services/api';
 import EnhancedAnalysisDisplay from './EnhancedAnalysisDisplay';
 
 const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
@@ -65,10 +65,10 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
 
         const result = await API.getStudent(studentCode);
 
-        if (result.success && result.student) {
-          setFullData(result.student);
+        if (result.success && result.data) {
+          setFullData(result.data);
           // Generate AI tasks based on analysis
-          generateAITasks(result.student);
+          generateAITasks(result.data);
         } else {
           setFullData(student);
           generateAITasks(student);

@@ -138,24 +138,51 @@ registerRoute(
   })
 );
 
-// App shell route
+// App shell route with improved denylist
 registerRoute(
   new NavigationRoute(
     createHandlerBoundToURL('/index.html'),
     {
-      denylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
+      // More specific denylist to prevent over-blocking
+      denylist: [
+        /^\/_/,           // System routes
+        /\/api\//,        // API routes
+        /\/__/,           // Build artifacts
+        /\.map$/,         // Source maps
+        /\.json$/,        // JSON files (except manifest)
+        /\.txt$/,         // Text files
+        /\.xml$/,         // XML files
+      ]
     }
   )
 );
 
-// Handle offline fallback
+// Handle offline fallback with better error handling
 self.addEventListener('fetch', (event: FetchEvent) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(async () => {
-        const cached = await caches.match('/offline.html');
-        return cached || new Response('Offline - Please check your internet connection', {
+      fetch(event.request).catch(async (error) => {
+        // Log 404 errors for debugging
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Navigation fetch failed:', event.request.url, error);
+        }
+
+        // Try to serve from cache
+        const cached = await caches.match(event.request);
+        if (cached) {
+          return cached;
+        }
+
+        // Try to serve index.html as fallback
+        const indexCache = await caches.match('/index.html');
+        if (indexCache) {
+          return indexCache;
+        }
+
+        // Last resort: offline message
+        return new Response('Offline - Please check your internet connection', {
           status: 503,
+          statusText: 'Service Unavailable',
           headers: { 'Content-Type': 'text/plain' }
         });
       })
