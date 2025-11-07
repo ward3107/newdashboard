@@ -25,7 +25,7 @@ Auth: Firebase Auth (Free)
 - ✅ Already set up and working
 - ✅ Vercel = Best for React/Vite (free, fast, auto-deploy)
 - ✅ Firebase = Managed database, no maintenance, built-in auth
-- ✅ Render = Cheap Python hosting ($7 vs Railway $20)
+- ✅ Render = Affordable Python hosting at $7/month
 - ✅ Everything you have already works
 - ✅ Separation of concerns (easy to scale)
 
@@ -63,33 +63,7 @@ Auth: NextAuth or Firebase
 
 ---
 
-### Option 3: All-in-One Railway
-```
-Frontend: Railway ($5/month)
-Backend: Railway ($5/month)
-Database: Railway PostgreSQL ($5/month)
-Auth: Firebase or custom
-```
-
-**Monthly Cost:** $15 - $40/month
-
-**Pros:**
-- ✅ Single platform for everything
-- ✅ Simple management
-- ✅ Good for monorepo projects
-
-**Cons:**
-- ❌ More expensive than Render ($20 vs $7 for backend)
-- ❌ Vercel is better for frontend (faster, free tier)
-- ❌ You'd need to migrate frontend from Vercel
-- ❌ You'd need to migrate from Firebase → PostgreSQL
-- ❌ Free tier only gives $5 credit (runs out fast)
-
-**Best for:** Developers who want one platform for everything
-
----
-
-### Option 4: All-in-One Render
+### Option 3: All-in-One Render
 ```
 Frontend: Render (Free static site)
 Backend: Render ($7/month)
@@ -114,7 +88,7 @@ Auth: Firebase or custom
 
 ---
 
-### Option 5: Serverless Everything (AWS/GCP)
+### Option 4: Serverless Everything (AWS/GCP)
 ```
 Frontend: Vercel
 Backend: Google Cloud Run or AWS Lambda
@@ -191,7 +165,6 @@ Auth: Firebase Auth
 | **Vercel** | ✅ Generous | $20/month | React/Next.js | ⭐⭐⭐⭐⭐ |
 | Netlify | ✅ Good | $19/month | Static sites | ⭐⭐⭐⭐ |
 | Render | ✅ Basic | $7/month | Static sites | ⭐⭐⭐ |
-| Railway | ❌ $5 credit | $5/month | Monorepos | ⭐⭐⭐ |
 
 **Winner: Vercel** - Best for React/Vite, you're already using it ✅
 
@@ -202,7 +175,6 @@ Auth: Firebase Auth
 | Platform | Free Tier | Paid | Sleeps? | Rating |
 |----------|-----------|------|---------|--------|
 | **Render** | ✅ 750hrs | $7/month | Yes (free) | ⭐⭐⭐⭐⭐ |
-| Railway | $5 credit | $20/month | No | ⭐⭐⭐⭐ |
 | Google Cloud Run | ✅ 2M requests | Pay-per-use | Yes | ⭐⭐⭐ |
 | Heroku | ❌ None | $7/month | No | ⭐⭐⭐⭐ |
 
@@ -216,7 +188,6 @@ Auth: Firebase Auth
 |----------|-----------|------|----------|--------|
 | **Firebase** | ✅ Generous | $25/month | Rapid dev | ⭐⭐⭐⭐⭐ |
 | Render PostgreSQL | ❌ None | $7/month | SQL apps | ⭐⭐⭐⭐ |
-| Railway PostgreSQL | ❌ Paid only | $5/month | SQL apps | ⭐⭐⭐⭐ |
 | Supabase | ✅ Good | $25/month | SQL + auth | ⭐⭐⭐⭐ |
 
 **Winner: Firebase** - You're already using it, free tier is great ✅
@@ -297,7 +268,7 @@ Auth: Firebase (FREE) or build custom
 
 ## Quick Start Guide
 
-### Option 1: Render Backend (Recommended) ⭐
+### Render Backend Deployment (Recommended) ⭐
 
 ```bash
 # 1. Go to Render
@@ -318,32 +289,12 @@ ALLOWED_ORIGINS=https://ishebot-g87tvjpdx-wassems-projects-ab3ab6ba.vercel.app
 
 ---
 
-### Option 2: Railway Backend (Alternative)
-
-```bash
-# 1. Go to Railway
-https://railway.app/dashboard
-
-# 2. New Project → Deploy from GitHub
-# 3. Connect GitHub: ward3107/newdashboard
-# 4. Set root directory: backend
-# 5. Set same environment variables
-```
-
-**Time to deploy:** 5 minutes
-**Cost:** $20/month
-**Effort:** Minimal
-
----
-
 ## Summary Table
 
 | Stack | Frontend | Backend | Database | Auth | Monthly Cost |
 |-------|----------|---------|----------|------|--------------|
 | **RECOMMENDED** | Vercel (FREE) | Render ($7) | Firebase (FREE) | Firebase (FREE) | **$7** ⭐ |
-| Alternative 1 | Vercel (FREE) | Railway ($20) | Firebase (FREE) | Firebase (FREE) | $20 |
-| Alternative 2 | Render (FREE) | Render ($7) | Render PG ($7) | Firebase (FREE) | $14 |
-| All Railway | Railway ($5) | Railway ($20) | Railway PG ($5) | Firebase (FREE) | $30 |
+| Alternative | Render (FREE) | Render ($7) | Render PG ($7) | Firebase (FREE) | $14 |
 
 ---
 

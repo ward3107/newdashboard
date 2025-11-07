@@ -342,9 +342,8 @@ Vercel auto-deploys!
 | --------------------- | ------------ | ----------- | ----------- |
 | **FREE (Render)**     | **$0**       | Yes (30s)   | Good        |
 | Paid (Render Starter) | $7           | None        | Excellent   |
-| Paid (Railway)        | $20          | None        | Excellent   |
 
-**Savings: $84-$240/year by using FREE tier**
+**Savings: $84/year by using FREE tier**
 
 ---
 
