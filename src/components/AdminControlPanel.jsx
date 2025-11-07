@@ -314,7 +314,7 @@ const AdminControlPanel = () => {
       if (diagnostic.apiReachable && diagnostic.hasOpenAIKey) {
         alert('✅ כל המערכות תקינות!\n\nה-API פעיל\nמפתח OpenAI מוגדר\nהגליונות נגישים');
       } else if (diagnostic.apiReachable && !diagnostic.hasOpenAIKey) {
-        alert('⚠️ בעיה: מפתח OpenAI חסר!\n\nצעדים לפתרון:\n1. פתח את Google Apps Script\n2. לחץ על Project Settings\n3. הוסף Script Property:\n   Key: OPENAI_API_KEY\n   Value: sk-your-api-key');
+        alert('⚠️ בעיה: מפתח OpenAI חסר!\n\nצעדים לפתרון:\n1. פתח את Google Apps Script\n2. לחץ על Project Settings\n3. הוסף Script Property:\n   Key: OPENAI_API_KEY\n   Value: [YOUR_OPENAI_API_KEY_HERE]');
       } else {
         alert('❌ לא ניתן להתחבר ל-API\n\nבדוק:\n1. האם ה-script פרוס?\n2. האם ה-URL בסדר?');
       }
