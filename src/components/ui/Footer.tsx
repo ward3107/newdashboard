@@ -17,7 +17,7 @@ const Footer: React.FC<FooterProps> = ({ className = '' }) => {
   ];
 
   const contactLinks = [
-    { href: 'mailto:wardwas3107@gmail.com', icon: Mail, label: 'צור קשר' },
+    { href: 'mailto:wardwas3107@gmail.com', icon: Mail, label: 'צור קשר', external: false },
   ];
 
   return (
