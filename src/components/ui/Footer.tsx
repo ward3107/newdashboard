@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, FileText, Lock, BookOpen, Mail, Github } from 'lucide-react';
+import { Shield, FileText, Lock, BookOpen, Mail } from 'lucide-react';
 
 interface FooterProps {
   className?: string;
@@ -18,7 +18,6 @@ const Footer: React.FC<FooterProps> = ({ className = '' }) => {
 
   const contactLinks = [
     { href: 'mailto:wardwas3107@gmail.com', icon: Mail, label: 'צור קשר' },
-    { href: 'https://github.com', icon: Github, label: 'GitHub', external: true },
   ];
 
   return (
