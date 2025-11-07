@@ -201,8 +201,10 @@ jobs:
       - name: Check bundle size
         run: |
           MAX_SIZE="10000" # KB (10MB - reasonable for full-featured dashboard)
-          ACTUAL_SIZE=$(du -sk dist | cut -f1)
-          echo "Bundle size: ${ACTUAL_SIZE}KB (max: ${MAX_SIZE}KB)"
+          # Exclude compressed duplicates (.gz, .br) and stats.html from size check
+          # Only count actual deployed assets
+          ACTUAL_SIZE=$(find dist -type f ! -name "*.gz" ! -name "*.br" ! -name "stats.html" -exec du -sk {} + | awk '{sum+=$1} END {print sum}')
+          echo "Bundle size (excluding compressed duplicates): ${ACTUAL_SIZE}KB (max: ${MAX_SIZE}KB)"
           if [ $ACTUAL_SIZE -gt $MAX_SIZE ]; then
             echo "Bundle size exceeds limit!"
             exit 1
