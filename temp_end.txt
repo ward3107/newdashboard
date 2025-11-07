@@ -1,0 +1,100 @@
+            }
+        });
+
+        // Sticky Header Scroll Effect
+        const header = document.querySelector('header');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+
+            // Add 'scrolled' class when scrolled past 50px
+            if (currentScroll > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+
+            lastScroll = currentScroll;
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        if (mobileMenuToggle && navLinks) {
+            mobileMenuToggle.addEventListener('click', () => {
+                const isActive = navLinks.classList.contains('active');
+
+                // Toggle menu
+                navLinks.classList.toggle('active');
+                mobileMenuToggle.classList.toggle('active');
+
+                // Update aria-expanded for accessibility
+                mobileMenuToggle.setAttribute('aria-expanded', !isActive);
+
+                // Prevent body scroll when menu is open
+                document.body.style.overflow = isActive ? '' : 'hidden';
+            });
+
+            // Close menu when clicking on a link
+            const menuLinks = navLinks.querySelectorAll('a');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                    mobileMenuToggle.classList.remove('active');
+                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                    document.body.style.overflow = '';
+                });
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (event) => {
+                if (!navLinks.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                    if (navLinks.classList.contains('active')) {
+                        navLinks.classList.remove('active');
+                        mobileMenuToggle.classList.remove('active');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+        }
+
+        // Video Demo Player
+        const videoPlayButton = document.getElementById('videoPlayButton');
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        const videoThumbnail = document.getElementById('videoThumbnail');
+        const videoIframeContainer = document.getElementById('videoIframeContainer');
+        const videoIframe = document.getElementById('videoIframe');
+
+        if (videoPlayButton && videoIframeContainer && videoIframe) {
+            // Replace this with your actual YouTube video ID or URL
+            // Example: https://www.youtube.com/watch?v=YOUR_VIDEO_ID
+            const videoId = 'dQw4w9WgXcQ'; // Replace with actual ISHEBOT demo video ID
+            const videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+
+            videoPlayButton.addEventListener('click', () => {
+                // Hide thumbnail and play button
+                videoThumbnail.style.display = 'none';
+                videoPlayButton.style.display = 'none';
+
+                // Show and load video
+                videoIframeContainer.style.display = 'block';
+                videoIframe.src = videoUrl;
+
+                // Optional: Track video play event
+                console.log('Video demo started');
+            });
+
+            // Alternative: Make entire placeholder clickable
+            videoPlaceholder.style.cursor = 'pointer';
+            videoPlaceholder.addEventListener('click', (e) => {
+                if (e.target === videoPlaceholder || e.target.closest('.video-thumbnail, .video-overlay')) {
+                    videoPlayButton.click();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

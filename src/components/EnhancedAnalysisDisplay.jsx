@@ -47,7 +47,19 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
     const generateAnalysis = async () => {
       setLoading(true);
       try {
+        console.log('📊 EnhancedAnalysisDisplay - Student Data:', {
+          hasInsights: !!studentData.insights,
+          insightsCount: studentData.insights?.length || 0,
+          studentCode: studentData.studentCode,
+          insights: studentData.insights,
+          fullStudentData: studentData
+        });
         const enhancedAnalysis = enhancedAnalysisService.generateEnhancedAnalysis(studentData);
+        console.log('📊 EnhancedAnalysisDisplay - Generated Analysis:', {
+          ...enhancedAnalysis,
+          insightsCount: enhancedAnalysis?.insights?.length || 0,
+          firstInsight: enhancedAnalysis?.insights?.[0]
+        });
         setAnalysis(enhancedAnalysis);
 
         // Load assignments from localStorage
@@ -221,16 +233,27 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
   }
 
   if (!analysis) {
+    console.log('❌ NO ANALYSIS - Returning early');
     return (
-      <div className={`text-center py-12 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+      <div className={`text-center py-12 border-4 border-red-500 bg-red-100 ${darkMode ? 'text-red-900' : 'text-red-600'}`}>
         <Brain size={48} className="mx-auto mb-4 opacity-50" />
-        <p>לא ניתן לייצר ניתוח מפורט</p>
+        <p className="font-bold text-xl">❌ אין ניתוח זמין</p>
+        <p className="text-sm mt-2">analysis object is null/undefined</p>
       </div>
     );
   }
 
+  console.log('✅ RENDERING ANALYSIS with insights:', analysis.insights?.length);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-[400px]">
+      {/* Debug info */}
+      <div className={`p-4 rounded-lg ${darkMode ? 'bg-blue-600/40 border-2' : 'bg-blue-50'} border ${darkMode ? 'border-blue-400' : 'border-blue-200'}`}>
+        <p className={`text-sm font-bold ${darkMode ? 'text-blue-100' : 'text-blue-700'}`}>
+          ✅ נמצאו {analysis.insights?.length || 0} תובנות • טאב פעיל: {activeTab}
+        </p>
+      </div>
+
       {/* Analysis Tabs */}
       <div className={`flex space-x-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
         {[
@@ -264,28 +287,45 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
       {/* Insights Tab */}
       {activeTab === 'insights' && (
         <div className="space-y-4">
-          <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800/50' : 'bg-blue-50'} border ${
-            darkMode ? 'border-gray-700' : 'border-blue-200'
+          <div className={`p-4 rounded-xl ${darkMode ? 'bg-blue-800/30 border-2' : 'bg-blue-50'} border ${
+            darkMode ? 'border-blue-600' : 'border-blue-200'
           }`}>
             <div className="flex items-center gap-2 mb-2">
               <Microscope className="text-blue-500" size={20} />
-              <h3 className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <h3 className={`font-bold ${darkMode ? 'text-blue-100' : 'text-gray-900'}`}>
                 ניתוח מבוסס מחקר
               </h3>
             </div>
-            <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            <p className={`text-sm ${darkMode ? 'text-blue-100' : 'text-gray-700'}`}>
               הניתוח מבוסס על מחקרים אקדמיים עדכניים, פרקטיקות מיטביות בחינוך הישראלי,
               ותיאוריות פדגוגיות מובילות. כל תובנה מגובה במקורות מדעיים ומותאמת לקונטקסט הישראלי.
             </p>
           </div>
 
+          {/* Debug: Show if insights exist */}
+          {(!analysis.insights || analysis.insights.length === 0) && (
+            <div className="p-6 rounded-xl border-4 border-yellow-500 bg-yellow-50">
+              <p className="text-yellow-900 font-bold">⚠️ אין תובנות להצגה</p>
+              <p className="text-sm text-yellow-700 mt-2">
+                analysis.insights = {JSON.stringify(analysis.insights)}
+              </p>
+            </div>
+          )}
+
           {analysis.insights?.map((insight, index) => {
+            console.log(`🔍 Rendering insight ${index}:`, {
+              id: insight.id,
+              title: insight.title,
+              category: insight.category,
+              hasDescription: !!insight.description
+            });
+
             const Icon = getSeverityIcon(insight.severity);
             const isExpanded = expandedInsights[insight.id];
 
             return (
               <div
-                key={insight.id}
+                key={insight.id || `insight-${index}`}
                 className={`rounded-xl overflow-hidden border ${
                   darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                 } shadow-lg hover:shadow-xl transition-shadow`}

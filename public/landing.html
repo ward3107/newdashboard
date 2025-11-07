@@ -11,6 +11,27 @@
     <meta name="theme-color" content="#3B82F6">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icon-192.svg">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.svg">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.svg">
+
+    <!-- Apple PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ISHEBOT">
+
+    <!-- Microsoft PWA Tags -->
+    <meta name="msapplication-TileColor" content="#3B82F6">
+    <meta name="msapplication-TileImage" content="/icon-192.svg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/icon-192.svg">
+    <link rel="icon" type="image/svg+xml" sizes="512x512" href="/icon-512.svg">
+
     <!-- Preload critical resources -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap">
 
@@ -5534,6 +5555,141 @@
             // Run scroll-spy initially
             scrollSpy();
         })();
+
+        // ============================================================================
+        // PWA SERVICE WORKER REGISTRATION
+        // ============================================================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // ============================================================================
+        // PWA INSTALL PROMPT
+        // ============================================================================
+        let deferredPrompt;
+        const installButton = document.createElement('button');
+        installButton.innerHTML = `
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            <span>התקן אפליקציה</span>
+        `;
+        installButton.style.cssText = `
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', sans-serif;
+        `;
+        installButton.addEventListener('mouseenter', () => {
+            installButton.style.transform = 'translateY(-3px)';
+            installButton.style.boxShadow = '0 15px 40px rgba(59, 130, 246, 0.5)';
+        });
+        installButton.addEventListener('mouseleave', () => {
+            installButton.style.transform = 'translateY(0)';
+            installButton.style.boxShadow = '0 10px 30px rgba(59, 130, 246, 0.4)';
+        });
+
+        document.body.appendChild(installButton);
+
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show the install button
+            installButton.style.display = 'flex';
+
+            console.log('💡 PWA install prompt available');
+        });
+
+        // Handle install button click
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) {
+                return;
+            }
+
+            // Show the install prompt
+            deferredPrompt.prompt();
+
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+
+            console.log(`👤 User response to install prompt: ${outcome}`);
+
+            if (outcome === 'accepted') {
+                console.log('✅ User accepted the install prompt');
+            } else {
+                console.log('❌ User dismissed the install prompt');
+            }
+
+            // Clear the deferredPrompt
+            deferredPrompt = null;
+            // Hide the install button
+            installButton.style.display = 'none';
+        });
+
+        // Listen for successful installation
+        window.addEventListener('appinstalled', (e) => {
+            console.log('🎉 PWA installed successfully!');
+            // Hide the install button if it's still visible
+            installButton.style.display = 'none';
+
+            // Show success message
+            const successMessage = document.createElement('div');
+            successMessage.textContent = '✅ האפליקציה הותקנה בהצלחה!';
+            successMessage.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #10B981, #059669);
+                color: white;
+                padding: 16px 32px;
+                border-radius: 12px;
+                font-weight: 600;
+                box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+                z-index: 10000;
+                animation: slideUp 0.3s ease;
+                font-family: 'Rubik', sans-serif;
+            `;
+            document.body.appendChild(successMessage);
+
+            setTimeout(() => {
+                successMessage.style.opacity = '0';
+                successMessage.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => successMessage.remove(), 300);
+            }, 3000);
+        });
+
+        // Check if already installed (standalone mode)
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            console.log('📱 PWA is running in standalone mode');
+            installButton.style.display = 'none';
+        }
+
         }
     </script>
 </body>

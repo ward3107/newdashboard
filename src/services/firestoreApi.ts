@@ -96,8 +96,8 @@ export async function getAllStudentsFromFirestore(): Promise<ApiResponse<{ stude
 
   try {
     const studentsRef = collection(db, `schools/${SCHOOL_ID}/students`);
-    const q = query(studentsRef, orderBy('studentCode'));
-    const snapshot = await getDocs(q);
+    // Temporarily removed orderBy to fetch all students (including those without studentCode)
+    const snapshot = await getDocs(studentsRef);
 
     const students: Student[] = snapshot.docs.map(doc => {
       const data = doc.data();
@@ -107,6 +107,15 @@ export async function getAllStudentsFromFirestore(): Promise<ApiResponse<{ stude
       const strengths = summary.strengths || [];
       const challenges = summary.challenges || [];
 
+      // Calculate counts - use insights count as fallback if no strengths/challenges
+      const insights = data.insights || [];
+      const positiveInsightsCount = insights.filter((i: any) =>
+        i.domain === 'cognitive' || i.domain === 'social' || i.confidence > 0.7
+      ).length;
+      const challengeInsightsCount = insights.filter((i: any) =>
+        i.domain === 'emotional' || i.domain === 'self-regulation'
+      ).length;
+
       return {
         studentCode: data.studentCode || doc.id,
         quarter: data.quarter || 'Q1',
@@ -115,8 +124,8 @@ export async function getAllStudentsFromFirestore(): Promise<ApiResponse<{ stude
         name: data.name?.toString() || '',
         learningStyle: data.learningStyle || summary.learning_style || '',
         keyNotes: data.keyNotes || summary.key_notes || '',
-        strengthsCount: data.strengthsCount || strengths.length || 0,
-        challengesCount: data.challengesCount || challenges.length || 0,
+        strengthsCount: data.strengthsCount || strengths.length || positiveInsightsCount || 0,
+        challengesCount: data.challengesCount || challenges.length || challengeInsightsCount || 0,
         // Include student_summary for detailed views
         student_summary: summary.strengths || summary.challenges ? {
           learning_style: summary.learning_style || data.learningStyle || '',
@@ -165,6 +174,25 @@ export async function getStudentFromFirestore(studentId: string): Promise<ApiRes
 
     const data = snapshot.data();
 
+    // Transform Firestore insights structure to UI format
+    const rawInsights = data.insights || [];
+    const transformedInsights = rawInsights.map((insight: any) => ({
+      title: insight.title || '',
+      category: insight.domain || insight.category || '',
+      finding: insight.summary || insight.finding || '',
+      relatedQuestions: insight.evidence?.from_questions?.join(', ') || '',
+      description: insight.summary || insight.description || '',
+      recommendations: (insight.recommendations || []).map((rec: any) => ({
+        action: rec.action || rec.text || '',
+        text: rec.action || rec.text || '',
+        how_to: rec.how_to || rec.implementation || '',
+        time_needed: rec.duration || rec.time_needed || '',
+        examples: rec.materials?.join(', ') || rec.examples || '',
+        priority: rec.priority || 'medium',
+        implementation: rec.how_to || rec.implementation || ''
+      }))
+    }));
+
     const detailedStudent: DetailedStudent = {
       studentCode: data.studentCode || studentId,
       quarter: data.quarter || 'Q1',
@@ -177,7 +205,7 @@ export async function getStudentFromFirestore(studentId: string): Promise<ApiRes
         strengths: [],
         challenges: [],
       },
-      insights: data.insights || [],
+      insights: transformedInsights,
       immediate_actions: data.immediateActions || [],
       seating_arrangement: data.seatingArrangement || {
         location: '',

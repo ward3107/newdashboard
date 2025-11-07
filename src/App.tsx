@@ -85,7 +85,7 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-          <Router>
+          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ErrorBoundary>
               <div className="min-h-screen bg-gray-50" dir="rtl">
               {/* Toast Notifications */}

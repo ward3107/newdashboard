@@ -1,20 +1,19 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import * as React from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import {
   Brain,
-  Users,
-  Zap,
   Globe,
   Shield,
   CheckCircle,
-  ArrowLeft,
   Sparkles,
   Target,
-  Heart,
   Clock,
-  Award,
-  TrendingUp
+  TrendingUp,
+  Menu,
+  X,
+  ChevronUp,
+  List
 } from 'lucide-react';
 
 const LandingPage: React.FC = () => {
@@ -29,6 +28,26 @@ const LandingPage: React.FC = () => {
   const [showVideoModal, setShowVideoModal] = React.useState(!hasSeenVideo);
   const [showPlayButton, setShowPlayButton] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
+
+  // Navigation state
+  const [activeSection, setActiveSection] = React.useState('hero');
+  const [showBackToTop, setShowBackToTop] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [showSidebar, setShowSidebar] = React.useState(true);
+
+  // Section refs for scroll-spy
+  const heroRef = React.useRef<HTMLDivElement>(null);
+  const featuresRef = React.useRef<HTMLDivElement>(null);
+  const benefitsRef = React.useRef<HTMLDivElement>(null);
+  const ctaRef = React.useRef<HTMLDivElement>(null);
+
+  // Navigation sections
+  const sections = [
+    { id: 'hero', label: 'ראשי', ref: heroRef },
+    { id: 'features', label: 'תכונות', ref: featuresRef },
+    { id: 'benefits', label: 'יתרונות', ref: benefitsRef },
+    { id: 'cta', label: 'התחל עכשיו', ref: ctaRef }
+  ];
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -85,6 +104,52 @@ const LandingPage: React.FC = () => {
   const handleCloseModal = () => {
     setShowVideoModal(false);
     localStorage.setItem(VIDEO_SEEN_KEY, 'true');
+  };
+
+  // Smooth scroll to section
+  const scrollToSection = (sectionId: string) => {
+    const section = sections.find(s => s.id === sectionId);
+    if (section?.ref.current) {
+      const offsetTop = section.ref.current.offsetTop - 80; // Account for sticky nav
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+      setMobileMenuOpen(false);
+    }
+  };
+
+  // Scroll spy effect
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 100;
+
+      // Show/hide back to top button
+      setShowBackToTop(window.scrollY > 400);
+
+      // Determine active section
+      for (const section of sections) {
+        if (section.ref.current) {
+          const { offsetTop, offsetHeight } = section.ref.current;
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(section.id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial check
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [sections]);
+
+  // Back to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
 
   return (
@@ -146,8 +211,140 @@ const LandingPage: React.FC = () => {
         </motion.div>
       )}
 
+      {/* Sticky Navigation Bar */}
+      <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <div className="flex items-center gap-2">
+              <Brain className="w-8 h-8 text-purple-600" />
+              <span className="text-xl font-bold text-gray-900">ISHEBOT</span>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-8">
+              {sections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => scrollToSection(section.id)}
+                  className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
+                    activeSection === section.id
+                      ? 'bg-purple-100 text-purple-700'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  {section.label}
+                </button>
+              ))}
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+              >
+                התחבר
+              </button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden bg-white border-t border-gray-200 shadow-xl"
+          >
+            <div className="px-4 py-4 space-y-2">
+              {sections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => scrollToSection(section.id)}
+                  className={`block w-full text-right px-4 py-3 rounded-lg transition-all duration-300 ${
+                    activeSection === section.id
+                      ? 'bg-purple-100 text-purple-700 font-medium'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  {section.label}
+                </button>
+              ))}
+              <button
+                onClick={() => {
+                  navigate('/dashboard');
+                  setMobileMenuOpen(false);
+                }}
+                className="block w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium shadow-md"
+              >
+                התחבר
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </nav>
+
+      {/* Floating Table of Contents Sidebar (Desktop Only) */}
+      <div className="hidden lg:block">
+        <motion.div
+          initial={{ x: 100, opacity: 0 }}
+          animate={{ x: showSidebar ? 0 : 100, opacity: showSidebar ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed left-6 top-1/2 -translate-y-1/2 z-30 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-gray-200"
+        >
+          {/* Toggle Button */}
+          <button
+            onClick={() => setShowSidebar(!showSidebar)}
+            className="absolute -right-12 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300"
+            aria-label={showSidebar ? "סגור תוכן העניינים" : "פתח תוכן העניינים"}
+            title={showSidebar ? "סגור תוכן העניינים" : "פתח תוכן העניינים"}
+          >
+            <List className="w-5 h-5 text-gray-600" />
+          </button>
+
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-gray-900 mb-3 pb-2 border-b border-gray-200">תוכן העניינים</h3>
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => scrollToSection(section.id)}
+                className={`block w-full text-right px-3 py-2 rounded-lg text-sm transition-all duration-300 ${
+                  activeSection === section.id
+                    ? 'bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 font-medium border-r-4 border-purple-600'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+              >
+                {section.label}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Back to Top Button */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{
+          opacity: showBackToTop ? 1 : 0,
+          scale: showBackToTop ? 1 : 0.8,
+          pointerEvents: showBackToTop ? 'auto' : 'none'
+        }}
+        transition={{ duration: 0.3 }}
+        onClick={scrollToTop}
+        className="fixed bottom-6 right-6 z-30 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
+        aria-label="Back to top"
+      >
+        <ChevronUp size={24} />
+      </motion.button>
+
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section ref={heroRef} className="relative overflow-hidden pt-8">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -238,7 +435,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
+      <section ref={featuresRef} id="features" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -361,7 +558,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 to-purple-600 text-white">
+      <section ref={benefitsRef} className="py-20 bg-gradient-to-br from-blue-600 to-purple-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -436,7 +633,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+      <section ref={ctaRef} className="py-20 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}

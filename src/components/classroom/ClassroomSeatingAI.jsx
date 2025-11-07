@@ -2513,8 +2513,8 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
         // Perform the swap in arrangement
         const newArrangement = [...arrangement];
-        const index1 = newArrangement.findIndex(item => item.student.studentCode === active.id);
-        const index2 = newArrangement.findIndex(item => item.student.studentCode === over.id);
+        const index1 = newArrangement.findIndex(item => item.student && item.student.studentCode === active.id);
+        const index2 = newArrangement.findIndex(item => item.student && item.student.studentCode === over.id);
 
         if (index1 !== -1 && index2 !== -1) {
           const temp = newArrangement[index1].student;

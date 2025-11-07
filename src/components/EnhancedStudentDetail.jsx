@@ -442,8 +442,19 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
     const strengths = fullData?.strengths || (typeof student.strengths === 'string' ? [student.strengths] : student.strengths) || [];
     const challenges = fullData?.challenges || (typeof student.challenges === 'string' ? [student.challenges] : student.challenges) || [];
 
-    // Get ISHEBOT insights if available
-    const insights = fullData?.insights || [];
+    // Get ISHEBOT insights if available and transform Firestore structure to UI structure
+    const rawInsights = fullData?.insights || [];
+    const insights = rawInsights.map(insight => ({
+      title: insight.title || '',
+      category: insight.domain || insight.category || '',
+      relatedQuestions: insight.evidence?.from_questions?.join(', ') || '',
+      description: insight.summary || insight.description || '',
+      recommendations: (insight.recommendations || []).map(rec => ({
+        text: rec.action || rec.text || '',
+        priority: rec.priority || 'medium',
+        implementation: rec.how_to || rec.implementation || ''
+      }))
+    }));
     const ishebotReport = fullData?.ishebotReport || {};
 
     // Helper to clean text

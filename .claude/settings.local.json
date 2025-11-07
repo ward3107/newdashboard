@@ -1,14 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run build:*)",
-      "Bash(npm run dev:*)",
-      "Bash(npm install:*)",
-      "Bash(npx vite)",
-      "Bash(node:*)",
-      "Bash(dir node_modulesvite)",
-      "Bash(dir:*)",
-      "Bash(xcopy \"C:\\Users\\User\\Downloads\\the new isheshe\\newdashboard\" \"C:\\dashboard\" \" /E /I /H /Y)"
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(node scripts/generate-pwa-icons.cjs:*)",
+      "Bash(test:*)",
+      "Bash(taskkill /F /PID 60f8b4 2)",
+      "Bash(nul)",
+      "Bash(timeout /t 3)",
+      "Bash(rm nul public/nul)"
     ],
     "deny": [],
     "ask": []
