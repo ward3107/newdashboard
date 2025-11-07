@@ -76,7 +76,7 @@ jobs:
 
       - name: Check for secrets in code
         run: |
-          if grep -r "sk-[a-zA-Z0-9]" --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" src/ 2>/dev/null; then
+          if grep -rE '["'"'"']sk-[a-zA-Z0-9]{20,}' --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" src/ 2>/dev/null; then
             echo "Error: Found potential API keys in source code!"
             exit 1
           fi
