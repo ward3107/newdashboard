@@ -176,8 +176,11 @@ test.describe('Data Display', () => {
     // Loading indicators might appear briefly
     const hasLoadingStates = await loadingIndicators.count() > 0;
 
-    // Wait for content to load with network idle
-    await page.waitForLoadState('networkidle', { timeout: 10000 });
+    // Wait for DOM to be ready (more reliable than networkidle in CI)
+    await page.waitForLoadState('domcontentloaded');
+
+    // Wait a bit for any initial renders
+    await page.waitForTimeout(1000);
 
     // Content should be loaded - check for dashboard-specific elements
     // The dashboard uses divs, not main elements, so check for actual content
