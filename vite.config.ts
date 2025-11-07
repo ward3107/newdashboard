@@ -196,8 +196,8 @@ export default defineConfig({
       // external: ['react', 'react-dom'],
     },
 
-    // Source maps for production debugging
-    sourcemap: true,
+    // Source maps disabled in production to reduce bundle size
+    sourcemap: false,
 
     // Assets inlining threshold
     assetsInlineLimit: 4096, // 4kb
