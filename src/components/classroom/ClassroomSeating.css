@@ -1,0 +1,179 @@
+.classroom-seating-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.classroom-header {
+  background: white;
+  border-radius: 8px;
+  padding: 8px 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid #667eea;
+  margin-bottom: 10px;
+}
+
+.classroom-room {
+  background: linear-gradient(to bottom, #f5f3f0, #e8e6e3);
+  border: 2px solid #8b4513;
+  border-radius: 8px;
+  padding: 10px;
+  min-height: 400px;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.blackboard {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 45%;
+  height: 35px;
+  background: linear-gradient(to bottom, #2c3e50, #1a252f);
+  border: 2px solid #8b4513;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  font-size: 0.95em;
+}
+
+.desk-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 50px;
+  padding: 5px;
+}
+
+.desk {
+  background: white;
+  border: 2px solid #34495e;
+  border-radius: 8px;
+  padding: 6px;
+  min-height: 80px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.desk.empty {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.desk-number {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 0.8em;
+}
+
+.students-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 14px;
+}
+
+.student-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #2c3e50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.7em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.desk:hover .student-circle {
+  width: 42px;
+  height: 42px;
+  font-size: 0.8em;
+}
+
+.compatibility-score {
+  text-align: center;
+  margin-top: 4px;
+  font-size: 0.75em;
+  color: #7f8c8d;
+  font-weight: 600;
+}
+
+.desk:hover .compatibility-score {
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+.desk:hover .desk-number {
+  transform: scale(1.1);
+  padding: 4px 10px;
+}
+
+.classroom-legend {
+  margin-top: 8px;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.9em;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #333;
+  border-radius: 3px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .desk-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .blackboard {
+    width: 80%;
+    height: 40px;
+    font-size: 0.9em;
+  }
+
+  .desk {
+    min-height: 90px;
+  }
+
+  .student-circle {
+    width: 40px;
+    height: 40px;
+    font-size: 0.65em;
+  }
+
+  .classroom-legend {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
