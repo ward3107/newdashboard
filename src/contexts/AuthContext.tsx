@@ -24,6 +24,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
+import { logger } from '../utils/logger';
 import type {
   User,
   AuthContextState,
@@ -65,7 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const fetchUserData = useCallback(async (firebaseUser: FirebaseUser): Promise<User | null> => {
     if (!db) {
-      console.error('Firestore not initialized');
+      logger.error('AuthContext', 'Firestore not initialized');
       return null;
     }
 
@@ -73,7 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
 
       if (!userDoc.exists()) {
-        console.error('User document not found in Firestore');
+        logger.warn('AuthContext', 'User document not found in Firestore', { uid: firebaseUser.uid });
         return null;
       }
 
@@ -95,7 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           : undefined,
       };
     } catch (err) {
-      console.error('Error fetching user data:', err);
+      logger.error('AuthContext', 'Error fetching user data', err as Error);
       return null;
     }
   }, []);

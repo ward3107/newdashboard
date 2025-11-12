@@ -26,14 +26,40 @@ export default defineConfig({
         'scripts/',
       ],
       reportsDirectory: './coverage',
-      // Thresholds disabled temporarily - will be enforced once more tests are added
-      // Target: 85% coverage across all metrics
-      // thresholds: {
-      //   lines: 85,
-      //   functions: 85,
-      //   branches: 85,
-      //   statements: 85,
-      // },
+      // Coverage thresholds -渐进式目标
+      thresholds: {
+        global: {
+          branches: 70,
+          functions: 75,
+          lines: 75,
+          statements: 75,
+        },
+        // Critical files have higher thresholds
+        'src/services/api.ts': {
+          branches: 85,
+          functions: 90,
+          lines: 90,
+          statements: 90,
+        },
+        'src/utils/logger.ts': {
+          branches: 90,
+          functions: 95,
+          lines: 95,
+          statements: 95,
+        },
+        'src/services/errorReporting.ts': {
+          branches: 85,
+          functions: 90,
+          lines: 90,
+          statements: 90,
+        },
+        'src/components/common/ErrorBoundary.tsx': {
+          branches: 90,
+          functions: 90,
+          lines: 90,
+          statements: 90,
+        },
+      },
     },
     testTimeout: 10000,
     hookTimeout: 10000,

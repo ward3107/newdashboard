@@ -12,7 +12,10 @@
       "Bash(taskkill /F /PID 60f8b4 2)",
       "Bash(nul)",
       "Bash(timeout /t 3)",
-      "Bash(rm nul public/nul)"
+      "Bash(rm nul public/nul)",
+      "Bash(npm audit:*)",
+      "Bash(find:*)",
+      "Bash(4/74*100\" | bc)%\")"
     ],
     "deny": [],
     "ask": []
