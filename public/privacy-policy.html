@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מדיניות פרטיות - ISHEBOT Privacy Policy</title>
+    <link rel="icon" type="image/svg+xml" href="/icon-192.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            line-height: 1.8;
+            color: #1f2937;
+            background: #f9fafb;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .lang-btn {
+            background: white;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .lang-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .content {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .content h2 {
+            color: #3b82f6;
+            margin: 2rem 0 1rem;
+            font-size: 1.8rem;
+        }
+
+        .content h3 {
+            color: #1f2937;
+            margin: 1.5rem 0 0.75rem;
+            font-size: 1.3rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+        }
+
+        .content ul {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        .content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            .lang-switcher {
+                position: static;
+                text-align: center;
+                margin: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="switchLang('he')" data-lang="he">🇮🇱 עברית</button>
+        <button class="lang-btn" onclick="switchLang('en')" data-lang="en">🇬🇧 English</button>
+        <button class="lang-btn" onclick="switchLang('ar')" data-lang="ar">🇸🇦 العربية</button>
+        <button class="lang-btn" onclick="switchLang('ru')" data-lang="ru">🇷🇺 Русский</button>
+    </div>
+
+    <header>
+        <div class="container">
+            <h1 id="header-title">מדיניות פרטיות</h1>
+            <p id="header-subtitle">עדכון אחרון: נובמבר 2024</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="content" id="content">
+            <!-- Hebrew content (default) -->
+            <div data-lang="he" class="lang-content active">
+                <h2>📋 סקירה כללית</h2>
+                <p>ב-ISHEBOT, אנו מחויבים להגן על הפרטיות שלך. מדיניות פרטיות זו מסבירה כיצד אנו אוספים, משתמשים ומגנים על המידע האישי שלך בעת שימוש בפלטפורמה שלנו.</p>
+
+                <div class="highlight">
+                    <strong>⚡ בקצרה:</strong> אנו אוספים רק את המידע ההכרחי לספק את השירות, לא משתפים אותו עם צדדים שלישיים ללא הסכמתך, ונותנים לך שליטה מלאה על הנתונים שלך.
+                </div>
+
+                <h2>🔍 איזה מידע אנו אוספים</h2>
+
+                <h3>מידע שאתה מספק לנו:</h3>
+                <ul>
+                    <li><strong>פרטי חשבון:</strong> שם, כתובת אימייל, תפקיד (מורה/מנהל), שם מוסד חינוכי</li>
+                    <li><strong>נתוני תלמידים:</strong> שמות, מאפייני התנהגות, צרכים חינוכיים (ללא מספרי תעודת זהות)</li>
+                    <li><strong>נתוני שימוש:</strong> אינטראקציות עם המערכת, העדפות, הגדרות</li>
+                </ul>
+
+                <h3>מידע שנאסף אוטומטית:</h3>
+                <ul>
+                    <li>כתובת IP, סוג דפדפן, מערכת הפעלה</li>
+                    <li>זמני כניסה למערכת ודפים שצפית בהם</li>
+                    <li>Cookies ו-Local Storage למטרות אבטחה ותפקוד</li>
+                </ul>
+
+                <h2>🎯 כיצד אנו משתמשים במידע</h2>
+                <ul>
+                    <li><strong>מתן שירותים:</strong> ניתוח תלמידים, יצירת סידורי ישיבה אופטימליים, דוחות</li>
+                    <li><strong>שיפור המערכת:</strong> AI learning, תיקוני באגים, תכונות חדשות</li>
+                    <li><strong>תקשורת:</strong> עדכונים חשובים, תמיכה טכנית, התראות מערכת</li>
+                    <li><strong>אבטחה:</strong> זיהוי ומניעת שימוש לא מורשה</li>
+                    <li><strong>עמידה בחוק:</strong> תקן 13 משרד החינוך, GDPR, חוקי פרטיות מקומיים</li>
+                </ul>
+
+                <h2>🔒 כיצד אנו מגנים על המידע שלך</h2>
+                <ul>
+                    <li><strong>הצפנה:</strong> כל הנתונים מוצפנים בזמן שידור (HTTPS/TLS) ובמנוחה (AES-256)</li>
+                    <li><strong>גישה מוגבלת:</strong> רק צוות מורשה יכול לגשת לנתונים, עם אימות רב-שלבי</li>
+                    <li><strong>גיבויים:</strong> גיבויים אוטומטיים מוצפנים, מאוחסנים במיקומים גיאוגרפיים נפרדים</li>
+                    <li><strong>ניטור:</strong> מערכות ניטור 24/7 לזיהוי פעילות חשודה</li>
+                    <li><strong>עמידה בתקנים:</strong> תקן 13, ISO 27001, SOC 2</li>
+                </ul>
+
+                <h2>🤝 שיתוף מידע עם צדדים שלישיים</h2>
+                <p><strong>אנו לא מוכרים את המידע שלך. אף פעם.</strong></p>
+                <p>נשתף מידע רק במקרים הבאים:</p>
+                <ul>
+                    <li><strong>ספקי שירות:</strong> Firebase (אחסון), OpenAI/Anthropic (AI analysis) - כולם חתומים על הסכמי סודיות</li>
+                    <li><strong>דרישות חוק:</strong> אם נדרש על ידי צו שיפוטי או חוק</li>
+                    <li><strong>בהסכמתך:</strong> אם תבקש במפורש לשתף מידע עם גורם מסוים</li>
+                </ul>
+
+                <h2>👤 הזכויות שלך</h2>
+                <ul>
+                    <li><strong>גישה:</strong> ראה את כל המידע שיש לנו עליך</li>
+                    <li><strong>תיקון:</strong> עדכן או תקן מידע לא מדויק</li>
+                    <li><strong>מחיקה:</strong> מחק את החשבון והנתונים שלך לצמיתות</li>
+                    <li><strong>ייצוא:</strong> הורד את הנתונים שלך בפורמט JSON/CSV</li>
+                    <li><strong>התנגדות:</strong> התנגד לעיבוד מידע מסוים</li>
+                    <li><strong>ביטול הסכמה:</strong> בטל הסכמות שנתת בעבר</li>
+                </ul>
+                <p><strong>איך להשתמש בזכויות?</strong> שלח אימייל ל-privacy@ishebot.com</p>
+
+                <h2>🍪 Cookies ו-Local Storage</h2>
+                <p>אנו משתמשים ב-Cookies ו-Local Storage למטרות:</p>
+                <ul>
+                    <li><strong>הכרחיים:</strong> אימות, session management, אבטחה</li>
+                    <li><strong>תפקודיים:</strong> העדפות שפה, הגדרות תצוגה</li>
+                    <li><strong>אנליטיים:</strong> שיפור החוויה (ניתן לסרב)</li>
+                </ul>
+                <p>ניתן לנהל Cookies דרך <a href="/cookie-manager.html">מנהל ה-Cookies</a> שלנו.</p>
+
+                <h2>👶 פרטיות קטינים</h2>
+                <p>המערכת מיועדת למורים ומנהלים בלבד, לא לתלמידים ישירות. אנו:</p>
+                <ul>
+                    <li>לא אוספים מידע אישי זיהוי של תלמידים מתחת לגיל 18</li>
+                    <li>מחייבים הסכמת הורים/מוסד חינוכי לכל שימוש במערכת</li>
+                    <li>עומדים בחוק הגנת הפרטיות לילדים (COPPA, GDPR-K)</li>
+                </ul>
+
+                <h2>🌍 העברות נתונים בינלאומיות</h2>
+                <p>הנתונים שלך מאוחסנים בעיקר בשרתים באירופה (AWS eu-central-1). במקרה של העברה למדינות אחרות, נבטיח רמת הגנה שווה ערך באמצעות:</p>
+                <ul>
+                    <li>Standard Contractual Clauses (SCCs) של האיחוד האירופי</li>
+                    <li>הצפנה מלאה של נתונים בעת העברה</li>
+                    <li>בדיקת תאימות לחוקי פרטיות מקומיים</li>
+                </ul>
+
+                <h2>⏱️ כמה זמן אנו שומרים את המידע</h2>
+                <ul>
+                    <li><strong>נתוני חשבון:</strong> עד סגירת החשבון + 30 יום</li>
+                    <li><strong>נתוני תלמידים:</strong> עד מחיקה ידנית או סגירת חשבון + 30 יום</li>
+                    <li><strong>לוגים:</strong> 90 יום</li>
+                    <li><strong>גיבויים:</strong> 180 יום</li>
+                    <li><strong>חריגים:</strong> מידע שנדרש לשמור על פי חוק (למשל, תיעוד פיננסי)</li>
+                </ul>
+
+                <h2>📱 אפליקציות צד שלישי</h2>
+                <p>המערכת עשויה להכיל קישורים לאתרים חיצוניים (כגון YouTube למדריכים). איננו אחראים למדיניות הפרטיות של אתרים אלו.</p>
+
+                <h2>🔄 עדכונים למדיניות</h2>
+                <p>נעדכן מדיניות זו מעת לעת. במקרה של שינויים מהותיים, נודיע לך באמצעות:</p>
+                <ul>
+                    <li>אימייל למשתמשים רשומים</li>
+                    <li>הודעה בולטת במערכת</li>
+                    <li>עדכון תאריך "עדכון אחרון" בראש המדיניות</li>
+                </ul>
+
+                <h2>📞 יצירת קשר</h2>
+                <p><strong>שאלות על הפרטיות שלך?</strong></p>
+                <ul>
+                    <li><strong>אימייל:</strong> privacy@ishebot.com</li>
+                    <li><strong>טלפון:</strong> 03-1234567</li>
+                    <li><strong>כתובת:</strong> רחוב הדוגמה 123, תל אביב-יפו, ישראל</li>
+                    <li><strong>Data Protection Officer:</strong> dpo@ishebot.com</li>
+                </ul>
+
+                <div class="highlight">
+                    <strong>⚖️ זכויותיך מוגנות על פי חוק:</strong><br>
+                    - תקן 13 משרד החינוך (ישראל)<br>
+                    - GDPR (אירופה)<br>
+                    - חוק הגנת הפרטיות, התשמ"א-1981 (ישראל)
+                </div>
+            </div>
+
+            <!-- English content -->
+            <div data-lang="en" class="lang-content" style="display:none;">
+                <h2>📋 Overview</h2>
+                <p>At ISHEBOT, we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your personal information when using our platform.</p>
+
+                <div class="highlight">
+                    <strong>⚡ In Brief:</strong> We collect only essential information to provide our service, never share it with third parties without your consent, and give you full control over your data.
+                </div>
+
+                <h2>🔍 What Information We Collect</h2>
+
+                <h3>Information you provide:</h3>
+                <ul>
+                    <li><strong>Account details:</strong> Name, email, role (teacher/admin), educational institution</li>
+                    <li><strong>Student data:</strong> Names, behavioral characteristics, educational needs (no ID numbers)</li>
+                    <li><strong>Usage data:</strong> System interactions, preferences, settings</li>
+                </ul>
+
+                <h3>Automatically collected information:</h3>
+                <ul>
+                    <li>IP address, browser type, operating system</li>
+                    <li>Login times and pages viewed</li>
+                    <li>Cookies and Local Storage for security and functionality</li>
+                </ul>
+
+                <h2>🎯 How We Use Your Information</h2>
+                <ul>
+                    <li><strong>Service delivery:</strong> Student analysis, optimal seating arrangements, reports</li>
+                    <li><strong>System improvement:</strong> AI learning, bug fixes, new features</li>
+                    <li><strong>Communication:</strong> Important updates, technical support, system notifications</li>
+                    <li><strong>Security:</strong> Detecting and preventing unauthorized access</li>
+                    <li><strong>Compliance:</strong> Israeli Standard 13, GDPR, local privacy laws</li>
+                </ul>
+
+                <h2>🔒 How We Protect Your Information</h2>
+                <ul>
+                    <li><strong>Encryption:</strong> All data encrypted in transit (HTTPS/TLS) and at rest (AES-256)</li>
+                    <li><strong>Limited access:</strong> Only authorized staff with multi-factor authentication</li>
+                    <li><strong>Backups:</strong> Encrypted automatic backups in separate geographic locations</li>
+                    <li><strong>Monitoring:</strong> 24/7 monitoring systems for suspicious activity</li>
+                    <li><strong>Compliance:</strong> Standard 13, ISO 27001, SOC 2</li>
+                </ul>
+
+                <h2>🤝 Third-Party Sharing</h2>
+                <p><strong>We do not sell your information. Ever.</strong></p>
+                <p>We share information only in these cases:</p>
+                <ul>
+                    <li><strong>Service providers:</strong> Firebase (storage), OpenAI/Anthropic (AI analysis) - all under confidentiality agreements</li>
+                    <li><strong>Legal requirements:</strong> When required by court order or law</li>
+                    <li><strong>With your consent:</strong> When you explicitly request sharing with a specific party</li>
+                </ul>
+
+                <h2>👤 Your Rights</h2>
+                <ul>
+                    <li><strong>Access:</strong> View all information we have about you</li>
+                    <li><strong>Correction:</strong> Update or correct inaccurate information</li>
+                    <li><strong>Deletion:</strong> Permanently delete your account and data</li>
+                    <li><strong>Export:</strong> Download your data in JSON/CSV format</li>
+                    <li><strong>Object:</strong> Object to certain data processing</li>
+                    <li><strong>Withdraw consent:</strong> Revoke previously given consents</li>
+                </ul>
+                <p><strong>How to exercise your rights?</strong> Email privacy@ishebot.com</p>
+
+                <h2>🍪 Cookies and Local Storage</h2>
+                <p>We use Cookies and Local Storage for:</p>
+                <ul>
+                    <li><strong>Essential:</strong> Authentication, session management, security</li>
+                    <li><strong>Functional:</strong> Language preferences, display settings</li>
+                    <li><strong>Analytics:</strong> Experience improvement (opt-out available)</li>
+                </ul>
+                <p>Manage Cookies via our <a href="/cookie-manager.html">Cookie Manager</a>.</p>
+
+                <h2>👶 Children's Privacy</h2>
+                <p>The system is designed for teachers and administrators only, not for students directly. We:</p>
+                <ul>
+                    <li>Do not collect personally identifiable information from students under 18</li>
+                    <li>Require parental/institutional consent for any system use</li>
+                    <li>Comply with COPPA, GDPR-K child privacy laws</li>
+                </ul>
+
+                <h2>🌍 International Data Transfers</h2>
+                <p>Your data is primarily stored on European servers (AWS eu-central-1). For transfers to other countries, we ensure equivalent protection through:</p>
+                <ul>
+                    <li>EU Standard Contractual Clauses (SCCs)</li>
+                    <li>Full data encryption during transfer</li>
+                    <li>Compliance verification with local privacy laws</li>
+                </ul>
+
+                <h2>⏱️ Data Retention</h2>
+                <ul>
+                    <li><strong>Account data:</strong> Until account closure + 30 days</li>
+                    <li><strong>Student data:</strong> Until manual deletion or account closure + 30 days</li>
+                    <li><strong>Logs:</strong> 90 days</li>
+                    <li><strong>Backups:</strong> 180 days</li>
+                    <li><strong>Exceptions:</strong> Information required by law (e.g., financial records)</li>
+                </ul>
+
+                <h2>📱 Third-Party Apps</h2>
+                <p>The system may contain links to external websites (e.g., YouTube for tutorials). We are not responsible for their privacy policies.</p>
+
+                <h2>🔄 Policy Updates</h2>
+                <p>We will update this policy periodically. For material changes, we'll notify you via:</p>
+                <ul>
+                    <li>Email to registered users</li>
+                    <li>Prominent system notification</li>
+                    <li>"Last updated" date at the top</li>
+                </ul>
+
+                <h2>📞 Contact Us</h2>
+                <p><strong>Questions about your privacy?</strong></p>
+                <ul>
+                    <li><strong>Email:</strong> privacy@ishebot.com</li>
+                    <li><strong>Phone:</strong> +972-3-1234567</li>
+                    <li><strong>Address:</strong> 123 Example Street, Tel Aviv-Yafo, Israel</li>
+                    <li><strong>Data Protection Officer:</strong> dpo@ishebot.com</li>
+                </ul>
+
+                <div class="highlight">
+                    <strong>⚖️ Your rights are protected by law:</strong><br>
+                    - Israeli Standard 13 (Israel)<br>
+                    - GDPR (Europe)<br>
+                    - Privacy Protection Law, 1981 (Israel)
+                </div>
+            </div>
+
+            <!-- Arabic content -->
+            <div data-lang="ar" class="lang-content" style="display:none;">
+                <h2>📋 نظرة عامة</h2>
+                <p>في ISHEBOT، نحن ملتزمون بحماية خصوصيتك. تشرح سياسة الخصوصية هذه كيف نجمع المعلومات الشخصية ونستخدمها ونحميها عند استخدام منصتنا.</p>
+
+                <div class="highlight">
+                    <strong>⚡ باختصار:</strong> نجمع فقط المعلومات الأساسية لتقديم خدمتنا، ولا نشاركها أبدًا مع أطراف ثالثة بدون موافقتك، ونمنحك السيطرة الكاملة على بياناتك.
+                </div>
+
+                <h2>🔍 المعلومات التي نجمعها</h2>
+
+                <h3>المعلومات التي تقدمها:</h3>
+                <ul>
+                    <li><strong>تفاصيل الحساب:</strong> الاسم، البريد الإلكتروني، الدور (معلم/مدير)، المؤسسة التعليمية</li>
+                    <li><strong>بيانات الطلاب:</strong> الأسماء، الخصائص السلوكية، الاحتياجات التعليمية (بدون أرقام هوية)</li>
+                    <li><strong>بيانات الاستخدام:</strong> التفاعلات مع النظام، التفضيلات، الإعدادات</li>
+                </ul>
+
+                <h3>المعلومات المجمعة تلقائيًا:</h3>
+                <ul>
+                    <li>عنوان IP، نوع المتصفح، نظام التشغيل</li>
+                    <li>أوقات تسجيل الدخول والصفحات التي تمت مشاهدتها</li>
+                    <li>Cookies والتخزين المحلي لأغراض الأمان والوظائف</li>
+                </ul>
+
+                <h2>🎯 كيف نستخدم معلوماتك</h2>
+                <ul>
+                    <li><strong>تقديم الخدمات:</strong> تحليل الطلاب، ترتيبات الجلوس المثلى، التقارير</li>
+                    <li><strong>تحسين النظام:</strong> تعلم الذكاء الاصطناعي، إصلاح الأخطاء، ميزات جديدة</li>
+                    <li><strong>الاتصال:</strong> التحديثات المهمة، الدعم الفني، إشعارات النظام</li>
+                    <li><strong>الأمان:</strong> اكتشاف ومنع الوصول غير المصرح به</li>
+                    <li><strong>الامتثال:</strong> المعيار الإسرائيلي 13، GDPR، قوانين الخصوصية المحلية</li>
+                </ul>
+
+                <h2>🔒 كيف نحمي معلوماتك</h2>
+                <ul>
+                    <li><strong>التشفير:</strong> جميع البيانات مشفرة أثناء النقل (HTTPS/TLS) وأثناء الراحة (AES-256)</li>
+                    <li><strong>وصول محدود:</strong> فقط الموظفين المصرح لهم مع مصادقة متعددة العوامل</li>
+                    <li><strong>النسخ الاحتياطية:</strong> نسخ احتياطية مشفرة تلقائيًا في مواقع جغرافية منفصلة</li>
+                    <li><strong>المراقبة:</strong> أنظمة مراقبة على مدار الساعة طوال أيام الأسبوع للنشاط المشبوه</li>
+                    <li><strong>الامتثال:</strong> المعيار 13، ISO 27001، SOC 2</li>
+                </ul>
+
+                <h2>🤝 مشاركة الطرف الثالث</h2>
+                <p><strong>نحن لا نبيع معلوماتك. أبدًا.</strong></p>
+                <p>نشارك المعلومات فقط في هذه الحالات:</p>
+                <ul>
+                    <li><strong>مزودو الخدمة:</strong> Firebase (التخزين)، OpenAI/Anthropic (تحليل AI) - جميعهم بموجب اتفاقيات سرية</li>
+                    <li><strong>المتطلبات القانونية:</strong> عندما يتطلب الأمر بأمر من المحكمة أو القانون</li>
+                    <li><strong>بموافقتك:</strong> عندما تطلب صراحةً المشاركة مع طرف معين</li>
+                </ul>
+
+                <h2>👤 حقوقك</h2>
+                <ul>
+                    <li><strong>الوصول:</strong> عرض جميع المعلومات المتوفرة لدينا عنك</li>
+                    <li><strong>التصحيح:</strong> تحديث أو تصحيح المعلومات غير الدقيقة</li>
+                    <li><strong>الحذف:</strong> حذف حسابك وبياناتك نهائيًا</li>
+                    <li><strong>التصدير:</strong> تنزيل بياناتك بتنسيق JSON/CSV</li>
+                    <li><strong>الاعتراض:</strong> الاعتراض على معالجة بيانات معينة</li>
+                    <li><strong>سحب الموافقة:</strong> إلغاء الموافقات الممنوحة سابقًا</li>
+                </ul>
+                <p><strong>كيفية ممارسة حقوقك؟</strong> أرسل بريدًا إلكترونيًا إلى privacy@ishebot.com</p>
+
+                <h2>📞 اتصل بنا</h2>
+                <p><strong>أسئلة حول خصوصيتك؟</strong></p>
+                <ul>
+                    <li><strong>البريد الإلكتروني:</strong> privacy@ishebot.com</li>
+                    <li><strong>الهاتف:</strong> 1234567-03-972+</li>
+                    <li><strong>العنوان:</strong> شارع المثال 123، تل أبيب-يافا، إسرائيل</li>
+                    <li><strong>مسؤول حماية البيانات:</strong> dpo@ishebot.com</li>
+                </ul>
+            </div>
+
+            <!-- Russian content -->
+            <div data-lang="ru" class="lang-content" style="display:none;">
+                <h2>📋 Обзор</h2>
+                <p>В ISHEBOT мы привержены защите вашей конфиденциальности. Эта Политика конфиденциальности объясняет, как мы собираем, используем и защищаем вашу личную информацию при использовании нашей платформы.</p>
+
+                <div class="highlight">
+                    <strong>⚡ Кратко:</strong> Мы собираем только необходимую информацию для предоставления нашего сервиса, никогда не делимся ею с третьими сторонами без вашего согласия и даем вам полный контроль над вашими данными.
+                </div>
+
+                <h2>🔍 Какую информацию мы собираем</h2>
+
+                <h3>Информация, которую вы предоставляете:</h3>
+                <ul>
+                    <li><strong>Детали аккаунта:</strong> Имя, электронная почта, роль (учитель/администратор), учебное заведение</li>
+                    <li><strong>Данные учеников:</strong> Имена, поведенческие характеристики, образовательные потребности (без ID номеров)</li>
+                    <li><strong>Данные об использовании:</strong> Взаимодействия с системой, предпочтения, настройки</li>
+                </ul>
+
+                <h3>Автоматически собираемая информация:</h3>
+                <ul>
+                    <li>IP-адрес, тип браузера, операционная система</li>
+                    <li>Время входа и просмотренные страницы</li>
+                    <li>Cookies и Local Storage для безопасности и функциональности</li>
+                </ul>
+
+                <h2>🎯 Как мы используем вашу информацию</h2>
+                <ul>
+                    <li><strong>Предоставление услуг:</strong> Анализ учеников, оптимальные схемы рассадки, отчеты</li>
+                    <li><strong>Улучшение системы:</strong> Обучение AI, исправление ошибок, новые функции</li>
+                    <li><strong>Коммуникация:</strong> Важные обновления, техническая поддержка, уведомления системы</li>
+                    <li><strong>Безопасность:</strong> Обнаружение и предотвращение несанкционированного доступа</li>
+                    <li><strong>Соответствие:</strong> Израильский стандарт 13, GDPR, местные законы о конфиденциальности</li>
+                </ul>
+
+                <h2>🔒 Как мы защищаем вашу информацию</h2>
+                <ul>
+                    <li><strong>Шифрование:</strong> Все данные зашифрованы при передаче (HTTPS/TLS) и в покое (AES-256)</li>
+                    <li><strong>Ограниченный доступ:</strong> Только уполномоченный персонал с многофакторной аутентификацией</li>
+                    <li><strong>Резервные копии:</strong> Зашифрованные автоматические резервные копии в отдельных географических местах</li>
+                    <li><strong>Мониторинг:</strong> Системы мониторинга 24/7 для подозрительной активности</li>
+                    <li><strong>Соответствие:</strong> Стандарт 13, ISO 27001, SOC 2</li>
+                </ul>
+
+                <h2>👤 Ваши права</h2>
+                <ul>
+                    <li><strong>Доступ:</strong> Просмотр всей информации о вас</li>
+                    <li><strong>Исправление:</strong> Обновление или исправление неточной информации</li>
+                    <li><strong>Удаление:</strong> Окончательное удаление вашего аккаунта и данных</li>
+                    <li><strong>Экспорт:</strong> Загрузка ваших данных в формате JSON/CSV</li>
+                    <li><strong>Возражение:</strong> Возражение против определенной обработки данных</li>
+                    <li><strong>Отзыв согласия:</strong> Отмена ранее данных согласий</li>
+                </ul>
+                <p><strong>Как воспользоваться своими правами?</strong> Напишите на privacy@ishebot.com</p>
+
+                <h2>📞 Свяжитесь с нами</h2>
+                <p><strong>Вопросы о вашей конфиденциальности?</strong></p>
+                <ul>
+                    <li><strong>Email:</strong> privacy@ishebot.com</li>
+                    <li><strong>Телефон:</strong> +972-3-1234567</li>
+                    <li><strong>Адрес:</strong> Улица Примера 123, Тель-Авив-Яффо, Израиль</li>
+                    <li><strong>Офицер по защите данных:</strong> dpo@ishebot.com</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 ISHEBOT. All rights reserved. | <a href="/">Back to Home</a> | <a href="/terms.html">Terms of Service</a></p>
+    </footer>
+
+    <script>
+        function switchLang(lang) {
+            // Update HTML attributes
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'he' || lang === 'ar') ? 'rtl' : 'ltr';
+
+            // Hide all content
+            document.querySelectorAll('.lang-content').forEach(el => {
+                el.style.display = 'none';
+            });
+
+            // Show selected language content
+            const selectedContent = document.querySelector(`[data-lang="${lang}"]`);
+            if (selectedContent) {
+                selectedContent.style.display = 'block';
+            }
+
+            // Update active button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+
+            // Update header based on language
+            const headers = {
+                he: { title: 'מדיניות פרטיות', subtitle: 'עדכון אחרון: נובמבר 2024' },
+                en: { title: 'Privacy Policy', subtitle: 'Last updated: November 2024' },
+                ar: { title: 'سياسة الخصوصية', subtitle: 'آخر تحديث: نوفمبر 2024' },
+                ru: { title: 'Политика конфиденциальности', subtitle: 'Последнее обновление: ноябрь 2024' }
+            };
+
+            document.getElementById('header-title').textContent = headers[lang].title;
+            document.getElementById('header-subtitle').textContent = headers[lang].subtitle;
+
+            // Save preference
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Load saved language on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferredLanguage') || 'he';
+            switchLang(savedLang);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תנאי שימוש - ISHEBOT Terms of Service</title>
+    <link rel="icon" type="image/svg+xml" href="/icon-192.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            line-height: 1.8;
+            color: #1f2937;
+            background: #f9fafb;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .lang-btn {
+            background: white;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .lang-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .content {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .content h2 {
+            color: #3b82f6;
+            margin: 2rem 0 1rem;
+            font-size: 1.8rem;
+        }
+
+        .content h3 {
+            color: #1f2937;
+            margin: 1.5rem 0 0.75rem;
+            font-size: 1.3rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+        }
+
+        .content ul, .content ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        .content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .warning {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            .lang-switcher {
+                position: static;
+                text-align: center;
+                margin: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="switchLang('he')" data-lang="he">🇮🇱 עברית</button>
+        <button class="lang-btn" onclick="switchLang('en')" data-lang="en">🇬🇧 English</button>
+        <button class="lang-btn" onclick="switchLang('ar')" data-lang="ar">🇸🇦 العربية</button>
+        <button class="lang-btn" onclick="switchLang('ru')" data-lang="ru">🇷🇺 Русский</button>
+    </div>
+
+    <header>
+        <div class="container">
+            <h1 id="header-title">תנאי שימוש</h1>
+            <p id="header-subtitle">עדכון אחרון: נובמבר 2024</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="content" id="content">
+            <!-- Hebrew content (default) -->
+            <div data-lang="he" class="lang-content active">
+                <div class="highlight">
+                    <strong>📢 הסכם משפטי:</strong> על ידי שימוש ב-ISHEBOT, אתה מסכים לתנאים אלה. אם אינך מסכים, אנא אל תשתמש בשירות.
+                </div>
+
+                <h2>1. הגדרות</h2>
+                <ul>
+                    <li><strong>"השירות"</strong> - פלטפורמת ISHEBOT לניהול כיתה ותלמידים</li>
+                    <li><strong>"משתמש"</strong> - מורה, מנהל או נציג מוסד חינוכי</li>
+                    <li><strong>"תלמידים"</strong> - הסטודנטים אשר נתוניהם מנוהלים במערכת</li>
+                    <li><strong>"אנחנו/אנו"</strong> - ISHEBOT Ltd.</li>
+                    <li><strong>"חשבון"</strong> - חשבון המשתמש הרשום בשירות</li>
+                </ul>
+
+                <h2>2. קבלת התנאים</h2>
+                <p>על ידי יצירת חשבון או שימוש בשירות, אתה:</p>
+                <ul>
+                    <li>✅ מאשר שאתה בן 18 או יותר</li>
+                    <li>✅ מאשר שאתה מורה/מנהל מוסמך</li>
+                    <li>✅ מסכים לתנאים אלה ול<a href="/privacy-policy.html">מדיניות הפרטיות</a></li>
+                    <li>✅ מתחייב להשתמש בשירות באופן חוקי ואתי</li>
+                </ul>
+
+                <h2>3. זכויות שימוש (רישיון)</h2>
+                <p>אנו מעניקים לך רישיון מוגבל, לא בלעדי, ניתן לביטול לשימוש בשירות עבור:</p>
+                <ul>
+                    <li>ניהול תלמידים ובניית פרופילים התנהגותיים</li>
+                    <li>יצירת סידורי ישיבה אופטימליים</li>
+                    <li>יצירת דוחות וניתוחים</li>
+                    <li>שימוש בכלי AI לשיפור ההוראה</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>⚠️ אסור לך:</strong><br>
+                    ❌ להעתיק, לשנות או להפיץ את השירות<br>
+                    ❌ להנדס לאחור את הקוד<br>
+                    ❌ להשתמש בשירות למטרות לא חוקיות<br>
+                    ❌ לשתף את פרטי ההתחברות שלך<br>
+                    ❌ להשתמש בשירות למטרות מסחריות ללא אישור
+                </div>
+
+                <h2>4. חשבון משתמש</h2>
+
+                <h3>4.1 יצירת חשבון</h3>
+                <ul>
+                    <li>אתה אחראי לספק מידע מדויק ומעודכן</li>
+                    <li>אתה אחראי לשמור על סודיות פרטי ההתחברות</li>
+                    <li>אתה אחראי לכל פעילות שמתרחשת בחשבונך</li>
+                    <li>עליך להודיע לנו מיד על שימוש לא מורשה</li>
+                </ul>
+
+                <h3>4.2 השעיית חשבון</h3>
+                <p>אנו שומרים את הזכות להשעות או לסגור חשבון במקרים של:</p>
+                <ul>
+                    <li>הפרת תנאי שימוש</li>
+                    <li>שימוש לא חוקי או פוגעני</li>
+                    <li>פעילות חשודה או מזיקה</li>
+                    <li>אי תשלום (בתוכניות בתשלום)</li>
+                </ul>
+
+                <h2>5. תשלום ומנויים</h2>
+
+                <h3>5.1 תוכניות מחירים</h3>
+                <ul>
+                    <li><strong>Free:</strong> חינם, מוגבל ל-10 תלמידים</li>
+                    <li><strong>Professional:</strong> ₪499/שנה, עד 100 תלמידים</li>
+                    <li><strong>Enterprise:</strong> מותאם אישית, תלמידים ללא הגבלה</li>
+                </ul>
+
+                <h3>5.2 תנאי תשלום</h3>
+                <ul>
+                    <li>התשלום מתבצע מראש לתקופת המנוי</li>
+                    <li>המחירים כוללים מע"מ</li>
+                    <li>חידוש אוטומטי אלא אם בוטל</li>
+                    <li>ניתן לבטל בכל עת ללא עלות נוספת</li>
+                </ul>
+
+                <h3>5.3 החזרים</h3>
+                <ul>
+                    <li>החזר מלא תוך 30 יום מרכישה (ללא שאלות)</li>
+                    <li>החזר יחסי במקרה של ביטול באמצע תקופת מנוי</li>
+                    <li>ללא החזרים על תוכניות מותאמות אישית (Enterprise)</li>
+                </ul>
+
+                <h2>6. נתוני תלמידים ופרטיות</h2>
+
+                <h3>6.1 בעלות על נתונים</h3>
+                <ul>
+                    <li>אתה מחזיק בבעלות מלאה על כל נתוני התלמידים</li>
+                    <li>אנו רק מאחסנים ומעבדים את הנתונים עבורך</li>
+                    <li>לא נשתמש בנתונים לצרכים אחרים ללא הסכמתך</li>
+                </ul>
+
+                <h3>6.2 הסכמות נדרשות</h3>
+                <ul>
+                    <li>עליך לקבל הסכמה מהמוסד החינוכי</li>
+                    <li>עליך לקבל הסכמת הורים (לפי החוק המקומי)</li>
+                    <li>עליך לעמוד בכל חוקי הגנת הפרטיות</li>
+                </ul>
+
+                <h3>6.3 אחריות המשתמש</h3>
+                <ul>
+                    <li>אתה אחראי לדיוק הנתונים שאתה מזין</li>
+                    <li>אתה אחראי לשמור על סודיות נתוני התלמידים</li>
+                    <li>אתה אחראי לעמוד בתקן 13 משרד החינוך</li>
+                </ul>
+
+                <h2>7. שימוש מקובל (Acceptable Use)</h2>
+
+                <div class="warning">
+                    <strong>🚫 שימושים אסורים:</strong><br>
+                    ❌ אפליה על בסיס גזע, מין, דת או כל מאפיין מוגן<br>
+                    ❌ הטרדה, בריונות או התעללות בתלמידים<br>
+                    ❌ שיתוף נתוני תלמידים ללא הרשאה<br>
+                    ❌ שימוש במערכת לפגיעה בפרטיות<br>
+                    ❌ העלאת תוכן לא חוקי, פוגעני או מזיק<br>
+                    ❌ ניסיון לפרוץ או להזיק למערכת
+                </div>
+
+                <h2>8. קניין רוחני</h2>
+                <p>כל הזכויות במערכת, כולל אך לא רק:</p>
+                <ul>
+                    <li>קוד מקור, עיצוב, גרפיקה</li>
+                    <li>סימני מסחר, לוגו, שם המותג</li>
+                    <li>תוכן, טקסטים, מדריכים</li>
+                    <li>אלגוריתמים ומודלי AI</li>
+                </ul>
+                <p>שייכים ל-ISHEBOT Ltd. ומוגנים על ידי חוקי קניין רוחני.</p>
+
+                <h2>9. כתב שיפוי (Indemnification)</h2>
+                <p>אתה מתחייב לשפות ולהגן על ISHEBOT מפני כל תביעה, נזק או הפסד הנובע מ:</p>
+                <ul>
+                    <li>שימושך בשירות</li>
+                    <li>הפרת תנאים אלה</li>
+                    <li>הפרת זכויות של צדדים שלישיים</li>
+                    <li>תוכן שהעלית למערכת</li>
+                </ul>
+
+                <h2>10. הגבלת אחריות</h2>
+                <p><strong>השירות מסופק "כמות שהוא" (AS IS):</strong></p>
+                <ul>
+                    <li>אנו לא מבטיחים שהשירות יהיה ללא הפרעות</li>
+                    <li>אנו לא מבטיחים שהשירות יהיה ללא שגיאות</li>
+                    <li>אנו לא אחראים לנזקים עקיפים או תוצאתיים</li>
+                    <li>האחריות המקסימלית שלנו מוגבלת לסכום ששילמת</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>⚠️ חריגים:</strong> הגבלת האחריות אינה חלה על נזקים הנגרמים מרשלנות חמורה או כוונת זדון.
+                </div>
+
+                <h2>11. ביטול והפסקת שירות</h2>
+
+                <h3>11.1 ביטול על ידך</h3>
+                <ul>
+                    <li>ניתן לבטל בכל עת דרך הגדרות החשבון</li>
+                    <li>הביטול ייכנס לתוקף בתום תקופת המנוי</li>
+                    <li>ניתן לייצא את הנתונים לפני הביטול</li>
+                </ul>
+
+                <h3>11.2 ביטול על ידינו</h3>
+                <ul>
+                    <li>נודיע 30 יום מראש במקרה של סגירת השירות</li>
+                    <li>נספק אפשרות לייצוא נתונים</li>
+                    <li>החזר יחסי במקרה של סגירה מוקדמת</li>
+                </ul>
+
+                <h3>11.3 אחרי ביטול</h3>
+                <ul>
+                    <li>הנתונים יימחקו תוך 30 יום</li>
+                    <li>גיבויים יימחקו תוך 180 יום</li>
+                    <li>לא תהיה גישה למערכת לאחר המחיקה</li>
+                </ul>
+
+                <h2>12. שינויים בתנאים</h2>
+                <p>אנו שומרים את הזכות לעדכן תנאים אלה. במקרה של שינויים מהותיים:</p>
+                <ul>
+                    <li>נודיע לך באימייל</li>
+                    <li>נפרסם הודעה בולטת במערכת</li>
+                    <li>השינויים ייכנסו לתוקף תוך 30 יום</li>
+                    <li>המשך שימוש לאחר השינויים = הסכמה</li>
+                </ul>
+
+                <h2>13. סמכות שיפוט וחוק החל</h2>
+                <ul>
+                    <li><strong>חוק חל:</strong> חוקי מדינת ישראל</li>
+                    <li><strong>סמכות שיפוט:</strong> בתי המשפט בתל אביב-יפו</li>
+                    <li><strong>שפה:</strong> בכל מקרה של סתירה, הגרסה העברית מחייבת</li>
+                </ul>
+
+                <h2>14. הוראות כלליות</h2>
+                <ul>
+                    <li><strong>הפרדה:</strong> אם חלק מהתנאים בטל, היתר ממשיך לחול</li>
+                    <li><strong>ויתור:</strong> אי אכיפת סעיף אינה ויתור על הזכות</li>
+                    <li><strong>עדיפות:</strong> תנאים אלה גוברים על הסכמים קודמים</li>
+                    <li><strong>הקצאה:</strong> אינך יכול להעביר את ההסכם לצד שלישי</li>
+                </ul>
+
+                <h2>15. יצירת קשר</h2>
+                <p><strong>שאלות על התנאים?</strong></p>
+                <ul>
+                    <li><strong>אימייל:</strong> legal@ishebot.com</li>
+                    <li><strong>טלפון:</strong> 03-1234567</li>
+                    <li><strong>כתובת:</strong> רחוב הדוגמה 123, תל אביב-יפו, ישראל</li>
+                    <li><strong>תמיכה:</strong> support@ishebot.com</li>
+                </ul>
+
+                <div class="highlight">
+                    <strong>📄 מסמכים נוספים:</strong><br>
+                    📌 <a href="/privacy-policy.html">מדיניות פרטיות</a><br>
+                    📌 <a href="/cookie-manager.html">מדיניות Cookies</a><br>
+                    📌 <a href="/">חזרה לדף הבית</a>
+                </div>
+
+                <div class="warning">
+                    <strong>⚖️ הודעה משפטית:</strong> תנאים אלה מהווים הסכם משפטי מחייב. קרא אותם בעיון לפני השימוש בשירות.
+                </div>
+            </div>
+
+            <!-- English content -->
+            <div data-lang="en" class="lang-content" style="display:none;">
+                <div class="highlight">
+                    <strong>📢 Legal Agreement:</strong> By using ISHEBOT, you agree to these terms. If you disagree, please do not use the service.
+                </div>
+
+                <h2>1. Definitions</h2>
+                <ul>
+                    <li><strong>"Service"</strong> - ISHEBOT classroom and student management platform</li>
+                    <li><strong>"User"</strong> - Teacher, administrator, or representative of an educational institution</li>
+                    <li><strong>"Students"</strong> - Students whose data is managed in the system</li>
+                    <li><strong>"We/Us"</strong> - ISHEBOT Ltd.</li>
+                    <li><strong>"Account"</strong> - User account registered in the service</li>
+                </ul>
+
+                <h2>2. Acceptance of Terms</h2>
+                <p>By creating an account or using the service, you:</p>
+                <ul>
+                    <li>✅ Confirm you are 18 years or older</li>
+                    <li>✅ Confirm you are an authorized teacher/administrator</li>
+                    <li>✅ Agree to these terms and the <a href="/privacy-policy.html">Privacy Policy</a></li>
+                    <li>✅ Commit to using the service legally and ethically</li>
+                </ul>
+
+                <h2>3. License Rights</h2>
+                <p>We grant you a limited, non-exclusive, revocable license to use the service for:</p>
+                <ul>
+                    <li>Managing students and building behavioral profiles</li>
+                    <li>Creating optimal seating arrangements</li>
+                    <li>Generating reports and analyses</li>
+                    <li>Using AI tools to improve teaching</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>⚠️ You must not:</strong><br>
+                    ❌ Copy, modify, or distribute the service<br>
+                    ❌ Reverse engineer the code<br>
+                    ❌ Use the service for illegal purposes<br>
+                    ❌ Share your login credentials<br>
+                    ❌ Use the service for commercial purposes without permission
+                </div>
+
+                <h2>4. User Account</h2>
+
+                <h3>4.1 Account Creation</h3>
+                <ul>
+                    <li>You are responsible for providing accurate and updated information</li>
+                    <li>You are responsible for maintaining the confidentiality of login details</li>
+                    <li>You are responsible for all activity occurring in your account</li>
+                    <li>You must notify us immediately of unauthorized use</li>
+                </ul>
+
+                <h3>4.2 Account Suspension</h3>
+                <p>We reserve the right to suspend or close an account in cases of:</p>
+                <ul>
+                    <li>Violation of terms of use</li>
+                    <li>Illegal or harmful use</li>
+                    <li>Suspicious or malicious activity</li>
+                    <li>Non-payment (in paid plans)</li>
+                </ul>
+
+                <h2>5. Payment and Subscriptions</h2>
+
+                <h3>5.1 Pricing Plans</h3>
+                <ul>
+                    <li><strong>Free:</strong> Free, limited to 10 students</li>
+                    <li><strong>Professional:</strong> $129/year, up to 100 students</li>
+                    <li><strong>Enterprise:</strong> Custom, unlimited students</li>
+                </ul>
+
+                <h3>5.2 Payment Terms</h3>
+                <ul>
+                    <li>Payment is made in advance for the subscription period</li>
+                    <li>Prices include applicable taxes</li>
+                    <li>Automatic renewal unless canceled</li>
+                    <li>Can be canceled anytime without additional cost</li>
+                </ul>
+
+                <h3>5.3 Refunds</h3>
+                <ul>
+                    <li>Full refund within 30 days of purchase (no questions asked)</li>
+                    <li>Pro-rata refund in case of mid-subscription cancellation</li>
+                    <li>No refunds on custom Enterprise plans</li>
+                </ul>
+
+                <h2>6. Student Data and Privacy</h2>
+
+                <h3>6.1 Data Ownership</h3>
+                <ul>
+                    <li>You retain full ownership of all student data</li>
+                    <li>We only store and process the data for you</li>
+                    <li>We will not use the data for other purposes without your consent</li>
+                </ul>
+
+                <h3>6.2 Required Consents</h3>
+                <ul>
+                    <li>You must obtain consent from the educational institution</li>
+                    <li>You must obtain parental consent (per local law)</li>
+                    <li>You must comply with all privacy protection laws</li>
+                </ul>
+
+                <h2>7. Acceptable Use</h2>
+
+                <div class="warning">
+                    <strong>🚫 Prohibited Uses:</strong><br>
+                    ❌ Discrimination based on race, gender, religion, or any protected characteristic<br>
+                    ❌ Harassment, bullying, or abuse of students<br>
+                    ❌ Sharing student data without authorization<br>
+                    ❌ Using the system to invade privacy<br>
+                    ❌ Uploading illegal, harmful, or malicious content<br>
+                    ❌ Attempting to hack or damage the system
+                </div>
+
+                <h2>8. Intellectual Property</h2>
+                <p>All rights in the system, including but not limited to:</p>
+                <ul>
+                    <li>Source code, design, graphics</li>
+                    <li>Trademarks, logo, brand name</li>
+                    <li>Content, texts, guides</li>
+                    <li>Algorithms and AI models</li>
+                </ul>
+                <p>Belong to ISHEBOT Ltd. and are protected by intellectual property laws.</p>
+
+                <h2>9. Contact</h2>
+                <p><strong>Questions about the terms?</strong></p>
+                <ul>
+                    <li><strong>Email:</strong> legal@ishebot.com</li>
+                    <li><strong>Phone:</strong> +972-3-1234567</li>
+                    <li><strong>Address:</strong> 123 Example Street, Tel Aviv-Yafo, Israel</li>
+                    <li><strong>Support:</strong> support@ishebot.com</li>
+                </ul>
+
+                <div class="highlight">
+                    <strong>📄 Additional Documents:</strong><br>
+                    📌 <a href="/privacy-policy.html">Privacy Policy</a><br>
+                    📌 <a href="/cookie-manager.html">Cookie Policy</a><br>
+                    📌 <a href="/">Back to Home</a>
+                </div>
+            </div>
+
+            <!-- Arabic and Russian content abbreviated for brevity -->
+            <div data-lang="ar" class="lang-content" style="display:none;">
+                <h2>شروط الخدمة</h2>
+                <p>بإنشاء حساب أو استخدام الخدمة، فإنك توافق على هذه الشروط.</p>
+                <p>لمزيد من المعلومات، يرجى الاتصال بنا على legal@ishebot.com</p>
+            </div>
+
+            <div data-lang="ru" class="lang-content" style="display:none;">
+                <h2>Условия обслуживания</h2>
+                <p>Создавая учетную запись или используя сервис, вы соглашаетесь с этими условиями.</p>
+                <p>Для получения дополнительной информации, пожалуйста, свяжитесь с нами по адресу legal@ishebot.com</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 ISHEBOT. All rights reserved. | <a href="/">Back to Home</a> | <a href="/privacy-policy.html">Privacy Policy</a></p>
+    </footer>
+
+    <script>
+        function switchLang(lang) {
+            // Update HTML attributes
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'he' || lang === 'ar') ? 'rtl' : 'ltr';
+
+            // Hide all content
+            document.querySelectorAll('.lang-content').forEach(el => {
+                el.style.display = 'none';
+            });
+
+            // Show selected language content
+            const selectedContent = document.querySelector(`[data-lang="${lang}"]`);
+            if (selectedContent) {
+                selectedContent.style.display = 'block';
+            }
+
+            // Update active button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+
+            // Update header based on language
+            const headers = {
+                he: { title: 'תנאי שימוש', subtitle: 'עדכון אחרון: נובמבר 2024' },
+                en: { title: 'Terms of Service', subtitle: 'Last updated: November 2024' },
+                ar: { title: 'شروط الخدمة', subtitle: 'آخر تحديث: نوفمبر 2024' },
+                ru: { title: 'Условия обслуживания', subtitle: 'Последнее обновление: ноябрь 2024' }
+            };
+
+            document.getElementById('header-title').textContent = headers[lang].title;
+            document.getElementById('header-subtitle').textContent = headers[lang].subtitle;
+
+            // Save preference
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Load saved language on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferredLanguage') || 'he';
+            switchLang(savedLang);
+        });
+    </script>
+</body>
+</html>
