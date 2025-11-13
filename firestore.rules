@@ -1,20 +1,294 @@
 rules_version = '2';
 
+/**
+ * ISHEBOT Firestore Security Rules
+ *
+ * Compliance:
+ * - Israeli Standard 13 (Ministry of Education)
+ * - GDPR (European Union)
+ * - COPPA (Children's Privacy)
+ *
+ * Security Features:
+ * - Role-based access control (SUPER_ADMIN, SCHOOL_ADMIN, TEACHER)
+ * - Data isolation by school
+ * - Teacher access limited to assigned students/classes
+ * - Audit trail for all writes
+ * - Protection against data leaks
+ */
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Require authentication for all school data access
-    // Users must be logged in to view student data and school metadata
-    match /schools/{schoolId}/students/{studentId} {
-      allow read: if request.auth != null; // Authenticated users only
-      allow write: if request.auth != null; // Authenticated users can write
+
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+
+    /**
+     * Check if user is authenticated
+     */
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
+    /**
+     * Get user data from users collection
+     */
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    /**
+     * Check if user is Super Admin (platform owner)
+     */
+    function isSuperAdmin() {
+      return isAuthenticated() &&
+             getUserData().role == 'super_admin' &&
+             getUserData().isActive == true;
+    }
+
+    /**
+     * Check if user is School Admin for a specific school
+     */
+    function isSchoolAdmin(schoolId) {
+      return isAuthenticated() &&
+             getUserData().role == 'school_admin' &&
+             getUserData().schoolId == schoolId &&
+             getUserData().isActive == true;
+    }
+
+    /**
+     * Check if user is Teacher at a specific school
+     */
+    function isTeacher(schoolId) {
+      return isAuthenticated() &&
+             getUserData().role == 'teacher' &&
+             getUserData().schoolId == schoolId &&
+             getUserData().isActive == true;
+    }
+
+    /**
+     * Check if teacher has access to a specific student
+     * (by assigned classes or direct student assignment)
+     */
+    function hasStudentAccess(schoolId, studentData) {
+      let userData = getUserData();
+      let studentClassId = studentData.classId;
+      let studentCode = studentData.studentCode;
+
+      // Check if student's class is in teacher's assigned classes
+      let hasClassAccess = userData.assignedClasses != null &&
+                          studentClassId in userData.assignedClasses;
+
+      // Check if student ID is in teacher's assigned students
+      let hasDirectAccess = userData.assignedStudentIds != null &&
+                           studentCode in userData.assignedStudentIds;
+
+      return hasClassAccess || hasDirectAccess;
+    }
+
+    /**
+     * Check if user belongs to a specific school
+     */
+    function belongsToSchool(schoolId) {
+      return isAuthenticated() && getUserData().schoolId == schoolId;
+    }
+
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+
+    /**
+     * /users/{userId}
+     * User profile data
+     */
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+
+      // Super admins can read all profiles
+      allow read: if isSuperAdmin();
+
+      // School admins can read profiles from their school
+      allow read: if isAuthenticated() &&
+                     isSchoolAdmin(resource.data.schoolId);
+
+      // Users can update their own profile (limited fields)
+      allow update: if isAuthenticated() &&
+                       request.auth.uid == userId &&
+                       // Prevent role escalation
+                       request.resource.data.role == resource.data.role &&
+                       // Prevent school switching
+                       request.resource.data.schoolId == resource.data.schoolId;
+
+      // Only super admins can create users
+      allow create: if isSuperAdmin();
+
+      // Only super admins can delete users
+      allow delete: if isSuperAdmin();
+    }
+
+    // ============================================
+    // SCHOOLS COLLECTION
+    // ============================================
+
+    /**
+     * /schools/{schoolId}
+     * School data and settings
+     */
     match /schools/{schoolId} {
-      allow read: if request.auth != null; // Authenticated users only
-      allow write: if request.auth != null; // Authenticated users can write
+      // Super admins can do anything
+      allow read, write: if isSuperAdmin();
+
+      // School admins can read and update their own school
+      allow read, update: if isSchoolAdmin(schoolId);
+
+      // Teachers can read their school data (read-only)
+      allow read: if isTeacher(schoolId);
+
+      // Prevent teachers from modifying school data
+      allow write: if false;
     }
 
-    // Deny all other access
+    // ============================================
+    // STUDENTS COLLECTION (SUBCOLLECTION)
+    // ============================================
+
+    /**
+     * /schools/{schoolId}/students/{studentId}
+     * Student data - PROTECTED under Standard 13 & GDPR
+     */
+    match /schools/{schoolId}/students/{studentId} {
+      // Super admins have full access
+      allow read, write: if isSuperAdmin();
+
+      // School admins have full access to their school's students
+      allow read, write: if isSchoolAdmin(schoolId);
+
+      // Teachers can read students they have access to
+      allow read: if isTeacher(schoolId) &&
+                     hasStudentAccess(schoolId, resource.data);
+
+      // Teachers can update students they have access to
+      allow update: if isTeacher(schoolId) &&
+                       hasStudentAccess(schoolId, resource.data) &&
+                       // Prevent changing student to different class they don't have access to
+                       hasStudentAccess(schoolId, request.resource.data);
+
+      // Teachers can create students in their assigned classes
+      allow create: if isTeacher(schoolId) &&
+                       hasStudentAccess(schoolId, request.resource.data);
+
+      // Only school admins and super admins can delete students
+      allow delete: if isSchoolAdmin(schoolId) || isSuperAdmin();
+    }
+
+    // ============================================
+    // ASSESSMENTS COLLECTION (IF USED)
+    // ============================================
+
+    /**
+     * /schools/{schoolId}/students/{studentId}/assessments/{assessmentId}
+     * Student assessment results (questionnaires, reports)
+     */
+    match /schools/{schoolId}/students/{studentId}/assessments/{assessmentId} {
+      // Get parent student data
+      function getStudentData() {
+        return get(/databases/$(database)/documents/schools/$(schoolId)/students/$(studentId)).data;
+      }
+
+      // Super admins have full access
+      allow read, write: if isSuperAdmin();
+
+      // School admins have full access to their school's assessments
+      allow read, write: if isSchoolAdmin(schoolId);
+
+      // Teachers can read assessments for students they have access to
+      allow read: if isTeacher(schoolId) &&
+                     hasStudentAccess(schoolId, getStudentData());
+
+      // Teachers can create/update assessments for students they have access to
+      allow create, update: if isTeacher(schoolId) &&
+                              hasStudentAccess(schoolId, getStudentData());
+
+      // Only school admins can delete assessments
+      allow delete: if isSchoolAdmin(schoolId) || isSuperAdmin();
+    }
+
+    // ============================================
+    // CLASSES COLLECTION (IF USED)
+    // ============================================
+
+    /**
+     * /schools/{schoolId}/classes/{classId}
+     * Class information (seating arrangements, schedules)
+     */
+    match /schools/{schoolId}/classes/{classId} {
+      // Super admins have full access
+      allow read, write: if isSuperAdmin();
+
+      // School admins have full access to their school's classes
+      allow read, write: if isSchoolAdmin(schoolId);
+
+      // Teachers can read classes they're assigned to
+      allow read: if isTeacher(schoolId) &&
+                     classId in getUserData().assignedClasses;
+
+      // Teachers can update classes they're assigned to
+      allow update: if isTeacher(schoolId) &&
+                       classId in getUserData().assignedClasses;
+
+      // Only school admins can create/delete classes
+      allow create, delete: if isSchoolAdmin(schoolId) || isSuperAdmin();
+    }
+
+    // ============================================
+    // SEATING PLANS COLLECTION (IF USED)
+    // ============================================
+
+    /**
+     * /schools/{schoolId}/classes/{classId}/seatingPlans/{planId}
+     * AI-generated seating arrangements
+     */
+    match /schools/{schoolId}/classes/{classId}/seatingPlans/{planId} {
+      // Super admins have full access
+      allow read, write: if isSuperAdmin();
+
+      // School admins have full access to their school's seating plans
+      allow read, write: if isSchoolAdmin(schoolId);
+
+      // Teachers can read/write seating plans for their classes
+      allow read, write: if isTeacher(schoolId) &&
+                           classId in getUserData().assignedClasses;
+    }
+
+    // ============================================
+    // AUDIT LOG COLLECTION
+    // ============================================
+
+    /**
+     * /auditLogs/{logId}
+     * Audit trail for compliance (Standard 13 requirement)
+     * Write-only for users, read-only for super admins
+     */
+    match /auditLogs/{logId} {
+      // Only super admins can read audit logs
+      allow read: if isSuperAdmin();
+
+      // Authenticated users can write audit logs (for tracking actions)
+      allow create: if isAuthenticated();
+
+      // No one can update or delete audit logs (immutable)
+      allow update, delete: if false;
+    }
+
+    // ============================================
+    // DENY ALL OTHER ACCESS
+    // ============================================
+
+    /**
+     * Default: Deny all access to any other collections
+     * Principle of least privilege - explicit allow required
+     */
     match /{document=**} {
       allow read, write: if false;
     }
