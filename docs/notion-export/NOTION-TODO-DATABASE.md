@@ -308,9 +308,9 @@ Classroom optimization feature requires this backend.
 
 #### Deployment Options
 1. **Render.com** (Recommended - Free tier)
-2. **Railway** (Easy deployment)
-3. **Fly.io** (Good free tier)
-4. **Google Cloud Run** (Serverless)
+2. **Fly.io** (Good free tier)
+3. **Google Cloud Run** (Serverless)
+4. **AWS Lambda** (Serverless)
 
 #### Steps to Complete (Render.com)
 - [ ] Create Render account

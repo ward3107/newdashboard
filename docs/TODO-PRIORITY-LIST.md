@@ -60,7 +60,7 @@ VITE_OPENAI_API_KEY=             # OpenAI API key (for Cloud Function)
 **Tasks**:
 - [ ] Create `.env.production` file
 - [ ] Set all required environment variables
-- [ ] Configure variables in Vercel/Render/Railway dashboard
+- [ ] Configure variables in Vercel/Render dashboard
 - [ ] Test with production values
 - [ ] Document all variables in README
 
@@ -177,9 +177,9 @@ service cloud.firestore {
 
 **Deployment Options**:
 1. **Render.com** (Recommended - Free tier available)
-2. **Railway** (Easy deployment)
-3. **Google Cloud Run** (Serverless)
-4. **AWS Lambda** (Serverless)
+2. **Google Cloud Run** (Serverless)
+3. **AWS Lambda** (Serverless)
+4. **Fly.io** (Good free tier)
 5. **Heroku** (Paid)
 
 **Tasks**:

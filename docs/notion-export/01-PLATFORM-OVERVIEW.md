@@ -140,10 +140,10 @@
    - Python backend support
    - PostgreSQL database option
 
-4. **Railway**
-   - Configuration via render.yaml
-   - Auto-scaling
-   - GitHub integration
+4. **Fly.io**
+   - Good free tier
+   - Global deployment
+   - Easy scaling
 
 5. **Local Development**
    ```bash
