@@ -2693,8 +2693,13 @@
             }
 
             .hero-stats {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            /* Make 5th stat card span full width for better layout */
+            .stat-card:nth-child(5) {
+                grid-column: 1 / -1;
             }
 
             /* Stat cards more compact on mobile */
@@ -2883,6 +2888,51 @@
             background: rgba(59, 130, 246, 0.2);
             border-color: #3B82F6;
             box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Mobile Language Switcher Improvements */
+        @media (max-width: 768px) {
+            .language-switcher {
+                top: auto;
+                bottom: 80px;
+                left: auto;
+                right: 20px;
+            }
+
+            .lang-toggle {
+                width: 48px;
+                height: 48px;
+                font-size: 1rem;
+            }
+
+            .lang-toggle #currentLangFlag {
+                font-size: 1rem;
+            }
+
+            /* Make language menu work with click/tap on mobile */
+            .language-switcher.active .lang-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            /* Position dropdown above button on mobile */
+            .lang-menu {
+                top: auto;
+                bottom: 60px;
+                left: auto;
+                right: 0;
+            }
+
+            .language-btn {
+                width: 48px;
+                height: 48px;
+                padding: 0.5rem;
+            }
+
+            .language-btn .lang-flag {
+                font-size: 1.4rem;
+            }
         }
 
         @media print {
@@ -5445,6 +5495,35 @@
                         document.body.style.overflow = '';
                     }
                 }
+            });
+        }
+
+        // Mobile Language Switcher - Click/Tap Functionality
+        const langToggleBtn = document.getElementById('langToggleBtn');
+        const languageSwitcher = document.querySelector('.language-switcher');
+
+        if (langToggleBtn && languageSwitcher) {
+            // Toggle language menu on click (for mobile)
+            langToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                languageSwitcher.classList.toggle('active');
+            });
+
+            // Close language menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!languageSwitcher.contains(e.target)) {
+                    languageSwitcher.classList.remove('active');
+                }
+            });
+
+            // Close language menu when selecting a language
+            const languageBtns = document.querySelectorAll('.language-btn');
+            languageBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setTimeout(() => {
+                        languageSwitcher.classList.remove('active');
+                    }, 300); // Small delay to allow language switch animation
+                });
             });
         }
 
