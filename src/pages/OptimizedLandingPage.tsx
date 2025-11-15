@@ -326,28 +326,22 @@ const OptimizedLandingPage: React.FC = () => {
       {/* Header */}
       <header className="bg-white/90 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3 rtl:space-x-reverse">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Brain className="w-6 h-6 text-white" />
+          <div className="flex items-center justify-between h-12">
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <Brain className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                 ISHEBOT
               </h1>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
               <button
                 onClick={() => setShowPlayButton(!showPlayButton)}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <Play className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-              >
-                התחל עכשיו
+                <Play className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -357,19 +351,19 @@ const OptimizedLandingPage: React.FC = () => {
       {/* Tab Navigation */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8 rtl:space-x-reverse overflow-x-auto">
+          <div className="flex space-x-4 rtl:space-x-reverse overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                className={`py-2 px-2 border-b-2 font-medium text-xs whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-blue-500 text-blue-600 bg-blue-50'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                  <tab.icon className="w-4 h-4" />
+                <div className="flex items-center space-x-1 rtl:space-x-reverse">
+                  <tab.icon className="w-3 h-3" />
                   <span>{tab.label}</span>
                 </div>
               </button>
@@ -379,9 +373,9 @@ const OptimizedLandingPage: React.FC = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200" style={{ height: 'calc(100vh - 200px)' }}>
-          <div className="h-full p-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200" style={{ height: 'calc(100vh - 80px)' }}>
+          <div className="h-full p-3 overflow-hidden">
             <AnimatePresence mode="wait">
               <TabContent />
             </AnimatePresence>
