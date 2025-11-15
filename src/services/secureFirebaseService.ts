@@ -118,7 +118,8 @@ class SecureFirebaseService {
       return true;
     } catch (error) {
       console.error('Security validation failed:', error);
-      this.reportSecurityViolation('VALIDATION_FAILED', { error: error.message, data: this.sanitizeDataForLogging(data) });
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.reportSecurityViolation('VALIDATION_FAILED', { error: errorMessage, data: this.sanitizeDataForLogging(data) });
       return false;
     }
   }
@@ -238,8 +239,9 @@ class SecureFirebaseService {
 
       // Report security violation for suspicious errors
       if (this.isSuspiciousError(error)) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         this.reportSecurityViolation('SUSPICIOUS_ERROR', {
-          error: error.message,
+          error: errorMessage,
           fingerprint: this.fingerprint
         });
       }
@@ -282,7 +284,8 @@ class SecureFirebaseService {
 
     } catch (error) {
       console.error('Firebase submission error:', error);
-      throw new Error(`Firebase submission failed: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Firebase submission failed: ${errorMessage}`);
     }
   }
 
@@ -394,7 +397,7 @@ class SecureFirebaseService {
       /unauthorized/i
     ];
 
-    const errorMessage = error.message || '';
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return suspiciousPatterns.some(pattern => pattern.test(errorMessage));
   }
 
