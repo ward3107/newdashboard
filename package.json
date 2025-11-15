@@ -14,13 +14,16 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.90.2",
+    "@types/crypto-js": "^4.2.2",
     "@types/react-window": "^1.8.8",
     "axios": "^1.6.2",
     "canvas-confetti": "^1.9.4",
     "chart.js": "^4.5.1",
+    "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "exceljs": "^4.4.0",
+    "express": "^5.1.0",
     "firebase": "^12.5.0",
     "firebase-admin": "^13.5.0",
     "follow-redirects": "^1.15.11",
@@ -61,6 +64,7 @@
     "e2e": "playwright test",
     "e2e:headed": "playwright test --headed",
     "e2e:debug": "playwright test --debug",
+    "test:offline": "playwright test tests/e2e/offline-assessment.spec.ts --headed",
     "a11y": "node scripts/run-a11y.cjs",
     "perf": "node scripts/run-perf.cjs",
     "scan:deps": "npm audit --audit-level=moderate && npx better-npm-audit audit",
@@ -71,7 +75,8 @@
     "precommit": "npm run lint && npm run typecheck && npm run test",
     "ci": "npm run clean && npm run lint && npm run typecheck && npm run test:coverage && npm run e2e && npm run a11y && npm run scan:deps",
     "ci:full": "npm run clean && npm run lint && npm run typecheck && npm run test:coverage && npm run test:int && npm run e2e && npm run a11y && npm run scan:deps && npm run security:audit",
-    "reports": "node scripts/generate-reports.cjs"
+    "reports": "node scripts/generate-reports.cjs",
+    "start": "node server.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.8.0",
@@ -119,5 +124,21 @@
   },
   "msw": {
     "workerDirectory": "public"
-  }
+  },
+  "main": "analyze-bundle.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ward3107/newdashboard.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ward3107/newdashboard/issues"
+  },
+  "homepage": "https://github.com/ward3107/newdashboard#readme"
 }

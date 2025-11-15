@@ -1,0 +1,133 @@
+{
+  "info": {
+    "name": "Student Dashboard API Integration Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": ["{{baseUrl}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response contains ISHEBOT\", function () {",
+              "    pm.expect(pm.response.text()).to.include(\"ISHEBOT\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assessment Page",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/assessment",
+          "host": ["{{baseUrl}}"],
+          "path": ["assessment"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Assessment form loaded\", function () {",
+              "    pm.expect(pm.response.text()).to.include(\"assessment\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard Page",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["dashboard"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Dashboard loaded\", function () {",
+              "    pm.expect(pm.response.text()).to.include(\"dashboard\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mock API - Students",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:1080/api/students",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "1080",
+          "path": ["api", "students"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response is array\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});",
+              "",
+              "pm.test(\"Contains test student\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData[0].name).to.eql(\"Test Student\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4173"
+    }
+  ]
+}

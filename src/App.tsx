@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { initPerformanceMonitoring } from './utils/performanceMonitoring';
 import { initializeCSP } from './security/csp';
 import { initializeRUM } from './monitoring/rum';
+import { securityManager } from './security/securityEnhancements';
 
 // Error Boundary and Loading Components
 import { ErrorBoundary } from './components/common/ErrorBoundary';
@@ -29,7 +30,6 @@ import { Loading } from './components/common/Loading';
 // UI Components
 import CookieConsent from './components/ui/CookieConsent';
 import AccessibilityWidget from './components/ui/AccessibilityWidget';
-import LanguageSwitcher from './components/ui/LanguageSwitcher';
 
 // Lazy load components for code splitting with preload hints
 const LandingPage = lazy(() => import(/* webpackChunkName: "landing" */ './pages/HtmlLandingRedirect'));
@@ -43,6 +43,9 @@ const ClassroomOptimizationPage = lazy(() => import(/* webpackChunkName: "classr
 
 // Assessment Form
 const AssessmentPage = lazy(() => import(/* webpackChunkName: "assessment" */ './pages/AssessmentPage'));
+
+// Security Dashboard
+const AISecurityDashboard = lazy(() => import(/* webpackChunkName: "security-dashboard" */ './components/security/AISecurityDashboard'));
 
 // Legal pages
 const PrivacyPolicyPage = lazy(() => import(/* webpackChunkName: "privacy-policy" */ './pages/PrivacyPolicyPage'));
@@ -72,11 +75,19 @@ function App() {
     // Performance monitoring
     initPerformanceMonitoring();
 
+    // Enhanced Security System
+    const securityStatus = securityManager.getSecurityStatus();
+    console.log('🔒 Security Status:', securityStatus);
+
     // Content Security Policy
     initializeCSP();
 
     // Real User Monitoring
     initializeRUM();
+
+    // Log security initialization
+    console.log('✅ Security initialized successfully');
+    console.log('🛡️ Features: CSRF protection, Rate limiting, Bot detection, Data encryption');
 
     // PWA and Service Worker are enabled
     // Auto-registered via VitePWA plugin in vite.config.js
@@ -132,9 +143,6 @@ function App() {
               {/* Accessibility Widget */}
               <AccessibilityWidget />
 
-              {/* Language Switcher */}
-              <LanguageSwitcher />
-
               {/* Main Application */}
               <motion.main
                 initial={{ opacity: 0 }}
@@ -161,6 +169,7 @@ function App() {
                       <Route path="/admin" element={<AdminControlPanel />} />
                       <Route path="/api-test" element={<ApiTestPage />} />
                       <Route path="/assessment" element={<AssessmentPage />} />
+                      <Route path="/security-dashboard" element={<AISecurityDashboard />} />
                       <Route path="/classroom-optimization" element={<ClassroomOptimizationPage />} />
 
                       <Route path="*" element={<NotFound />} />

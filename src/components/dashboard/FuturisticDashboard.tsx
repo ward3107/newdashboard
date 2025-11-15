@@ -22,6 +22,7 @@ import { toast } from 'react-hot-toast';
 import { useStudents } from '../../hooks/useStudents';
 import { VirtualStudentList } from '../optimized/VirtualStudentList';
 import { Loading } from '../common/Loading';
+import SecurityStatusWidget from '../security/SecurityStatusWidget';
 import type { Student, Filters } from '../../types';
 
 const FuturisticDashboard: React.FC = () => {
@@ -125,6 +126,11 @@ const FuturisticDashboard: React.FC = () => {
           <p className="text-gray-600 text-lg">
             מערכת חכמה לניתוח והערכה הוליסטית של תלמידים
           </p>
+        </div>
+
+        {/* Security Status Widget */}
+        <div className="mb-8 animate-fade-in-up">
+          <SecurityStatusWidget />
         </div>
 
         {/* Stats Cards */}
