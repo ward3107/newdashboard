@@ -399,6 +399,26 @@ export const securityManager = SecurityManager.getInstance();
  */
 export const SecurityUtils = {
   /**
+   * Validate input for security
+   */
+  validateInput(input: string): boolean {
+    if (!input || typeof input !== 'string') return false;
+
+    // Check for suspicious patterns
+    const suspiciousPatterns = [
+      /<script/i,
+      /javascript:/i,
+      /on\w+\s*=/i,
+      /data:text\/html/i,
+      /vbscript:/i,
+      /file:/i,
+      /ftp:/i
+    ];
+
+    return !suspiciousPatterns.some(pattern => pattern.test(input));
+  },
+
+  /**
    * Sanitize input
    */
   sanitizeInput(input: string): string {
@@ -431,7 +451,7 @@ export const SecurityUtils = {
   detectBot(): boolean {
     const indicators = [
       navigator.webdriver, // Selenium detection
-      !window.chrome, // Headless browser detection
+      !((window as any).chrome), // Headless browser detection
       navigator.languages.length === 0, // No languages set
       navigator.plugins.length === 0, // No plugins
       window.outerHeight === 0, // Headless browser

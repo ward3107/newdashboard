@@ -32,7 +32,7 @@ import CookieConsent from './components/ui/CookieConsent';
 import AccessibilityWidget from './components/ui/AccessibilityWidget';
 
 // Lazy load components for code splitting with preload hints
-const LandingPage = lazy(() => import(/* webpackChunkName: "landing" */ './pages/HtmlLandingRedirect'));
+const LandingPage = lazy(() => import(/* webpackChunkName: "landing" */ './pages/OptimizedLandingPage'));
 const Dashboard = lazy(() => import(/* webpackChunkName: "dashboard" */ './components/dashboard/Dashboard'));
 const FuturisticDashboard = lazy(() => import(/* webpackChunkName: "futuristic-dashboard" */ './components/dashboard/FuturisticDashboard'));
 const StudentDetail = lazy(() => import(/* webpackChunkName: "student-detail" */ './components/student/StudentDetail'));
