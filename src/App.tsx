@@ -13,7 +13,7 @@
  */
 
 import React, { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
@@ -97,6 +97,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
           <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <ScrollToTop />
             <ErrorBoundary>
               <div className="min-h-screen bg-gray-50" dir="rtl">
               {/* Toast Notifications */}
@@ -184,6 +185,17 @@ function App() {
     </ErrorBoundary>
   );
 }
+
+// Scroll to top on route change
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 // Redirect to Landing HTML Component
 const RedirectToLanding: React.FC = () => {
