@@ -13,7 +13,7 @@ const SecurityPage: React.FC = () => {
               <Shield className="w-8 h-8 text-blue-400" />
               <h1 className="text-xl font-bold">ISHEBOT - מערכת ניתוח תלמידים</h1>
             </div>
-            <Link to="/" className="flex items-center gap-2 text-sm text-slate-300 hover:text-blue-400 transition-colors">
+            <Link to="/dashboard" className="flex items-center gap-2 text-sm text-slate-300 hover:text-blue-400 transition-colors">
               <span>חזרה לדשבורד</span>
               <ArrowRight className="w-4 h-4" />
             </Link>

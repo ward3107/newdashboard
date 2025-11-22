@@ -222,4 +222,35 @@ export function t(key: string, lang: Language, replacements?: Record<string, str
   return result;
 }
 
+// Helper function to format class names based on language
+export function getClassName(classId: string, lang: Language): string {
+  // classId format: Hebrew letter (grade) + number (class number)
+  // e.g., "ג1" = Grade 3, Class 1
+
+  const gradeMap: Record<string, { he: string; en: string; ar: string; ru: string }> = {
+    'ג': { he: 'כיתה ג׳', en: 'Grade 3', ar: 'الصف 3', ru: 'Класс 3' },
+    'ד': { he: 'כיתה ד׳', en: 'Grade 4', ar: 'الصف 4', ru: 'Класс 4' },
+    'ה': { he: 'כיתה ה׳', en: 'Grade 5', ar: 'الصف 5', ru: 'Класс 5' },
+    'ו': { he: 'כיתה ו׳', en: 'Grade 6', ar: 'الصف 6', ru: 'Класс 6' },
+    'ז': { he: 'כיתה ז׳', en: 'Grade 7', ar: 'الصف 7', ru: 'Класс 7' },
+    'ח': { he: 'כיתה ח׳', en: 'Grade 8', ar: 'الصف 8', ru: 'Класс 8' },
+    'ט': { he: 'כיתה ט׳', en: 'Grade 9', ar: 'الصف 9', ru: 'Класс 9' },
+    'י': { he: 'כיתה י׳', en: 'Grade 10', ar: 'الصف 10', ru: 'Класс 10' },
+    'יא': { he: 'כיתה יא׳', en: 'Grade 11', ar: 'الصف 11', ru: 'Класс 11' },
+    'יב': { he: 'כיתה יב׳', en: 'Grade 12', ar: 'الصف 12', ru: 'Класс 12' },
+  };
+
+  // Extract grade letter and class number
+  const gradeLetter = classId.match(/^(י[אב]|[גדהוזחט])/)?.[0] || '';
+  const classNumber = classId.replace(gradeLetter, '');
+
+  const gradeInfo = gradeMap[gradeLetter];
+  if (!gradeInfo) {
+    return classId; // Return as-is if not found
+  }
+
+  // Format based on language
+  return `${gradeInfo[lang]}${classNumber}`;
+}
+
 export default FORM_TRANSLATIONS;

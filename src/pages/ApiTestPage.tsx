@@ -117,7 +117,7 @@ const ApiTestPage: React.FC = () => {
           {/* Back Button */}
           <div className="mt-8 text-center">
             <a
-              href="/"
+              href="/dashboard"
               className="inline-block px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold transition-all"
             >
               ← Back to Dashboard

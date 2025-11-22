@@ -15,7 +15,7 @@ const PrivacyPolicyPage: React.FC = () => {
               <h1 className="text-xl font-bold">ISHEBOT - מערכת ניתוח תלמידים</h1>
             </div>
             <Link
-              to="/"
+              to="/dashboard"
               className="flex items-center gap-2 text-sm text-slate-300 hover:text-blue-400 transition-colors"
             >
               <span>חזרה לדשבורד</span>

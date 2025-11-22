@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -15,7 +15,9 @@ import {
   BookOpen,
   Brain,
   X,
-  ChevronDown
+  ChevronDown,
+  FileText,
+  ArrowLeft
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -333,6 +335,32 @@ const FuturisticDashboard: React.FC = () => {
               </button>
             </div>
           )}
+        </div>
+
+        {/* Footer - Assessment Form Link */}
+        <div className="mt-8 animate-fade-in-up">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg p-6 text-white">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <FileText className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold mb-1">שאלון הערכת תלמיד</h3>
+                  <p className="text-blue-100 text-sm">
+                    מלא שאלון לתלמיד חדש או עדכן נתונים קיימים
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/assessment"
+                className="flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-xl hover:bg-blue-50 transition-all font-semibold shadow-lg hover:shadow-xl"
+              >
+                <span>פתח שאלון</span>
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
