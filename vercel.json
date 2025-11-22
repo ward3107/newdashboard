@@ -5,6 +5,13 @@
   "installCommand": "npm install",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/landing.html",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!manifest\\.webmanifest$|sw\\.js$|workbox-.*\\.js$|favicon\\.svg$|.*\\.html$|assets/).*)",
