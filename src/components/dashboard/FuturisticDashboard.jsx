@@ -46,7 +46,6 @@ import { AnalysisAggregator } from "../../services/analysisAggregator";
 import ClassroomSeatingAI from "../classroom/ClassroomSeatingAI";
 import Footer from "../ui/Footer";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
-import ConnectionStatusBanner from "../ui/ConnectionStatusBanner";
 
 // Use environment variable or config file for API URL
 // UPDATED 2025-10-10 - V5 WITH CORS HEADERS FIXED!
@@ -909,13 +908,6 @@ const FuturisticTeacherDashboard = () => {
       <main className="px-5 pb-5 relative z-10" style={{ paddingTop: "130px" }}>
         {activeView === "dashboard" && (
           <>
-            {/* Connection Status Banner */}
-            <ConnectionStatusBanner
-              error={connectionError}
-              isLoading={loading && !students.length}
-              hasData={students.length > 0}
-            />
-
             {/* Overview Stats Section */}
             <FuturisticOverview
               stats={stats}
