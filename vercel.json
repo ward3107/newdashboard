@@ -7,7 +7,15 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!manifest\\.webmanifest$|sw\\.js$|workbox-.*\\.js$|favicon\\.svg$|.*\\.html$|assets/).*)",
+      "source": "/landing.html",
+      "destination": "/landing.html"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ],
