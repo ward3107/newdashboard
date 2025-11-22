@@ -158,8 +158,8 @@ function App() {
                       <Route path="/data-processing" element={<DataProcessingPage />} />
                       <Route path="/security" element={<SecurityPage />} />
 
-                      {/* Landing Page */}
-                      <Route path="/" element={<LandingPage />} />
+                      {/* Landing Page - Redirect to standalone HTML */}
+                      <Route path="/" element={<RedirectToLanding />} />
 
                       {/* Main Routes - Authentication temporarily disabled for presentation */}
                       <Route path="/dashboard" element={<FuturisticDashboard />} />
@@ -184,6 +184,21 @@ function App() {
     </ErrorBoundary>
   );
 }
+
+// Redirect to Landing HTML Component
+const RedirectToLanding: React.FC = () => {
+  React.useEffect(() => {
+    window.location.href = '/landing.html';
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-gray-600">מפנה לדף הבית...</p>
+      </div>
+    </div>
+  );
+};
 
 // 404 Not Found Component
 const NotFound: React.FC = () => {
