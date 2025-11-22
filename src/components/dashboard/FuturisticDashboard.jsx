@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Brain,
@@ -518,41 +518,12 @@ const FuturisticTeacherDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
-  const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [adminPassword, setAdminPassword] = useState("");
-  const [passwordError, setPasswordError] = useState(false);
   const [viewMode, setViewMode] = useState("list"); // "list" or "grouped"
 
+  // Refs
+  const themeSelectorRef = useRef(null);
+
   const theme = COLOR_THEMES[colorTheme];
-
-  // Admin password - you can change this to any code you want
-  const ADMIN_CODE = "1234";
-
-  // Handler for admin access
-  const handleAdminClick = () => {
-    setShowPasswordDialog(true);
-    setPasswordError(false);
-    setAdminPassword("");
-  };
-
-  const handlePasswordSubmit = () => {
-    if (adminPassword === ADMIN_CODE) {
-      setShowPasswordDialog(false);
-      setShowAdminPanel(true);
-      setAdminPassword("");
-      setPasswordError(false);
-    } else {
-      setPasswordError(true);
-      setAdminPassword("");
-    }
-  };
-
-  const handlePasswordCancel = () => {
-    setShowPasswordDialog(false);
-    setAdminPassword("");
-    setPasswordError(false);
-  };
 
   // Handler for running smart analysis
   const handleSmartAnalysis = async () => {
@@ -655,6 +626,23 @@ const FuturisticTeacherDashboard = () => {
     loadData();
   }, []);
 
+  // Close theme selector when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (themeSelectorRef.current && !themeSelectorRef.current.contains(event.target)) {
+        setShowThemeSelector(false);
+      }
+    };
+
+    if (showThemeSelector) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showThemeSelector]);
+
   const classes = ["י1", "י2", "י3", "י4", "י5"];
 
   return (
@@ -734,21 +722,8 @@ const FuturisticTeacherDashboard = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-3">
-              {/* Admin Panel Button */}
-              <button onClick={handleAdminClick} className="relative group">
-                <div
-                  className={`absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition-opacity`}
-                ></div>
-                <div
-                  className={`relative px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl text-white font-medium flex items-center gap-2 shadow-lg`}
-                >
-                  <Settings size={17} />
-                  <span className="text-sm">מנהל</span>
-                </div>
-              </button>
-
               {/* Color Theme Selector */}
-              <div className="relative">
+              <div className="relative" ref={themeSelectorRef}>
                 <button
                   onClick={() => setShowThemeSelector(!showThemeSelector)}
                   className={`p-2 rounded-xl backdrop-blur-md ${
@@ -1001,127 +976,6 @@ const FuturisticTeacherDashboard = () => {
 
       {/* Loading */}
       {loading && <FuturisticLoader darkMode={darkMode} theme={theme} />}
-
-      {/* Password Dialog for Admin Access */}
-      {showPasswordDialog && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-          <div
-            className={`backdrop-blur-xl ${
-              darkMode ? "bg-gray-900/95" : "bg-white"
-            } rounded-3xl p-8 border ${
-              darkMode ? "border-gray-700" : "border-gray-200"
-            } shadow-2xl w-96`}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2
-                className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}
-              >
-                כניסת מנהל
-              </h2>
-              <button
-                onClick={handlePasswordCancel}
-                className={`p-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors`}
-              >
-                <X
-                  size={20}
-                  className={darkMode ? "text-gray-400" : "text-gray-600"}
-                />
-              </button>
-            </div>
-
-            <div className="space-y-2">
-              <div>
-                <label
-                  className={`block text-sm font-medium mb-2 ${
-                    darkMode ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
-                  Enter Admin Code
-                </label>
-                <input
-                  id="admin-password"
-                  name="adminPassword"
-                  type="password"
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                  onKeyPress={(e) =>
-                    e.key === "Enter" && handlePasswordSubmit()
-                  }
-                  placeholder="••••"
-                  className={`w-full px-4 py-2 rounded-xl border ${
-                    passwordError
-                      ? "border-red-500"
-                      : darkMode
-                        ? "border-gray-600 bg-gray-800 text-white"
-                        : "border-gray-300 bg-white text-gray-900"
-                  } focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors`}
-                  autoFocus
-                  autoComplete="current-password"
-                />
-                {passwordError && (
-                  <p className="text-red-500 text-sm mt-2">
-                    קוד שגוי. אנא נסה שוב.
-                  </p>
-                )}
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={handlePasswordSubmit}
-                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:opacity-90 transition-opacity"
-                >
-                  אישור
-                </button>
-                <button
-                  onClick={handlePasswordCancel}
-                  className={`flex-1 px-4 py-2.5 rounded-xl font-medium transition-colors ${
-                    darkMode
-                      ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Admin Panel */}
-      {showAdminPanel && (
-        <AdminPanel
-          darkMode={darkMode}
-          theme={theme}
-          onClose={() => setShowAdminPanel(false)}
-          onSmartAnalysis={handleSmartAnalysis}
-          onDataUpdate={async () => {
-            // Refresh data after admin operations
-            const [studentsData, statsData] = await Promise.all([
-              API.getAllStudents(),
-              API.getStats(),
-            ]);
-
-            if (studentsData.success) {
-              setStudents(studentsData.students);
-            }
-
-            if (studentsData.success) {
-              const students = studentsData.students || [];
-              setStats({
-                totalStudents: students.length, // Use actual deduplicated count
-                analyzedThisWeek:
-                  students.filter((s) => s.needsAnalysis).length || 0,
-                averageStrengths:
-                  parseFloat(statsData.stats?.averageStrengths) || 0,
-                upToDate: students.filter((s) => !s.needsAnalysis).length || 0,
-                learningStyles: statsData.stats?.byLearningStyle || {},
-                classSizes: statsData.stats?.byClass || {},
-              });
-            }
-          }}
-        />
-      )}
 
       {/* Footer */}
       <Footer />
