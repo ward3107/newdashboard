@@ -30,13 +30,11 @@ export const SECURITY_CONFIG = {
 };
 
 // Security Interfaces
+// Note: Most headers are set via HTTP headers in vercel.json
+// Only client-side applicable headers are listed here
 interface SecurityHeaders {
-  'X-Content-Type-Options': string;
-  'X-Frame-Options': string;
-  'X-XSS-Protection': string;
   'Referrer-Policy': string;
   'Permissions-Policy': string;
-  'Strict-Transport-Security': string;
 }
 
 interface RateLimitEntry {
@@ -91,15 +89,16 @@ class SecurityManager {
 
   /**
    * Apply comprehensive security headers
+   * Note: Most security headers are set via HTTP headers in vercel.json
+   * Only client-side applicable headers are set here
    */
   private applySecurityHeaders(): void {
-    const headers: SecurityHeaders = {
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block',
+    // Security headers are primarily set via HTTP headers in vercel.json
+    // X-Frame-Options, HSTS, and X-Content-Type-Options cannot be set via meta tags
+    // Only setting CSP-compatible headers here
+    const headers = {
       'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
-      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()'
     };
 
     // Apply to document (for client-side)
