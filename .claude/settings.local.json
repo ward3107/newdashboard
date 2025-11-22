@@ -12,7 +12,12 @@
       "Bash(taskkill /F /PID 60f8b4 2)",
       "Bash(nul)",
       "Bash(timeout /t 3)",
-      "Bash(rm nul public/nul)"
+      "Bash(rm nul public/nul)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install:*)",
+      "Bash(for file in index.html public/*.html ishebot-landing/index.html)",
+      "Bash(do [ -f \"$file\" ])",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
