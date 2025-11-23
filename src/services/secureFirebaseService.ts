@@ -20,6 +20,7 @@ import {
 import { httpsCallable } from 'firebase/functions';
 import { db, functions, isFirebaseAvailable } from '../config/firebase';
 import { securityManager, SecurityUtils } from '../security/securityEnhancements';
+import logger from '../utils/logger';
 
 // Security configuration
 const SECURITY_SETTINGS = {
@@ -117,7 +118,7 @@ class SecureFirebaseService {
 
       return true;
     } catch (error) {
-      console.error('Security validation failed:', error);
+      logger.error('Security validation failed:', error);
       const errorMessage = error instanceof Error ? error.message : String(error);
       this.reportSecurityViolation('VALIDATION_FAILED', { error: errorMessage, data: this.sanitizeDataForLogging(data) });
       return false;
@@ -181,7 +182,7 @@ class SecureFirebaseService {
         encryptionVersion: '1.0'
       };
     } catch (error) {
-      console.error('Encryption failed:', error);
+      logger.error('Encryption failed:', error);
       throw new Error('Failed to encrypt submission data');
     }
   }
@@ -234,7 +235,7 @@ class SecureFirebaseService {
       return { success: true, submissionId };
 
     } catch (error) {
-      console.error('Secure submission failed:', error);
+      logger.error('Secure submission failed:', error);
       this.attemptCount++;
 
       // Report security violation for suspicious errors
@@ -283,7 +284,7 @@ class SecureFirebaseService {
       return docRef.id;
 
     } catch (error) {
-      console.error('Firebase submission error:', error);
+      logger.error('Firebase submission error:', error);
       const errorMessage = error instanceof Error ? error.message : String(error);
       throw new Error(`Firebase submission failed: ${errorMessage}`);
     }
@@ -310,7 +311,7 @@ class SecureFirebaseService {
       return !querySnapshot.empty;
 
     } catch (error) {
-      console.error('Duplicate check failed:', error);
+      logger.error('Duplicate check failed:', error);
       return false;
     }
   }
@@ -334,7 +335,7 @@ class SecureFirebaseService {
 
       return null;
     } catch (error) {
-      console.error('Failed to get submission stats:', error);
+      logger.error('Failed to get submission stats:', error);
       return null;
     }
   }
@@ -361,7 +362,7 @@ class SecureFirebaseService {
 
     // Log to console in development
     if (import.meta.env.DEV) {
-      console.error('Security Violation:', violation);
+      logger.error('Security Violation:', violation);
     }
 
     // Store in localStorage for monitoring
@@ -371,7 +372,7 @@ class SecureFirebaseService {
       if (violations.length > 50) violations.shift();
       localStorage.setItem('security_violations', JSON.stringify(violations));
     } catch (error) {
-      console.error('Failed to store security violation:', error);
+      logger.error('Failed to store security violation:', error);
     }
 
     // Send to monitoring service if available
@@ -424,7 +425,7 @@ class SecureFirebaseService {
    * Log successful submission
    */
   private logSuccessfulSubmission(submissionId: string): void {
-    console.log('✅ Secure submission successful:', {
+    logger.log('✅ Secure submission successful:', {
       submissionId: submissionId.substring(0, 8) + '...',
       fingerprint: this.fingerprint.substring(0, 8) + '...',
       attempts: this.attemptCount + 1

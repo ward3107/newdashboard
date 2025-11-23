@@ -3,6 +3,8 @@
  * Prevents API abuse and DoS attacks
  */
 
+import logger from '../utils/logger';
+
 interface RateLimitConfig {
   maxRequests: number;
   windowMs: number;
@@ -43,7 +45,7 @@ class RateLimiter {
     if (entry.count >= cfg.maxRequests) {
       // Rate limit exceeded
       const remainingTime = Math.ceil((entry.resetTime - now) / 1000);
-      console.warn(`Rate limit exceeded for ${endpoint}. Try again in ${remainingTime}s`);
+      logger.warn(`Rate limit exceeded for ${endpoint}. Try again in ${remainingTime}s`);
       return false;
     }
 

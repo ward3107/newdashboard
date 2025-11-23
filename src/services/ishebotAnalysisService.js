@@ -4,6 +4,8 @@
  * pedagogically sound, MOE-compliant student reports
  */
 
+import logger from '../utils/logger.js';
+
 const ISHEBOT_API_URL = import.meta.env.VITE_ISHEBOT_API_URL || 'http://localhost:3000';
 
 /**
@@ -57,7 +59,7 @@ export const analyzeStudentWithISHEBOT = async (studentData) => {
     };
 
   } catch (error) {
-    console.error('❌ ISHEBOT Analysis Error:', error);
+    logger.error('❌ ISHEBOT Analysis Error:', error);
     return {
       success: false,
       error: error.message || 'שגיאה לא ידועה בניתוח'
@@ -77,7 +79,7 @@ export const checkISHEBOTHealth = async () => {
     const data = await response.json();
     return data.ok === true;
   } catch (error) {
-    console.error('ISHEBOT Health Check Failed:', error);
+    logger.error('ISHEBOT Health Check Failed:', error);
     return false;
   }
 };

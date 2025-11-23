@@ -59,14 +59,21 @@ app = FastAPI(
 )
 
 # Configure CORS
-# Support both specific origins and regex patterns for wildcards
+# Restrict to specific origins, methods, and headers for security
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins_list,
-    allow_origin_regex=settings.allowed_origins_regex,
+    allow_origin_regex=settings.allowed_origins_regex if settings.DEBUG else None,  # Only allow regex in dev
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Specific methods only
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Accept",
+        "Origin",
+        "X-Requested-With",
+    ],  # Specific headers only
+    max_age=3600,  # Cache preflight requests for 1 hour
 )
 
 # Include routers

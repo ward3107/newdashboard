@@ -22,6 +22,7 @@ import { initPerformanceMonitoring } from './utils/performanceMonitoring';
 import { initializeCSP } from './security/csp';
 import { initializeRUM } from './monitoring/rum';
 import { securityManager } from './security/securityEnhancements';
+import logger from './utils/logger';
 
 // Error Boundary and Loading Components
 import { ErrorBoundary } from './components/common/ErrorBoundary';
@@ -30,6 +31,11 @@ import { Loading } from './components/common/Loading';
 // UI Components
 import CookieConsent from './components/ui/CookieConsent';
 import AccessibilityWidget from './components/ui/AccessibilityWidget';
+
+// Authentication
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { AuthProvider } from './contexts/AuthContext';
+import { LoginPage } from './components/auth/LoginPage';
 
 // Lazy load components for code splitting with preload hints
 const LandingPage = lazy(() => import(/* webpackChunkName: "landing" */ './pages/OptimizedLandingPage'));
@@ -77,7 +83,7 @@ function App() {
 
     // Enhanced Security System
     const securityStatus = securityManager.getSecurityStatus();
-    console.log('🔒 Security Status:', securityStatus);
+    logger.log('🔒 Security Status:', securityStatus);
 
     // Content Security Policy
     initializeCSP();
@@ -86,8 +92,8 @@ function App() {
     initializeRUM();
 
     // Log security initialization
-    console.log('✅ Security initialized successfully');
-    console.log('🛡️ Features: CSRF protection, Rate limiting, Bot detection, Data encryption');
+    logger.log('✅ Security initialized successfully');
+    logger.log('🛡️ Features: CSRF protection, Rate limiting, Bot detection, Data encryption');
 
     // PWA and Service Worker are enabled
     // Auto-registered via VitePWA plugin in vite.config.js
@@ -96,6 +102,7 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
+        <AuthProvider>
           <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ScrollToTop />
             <ErrorBoundary>
@@ -162,16 +169,77 @@ function App() {
                       {/* Landing Page - Redirect to standalone HTML */}
                       <Route path="/" element={<RedirectToLanding />} />
 
-                      {/* Main Routes - Authentication temporarily disabled for presentation */}
-                      <Route path="/dashboard" element={<FuturisticDashboard />} />
-                      <Route path="/original" element={<Dashboard />} />
-                      <Route path="/student/:studentId" element={<StudentDetail />} />
-                      <Route path="/test-analytics" element={<TestAnalytics />} />
-                      <Route path="/admin" element={<AdminControlPanel />} />
-                      <Route path="/api-test" element={<ApiTestPage />} />
+                      {/* Authentication Routes (Public) */}
+                      <Route path="/login" element={<LoginPage />} />
+
+                      {/* Public Route - Student Assessment (No authentication required) */}
                       <Route path="/assessment" element={<AssessmentPage />} />
-                      <Route path="/security-dashboard" element={<AISecurityDashboard />} />
-                      <Route path="/classroom-optimization" element={<ClassroomOptimizationPage />} />
+
+                      {/* Protected Routes - Require Authentication */}
+                      <Route
+                        path="/dashboard"
+                        element={
+                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                            <FuturisticDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/original"
+                        element={
+                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                            <Dashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/student/:studentId"
+                        element={
+                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                            <StudentDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/test-analytics"
+                        element={
+                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                            <TestAnalytics />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin"
+                        element={
+                          <ProtectedRoute requiredRole="admin">
+                            <AdminControlPanel />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/api-test"
+                        element={
+                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                            <ApiTestPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/security-dashboard"
+                        element={
+                          <ProtectedRoute requiredRole="admin">
+                            <AISecurityDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/classroom-optimization"
+                        element={
+                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                            <ClassroomOptimizationPage />
+                          </ProtectedRoute>
+                        }
+                      />
 
                       <Route path="*" element={<NotFound />} />
                     </Routes>
@@ -181,6 +249,7 @@ function App() {
             </div>
           </ErrorBoundary>
         </Router>
+        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

@@ -16,10 +16,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./i18n"; // Initialize i18n before app renders
+import logger from "./utils/logger";
 
 // Global error handlers for debugging
 window.addEventListener('error', (event) => {
-  console.error('❌ Global error:', {
+  logger.error('❌ Global error:', {
     message: event.message,
     filename: event.filename,
     lineno: event.lineno,
@@ -30,7 +31,7 @@ window.addEventListener('error', (event) => {
 });
 
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('❌ Unhandled promise rejection:', {
+  logger.error('❌ Unhandled promise rejection:', {
     reason: event.reason,
     promise: event.promise,
     timestamp: new Date().toISOString(),
@@ -38,7 +39,7 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 // Log environment info for debugging
-console.log('🔧 Environment:', {
+logger.log('🔧 Environment:', {
   mode: import.meta.env.MODE,
   baseUrl: import.meta.env.BASE_URL,
   useFirestore: import.meta.env.VITE_USE_FIRESTORE,
@@ -48,27 +49,27 @@ console.log('🔧 Environment:', {
 
 // Ensure DOM is ready
 const initApp = () => {
-  console.log('🚀 Initializing app...');
+  logger.log('🚀 Initializing app...');
   const rootElement = document.getElementById("root");
 
   if (!rootElement) {
-    console.error("❌ Failed to find the root element");
-    console.error('Document body HTML:', document.body.innerHTML.substring(0, 200));
+    logger.error("❌ Failed to find the root element");
+    logger.error('Document body HTML:', document.body.innerHTML.substring(0, 200));
     document.body.innerHTML = '<div style="padding: 20px; font-family: sans-serif;"><h1>Error Loading Application</h1><p>Could not find root element. Please refresh the page.</p><p style="color: #666; font-size: 12px;">Error ID: ROOT_NOT_FOUND</p></div>';
     return;
   }
 
   try {
-    console.log('✅ Root element found, rendering app...');
+    logger.log('✅ Root element found, rendering app...');
     ReactDOM.createRoot(rootElement).render(
       <React.StrictMode>
         <App />
       </React.StrictMode>,
     );
-    console.log('✅ App rendered successfully');
+    logger.log('✅ App rendered successfully');
   } catch (error) {
-    console.error("❌ Error rendering app:", error);
-    console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace');
+    logger.error("❌ Error rendering app:", error);
+    logger.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace');
     rootElement.innerHTML = `<div style="padding: 20px; font-family: sans-serif;">
       <h1>Error Loading Application</h1>
       <p>An error occurred while loading the application. Please refresh the page.</p>

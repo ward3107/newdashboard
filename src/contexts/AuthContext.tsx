@@ -31,6 +31,14 @@ import type {
   SignupData,
   UserRole,
 } from '../types/auth';
+import {
+  shouldUseMockAuth,
+  mockLogin,
+  setMockAuthSession,
+  getMockAuthSession,
+  clearMockAuthSession,
+} from '../utils/mockAuth';
+import logger from '../utils/logger';
 
 /**
  * Auth Context
@@ -65,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const fetchUserData = useCallback(async (firebaseUser: FirebaseUser): Promise<User | null> => {
     if (!db) {
-      console.error('Firestore not initialized');
+      logger.error('Firestore not initialized');
       return null;
     }
 
@@ -73,7 +81,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
 
       if (!userDoc.exists()) {
-        console.error('User document not found in Firestore');
+        logger.error('User document not found in Firestore');
         return null;
       }
 
@@ -95,7 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           : undefined,
       };
     } catch (err) {
-      console.error('Error fetching user data:', err);
+      logger.error('Error fetching user data:', err);
       return null;
     }
   }, []);
@@ -105,7 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const updateLastLogin = useCallback(async (uid: string) => {
     if (!db) {
-      console.error('Firestore not initialized');
+      logger.error('Firestore not initialized');
       return;
     }
 
@@ -114,7 +122,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         lastLogin: serverTimestamp(),
       });
     } catch (err) {
-      console.error('Error updating last login:', err);
+      logger.error('Error updating last login:', err);
     }
   }, []);
 
@@ -122,8 +130,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Listen to auth state changes
    */
   useEffect(() => {
+    // Check if using mock auth (Firebase not configured)
+    if (shouldUseMockAuth()) {
+      logger.warn('⚠️ USING MOCK AUTHENTICATION - FOR TESTING ONLY');
+      const mockUser = getMockAuthSession();
+      setUser(mockUser);
+      setLoading(false);
+      return;
+    }
+
     if (!auth) {
-      console.error('Firebase Auth not initialized');
+      logger.error('Firebase Auth not initialized');
       setLoading(false);
       return;
     }
@@ -148,7 +165,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setLoading(false);
     }, (error) => {
-      console.error('🔐 AuthContext: Auth listener error', error);
+      logger.error('🔐 AuthContext: Auth listener error', error);
       setUser(null);
       setLoading(false);
     });
@@ -160,13 +177,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Login with email and password
    */
   const login = useCallback(async (credentials: LoginCredentials) => {
-    if (!auth) {
-      throw new Error('Authentication not initialized. Please check Firebase configuration.');
-    }
-
     try {
       setError(null);
       setLoading(true);
+
+      // MOCK AUTH: Use mock authentication if Firebase not configured
+      if (shouldUseMockAuth()) {
+        logger.log('🧪 Using mock authentication');
+        const user = mockLogin(credentials.email, credentials.password);
+
+        if (!user) {
+          throw new Error('Invalid email or password. Try:\n• teacher@test.com / teacher123\n• admin@test.com / admin123\n• manager@test.com / manager123');
+        }
+
+        setMockAuthSession(user);
+        setUser(user);
+        return;
+      }
+
+      // REAL AUTH: Firebase authentication
+      if (!auth) {
+        throw new Error('Authentication not initialized. Please check Firebase configuration.');
+      }
 
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -196,7 +228,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setUser(userData);
     } catch (err: any) {
-      console.error('Login error:', err);
+      logger.error('Login error:', err);
 
       // User-friendly error messages
       let errorMessage = 'Login failed. Please try again.';
@@ -250,7 +282,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setUser(userData);
     } catch (err: any) {
-      console.error('Google login error:', err);
+      logger.error('Google login error:', err);
 
       let errorMessage = 'Google login failed. Please try again.';
 
@@ -273,16 +305,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Logout
    */
   const logout = useCallback(async () => {
-    if (!auth) {
-      throw new Error('Authentication not initialized. Please check Firebase configuration.');
-    }
-
     try {
       setError(null);
+
+      // MOCK AUTH: Clear mock session
+      if (shouldUseMockAuth()) {
+        clearMockAuthSession();
+        setUser(null);
+        return;
+      }
+
+      // REAL AUTH: Firebase logout
+      if (!auth) {
+        throw new Error('Authentication not initialized. Please check Firebase configuration.');
+      }
+
       await signOut(auth);
       setUser(null);
     } catch (err: any) {
-      console.error('Logout error:', err);
+      logger.error('Logout error:', err);
       setError('Logout failed. Please try again.');
       throw err;
     }
@@ -334,7 +375,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Sign out (require email verification before login)
       await signOut(auth);
     } catch (err: any) {
-      console.error('Signup error:', err);
+      logger.error('Signup error:', err);
 
       let errorMessage = 'Signup failed. Please try again.';
 
@@ -367,7 +408,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setError(null);
       await sendPasswordResetEmail(auth, email);
     } catch (err: any) {
-      console.error('Password reset error:', err);
+      logger.error('Password reset error:', err);
 
       let errorMessage = 'Password reset failed. Please try again.';
 
@@ -412,7 +453,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Update local state
       setUser({ ...user, ...data });
     } catch (err: any) {
-      console.error('Profile update error:', err);
+      logger.error('Profile update error:', err);
       setError('Profile update failed. Please try again.');
       throw err;
     }

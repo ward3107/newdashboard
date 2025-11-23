@@ -46,6 +46,7 @@ import {
   Compass
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import logger from '../../utils/logger';
 
 // Import real analytics data aggregator
 import { aggregateRealAnalytics } from '../../utils/realAnalyticsData';
@@ -174,14 +175,14 @@ const AnalyticsDashboard = ({ students, darkMode, theme }) => {
           if (data) {
             setAnalyticsData(data);
           } else {
-            console.warn('⚠️ No ISHEBOT analysis data found in students');
+            logger.warn('⚠️ No ISHEBOT analysis data found in students');
             setAnalyticsData(null);
           }
         } else {
           setAnalyticsData(null);
         }
       } catch (error) {
-        console.error('❌ Error loading analytics:', error);
+        logger.error('❌ Error loading analytics:', error);
       } finally {
         setLoading(false);
       }

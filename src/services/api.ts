@@ -4,6 +4,7 @@
  */
 
 import { firestoreApi } from './firestoreApi';
+import logger from '../utils/logger';
 
 // ====================================
 // DATA SOURCE CONFIGURATION
@@ -332,7 +333,7 @@ const MOCK_STUDENTS: Student[] = [
 function buildUrl(action: string, params?: Record<string, string>): string {
   if (!API_URL) {
     if (process.env.NODE_ENV === 'development') {
-      console.warn('⚠️ VITE_API_URL not set in .env.local');
+      logger.warn('⚠️ VITE_API_URL not set in .env.local');
     }
     return '';
   }
@@ -379,17 +380,17 @@ async function fetchWithTimeout(url: string, timeout: number = API_TIMEOUT): Pro
 async function apiCall<T>(action: string, params?: Record<string, string>): Promise<ApiResponse<T>> {
   // Use mock data in development
   if (USE_MOCK_DATA) {
-    console.log(`🔧 Using MOCK data for action: ${action}`);
+    logger.log(`🔧 Using MOCK data for action: ${action}`);
     // Mock data enabled - bypassing API calls for development
     const response = handleMockResponse<T>(action, params);
-    console.log(`📊 Mock data response:`, response);
+    logger.log(`📊 Mock data response:`, response);
     return response;
   }
 
   // Check if API URL is configured - if not, fallback to mock data
   if (!API_URL || API_URL.includes('YOUR_DEPLOYMENT_ID')) {
     if (process.env.NODE_ENV === 'development') {
-      console.warn('⚠️ API URL not configured. Using mock data as fallback.');
+      logger.warn('⚠️ API URL not configured. Using mock data as fallback.');
     }
     // Return mock data instead of error for better UX
     return handleMockResponse<T>(action, params);
@@ -421,7 +422,7 @@ async function apiCall<T>(action: string, params?: Record<string, string>): Prom
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     if (process.env.NODE_ENV === 'development') {
-      console.error(`❌ API Error: ${action}`, error);
+      logger.error(`❌ API Error: ${action}`, error);
     }
 
     // Handle specific errors
@@ -488,7 +489,7 @@ function handleMockResponse<T>(action: string, params?: Record<string, string>):
 export async function getStats(): Promise<ApiResponse<DashboardStats>> {
   if (USE_FIRESTORE) {
     if (process.env.NODE_ENV === 'development') {
-      console.log('📊 Fetching stats from Firestore');
+      logger.log('📊 Fetching stats from Firestore');
     }
     return firestoreApi.getStats();
   }
@@ -500,15 +501,15 @@ export async function getStats(): Promise<ApiResponse<DashboardStats>> {
  * Routes to Firestore or Google Sheets based on configuration
  */
 export async function getAllStudents(): Promise<ApiResponse<{ students: Student[] }>> {
-  console.log(`🎓 getAllStudents called - USE_FIRESTORE: ${USE_FIRESTORE}, USE_MOCK_DATA: ${USE_MOCK_DATA}`);
+  logger.log(`🎓 getAllStudents called - USE_FIRESTORE: ${USE_FIRESTORE}, USE_MOCK_DATA: ${USE_MOCK_DATA}`);
 
   if (USE_FIRESTORE) {
-    console.log('👥 Fetching students from Firestore');
+    logger.log('👥 Fetching students from Firestore');
     return firestoreApi.getAllStudents();
   }
 
   const result = await apiCall<{ students: Student[] }>('getAllStudents');
-  console.log(`✅ getAllStudents result - success: ${result.success}, student count: ${result.data?.students?.length || 0}`);
+  logger.log(`✅ getAllStudents result - success: ${result.success}, student count: ${result.data?.students?.length || 0}`);
   return result;
 }
 
@@ -519,7 +520,7 @@ export async function getAllStudents(): Promise<ApiResponse<{ students: Student[
 export async function getStudent(studentId: string): Promise<ApiResponse<DetailedStudent>> {
   if (USE_FIRESTORE) {
     if (process.env.NODE_ENV === 'development') {
-      console.log(`🔍 Fetching student ${studentId} from Firestore`);
+      logger.log(`🔍 Fetching student ${studentId} from Firestore`);
     }
     return firestoreApi.getStudent(studentId);
   }

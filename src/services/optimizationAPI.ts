@@ -3,6 +3,8 @@
  * Connects to FastAPI Python backend for genetic algorithm optimization
  */
 
+import logger from '../utils/logger';
+
 // ====================================
 // TYPE DEFINITIONS
 // ====================================
@@ -214,7 +216,7 @@ async function optimizationApiCall<T>(
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
 
     if (process.env.NODE_ENV === 'development') {
-      console.error(`❌ Optimization API Error: ${endpoint}`, error);
+      logger.error(`❌ Optimization API Error: ${endpoint}`, error);
     }
 
     // Handle specific errors

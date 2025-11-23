@@ -21,11 +21,10 @@ class Settings(BaseSettings):
     PORT: int = 8000
 
     # CORS
-    ALLOWED_ORIGINS: Union[List[str], str] = [
-        "http://localhost:3003",
-        "http://localhost:3000",
-        "http://127.0.0.1:3003"
-    ]
+    ALLOWED_ORIGINS: Union[List[str], str] = os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173"
+    )
 
     @property
     def allowed_origins_list(self) -> List[str]:
@@ -74,8 +73,15 @@ class Settings(BaseSettings):
     GA_CROSSOVER_RATE: float = 0.8
 
     # Security
-    SECRET_KEY: str = "your-secret-key-change-this-in-production"
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "dev-key-only-never-use-in-production")
     ALGORITHM: str = "HS256"
+
+    @property
+    def is_production_ready(self) -> bool:
+        """Check if production configuration is complete"""
+        if self.DEBUG:
+            return True  # Dev mode is always OK
+        return self.SECRET_KEY != "dev-key-only-never-use-in-production"
 
     # Logging
     LOG_LEVEL: str = "INFO"

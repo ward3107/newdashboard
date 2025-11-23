@@ -28,6 +28,7 @@ import { getStudent } from '../../services/api';
 
 // Utils
 import { exportStudentDetailToPDF, generatePrintHTML } from '../../utils/exportUtils';
+import logger from '../../utils/logger';
 
 // Components
 import InsightCard from './InsightCard';
@@ -68,7 +69,7 @@ const StudentDetail = () => {
         throw new Error(response.error || 'Failed to load student data');
       }
     } catch (err) {
-      console.error('Error loading student:', err);
+      logger.error('Error loading student:', err);
       setError(err.message);
       toast.error('שגיאה בטעינת נתוני התלמיד');
     } finally {

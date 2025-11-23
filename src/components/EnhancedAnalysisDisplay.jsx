@@ -26,6 +26,7 @@ import {
   Bell
 } from 'lucide-react';
 import enhancedAnalysisService from '../services/enhancedAnalysisService';
+import logger from '../utils/logger';
 
 const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
   const [analysis, setAnalysis] = useState(null);
@@ -47,7 +48,7 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
     const generateAnalysis = async () => {
       setLoading(true);
       try {
-        console.log('📊 EnhancedAnalysisDisplay - Student Data:', {
+        logger.log('📊 EnhancedAnalysisDisplay - Student Data:', {
           hasInsights: !!studentData.insights,
           insightsCount: studentData.insights?.length || 0,
           studentCode: studentData.studentCode,
@@ -55,7 +56,7 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
           fullStudentData: studentData
         });
         const enhancedAnalysis = enhancedAnalysisService.generateEnhancedAnalysis(studentData);
-        console.log('📊 EnhancedAnalysisDisplay - Generated Analysis:', {
+        logger.log('📊 EnhancedAnalysisDisplay - Generated Analysis:', {
           ...enhancedAnalysis,
           insightsCount: enhancedAnalysis?.insights?.length || 0,
           firstInsight: enhancedAnalysis?.insights?.[0]
@@ -68,7 +69,7 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
       } catch (error) {
         // Log error for debugging purposes
         if (process.env.NODE_ENV === 'development') {
-          console.error('Error generating enhanced analysis:', error);
+          logger.error('Error generating enhanced analysis:', error);
         }
       } finally {
         setLoading(false);
@@ -233,7 +234,7 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
   }
 
   if (!analysis) {
-    console.log('❌ NO ANALYSIS - Returning early');
+    logger.log('❌ NO ANALYSIS - Returning early');
     return (
       <div className={`text-center py-12 border-4 border-red-500 bg-red-100 ${darkMode ? 'text-red-900' : 'text-red-600'}`}>
         <Brain size={48} className="mx-auto mb-4 opacity-50" />
@@ -243,7 +244,7 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
     );
   }
 
-  console.log('✅ RENDERING ANALYSIS with insights:', analysis.insights?.length);
+  logger.log('✅ RENDERING ANALYSIS with insights:', analysis.insights?.length);
 
   return (
     <div className="space-y-6 min-h-[400px]">
@@ -313,7 +314,7 @@ const EnhancedAnalysisDisplay = ({ studentData, darkMode }) => {
           )}
 
           {analysis.insights?.map((insight, index) => {
-            console.log(`🔍 Rendering insight ${index}:`, {
+            logger.log(`🔍 Rendering insight ${index}:`, {
               id: insight.id,
               title: insight.title,
               category: insight.category,

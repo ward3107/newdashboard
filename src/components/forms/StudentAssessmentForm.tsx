@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import logger from '../../utils/logger';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '../../config/firebase';
 import { secureFirebaseService } from '../../services/secureFirebaseService';
@@ -476,7 +477,7 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
             const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
 
             if (saveAge > maxAge) {
-              console.log('Saved data is too old, ignoring');
+              logger.log('Saved data is too old, ignoring');
               localStorage.removeItem('assessmentFormData');
               localStorage.removeItem('assessmentLastSave');
               return;
@@ -491,7 +492,7 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
             };
           }
         } catch (parseError) {
-          console.error('Error parsing saved data:', parseError);
+          logger.error('Error parsing saved data:', parseError);
           dataToLoad = null;
         }
       }
@@ -507,12 +508,12 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
           };
           dataSource = 'sessionStorage';
         } catch (sessionParseError) {
-          console.error('Error parsing session backup:', sessionParseError);
+          logger.error('Error parsing session backup:', sessionParseError);
         }
       }
 
       if (!dataToLoad) {
-        console.log('No valid saved data found');
+        logger.log('No valid saved data found');
         return;
       }
 
@@ -562,10 +563,10 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
           });
         }
 
-        console.log(`Recovered data from ${dataSource}`);
+        logger.log(`Recovered data from ${dataSource}`);
       }
     } catch (error) {
-      console.error('Error loading saved data:', error);
+      logger.error('Error loading saved data:', error);
       // Don't show error to user on initial load, just log it
     }
   };
@@ -620,7 +621,7 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
       }, 2000);
 
     } catch (error) {
-      console.error('Error saving form data:', error);
+      logger.error('Error saving form data:', error);
       setAutoSaveStatus('error');
       setSaveError(error instanceof Error ? error.message : 'Unknown save error');
 
@@ -633,7 +634,7 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
           timestamp: Date.now()
         }));
       } catch (sessionError) {
-        console.error('SessionStorage backup also failed:', sessionError);
+        logger.error('SessionStorage backup also failed:', sessionError);
       }
     }
   };
@@ -687,7 +688,7 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
       sessionStorage.removeItem('assessmentBackup');
       sessionStorage.removeItem('assessmentSessionId');
     } catch (error) {
-      console.error('Error clearing saved data:', error);
+      logger.error('Error clearing saved data:', error);
     }
   };
 
@@ -755,7 +756,7 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
         toast.error(t('messages.someSyncFailed', language), { duration: 5000 });
       }
     } catch (error) {
-      console.error('Sync error:', error);
+      logger.error('Sync error:', error);
       setSyncStatus('error');
       toast.error(t('messages.syncFailed', language), { duration: 5000 });
     }
@@ -856,7 +857,7 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
       toast.success(t('messages.submissionSuccess', language), { duration: 3000 });
 
     } catch (error: any) {
-      console.error(`Submission attempt ${attempt} failed:`, error);
+      logger.error(`Submission attempt ${attempt} failed:`, error);
 
       // Determine error type
       let errorType: 'network' | 'server' | 'data' | 'unknown' = 'unknown';
@@ -1000,7 +1001,7 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
       }
 
     } catch (error) {
-      console.error('Secure submission failed:', error);
+      logger.error('Secure submission failed:', error);
 
       // Handle unexpected errors
       setSubmissionError({
@@ -1039,7 +1040,7 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
       }
 
     } catch (error) {
-      console.error('Manual retry failed:', error);
+      logger.error('Manual retry failed:', error);
     } finally {
       setIsRetrying(false);
     }

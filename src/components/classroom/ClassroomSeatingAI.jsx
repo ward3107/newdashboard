@@ -40,6 +40,7 @@ import { CSS } from '@dnd-kit/utilities';
 // UPGRADED: Now using Python genetic algorithm backend for 10x better optimization!
 // Falls back to JavaScript algorithm if backend is unavailable
 import { solveSeatingCSP, calculateDeskPairCompatibility } from '../../utils/seatingOptimizerEnhanced';
+import logger from '../../utils/logger';
 
 // Custom hook to safely use navigation
 const useSafeNavigate = () => {
@@ -948,7 +949,7 @@ const StudentAnalysisPopup = ({ student, onClose, darkMode = false }) => {
                 if (navigate && student.studentCode) {
                   navigate(`/student/${student.studentCode}`);
                 } else {
-                  // console.error('Cannot navigate: Missing navigate function or student code');
+                  // logger.error('Cannot navigate: Missing navigate function or student code');
                 }
               }}
             >
@@ -1623,7 +1624,7 @@ const StudentInfoPanel = ({ studentData, onClose, darkMode = false, selectedShap
                     setArrangementTrigger(prev => prev + 1);
 
                   } catch (error) {
-                    console.error('❌ Optimization failed:', error);
+                    logger.error('❌ Optimization failed:', error);
                     alert('אופטימיזציה נכשלה - משתמש בסידור פשוט');
                     const simpleArrangement = generateSimpleArrangement(analyzedStudents, shape);
                     setArrangement(simpleArrangement);
@@ -2124,7 +2125,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
       // Trigger initial arrangement generation if no arrangement exists
       if (arrangement.length === 0) {
-        console.log('🚀 Triggering initial arrangement generation');
+        logger.log('🚀 Triggering initial arrangement generation');
         setArrangementTrigger(prev => prev + 1);
       }
     }
@@ -2192,7 +2193,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
   // Generate SIMPLE arrangement when shape changes (FAST - no backend call)
   // Then automatically optimize with CSP solver in the background
   useEffect(() => {
-    console.log('🔄 Arrangement useEffect triggered:', {
+    logger.log('🔄 Arrangement useEffect triggered:', {
       studentsCount: studentsToUse.length,
       selectedShape,
       trigger: arrangementTrigger,
@@ -2204,7 +2205,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
       // Step 1: Show simple arrangement instantly (good UX)
       const simpleArrangement = generateSimpleArrangement(studentsToUse, shape);
-      console.log('📊 Simple arrangement generated:', {
+      logger.log('📊 Simple arrangement generated:', {
         shape: shape.id,
         layout: shape.layout,
         students: studentsToUse.length,
@@ -2224,7 +2225,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           generations: 100,
           mutationRate: 0.2
         }).then(result => {
-          console.log('✅ CSP optimization complete:', {
+          logger.log('✅ CSP optimization complete:', {
             arrangement: result.arrangement.length,
             score: result.score
           });
@@ -2232,7 +2233,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           setArrangement(result.arrangement);
           setCspMetadata(result.metadata);
         }).catch(error => {
-          console.warn('⚠️ Auto-optimization failed, keeping simple arrangement:', error);
+          logger.warn('⚠️ Auto-optimization failed, keeping simple arrangement:', error);
           // Keep the simple arrangement if optimization fails
         }).finally(() => {
           setIsGenerating(false);
@@ -2316,7 +2317,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
 
       // Use CSP solver for ALL layouts
       if (shape.rows && shape.cols) {
-        console.log('🔄 Regenerating with CSP solver...', {
+        logger.log('🔄 Regenerating with CSP solver...', {
           students: studentsToUse.length,
           shape: shape.id
         });
@@ -2327,7 +2328,7 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
           mutationRate: 0.2
         });
 
-        console.log('✅ Regeneration complete:', {
+        logger.log('✅ Regeneration complete:', {
           arrangementLength: result.arrangement.length,
           score: result.score
         });
@@ -2347,12 +2348,12 @@ const ClassroomSeatingAI = ({ students = [], darkMode = false, theme = {} }) => 
         setCspMetadata(null);
       }
     } catch (error) {
-      console.error('❌ Regenerate failed:', error);
-      console.error('Error details:', error.message, error.stack);
+      logger.error('❌ Regenerate failed:', error);
+      logger.error('Error details:', error.message, error.stack);
       // Fallback to simple arrangement on error
       const shape = SEATING_SHAPES[selectedShape];
       const simpleArrangement = generateSimpleArrangement(studentsToUse, shape);
-      console.log('⚠️ Using fallback simple arrangement:', simpleArrangement.length);
+      logger.log('⚠️ Using fallback simple arrangement:', simpleArrangement.length);
       setArrangement(simpleArrangement);
       setCspMetadata(null);
     } finally {

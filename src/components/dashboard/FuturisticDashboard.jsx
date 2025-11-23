@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import logger from "../../utils/logger";
 import {
   Brain,
   Users,
@@ -59,18 +60,18 @@ const API_URL =
 
 // Fetch all students from backend (now supports mock data)
 const fetchStudents = async () => {
-  console.log('🎯 fetchStudents: Starting fetch...');
+  logger.log('🎯 fetchStudents: Starting fetch...');
   try {
     // New API returns ApiResponse<{ students: Student[] }>
     const response = await StudentAPI.getAllStudents();
-    console.log('📥 fetchStudents: Received API response:', response);
+    logger.log('📥 fetchStudents: Received API response:', response);
 
     // Extract students from response
     const students = response.success && response.data?.students
       ? response.data.students
       : [];
 
-    console.log('📊 fetchStudents: Extracted students array:', {
+    logger.log('📊 fetchStudents: Extracted students array:', {
       count: students.length,
       firstStudent: students[0]
     });
@@ -86,14 +87,14 @@ const fetchStudents = async () => {
       avatar: student.avatar || (parseInt(student.studentCode) % 4) + 1,
     }));
 
-    console.log('✅ fetchStudents: Returning students with avatars:', {
+    logger.log('✅ fetchStudents: Returning students with avatars:', {
       count: studentsWithAvatars.length,
       sample: studentsWithAvatars[0]
     });
 
     return studentsWithAvatars;
   } catch (error) {
-    console.error("❌ Error fetching students:", error);
+    logger.error("❌ Error fetching students:", error);
     return [];
   }
 };
@@ -105,7 +106,7 @@ const fetchStats = async () => {
     const response = await StudentAPI.getStats();
     return response.success && response.data ? response.data : null;
   } catch (error) {
-    console.error("Error fetching stats:", error);
+    logger.error("Error fetching stats:", error);
     return null;
   }
 };
@@ -120,7 +121,7 @@ const analyzeStudent = async (studentCode) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error analyzing student:", error);
+    logger.error("Error analyzing student:", error);
     return { success: false, error: error.message };
   }
 };
@@ -133,7 +134,7 @@ const runSmartAnalysis = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error running smart analysis:", error);
+    logger.error("Error running smart analysis:", error);
     return { success: false, error: error.message };
   }
 };
@@ -572,7 +573,7 @@ const FuturisticTeacherDashboard = () => {
 
   // Fetch real data from backend - defined at component level for reuse
   const loadData = async () => {
-    console.log('🔄 FuturisticDashboard: Starting loadData...');
+    logger.log('🔄 FuturisticDashboard: Starting loadData...');
     setLoading(true);
     setConnectionError(null); // Clear previous errors
     try {
@@ -582,7 +583,7 @@ const FuturisticTeacherDashboard = () => {
         fetchStats(),
       ]);
 
-      console.log('📚 FuturisticDashboard: Received students data:', {
+      logger.log('📚 FuturisticDashboard: Received students data:', {
         count: studentsData?.length || 0,
         students: studentsData
       });
@@ -613,7 +614,7 @@ const FuturisticTeacherDashboard = () => {
           },
         });
       } catch (error) {
-        console.error("Error loading dashboard data:", error);
+        logger.error("Error loading dashboard data:", error);
         setConnectionError(error);
       } finally {
         setLoading(false);

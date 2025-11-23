@@ -7,6 +7,7 @@
  */
 
 import { EXPORT_CONFIG } from '../config';
+import logger from './logger.js';
 
 /**
  * Export students data to Excel file (Dynamic Import)
@@ -85,7 +86,7 @@ export const exportToExcel = async (students) => {
 
     return { success: true, filename };
   } catch (error) {
-    console.error('Excel export error:', error);
+    logger.error('Excel export error:', error);
     throw new Error('שגיאה בייצוא קובץ Excel');
   }
 };
@@ -238,7 +239,7 @@ export const exportToPDF = async (students) => {
 
     return { success: true, filename };
   } catch (error) {
-    console.error('PDF export error:', error);
+    logger.error('PDF export error:', error);
     throw new Error('שגיאה בייצוא קובץ PDF');
   }
 };
@@ -306,7 +307,7 @@ export const exportStudentDetailToPDF = async (studentData) => {
 
     return { success: true, filename };
   } catch (error) {
-    console.error('Student PDF export error:', error);
+    logger.error('Student PDF export error:', error);
     throw new Error('שגיאה בייצוא דוח התלמיד');
   }
 };

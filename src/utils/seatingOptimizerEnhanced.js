@@ -20,6 +20,7 @@
 
 import { optimizeClassroom } from '../services/optimizationAPI';
 import { solveSeatingCSP as fallbackSolver } from './seatingOptimizer';
+import logger from './logger.js';
 
 // ============================================================================
 // DATA CONVERSION FUNCTIONS
@@ -175,7 +176,7 @@ const findStudentAtPosition = (studentSeats, students, targetRow, targetCol) => 
 export const solveSeatingCSP = async (students, shape, options = {}) => {
   // Validate inputs
   if (!students || students.length === 0) {
-    console.warn('⚠️ No students provided');
+    logger.warn('⚠️ No students provided');
     return {
       arrangement: [],
       score: 0,
@@ -185,7 +186,7 @@ export const solveSeatingCSP = async (students, shape, options = {}) => {
   }
 
   if (!shape || !shape.rows || !shape.cols) {
-    console.warn('⚠️ Invalid shape configuration');
+    logger.warn('⚠️ Invalid shape configuration');
     return {
       arrangement: [],
       score: 0,
@@ -228,8 +229,8 @@ export const solveSeatingCSP = async (students, shape, options = {}) => {
     return uiFormat;
 
   } catch (error) {
-    console.warn('⚠️ Python backend unavailable, falling back to JavaScript algorithm...');
-    console.warn(`Error: ${error.message}`);
+    logger.warn('⚠️ Python backend unavailable, falling back to JavaScript algorithm...');
+    logger.warn(`Error: ${error.message}`);
 
     // Fall back to original JavaScript implementation
     return fallbackSolver(students, shape, options);

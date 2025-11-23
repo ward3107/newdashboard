@@ -3,6 +3,7 @@
  * Initializes Firebase services (Auth, Firestore, and Cloud Functions)
  */
 
+import logger from '../utils/logger';
 import { initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
@@ -43,7 +44,7 @@ const firebaseConfigured = isFirebaseConfigured();
 
 // Only warn during development, not during build
 if (!firebaseConfigured && import.meta.env.DEV) {
-  console.warn(
+  logger.warn(
     '⚠️ Firebase not configured. Set VITE_FIREBASE_* environment variables.\n' +
     'See docs/FIREBASE_SETUP_GUIDE.md for instructions.'
   );

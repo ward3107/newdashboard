@@ -42,6 +42,7 @@ import {
   Layers
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import logger from '../../utils/logger';
 
 // ============================================================================
 // EMOTIONAL-BEHAVIORAL-COGNITIVE DASHBOARD
@@ -845,7 +846,7 @@ const calculateEBCMetrics = (students) => {
   );
 
   if (analyzedStudents.length === 0) {
-    console.warn('⚠️ EmotionalBehavioralDashboard: No analyzed students found');
+    logger.warn('⚠️ EmotionalBehavioralDashboard: No analyzed students found');
     // Return null to prevent showing mock data
     return null;
   }

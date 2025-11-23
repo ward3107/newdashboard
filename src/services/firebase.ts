@@ -6,6 +6,7 @@
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getFunctions, Functions } from 'firebase/functions';
+import logger from '../utils/logger';
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
@@ -36,14 +37,14 @@ if (isFirebaseConfigured) {
     functions = getFunctions(app);
 
     if (import.meta.env.DEV) {
-      console.log('✅ Firebase initialized successfully');
+      logger.log('✅ Firebase initialized successfully');
     }
   } catch (error) {
-    console.error('❌ Failed to initialize Firebase:', error);
+    logger.error('❌ Failed to initialize Firebase:', error);
   }
 } else {
   if (import.meta.env.DEV) {
-    console.warn('⚠️ Firebase not configured. Set Firebase environment variables in .env');
+    logger.warn('⚠️ Firebase not configured. Set Firebase environment variables in .env');
   }
 }
 

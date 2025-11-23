@@ -13,6 +13,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import logger from '../utils/logger';
 import type {
   Student,
   DetailedStudent,
@@ -27,7 +28,7 @@ const SCHOOL_ID = import.meta.env.VITE_SCHOOL_ID || 'ishebott';
  */
 export async function getStatsFromFirestore(): Promise<ApiResponse<DashboardStats>> {
   if (!db) {
-    console.warn('⚠️ Firebase not configured. Check Vercel environment variables.');
+    logger.warn('⚠️ Firebase not configured. Check Vercel environment variables.');
     return {
       success: false,
       error: 'Firebase not configured. Please set VITE_FIREBASE_* environment variables in Vercel dashboard.',
@@ -74,7 +75,7 @@ export async function getStatsFromFirestore(): Promise<ApiResponse<DashboardStat
     };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('❌ Firestore error:', error);
+    logger.error('❌ Firestore error:', error);
     return {
       success: false,
       error: `Failed to fetch stats: ${errorMessage}`,
@@ -87,7 +88,7 @@ export async function getStatsFromFirestore(): Promise<ApiResponse<DashboardStat
  */
 export async function getAllStudentsFromFirestore(): Promise<ApiResponse<{ students: Student[] }>> {
   if (!db) {
-    console.warn('⚠️ Firebase not configured. Check Vercel environment variables.');
+    logger.warn('⚠️ Firebase not configured. Check Vercel environment variables.');
     return {
       success: false,
       error: 'Firebase not configured. Please set VITE_FIREBASE_* environment variables in Vercel dashboard.',
@@ -142,7 +143,7 @@ export async function getAllStudentsFromFirestore(): Promise<ApiResponse<{ stude
     };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('❌ Firestore error:', error);
+    logger.error('❌ Firestore error:', error);
     return {
       success: false,
       error: `Failed to fetch students: ${errorMessage}`,
@@ -220,7 +221,7 @@ export async function getStudentFromFirestore(studentId: string): Promise<ApiRes
     };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('❌ Firestore error:', error);
+    logger.error('❌ Firestore error:', error);
     return {
       success: false,
       error: `Failed to fetch student: ${errorMessage}`,

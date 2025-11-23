@@ -1,6 +1,8 @@
 // Google Apps Script API Service
 // Complete integration with all available functions
 
+import logger from '../utils/logger.js';
+
 const API_URL =
   import.meta.env.VITE_GOOGLE_SCRIPT_URL ||
   "https://script.google.com/macros/s/AKfycbxSawbi4f370i94rPA2EpVZh3LlfMisq7uu6r3pS0Q3rQU8nW5qTk_Witm1FVd5kQtb/exec";
@@ -43,7 +45,7 @@ export const getAllStudents = async () => {
 
     return { success: true, students };
   } catch (error) {
-    console.error("Error fetching students:", error);
+    logger.error("Error fetching students:", error);
     return { success: false, error: error.message };
   }
 };
@@ -60,13 +62,13 @@ export const getStudent = async (studentCode) => {
 
     // Check if the API returned an error
     if (data.error) {
-      console.error("❌ API returned error:", data.error);
+      logger.error("❌ API returned error:", data.error);
       return { success: false, error: data.error };
     }
 
     return { success: true, student: data };
   } catch (error) {
-    console.error("❌ Error fetching student:", error);
+    logger.error("❌ Error fetching student:", error);
     return { success: false, error: error.message };
   }
 };
@@ -77,7 +79,7 @@ export const getStats = async () => {
     const data = await response.json();
     return { success: true, stats: data };
   } catch (error) {
-    console.error("Error fetching stats:", error);
+    logger.error("Error fetching stats:", error);
     return { success: false, error: error.message };
   }
 };
@@ -89,7 +91,7 @@ export const analyzeOneStudent = async (studentCode) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error analyzing student:", error);
+    logger.error("Error analyzing student:", error);
     return { success: false, error: error.message };
   }
 };
@@ -100,7 +102,7 @@ export const syncStudents = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error syncing students:", error);
+    logger.error("Error syncing students:", error);
     return { success: false, error: error.message };
   }
 };
@@ -111,7 +113,7 @@ export const initialSync = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error in initial sync:", error);
+    logger.error("Error in initial sync:", error);
     return { success: false, error: error.message };
   }
 };
@@ -126,7 +128,7 @@ export const deleteStudentAnalysis = async (studentCode) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error deleting analysis:", error);
+    logger.error("Error deleting analysis:", error);
     return { success: false, error: error.message };
   }
 };
@@ -137,7 +139,7 @@ export const deleteMultipleAnalyses = async (studentCodes) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error deleting multiple analyses:", error);
+    logger.error("Error deleting multiple analyses:", error);
     return { success: false, error: error.message };
   }
 };
@@ -148,7 +150,7 @@ export const deleteByClass = async (classId) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error deleting by class:", error);
+    logger.error("Error deleting by class:", error);
     return { success: false, error: error.message };
   }
 };
@@ -159,7 +161,7 @@ export const deleteAllAnalyses = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error deleting all analyses:", error);
+    logger.error("Error deleting all analyses:", error);
     return { success: false, error: error.message };
   }
 };
@@ -170,7 +172,7 @@ export const deleteOldAnalyses = async (days = 30) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error deleting old analyses:", error);
+    logger.error("Error deleting old analyses:", error);
     return { success: false, error: error.message };
   }
 };
@@ -185,7 +187,7 @@ export const reanalyzeStudent = async (studentCode) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error re-analyzing student:", error);
+    logger.error("Error re-analyzing student:", error);
     return { success: false, error: error.message };
   }
 };
@@ -196,7 +198,7 @@ export const reanalyzeMultiple = async (studentCodes) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error re-analyzing multiple:", error);
+    logger.error("Error re-analyzing multiple:", error);
     return { success: false, error: error.message };
   }
 };
@@ -211,7 +213,7 @@ export const analyzeBatch = async (batchSize = 5) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error in batch analysis:", error);
+    logger.error("Error in batch analysis:", error);
     return { success: false, error: error.message };
   }
 };
@@ -222,7 +224,7 @@ export const standardBatch = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error in standard batch:", error);
+    logger.error("Error in standard batch:", error);
     return { success: false, error: error.message };
   }
 };
@@ -233,7 +235,7 @@ export const quickBatch = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error in quick batch:", error);
+    logger.error("Error in quick batch:", error);
     return { success: false, error: error.message };
   }
 };
@@ -248,7 +250,7 @@ export const getAnalyzedStudents = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error getting analyzed students:", error);
+    logger.error("Error getting analyzed students:", error);
     return { success: false, error: error.message };
   }
 };
@@ -259,7 +261,7 @@ export const getUnanalyzedStudents = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error getting unanalyzed students:", error);
+    logger.error("Error getting unanalyzed students:", error);
     return { success: false, error: error.message };
   }
 };
@@ -270,7 +272,7 @@ export const backupAnalyses = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error backing up analyses:", error);
+    logger.error("Error backing up analyses:", error);
     return { success: false, error: error.message };
   }
 };
@@ -281,7 +283,7 @@ export const restoreFromBackup = async (backupId) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error restoring backup:", error);
+    logger.error("Error restoring backup:", error);
     return { success: false, error: error.message };
   }
 };
@@ -292,7 +294,7 @@ export const getAuditLog = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error getting audit log:", error);
+    logger.error("Error getting audit log:", error);
     return { success: false, error: error.message };
   }
 };
@@ -303,7 +305,7 @@ export const searchAnalyses = async (query) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error searching analyses:", error);
+    logger.error("Error searching analyses:", error);
     return { success: false, error: error.message };
   }
 };
@@ -314,7 +316,7 @@ export const testConnection = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error testing connection:", error);
+    logger.error("Error testing connection:", error);
     return { success: false, error: error.message };
   }
 };
@@ -329,7 +331,7 @@ export const analyzeAllUnanalyzed = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error analyzing all unanalyzed:", error);
+    logger.error("Error analyzing all unanalyzed:", error);
     return { success: false, error: error.message };
   }
 };
@@ -340,7 +342,7 @@ export const listBackups = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error listing backups:", error);
+    logger.error("Error listing backups:", error);
     return { success: false, error: error.message };
   }
 };
@@ -351,7 +353,7 @@ export const exportAnalyses = async (format = 'json') => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error exporting analyses:", error);
+    logger.error("Error exporting analyses:", error);
     return { success: false, error: error.message };
   }
 };
@@ -362,7 +364,7 @@ export const healthCheck = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error checking health:", error);
+    logger.error("Error checking health:", error);
     return { success: false, error: error.message };
   }
 };
@@ -373,7 +375,7 @@ export const deleteAllAnalysesWithToken = async (token) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error deleting all analyses:", error);
+    logger.error("Error deleting all analyses:", error);
     return { success: false, error: error.message };
   }
 };
@@ -384,7 +386,7 @@ export const restoreFromBackupWithToken = async (backupId, token) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error restoring backup:", error);
+    logger.error("Error restoring backup:", error);
     return { success: false, error: error.message };
   }
 };

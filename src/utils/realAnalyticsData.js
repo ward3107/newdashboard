@@ -2,6 +2,8 @@
 // Aggregates actual student data from analyzed students
 // NOTE: Current system uses strengthsCount and challengesCount, not detailed ISHEBOT insights
 
+import logger from './logger.js';
+
 /**
  * Aggregate real analytics data from analyzed students
  * @param {Array} students - Array of student objects
@@ -15,7 +17,7 @@ export const aggregateRealAnalytics = (students = []) => {
 
 
   if (analyzedStudents.length === 0) {
-    console.warn('⚠️ No analyzed students found. All students need analysis.');
+    logger.warn('⚠️ No analyzed students found. All students need analysis.');
     return null;
   }
 

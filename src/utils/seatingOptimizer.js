@@ -16,6 +16,8 @@
  * - Classroom management best practices
  */
 
+import logger from './logger.js';
+
 // ============================================================================
 // STUDENT ANALYSIS FUNCTIONS
 // ============================================================================
@@ -415,12 +417,12 @@ export const solveSeatingCSP = (students, shape, options = {}) => {
   try {
     // Validate inputs
     if (!students || students.length === 0) {
-      console.warn('⚠️ No students provided to CSP solver');
+      logger.warn('⚠️ No students provided to CSP solver');
       return { arrangement: [], score: 0, violations: ['No students'], metadata: {} };
     }
 
     if (!shape || !shape.rows || !shape.cols) {
-      console.warn('⚠️ Invalid shape configuration');
+      logger.warn('⚠️ Invalid shape configuration');
       return { arrangement: [], score: 0, violations: ['Invalid shape'], metadata: {} };
     }
 
@@ -511,7 +513,7 @@ export const solveSeatingCSP = (students, shape, options = {}) => {
       }
     };
   } catch (error) {
-    console.error('❌ CSP Solver error:', error);
+    logger.error('❌ CSP Solver error:', error);
     return {
       arrangement: [],
       score: 0,

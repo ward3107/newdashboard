@@ -4,6 +4,7 @@
  */
 
 import CryptoJS from 'crypto-js';
+import logger from '../utils/logger';
 
 // Security Configuration
 export const SECURITY_CONFIG = {
@@ -198,7 +199,7 @@ class SecurityManager {
       const jsonString = JSON.stringify(data);
       return CryptoJS.AES.encrypt(jsonString, SECURITY_CONFIG.ENCRYPTION_KEY).toString();
     } catch (error) {
-      console.error('Encryption error:', error);
+      logger.error('Encryption error:', error);
       throw new Error('Failed to encrypt data');
     }
   }
@@ -212,7 +213,7 @@ class SecurityManager {
       const decryptedString = bytes.toString(CryptoJS.enc.Utf8);
       return JSON.parse(decryptedString);
     } catch (error) {
-      console.error('Decryption error:', error);
+      logger.error('Decryption error:', error);
       throw new Error('Failed to decrypt data');
     }
   }
@@ -315,7 +316,7 @@ class SecurityManager {
       url: window.location.href
     };
 
-    console.error('Security Violation:', violation);
+    logger.error('Security Violation:', violation);
 
     // Store for monitoring
     try {
@@ -324,7 +325,7 @@ class SecurityManager {
       if (violations.length > 100) violations.shift(); // Keep only last 100
       localStorage.setItem('security_violations', JSON.stringify(violations));
     } catch (error) {
-      console.error('Failed to store security violation:', error);
+      logger.error('Failed to store security violation:', error);
     }
   }
 

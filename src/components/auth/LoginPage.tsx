@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../../hooks/useAuth';
 import type { LoginCredentials } from '../../types/auth';
+import { shouldUseMockAuth, getTestAccounts } from '../../utils/mockAuth';
 
 /**
  * Login form validation schema
@@ -91,6 +92,38 @@ export const LoginPage: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
           <p className="text-gray-600">Sign in to access your dashboard</p>
         </div>
+
+        {/* Test Accounts Banner (only shown when using mock auth) */}
+        {shouldUseMockAuth() && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start">
+              <svg
+                className="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <div className="flex-1">
+                <h3 className="font-semibold text-blue-900 mb-2">🧪 Test Mode - Use these accounts:</h3>
+                <div className="text-sm text-blue-800 space-y-1">
+                  {getTestAccounts().map((account) => (
+                    <div key={account.email} className="font-mono bg-white/50 p-2 rounded">
+                      <strong>{account.displayName}:</strong> {account.email} / {account.password}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-blue-600 mt-2">
+                  ⚠️ Mock authentication - Remove before production
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
