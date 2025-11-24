@@ -40,7 +40,7 @@ class Settings(BaseSettings):
 
     @property
     def allowed_origins_regex(self) -> Optional[str]:
-        """
+        r"""
         Convert wildcard patterns to regex for CORS middleware
         Converts https://*.vercel.app to https://.*\.vercel\.app
         """

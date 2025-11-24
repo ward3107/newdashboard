@@ -51,6 +51,8 @@ Thumbs.db
 *.tmp
 *.temp
 *.cache
+nul
+**/nul
 
 # Build artifacts
 *.tsbuildinfo

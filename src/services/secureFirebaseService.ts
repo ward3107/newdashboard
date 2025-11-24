@@ -21,6 +21,7 @@ import { httpsCallable } from 'firebase/functions';
 import { db, functions, isFirebaseAvailable } from '../config/firebase';
 import { securityManager, SecurityUtils } from '../security/securityEnhancements';
 import logger from '../utils/logger';
+import CryptoJS from 'crypto-js';
 
 // Security configuration
 const SECURITY_SETTINGS = {
@@ -265,7 +266,10 @@ class SecureFirebaseService {
     try {
       // Try using a secure Cloud Function first
       if (functions) {
-        const submitAssessment = httpsCallable(functions, 'submitAssessmentSecure');
+        const submitAssessment = httpsCallable<typeof data, { success: boolean; submissionId: string }>(
+          functions,
+          'submitAssessmentSecure'
+        );
         const result = await submitAssessment(data);
 
         if (result.data.success) {

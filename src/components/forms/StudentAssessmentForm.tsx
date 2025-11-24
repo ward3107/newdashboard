@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import logger from '../../utils/logger';
 import { httpsCallable } from 'firebase/functions';
-import { functions } from '../../config/firebase';
+import { functions, isFirebaseAvailable } from '../../config/firebase';
 import { secureFirebaseService } from '../../services/secureFirebaseService';
 import { securityManager, SecurityUtils } from '../../security/securityEnhancements';
 import { ASSESSMENT_QUESTIONS, DOMAIN_LABELS, type Language } from '../../data/assessmentQuestions';
@@ -42,9 +42,10 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
 
   // Error recovery states
   const [submissionError, setSubmissionError] = useState<{
-    type: 'network' | 'server' | 'data' | 'unknown';
+    type: 'network' | 'server' | 'data' | 'unknown' | 'submission' | 'unexpected';
     message: string;
     retryCount: number;
+    timestamp?: Date;
   } | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
   const [maxRetries] = useState(3);
@@ -62,9 +63,9 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
   // Generate class options for all grades
-  const getClassOptions = () => {
+  const getClassOptions = (): Array<{value: string, label: string}> => {
     const grades = ['ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'יא', 'יב']; // Grades 3-12 in Hebrew
-    const options = [];
+    const options: Array<{value: string, label: string}> = [];
 
     grades.forEach(grade => {
       for (let i = 1; i <= 10; i++) {
@@ -959,7 +960,7 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
       };
 
       // Handle online submission with secure Firebase service
-      if (isOnline) {
+      if (isOnline && isFirebaseAvailable()) {
         setIsRetrying(true);
 
         // Submit securely with validation
@@ -992,12 +993,25 @@ export function StudentAssessmentForm({ academicMode = false, onLanguageChange }
           });
         }
       } else {
-        // Offline - save for later sync (existing logic)
+        // Offline or Firebase not available - save for later sync
         const newPending = [...pendingSubmissions, submissionData];
         setPendingSubmissions(newPending);
         localStorage.setItem('pendingSubmissions', JSON.stringify(newPending));
 
-        toast.success(t('messages.savedOffline', language), { duration: 3000 });
+        const message = isFirebaseAvailable()
+          ? t('messages.savedOffline', language)
+          : 'Assessment saved locally (Firebase not configured)';
+
+        toast.success(message, { duration: 3000 });
+
+        // Still celebrate for better UX
+        confetti({
+          particleCount: 50,
+          spread: 50,
+          origin: { y: 0.6 }
+        });
+
+        setSubmitted(true);
       }
 
     } catch (error) {

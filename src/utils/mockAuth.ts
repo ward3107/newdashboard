@@ -7,7 +7,7 @@
  * without Firebase setup. Delete this file when Firebase is configured.
  */
 
-import type { User, UserRole } from '../types/auth';
+import { type User, UserRole } from '../types/auth';
 
 // Test users - you can log in with any of these
 export const MOCK_USERS = {
@@ -16,7 +16,7 @@ export const MOCK_USERS = {
     email: 'teacher@test.com',
     password: 'teacher123', // ⚠️ Never do this in production!
     displayName: 'Test Teacher',
-    role: 'teacher' as UserRole,
+    role: UserRole.TEACHER,
     schoolId: 'school-001',
     isActive: true,
     createdAt: new Date(),
@@ -26,7 +26,7 @@ export const MOCK_USERS = {
     email: 'admin@test.com',
     password: 'admin123',
     displayName: 'Test Admin',
-    role: 'admin' as UserRole,
+    role: UserRole.SCHOOL_ADMIN,
     schoolId: 'school-001',
     isActive: true,
     createdAt: new Date(),
@@ -36,7 +36,7 @@ export const MOCK_USERS = {
     email: 'manager@test.com',
     password: 'manager123',
     displayName: 'Test Manager',
-    role: 'teacher' as UserRole, // Managers have teacher role
+    role: UserRole.TEACHER, // Managers have teacher role
     schoolId: 'school-001',
     isActive: true,
     createdAt: new Date(),
