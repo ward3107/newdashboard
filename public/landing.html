@@ -19,7 +19,8 @@
     <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.svg">
     <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.svg">
 
-    <!-- Apple PWA Meta Tags -->
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ISHEBOT">
@@ -67,11 +68,11 @@
         /* Smooth scroll with offset for sticky header */
         html {
             scroll-behavior: smooth;
-            scroll-padding-top: 100px;
+            scroll-padding-top: 80px;
         }
 
         section[id] {
-            scroll-margin-top: 100px;
+            scroll-margin-top: 80px;
         }
 
         body {
@@ -79,6 +80,71 @@
             line-height: 1.6;
             color: var(--dark);
             background: var(--white);
+        }
+
+        /* Progress indicator bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            z-index: 1001;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Lazy reveal animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .reveal-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .reveal-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Stagger children animations */
+        .reveal-stagger > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+
+        .reveal-stagger.visible > *:nth-child(1) { transition-delay: 0.1s; }
+        .reveal-stagger.visible > *:nth-child(2) { transition-delay: 0.2s; }
+        .reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.3s; }
+        .reveal-stagger.visible > *:nth-child(4) { transition-delay: 0.4s; }
+        .reveal-stagger.visible > *:nth-child(5) { transition-delay: 0.5s; }
+        .reveal-stagger.visible > *:nth-child(6) { transition-delay: 0.6s; }
+
+        .reveal-stagger.visible > * {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .container {
@@ -558,7 +624,7 @@
 
         /* Problem Section */
         .problem {
-            padding: 6rem 0;
+            padding: 4rem 0;
             background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
             position: relative;
             overflow: hidden;
@@ -682,7 +748,7 @@
 
         /* Features Section */
         .features {
-            padding: 6rem 0;
+            padding: 4rem 0;
             background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
             position: relative;
             overflow: hidden;
@@ -925,7 +991,7 @@
 
         /* ROI Section */
         .roi-section {
-            padding: 5rem 0;
+            padding: 3.5rem 0;
             background: linear-gradient(135deg, #1e3a8a, #3b82f6);
             color: var(--white);
         }
@@ -1057,7 +1123,7 @@
 
         /* FAQ Section */
         .faq-section {
-            padding: 5rem 0;
+            padding: 3.5rem 0;
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
         }
 
@@ -1080,6 +1146,7 @@
             gap: 1.5rem;
             max-width: 1200px;
             margin: 0 auto;
+            align-items: start;
         }
 
         .faq-item {
@@ -1174,7 +1241,7 @@
 
         /* Before/After Comparison Section */
         .before-after-section {
-            padding: 5rem 0;
+            padding: 3.5rem 0;
             background: linear-gradient(135deg, #f0f9ff 0%, #fef3c7 50%, #e0f2fe 100%);
             overflow: hidden;
         }
@@ -1601,7 +1668,7 @@
 
         /* Video Demo Section */
         .video-demo-section {
-            padding: 5rem 0;
+            padding: 3.5rem 0;
             background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 50%, #eff6ff 100%);
         }
 
@@ -2042,7 +2109,7 @@
 
         /* Pricing Section */
         .pricing {
-            padding: 5rem 0;
+            padding: 3.5rem 0;
         }
 
         .pricing-grid {
@@ -2787,8 +2854,8 @@
         }
 
         .lang-toggle {
-            width: 60px;
-            height: 60px;
+            width: 44px;
+            height: 44px;
             background: linear-gradient(135deg, #3B82F6, #8B5CF6);
             border: none;
             border-radius: 50%;
@@ -2797,14 +2864,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
             line-height: 1;
         }
 
         .lang-toggle #currentLangFlag {
             display: block;
-            font-size: 1.2rem;
+            font-size: 1rem;
             line-height: 1;
         }
 
@@ -2886,6 +2953,9 @@
     </style>
 </head>
 <body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
     <!-- Language Switcher -->
     <div class="language-switcher">
         <button class="lang-toggle" id="langToggleBtn" title="Choose Language / בחר שפה">
@@ -2973,7 +3043,6 @@
             </div>
 
             <div class="cta-buttons">
-                <a href="/dashboard" class="btn btn-primary btn-super">🎁 תן למערכת לעבוד במקומך - התחל עכשיו!</a>
                 <a href="#features" class="btn btn-secondary">ראה איך זה חוסך לך זמן</a>
             </div>
         </div>
@@ -3031,7 +3100,7 @@
     </section>
 
     <!-- Problem Section -->
-    <section id="problem" class="problem">
+    <section id="problem" class="problem reveal">
         <div class="container">
             <h2 class="section-title">🔥 העבודה שגוזלת ממורים את כל האנרגיה 🔥</h2>
             <p class="section-subtitle">האם אתה מבזבז שעות יקרות על המשימות האלו?</p>
@@ -3086,7 +3155,7 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="features">
+    <section id="features" class="features reveal">
         <div class="container">
             <h2 class="section-title">💎 ISHEBOT - הפתרון שישנה לך את החיים! 💎</h2>
             <p class="section-subtitle">AI חזק שעושה את כל העבודה הכבדה במקומך</p>
@@ -3167,7 +3236,7 @@
     </section>
 
     <!-- Video Demo Section -->
-    <section id="video-demo" class="video-demo-section">
+    <section id="video-demo" class="video-demo-section reveal">
         <div class="container">
             <h2 class="section-title" style="color: #1e40af;">🎬 ראו את ISHEBOT בפעולה</h2>
             <p class="section-subtitle" style="color: #475569; font-size: 1.4rem; font-weight: 600;">
@@ -3266,7 +3335,7 @@
     </section>
 
     <!-- Before/After Comparison Section -->
-    <section id="before-after" class="before-after-section">
+    <section id="before-after" class="before-after-section reveal">
         <div class="container">
             <h2 class="section-title" style="color: #1e40af;">🔄 מהפכה בניהול כיתה</h2>
             <p class="section-subtitle" style="color: #475569; font-size: 1.4rem;">ראו את ההבדל המדהים!</p>
@@ -3375,7 +3444,7 @@
     </section>
 
     <!-- ROI Calculation Section -->
-    <section id="roi" class="roi-section">
+    <section id="roi" class="roi-section reveal">
         <div class="container">
             <h2 class="section-title">💰 תשואה על ההשקעה (ROI)</h2>
             <p class="section-subtitle">למה ISHEBOT היא ההשקעה הכי חכמה שלכם?</p>
@@ -3471,7 +3540,7 @@
     </section>
 
     <!-- FAQ Section -->
-    <section id="faq" class="faq-section">
+    <section id="faq" class="faq-section reveal">
         <div class="container">
             <h2 class="section-title">❓ שאלות נפוצות</h2>
             <p class="section-subtitle">תשובות לשאלות שמנהלים שואלים לפני ההחלטה</p>
@@ -3590,14 +3659,14 @@
     </section>
 
     <!-- Pricing Section -->
-    <section id="pricing" class="pricing">
+    <section id="pricing" class="pricing reveal">
         <div class="container">
             <h2 class="section-title">מחירים שקופים ומשתלמים</h2>
             <div class="pricing-grid">
                 <div class="pricing-card">
                     <h3>📦 חבילה בסיסית</h3>
-                    <div class="price">₪47,200</div>
-                    <div class="period">לשנה | בתי ספר קטנים</div>
+                    <div class="price">₪42,000</div>
+                    <div class="period">לשנה</div>
                     <ul>
                         <li>ניתוח 50+ נקודות נתונים לכל תלמיד</li>
                         <li>מערכת צבעים חכמה (אדום/צהוב/ירוק)</li>
@@ -3605,49 +3674,50 @@
                         <li>סידור ישיבה אוטומטי עם AI</li>
                         <li>לוח בקרה פוטוריסטי בסיסי</li>
                         <li>הדפסה ויצוא PDF</li>
-                        <li>תמיכה ב-2 שפות (עברית ואנגלית)</li>
-                        <li>עד 10 מורים</li>
-                        <li>תמיכה במייל</li>
+                        <li>תמיכה ב-4 שפות (עברית, אנגלית, ערבית, רוסית)</li>
+                        <li>נגישות מלאה WCAG 2.1</li>
+                        <li>תמיכה במייל / whatsapp</li>
+                        <li>תואם תיקון 13 ומשרד החינוך</li>
                     </ul>
                     <a href="/dashboard" class="btn btn-primary">התחל עכשיו</a>
                 </div>
 
                 <div class="pricing-card featured">
                     <h3>📦 חבילה מקצועית</h3>
-                    <div class="price">₪88,000</div>
-                    <div class="period">לשנה | בתי ספר בינוניים</div>
+                    <div class="price">₪78,000</div>
+                    <div class="period">לשנה</div>
                     <ul>
                         <li>אלגוריתם גנטי מתקדם (CSP) - 100 דורות</li>
                         <li>ניתוח 50+ נקודות נתונים + ניתוח מיקום חכם</li>
+                        <li>ניתוח ISHEBOT מתקדם עם תובנות AI</li>
                         <li>כל 6 מבני הכיתה (שורות, זוגות, אשכולות, U-Shape, מעגל, גמיש)</li>
                         <li>Hover Tooltip עם הסבר מפורט למיקום</li>
                         <li>גרור ושחרר עם משוב מיידי</li>
                         <li>לוח בקרה פוטוריסטי מלא עם אנימציות</li>
                         <li>תמיכה ב-4 שפות (עברית, אנגלית, ערבית, רוסית)</li>
+                        <li>1 דוח (לא כלול בפלטפורמה) בהתאמה אישית לפי בית הספר</li>
                         <li>נגישות מלאה WCAG 2.1</li>
-                        <li>עד 25 מורים</li>
-                        <li>תמיכה מהירה ב-WhatsApp</li>
+                        <li>תמיכה במייל / whatsapp</li>
                         <li>הדרכה אישית מקיפה</li>
+                        <li>תואם תיקון 13 ומשרד החינוך</li>
                     </ul>
                     <a href="/dashboard" class="btn btn-primary">התחל עכשיו</a>
                 </div>
 
                 <div class="pricing-card">
                     <h3>📦 חבילה ארגונית</h3>
-                    <div class="price">₪120,000</div>
-                    <div class="period">לשנה | בתי ספר גדולים</div>
+                    <div class="price">₪100,000</div>
+                    <div class="period">לשנה</div>
                     <ul>
                         <li>כל תכונות החבילה המקצועית</li>
-                        <li>אלגוריתם גנטי מותאם אישית לארגון</li>
-                        <li>אינטגרציה עם Google Forms אוטומטית</li>
+                        <li>אלגוריתם גנטי מתקדם (CSP) - 100 דורות</li>
                         <li>ניתוח ISHEBOT מתקדם עם תובנות AI</li>
-                        <li>דוחות מפורטים להנהלה והורים</li>
-                        <li>התאמה אישית למבני כיתה ייחודיים</li>
-                        <li>כל 4 השפות עם תמיכה RTL/LTR מלאה</li>
+                        <li>3 דוחות (לא כלולות בפלטפורמה) בהתאמה אישית לפי בית הספר</li>
+                        <li>תמיכה ב-4 שפות (עברית, אנגלית, ערבית, רוסית - אפשרות להוספה עד 5 שפות)</li>
+                        <li>נגישות מלאה WCAG 2.1</li>
+                        <li>תמיכה במייל / whatsapp</li>
+                        <li>הדרכה אישית מקיפה</li>
                         <li>תואם תיקון 13 ומשרד החינוך</li>
-                        <li>מורים ללא הגבלה</li>
-                        <li>תמיכה פרימיום 24/7</li>
-                        <li>מנהל חשבון ייעודי</li>
                         <li>עדכונים ושדרוגים ראשונים</li>
                     </ul>
                     <a href="/dashboard" class="btn btn-primary">התחל עכשיו</a>
@@ -3657,7 +3727,7 @@
     </section>
 
     <!-- CTA Section -->
-    <section id="contact" class="cta-section">
+    <section id="contact" class="cta-section reveal">
         <div class="container">
             <h2>מוכנים לשדרג את בית הספר שלכם?</h2>
             <p>הצטרפו למורים שכבר חוסכים 10 שעות שבועיות</p>
@@ -5498,7 +5568,7 @@
 
             // Scroll-spy functionality
             function scrollSpy() {
-                const scrollPosition = window.scrollY + 150; // Offset for header
+                const scrollPosition = window.scrollY + 130; // Offset for header
 
                 sections.forEach(section => {
                     const sectionTop = section.offsetTop;
@@ -5573,15 +5643,24 @@
         }
 
         // ============================================================================
-        // PWA INSTALL PROMPT
+        // PWA INSTALL PROMPT - Shows on each visit unless installed
+        // Dismissed = shows again next visit | Installed = never shows again
         // ============================================================================
+        const PWA_INSTALL_KEY = 'ishebot-pwa-installed';
         let deferredPrompt;
+
+        // Only hide permanently if app was installed (not just dismissed)
+        const pwaInstalled = localStorage.getItem(PWA_INSTALL_KEY) === 'true';
+
         const installButton = document.createElement('button');
         installButton.innerHTML = `
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
             </svg>
             <span>התקן אפליקציה</span>
+            <svg class="close-btn" width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 8px; opacity: 0.7;">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
         `;
         installButton.style.cssText = `
             position: fixed;
@@ -5614,20 +5693,35 @@
 
         document.body.appendChild(installButton);
 
+        // Handle close button click (dismiss for this session only)
+        installButton.querySelector('.close-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Don't save to localStorage - will show again on next visit
+            installButton.style.display = 'none';
+            console.log('❌ User dismissed PWA install button (will show again next visit)');
+        });
+
         // Listen for the beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
             // Stash the event so it can be triggered later
             deferredPrompt = e;
-            // Show the install button
-            installButton.style.display = 'flex';
 
-            console.log('💡 PWA install prompt available');
+            // Only show if app was NOT installed
+            if (!pwaInstalled) {
+                installButton.style.display = 'flex';
+                console.log('💡 PWA install prompt available');
+            } else {
+                console.log('💡 PWA already installed - not showing install button');
+            }
         });
 
         // Handle install button click
-        installButton.addEventListener('click', async () => {
+        installButton.addEventListener('click', async (e) => {
+            // Ignore if clicking on close button
+            if (e.target.closest('.close-btn')) return;
+
             if (!deferredPrompt) {
                 return;
             }
@@ -5642,8 +5736,10 @@
 
             if (outcome === 'accepted') {
                 console.log('✅ User accepted the install prompt');
+                localStorage.setItem(PWA_INSTALL_KEY, 'true');
             } else {
-                console.log('❌ User dismissed the install prompt');
+                console.log('❌ User dismissed the install prompt (will show again next visit)');
+                // Don't save - will show again on next visit
             }
 
             // Clear the deferredPrompt
@@ -5655,6 +5751,7 @@
         // Listen for successful installation
         window.addEventListener('appinstalled', (e) => {
             console.log('🎉 PWA installed successfully!');
+            localStorage.setItem(PWA_INSTALL_KEY, 'true');
             // Hide the install button if it's still visible
             installButton.style.display = 'none';
 
@@ -5688,10 +5785,40 @@
         // Check if already installed (standalone mode)
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
             console.log('📱 PWA is running in standalone mode');
+            localStorage.setItem(PWA_INSTALL_KEY, 'installed');
             installButton.style.display = 'none';
         }
 
         }
+
+        // ===== SCROLL PROGRESS BAR =====
+        const scrollProgress = document.getElementById('scrollProgress');
+
+        function updateScrollProgress() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        }
+
+        window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+        // ===== REVEAL ON SCROLL ANIMATIONS =====
+        const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-stagger');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
     </script>
 </body>
 </html>

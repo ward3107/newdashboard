@@ -36,6 +36,7 @@ import AccessibilityWidget from './components/ui/AccessibilityWidget';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { LoginPage } from './components/auth/LoginPage';
+import { UserRole } from './types/auth';
 
 // Lazy load components for code splitting with preload hints
 const LandingPage = lazy(() => import(/* webpackChunkName: "landing" */ './pages/OptimizedLandingPage'));
@@ -179,7 +180,7 @@ function App() {
                       <Route
                         path="/dashboard"
                         element={
-                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                          <ProtectedRoute requiredRoles={[UserRole.TEACHER, UserRole.SCHOOL_ADMIN]}>
                             <FuturisticDashboard />
                           </ProtectedRoute>
                         }
@@ -187,7 +188,7 @@ function App() {
                       <Route
                         path="/original"
                         element={
-                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                          <ProtectedRoute requiredRoles={[UserRole.TEACHER, UserRole.SCHOOL_ADMIN]}>
                             <Dashboard />
                           </ProtectedRoute>
                         }
@@ -195,7 +196,7 @@ function App() {
                       <Route
                         path="/student/:studentId"
                         element={
-                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                          <ProtectedRoute requiredRoles={[UserRole.TEACHER, UserRole.SCHOOL_ADMIN]}>
                             <StudentDetail />
                           </ProtectedRoute>
                         }
@@ -203,7 +204,7 @@ function App() {
                       <Route
                         path="/test-analytics"
                         element={
-                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                          <ProtectedRoute requiredRoles={[UserRole.TEACHER, UserRole.SCHOOL_ADMIN]}>
                             <TestAnalytics />
                           </ProtectedRoute>
                         }
@@ -211,7 +212,7 @@ function App() {
                       <Route
                         path="/admin"
                         element={
-                          <ProtectedRoute requiredRole="admin">
+                          <ProtectedRoute requiredRole={UserRole.SCHOOL_ADMIN}>
                             <AdminControlPanel />
                           </ProtectedRoute>
                         }
@@ -219,7 +220,7 @@ function App() {
                       <Route
                         path="/api-test"
                         element={
-                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                          <ProtectedRoute requiredRoles={[UserRole.TEACHER, UserRole.SCHOOL_ADMIN]}>
                             <ApiTestPage />
                           </ProtectedRoute>
                         }
@@ -227,7 +228,7 @@ function App() {
                       <Route
                         path="/security-dashboard"
                         element={
-                          <ProtectedRoute requiredRole="admin">
+                          <ProtectedRoute requiredRole={UserRole.SCHOOL_ADMIN}>
                             <AISecurityDashboard />
                           </ProtectedRoute>
                         }
@@ -235,7 +236,7 @@ function App() {
                       <Route
                         path="/classroom-optimization"
                         element={
-                          <ProtectedRoute requiredRoles={['teacher', 'admin']}>
+                          <ProtectedRoute requiredRoles={[UserRole.TEACHER, UserRole.SCHOOL_ADMIN]}>
                             <ClassroomOptimizationPage />
                           </ProtectedRoute>
                         }
