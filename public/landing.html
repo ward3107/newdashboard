@@ -19,7 +19,8 @@
     <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.svg">
     <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.svg">
 
-    <!-- Apple PWA Meta Tags -->
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ISHEBOT">
@@ -67,11 +68,11 @@
         /* Smooth scroll with offset for sticky header */
         html {
             scroll-behavior: smooth;
-            scroll-padding-top: 100px;
+            scroll-padding-top: 80px;
         }
 
         section[id] {
-            scroll-margin-top: 100px;
+            scroll-margin-top: 80px;
         }
 
         body {
@@ -79,6 +80,71 @@
             line-height: 1.6;
             color: var(--dark);
             background: var(--white);
+        }
+
+        /* Progress indicator bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            z-index: 1001;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Lazy reveal animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .reveal-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .reveal-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Stagger children animations */
+        .reveal-stagger > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+
+        .reveal-stagger.visible > *:nth-child(1) { transition-delay: 0.1s; }
+        .reveal-stagger.visible > *:nth-child(2) { transition-delay: 0.2s; }
+        .reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.3s; }
+        .reveal-stagger.visible > *:nth-child(4) { transition-delay: 0.4s; }
+        .reveal-stagger.visible > *:nth-child(5) { transition-delay: 0.5s; }
+        .reveal-stagger.visible > *:nth-child(6) { transition-delay: 0.6s; }
+
+        .reveal-stagger.visible > * {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .container {
@@ -558,7 +624,7 @@
 
         /* Problem Section */
         .problem {
-            padding: 6rem 0;
+            padding: 4rem 0;
             background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
             position: relative;
             overflow: hidden;
@@ -682,7 +748,7 @@
 
         /* Features Section */
         .features {
-            padding: 6rem 0;
+            padding: 4rem 0;
             background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
             position: relative;
             overflow: hidden;
@@ -925,7 +991,7 @@
 
         /* ROI Section */
         .roi-section {
-            padding: 5rem 0;
+            padding: 3.5rem 0;
             background: linear-gradient(135deg, #1e3a8a, #3b82f6);
             color: var(--white);
         }
@@ -1057,7 +1123,7 @@
 
         /* FAQ Section */
         .faq-section {
-            padding: 5rem 0;
+            padding: 3.5rem 0;
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
         }
 
@@ -1175,7 +1241,7 @@
 
         /* Before/After Comparison Section */
         .before-after-section {
-            padding: 5rem 0;
+            padding: 3.5rem 0;
             background: linear-gradient(135deg, #f0f9ff 0%, #fef3c7 50%, #e0f2fe 100%);
             overflow: hidden;
         }
@@ -1602,7 +1668,7 @@
 
         /* Video Demo Section */
         .video-demo-section {
-            padding: 5rem 0;
+            padding: 3.5rem 0;
             background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 50%, #eff6ff 100%);
         }
 
@@ -2043,7 +2109,7 @@
 
         /* Pricing Section */
         .pricing {
-            padding: 5rem 0;
+            padding: 3.5rem 0;
         }
 
         .pricing-grid {
@@ -2887,6 +2953,9 @@
     </style>
 </head>
 <body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
     <!-- Language Switcher -->
     <div class="language-switcher">
         <button class="lang-toggle" id="langToggleBtn" title="Choose Language / בחר שפה">
@@ -3031,7 +3100,7 @@
     </section>
 
     <!-- Problem Section -->
-    <section id="problem" class="problem">
+    <section id="problem" class="problem reveal">
         <div class="container">
             <h2 class="section-title">🔥 העבודה שגוזלת ממורים את כל האנרגיה 🔥</h2>
             <p class="section-subtitle">האם אתה מבזבז שעות יקרות על המשימות האלו?</p>
@@ -3086,7 +3155,7 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="features">
+    <section id="features" class="features reveal">
         <div class="container">
             <h2 class="section-title">💎 ISHEBOT - הפתרון שישנה לך את החיים! 💎</h2>
             <p class="section-subtitle">AI חזק שעושה את כל העבודה הכבדה במקומך</p>
@@ -3167,7 +3236,7 @@
     </section>
 
     <!-- Video Demo Section -->
-    <section id="video-demo" class="video-demo-section">
+    <section id="video-demo" class="video-demo-section reveal">
         <div class="container">
             <h2 class="section-title" style="color: #1e40af;">🎬 ראו את ISHEBOT בפעולה</h2>
             <p class="section-subtitle" style="color: #475569; font-size: 1.4rem; font-weight: 600;">
@@ -3266,7 +3335,7 @@
     </section>
 
     <!-- Before/After Comparison Section -->
-    <section id="before-after" class="before-after-section">
+    <section id="before-after" class="before-after-section reveal">
         <div class="container">
             <h2 class="section-title" style="color: #1e40af;">🔄 מהפכה בניהול כיתה</h2>
             <p class="section-subtitle" style="color: #475569; font-size: 1.4rem;">ראו את ההבדל המדהים!</p>
@@ -3375,7 +3444,7 @@
     </section>
 
     <!-- ROI Calculation Section -->
-    <section id="roi" class="roi-section">
+    <section id="roi" class="roi-section reveal">
         <div class="container">
             <h2 class="section-title">💰 תשואה על ההשקעה (ROI)</h2>
             <p class="section-subtitle">למה ISHEBOT היא ההשקעה הכי חכמה שלכם?</p>
@@ -3471,7 +3540,7 @@
     </section>
 
     <!-- FAQ Section -->
-    <section id="faq" class="faq-section">
+    <section id="faq" class="faq-section reveal">
         <div class="container">
             <h2 class="section-title">❓ שאלות נפוצות</h2>
             <p class="section-subtitle">תשובות לשאלות שמנהלים שואלים לפני ההחלטה</p>
@@ -3590,7 +3659,7 @@
     </section>
 
     <!-- Pricing Section -->
-    <section id="pricing" class="pricing">
+    <section id="pricing" class="pricing reveal">
         <div class="container">
             <h2 class="section-title">מחירים שקופים ומשתלמים</h2>
             <div class="pricing-grid">
@@ -3658,7 +3727,7 @@
     </section>
 
     <!-- CTA Section -->
-    <section id="contact" class="cta-section">
+    <section id="contact" class="cta-section reveal">
         <div class="container">
             <h2>מוכנים לשדרג את בית הספר שלכם?</h2>
             <p>הצטרפו למורים שכבר חוסכים 10 שעות שבועיות</p>
@@ -5499,7 +5568,7 @@
 
             // Scroll-spy functionality
             function scrollSpy() {
-                const scrollPosition = window.scrollY + 150; // Offset for header
+                const scrollPosition = window.scrollY + 130; // Offset for header
 
                 sections.forEach(section => {
                     const sectionTop = section.offsetTop;
@@ -5721,6 +5790,35 @@
         }
 
         }
+
+        // ===== SCROLL PROGRESS BAR =====
+        const scrollProgress = document.getElementById('scrollProgress');
+
+        function updateScrollProgress() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        }
+
+        window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+        // ===== REVEAL ON SCROLL ANIMATIONS =====
+        const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-stagger');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
     </script>
 </body>
 </html>
