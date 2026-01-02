@@ -59,6 +59,7 @@ const PrivacyPolicyPage = lazy(() => import(/* webpackChunkName: "privacy-policy
 const TermsPage = lazy(() => import(/* webpackChunkName: "terms" */ './pages/TermsPage'));
 const DataProcessingPage = lazy(() => import(/* webpackChunkName: "data-processing" */ './pages/DataProcessingPage'));
 const SecurityPage = lazy(() => import(/* webpackChunkName: "security" */ './pages/SecurityPage'));
+const HealthCheckPage = lazy(() => import(/* webpackChunkName: "health-check" */ './pages/HealthCheckPage'));
 
 // Styles
 import './styles/global.css';
@@ -166,6 +167,9 @@ function App() {
                       <Route path="/terms" element={<TermsPage />} />
                       <Route path="/data-processing" element={<DataProcessingPage />} />
                       <Route path="/security" element={<SecurityPage />} />
+
+                      {/* Health Check (Public - for monitoring) */}
+                      <Route path="/health" element={<HealthCheckPage />} />
 
                       {/* Landing Page - Redirect to standalone HTML */}
                       <Route path="/" element={<RedirectToLanding />} />

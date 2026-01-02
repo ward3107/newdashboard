@@ -76,6 +76,10 @@ class Settings(BaseSettings):
     SECRET_KEY: str = os.getenv("SECRET_KEY", "dev-key-only-never-use-in-production")
     ALGORITHM: str = "HS256"
 
+    # Rate Limiting
+    RATE_LIMIT_REQUESTS_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_REQUESTS_PER_MINUTE", "60"))
+    RATE_LIMIT_BURST: int = int(os.getenv("RATE_LIMIT_BURST", "10"))
+
     @property
     def is_production_ready(self) -> bool:
         """Check if production configuration is complete"""

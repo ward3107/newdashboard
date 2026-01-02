@@ -12,6 +12,7 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.api.routes import optimize
 from app.models.request import HealthCheckResponse
+from app.middleware import RateLimiter
 
 # Setup logging
 logging.basicConfig(
@@ -78,6 +79,15 @@ app.add_middleware(
 
 # Include routers
 app.include_router(optimize.router)
+
+# Add rate limiter middleware
+# Must be added after CORS but before routes
+app.add_middleware(
+    RateLimiter,
+    requests_per_minute=settings.RATE_LIMIT_REQUESTS_PER_MINUTE,
+    burst_size=settings.RATE_LIMIT_BURST,
+    exclude_paths=["/", "/health", "/docs", "/redoc", "/openapi.json"]
+)
 
 
 # Root endpoint

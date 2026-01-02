@@ -17,6 +17,10 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./i18n"; // Initialize i18n before app renders
 import logger from "./utils/logger";
+import { initSentry } from "./monitoring/sentry";
+
+// Initialize Sentry error tracking (production only)
+initSentry();
 
 // Global error handlers for debugging
 window.addEventListener('error', (event) => {

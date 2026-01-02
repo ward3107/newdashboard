@@ -39,6 +39,7 @@ import {
   clearMockAuthSession,
 } from '../utils/mockAuth';
 import logger from '../utils/logger';
+import { setSentryUser } from '../monitoring/sentry';
 
 /**
  * Auth Context
@@ -132,6 +133,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Check if using mock auth (Firebase not configured)
     if (shouldUseMockAuth()) {
+      // SECURITY: Verify we're not in production
+      if (import.meta.env.PROD) {
+        logger.error('🚨 SECURITY ALERT: Mock auth attempted in production!');
+        setError('Authentication system misconfigured. Please contact support.');
+        setLoading(false);
+        return;
+      }
+
       logger.warn('⚠️ USING MOCK AUTHENTICATION - FOR TESTING ONLY');
       const mockUser = getMockAuthSession();
       setUser(mockUser);
@@ -174,6 +183,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [fetchUserData, updateLastLogin]);
 
   /**
+   * Track user changes in Sentry
+   */
+  useEffect(() => {
+    setSentryUser(user);
+  }, [user]);
+
+  /**
    * Login with email and password
    */
   const login = useCallback(async (credentials: LoginCredentials) => {
@@ -183,6 +199,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // MOCK AUTH: Use mock authentication if Firebase not configured
       if (shouldUseMockAuth()) {
+        // SECURITY: Never allow mock auth in production
+        if (import.meta.env.PROD) {
+          throw new Error('Authentication system misconfigured. Please contact support.');
+        }
+
         logger.log('🧪 Using mock authentication');
         const user = mockLogin(credentials.email, credentials.password);
 
@@ -310,6 +331,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // MOCK AUTH: Clear mock session
       if (shouldUseMockAuth()) {
+        // SECURITY: Never allow mock auth in production
+        if (import.meta.env.PROD) {
+          throw new Error('Authentication system misconfigured. Please contact support.');
+        }
+
         clearMockAuthSession();
         setUser(null);
         return;

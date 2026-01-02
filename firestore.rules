@@ -2,19 +2,153 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Require authentication for all school data access
-    // Users must be logged in to view student data and school metadata
-    match /schools/{schoolId}/students/{studentId} {
-      allow read: if request.auth != null; // Authenticated users only
-      allow write: if request.auth != null; // Authenticated users can write
+
+    // ============================================================================
+    // HELPER FUNCTIONS
+    // ============================================================================
+
+    // Check if user's email is verified
+    function isEmailVerified() {
+      return request.auth.token.email_verified == true;
     }
+
+    // Get the current user's document
+    function getUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // Check if user belongs to the requested school
+    function isUserSchoolMember(schoolId) {
+      return getUser().schoolId == schoolId;
+    }
+
+    // Check if user has one of the specified roles
+    function hasRole(roles) {
+      return getUser().role in roles;
+    }
+
+    // Check if user's account is active
+    function isUserActive() {
+      return getUser().isActive == true;
+    }
+
+    // Check if user is a school admin (can manage their school)
+    function isSchoolAdmin() {
+      return hasRole(['SCHOOL_ADMIN', 'SUPER_ADMIN']);
+    }
+
+    // Check if user is a teacher
+    function isTeacher() {
+      return hasRole(['TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN']);
+    }
+
+    // Check if user can access a specific student (based on assignedClasses or assignedStudentIds)
+    function canAccessStudent(studentData) {
+      return isSchoolAdmin() ||
+             getUser().assignedStudentIds contains studentData.studentCode ||
+             getUser().assignedClasses contains studentData.classId;
+    }
+
+    // ============================================================================
+    // USERS COLLECTION
+    // ============================================================================
+
+    match /users/{userId} {
+      // Users can read their own profile
+      // Super admins can read all users
+      // School admins can read users from their school
+      allow read: if request.auth != null &&
+                    request.auth.uid == userId ||
+                    hasRole(['SUPER_ADMIN']) ||
+                    (hasRole(['SCHOOL_ADMIN']) && isUserSchoolMember(getUser().schoolId));
+
+      // Users can update their own profile (limited fields)
+      // Super admins can update any user
+      // School admins can update users in their school
+      allow update: if request.auth != null &&
+                      (request.auth.uid == userId && isUserActive()) ||
+                      hasRole(['SUPER_ADMIN']) ||
+                      (hasRole(['SCHOOL_ADMIN']) && isUserSchoolMember(getUser().schoolId));
+
+      // Only super admins can create users (usually done via Firebase Admin SDK)
+      allow create: if hasRole(['SUPER_ADMIN']);
+
+      // Only super admins can delete users
+      allow delete: if hasRole(['SUPER_ADMIN']);
+    }
+
+    // ============================================================================
+    // SCHOOLS COLLECTION
+    // ============================================================================
 
     match /schools/{schoolId} {
-      allow read: if request.auth != null; // Authenticated users only
-      allow write: if request.auth != null; // Authenticated users can write
+      // School members can read their school metadata
+      allow read: if request.auth != null &&
+                    isEmailVerified() &&
+                    isUserActive() &&
+                    isUserSchoolMember(schoolId);
+
+      // Only school admins can update school metadata
+      allow update: if request.auth != null &&
+                      isEmailVerified() &&
+                      isUserActive() &&
+                      isSchoolAdmin() &&
+                      isUserSchoolMember(schoolId);
+
+      // Only super admins can create/delete schools
+      allow create, delete: if hasRole(['SUPER_ADMIN']);
+
+      // ========================================================================
+      // STUDENTS SUBCOLLECTION
+      // ========================================================================
+
+      match /students/{studentId} {
+        // Read: Users must be authenticated, verified, active, belong to the school,
+        // and be a teacher with access to this specific student
+        allow read: if request.auth != null &&
+                     isEmailVerified() &&
+                     isUserActive() &&
+                     isUserSchoolMember(schoolId) &&
+                     isTeacher() &&
+                     canAccessStudent(resource.data);
+
+        // Create: Teachers and school admins can create students in their school
+        allow create: if request.auth != null &&
+                        isEmailVerified() &&
+                        isUserActive() &&
+                        isUserSchoolMember(schoolId) &&
+                        isTeacher();
+
+        // Update: Only allow updates by school admins (for moderation)
+        // Teachers should NOT be able to modify student data directly
+        allow update: if request.auth != null &&
+                        isEmailVerified() &&
+                        isUserActive() &&
+                        isSchoolAdmin() &&
+                        isUserSchoolMember(schoolId);
+
+        // Delete: Only school admins can delete students
+        allow delete: if request.auth != null &&
+                        isEmailVerified() &&
+                        isUserActive() &&
+                        isSchoolAdmin() &&
+                        isUserSchoolMember(schoolId);
+      }
+
+      // ========================================================================
+      // OTHER SCHOOL SUBCOLLECTIONS (future use)
+      // ========================================================================
+
+      match /{document=**} {
+        // Default deny for any other school subcollections
+        allow read, write: if false;
+      }
     }
 
-    // Deny all other access
+    // ============================================================================
+    // DEFAULT DENY ALL OTHER ACCESS
+    // ============================================================================
+
     match /{document=**} {
       allow read, write: if false;
     }
