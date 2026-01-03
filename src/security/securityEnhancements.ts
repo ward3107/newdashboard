@@ -59,6 +59,7 @@ class SecurityManager {
   private rateLimits = new Map<string, RateLimitEntry>();
   private tokens = new Map<string, SecurityToken>();
   private sessionId: string;
+  private clickHandler: (() => void) | null = null;
 
   private constructor() {
     this.sessionId = this.generateSecureId();
@@ -274,12 +275,13 @@ class SecurityManager {
 
     // Monitor for suspicious activity
     let suspiciousActivityCount = 0;
-    document.addEventListener('click', () => {
+    this.clickHandler = () => {
       suspiciousActivityCount++;
       if (suspiciousActivityCount > 1000) { // Bot detection
         this.reportSecurityViolation('SUSPICIOUS_ACTIVITY', { clicks: suspiciousActivityCount });
       }
-    });
+    };
+    document.addEventListener('click', this.clickHandler);
   }
 
   /**
@@ -366,6 +368,20 @@ class SecurityManager {
       !window.location.protocol.includes('http:') &&
       window.crypto.subtle !== undefined
     );
+  }
+
+  /**
+   * Cleanup event listeners to prevent memory leaks
+   * Call this when the security manager is no longer needed
+   */
+  public cleanup(): void {
+    if (this.clickHandler) {
+      document.removeEventListener('click', this.clickHandler);
+      this.clickHandler = null;
+    }
+    // Clear rate limits and tokens
+    this.rateLimits.clear();
+    this.tokens.clear();
   }
 }
 

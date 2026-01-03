@@ -73,8 +73,14 @@ class Settings(BaseSettings):
     GA_CROSSOVER_RATE: float = 0.8
 
     # Security
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "dev-key-only-never-use-in-production")
+    # CRITICAL: SECRET_KEY must be set in production - no default for security
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
     ALGORITHM: str = "HS256"
+
+    @property
+    def requires_secret_key(self) -> bool:
+        """Check if SECRET_KEY is properly configured"""
+        return bool(self.SECRET_KEY and len(self.SECRET_KEY) >= 32)
 
     # Rate Limiting
     RATE_LIMIT_REQUESTS_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_REQUESTS_PER_MINUTE", "60"))
@@ -85,7 +91,8 @@ class Settings(BaseSettings):
         """Check if production configuration is complete"""
         if self.DEBUG:
             return True  # Dev mode is always OK
-        return self.SECRET_KEY != "dev-key-only-never-use-in-production"
+        # In production, SECRET_KEY must be properly configured
+        return self.requires_secret_key
 
     # Logging
     LOG_LEVEL: str = "INFO"

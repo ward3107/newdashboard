@@ -6,7 +6,7 @@
  */
 
 import * as Sentry from "@sentry/react";
-import { BrowserTracing } from "@sentry/tracing";
+import { browserTracingIntegration } from "@sentry/react";
 import type { User } from "../types/auth";
 
 /**
@@ -33,20 +33,7 @@ export function initSentry(): void {
 
     // Integrations
     integrations: [
-      new BrowserTracing({
-        // Set tracing origins to track performance
-        tracingOrigins: [
-          "localhost",
-          "https://ishebot.com",
-          "https://*.ishebot.com",
-          /^\//,
-        ],
-      }),
-      new Sentry.Replay({
-        // Record sessions with errors
-        sessionSampleRate: 0.1, // 10% of sessions
-        errorSampleRate: 1.0, // 100% of errors
-      }),
+      browserTracingIntegration(),
     ],
 
     // Performance monitoring
@@ -117,12 +104,14 @@ export function initSentry(): void {
       /^ms-browser-extension:\/\//i,
     ],
 
-    // Before send transaction: Filter sensitive spans
-    beforeSpan(span) {
-      if (span.description && includesSensitivePath(span.description)) {
-        return null; // Don't send this span
+    // beforeSendTransaction: Filter sensitive spans
+    beforeSendTransaction(transaction) {
+      // Filter transactions with sensitive paths
+      const txn = transaction as any; // Type assertion for name property
+      if (txn.name && includesSensitivePath(txn.name)) {
+        return null; // Don't send this transaction
       }
-      return span;
+      return transaction;
     },
   });
 }

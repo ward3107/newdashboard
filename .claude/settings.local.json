@@ -22,7 +22,12 @@
       "Bash(start index.html)",
       "Bash(start landing.html)",
       "Bash(timeout:*)",
-      "Bash(exit:*)"
+      "Bash(exit:*)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run lint:errors:*)",
+      "Bash(npm audit:*)",
+      "Bash(npm run build)",
+      "Bash(npm test:*)"
     ],
     "deny": [],
     "ask": []

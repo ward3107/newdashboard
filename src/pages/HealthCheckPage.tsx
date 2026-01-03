@@ -59,7 +59,11 @@ export default function HealthCheckPage() {
 
         // Return JSON for automated monitoring
         if (window.location.search.includes('format=json')) {
-          document.body.innerHTML = `<pre>${JSON.stringify(health, null, 2)}</pre>`;
+          // Use safe DOM manipulation instead of innerHTML
+          const preElement = document.createElement('pre');
+          preElement.textContent = JSON.stringify(health, null, 2);
+          document.body.innerHTML = ''; // Clear existing content
+          document.body.appendChild(preElement);
         }
       } catch (error) {
         const errorHealth: HealthStatus = {

@@ -21,12 +21,11 @@ import { httpsCallable } from 'firebase/functions';
 import { db, functions, isFirebaseAvailable } from '../config/firebase';
 import { securityManager, SecurityUtils } from '../security/securityEnhancements';
 import logger from '../utils/logger';
-import CryptoJS from 'crypto-js';
 
 // Security configuration
 const SECURITY_SETTINGS = {
   MAX_ATTEMPTS_PER_SESSION: 5,
-  ENCRYPTION_ENABLED: true,
+  ENCRYPTION_ENABLED: false, // Disabled - using HTTPS for transport encryption
   RATE_LIMIT_WINDOW: 60 * 60 * 1000, // 1 hour
   BOT_DETECTION_ENABLED: true,
   FINGERPRINT_VALIDATION: true
@@ -50,11 +49,20 @@ class SecureFirebaseService {
   private static instance: SecureFirebaseService;
   private sessionToken: string | null = null;
   private attemptCount = 0;
-  private fingerprint: string;
+  private fingerprint: string = '';
+  private fingerprintInitialized: Promise<void>;
 
   private constructor() {
-    this.fingerprint = securityManager.generateFingerprint();
+    // Initialize fingerprint asynchronously
+    this.fingerprintInitialized = this.initializeFingerprint();
     this.initializeSecureSession();
+  }
+
+  /**
+   * Initialize fingerprint asynchronously
+   */
+  private async initializeFingerprint(): Promise<void> {
+    this.fingerprint = await securityManager.generateFingerprint();
   }
 
   static getInstance(): SecureFirebaseService {
@@ -85,7 +93,7 @@ class SecureFirebaseService {
       }
 
       // 2. Rate limiting check
-      const rateLimitKey = this.getRateLimitKey();
+      const rateLimitKey = await this.getRateLimitKey();
       if (!securityManager.checkRateLimit(rateLimitKey)) {
         throw new Error('Rate limit exceeded');
       }
@@ -121,7 +129,8 @@ class SecureFirebaseService {
     } catch (error) {
       logger.error('Security validation failed:', error);
       const errorMessage = error instanceof Error ? error.message : String(error);
-      this.reportSecurityViolation('VALIDATION_FAILED', { error: errorMessage, data: this.sanitizeDataForLogging(data) });
+      const sanitizedData = await this.sanitizeDataForLogging(data);
+      this.reportSecurityViolation('VALIDATION_FAILED', { error: errorMessage, data: sanitizedData });
       return false;
     }
   }
@@ -169,23 +178,17 @@ class SecureFirebaseService {
 
   /**
    * Encrypt sensitive data before transmission
+   * NOTE: Client-side encryption disabled - using HTTPS for transport security
    */
   private encryptSubmissionData(data: any): any {
     if (!SECURITY_SETTINGS.ENCRYPTION_ENABLED) {
+      // HTTPS provides transport encryption
       return data;
     }
 
-    try {
-      const encrypted = securityManager.encryptData(data);
-      return {
-        encryptedData: encrypted,
-        isEncrypted: true,
-        encryptionVersion: '1.0'
-      };
-    } catch (error) {
-      logger.error('Encryption failed:', error);
-      throw new Error('Failed to encrypt submission data');
-    }
+    // If encryption is re-enabled in the future, implement here
+    // For now, just return the data as-is
+    return data;
   }
 
   /**
@@ -347,9 +350,14 @@ class SecureFirebaseService {
   /**
    * Get rate limit key
    */
-  private getRateLimitKey(): string {
+  private async getRateLimitKey(): Promise<string> {
     const key = `${this.fingerprint}-${navigator.userAgent}`;
-    return CryptoJS.SHA256(key).toString();
+    // Use Web Crypto API for hashing
+    const encoder = new TextEncoder();
+    const data = encoder.encode(key);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
   /**
@@ -369,15 +377,8 @@ class SecureFirebaseService {
       logger.error('Security Violation:', violation);
     }
 
-    // Store in localStorage for monitoring
-    try {
-      const violations = JSON.parse(localStorage.getItem('security_violations') || '[]');
-      violations.push(violation);
-      if (violations.length > 50) violations.shift();
-      localStorage.setItem('security_violations', JSON.stringify(violations));
-    } catch (error) {
-      logger.error('Failed to store security violation:', error);
-    }
+    // Note: Security violations logged to console only
+    // localStorage removed for security (could be blocked by CSP)
 
     // Send to monitoring service if available
     if (typeof window !== 'undefined' && (window as any).gtag) {
@@ -409,16 +410,20 @@ class SecureFirebaseService {
   /**
    * Sanitize data for logging (remove sensitive info)
    */
-  private sanitizeDataForLogging(data: any): any {
+  private async sanitizeDataForLogging(data: any): Promise<any> {
     const sanitized = { ...data };
 
     // Remove sensitive fields
     delete sanitized.answers;
     delete sanitized.studentName;
 
-    // Hash student code for logging
+    // Hash student code for logging (using Web Crypto API)
     if (sanitized.studentCode) {
-      sanitized.studentCodeHash = CryptoJS.SHA256(sanitized.studentCode).toString();
+      const encoder = new TextEncoder();
+      const data = encoder.encode(sanitized.studentCode);
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      sanitized.studentCodeHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
       delete sanitized.studentCode;
     }
 
@@ -446,12 +451,13 @@ class SecureFirebaseService {
   /**
    * Get security status
    */
-  getSecurityStatus(): any {
+  async getSecurityStatus(): Promise<any> {
+    const rateLimitKey = await this.getRateLimitKey();
     return {
       isAuthenticated: !!this.sessionToken,
       attemptCount: this.attemptCount,
       fingerprint: this.fingerprint.substring(0, 8) + '...',
-      rateLimitActive: !securityManager.checkRateLimit(this.getRateLimitKey(), 100),
+      rateLimitActive: !securityManager.checkRateLimit(rateLimitKey, 100),
       firebaseAvailable: isFirebaseAvailable(),
       sessionSecure: window.isSecureContext
     };

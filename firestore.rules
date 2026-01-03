@@ -58,17 +58,21 @@ service cloud.firestore {
       // Super admins can read all users
       // School admins can read users from their school
       allow read: if request.auth != null &&
-                    request.auth.uid == userId ||
-                    hasRole(['SUPER_ADMIN']) ||
-                    (hasRole(['SCHOOL_ADMIN']) && isUserSchoolMember(getUser().schoolId));
+                    (
+                      request.auth.uid == userId ||
+                      hasRole(['SUPER_ADMIN']) ||
+                      (hasRole(['SCHOOL_ADMIN']) && isUserSchoolMember(getUser().schoolId))
+                    );
 
       // Users can update their own profile (limited fields)
       // Super admins can update any user
       // School admins can update users in their school
       allow update: if request.auth != null &&
-                      (request.auth.uid == userId && isUserActive()) ||
-                      hasRole(['SUPER_ADMIN']) ||
-                      (hasRole(['SCHOOL_ADMIN']) && isUserSchoolMember(getUser().schoolId));
+                      (
+                        request.auth.uid == userId && isUserActive() ||
+                        hasRole(['SUPER_ADMIN']) ||
+                        (hasRole(['SCHOOL_ADMIN']) && isUserSchoolMember(getUser().schoolId))
+                      );
 
       // Only super admins can create users (usually done via Firebase Admin SDK)
       allow create: if hasRole(['SUPER_ADMIN']);

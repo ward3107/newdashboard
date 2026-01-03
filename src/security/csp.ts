@@ -159,15 +159,8 @@ export function setupCSPReporting(): void {
       });
     }
 
-    // Store in localStorage for debugging
-    try {
-      const violations = JSON.parse(localStorage.getItem('csp_violations') || '[]');
-      violations.push(violation);
-      if (violations.length > 50) violations.shift();
-      localStorage.setItem('csp_violations', JSON.stringify(violations));
-    } catch (error) {
-      console.error('Failed to store CSP violation:', error);
-    }
+    // Note: CSP violations logged to console only
+    // localStorage removed for security (could be blocked by CSP)
   });
 }
 

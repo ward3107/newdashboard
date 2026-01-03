@@ -18,9 +18,22 @@ import App from "./App";
 import "./i18n"; // Initialize i18n before app renders
 import logger from "./utils/logger";
 import { initSentry } from "./monitoring/sentry";
+import { assertProductionEnvValid, validateProductionEnv } from "./utils/envValidation";
 
 // Initialize Sentry error tracking (production only)
 initSentry();
+
+// Validate production environment variables
+const envValidation = validateProductionEnv();
+if (!envValidation.isValid) {
+  logger.error('❌ Production environment validation failed');
+  // In production, we still try to render but log the error prominently
+  // The assertProductionEnvValid() can be called to throw instead
+}
+
+if (envValidation.warnings.length > 0) {
+  logger.warn('⚠️ Environment warnings detected');
+}
 
 // Global error handlers for debugging
 window.addEventListener('error', (event) => {
