@@ -1,9 +1,11 @@
 /**
  * Advanced Security Enhancements
  * Implements multiple layers of security for hack-proof HTML
+ *
+ * NOTE: Client-side encryption removed - HTTPS provides encryption in transit.
+ * Client-side encryption with public keys is not effective for security.
  */
 
-import CryptoJS from 'crypto-js';
 import logger from '../utils/logger';
 
 // Security Configuration
@@ -25,9 +27,6 @@ export const SECURITY_CONFIG = {
     'http://localhost:5175',
     'https://yourdomain.com'
   ],
-
-  // Encryption
-  ENCRYPTION_KEY: import.meta.env.VITE_ENCRYPTION_KEY || 'fallback-key-change-in-production',
 };
 
 // Security Interfaces
@@ -60,6 +59,7 @@ class SecurityManager {
   private rateLimits = new Map<string, RateLimitEntry>();
   private tokens = new Map<string, SecurityToken>();
   private sessionId: string;
+  private clickHandler: (() => void) | null = null;
 
   private constructor() {
     this.sessionId = this.generateSecureId();
@@ -74,7 +74,10 @@ class SecurityManager {
   }
 
   private generateSecureId(): string {
-    return CryptoJS.lib.WordArray.random(32).toString();
+    // Use crypto.getRandomValues for secure random ID generation
+    const array = new Uint8Array(24);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
   }
 
   private initializeSecurity(): void {
@@ -192,33 +195,6 @@ class SecurityManager {
   }
 
   /**
-   * Encrypt sensitive data
-   */
-  public encryptData(data: any): string {
-    try {
-      const jsonString = JSON.stringify(data);
-      return CryptoJS.AES.encrypt(jsonString, SECURITY_CONFIG.ENCRYPTION_KEY).toString();
-    } catch (error) {
-      logger.error('Encryption error:', error);
-      throw new Error('Failed to encrypt data');
-    }
-  }
-
-  /**
-   * Decrypt sensitive data
-   */
-  public decryptData(encryptedData: string): any {
-    try {
-      const bytes = CryptoJS.AES.decrypt(encryptedData, SECURITY_CONFIG.ENCRYPTION_KEY);
-      const decryptedString = bytes.toString(CryptoJS.enc.Utf8);
-      return JSON.parse(decryptedString);
-    } catch (error) {
-      logger.error('Decryption error:', error);
-      throw new Error('Failed to decrypt data');
-    }
-  }
-
-  /**
    * Validate request origin
    */
   public validateOrigin(origin: string): boolean {
@@ -228,9 +204,9 @@ class SecurityManager {
   }
 
   /**
-   * Generate secure fingerprint
+   * Generate secure fingerprint using SubtleCrypto API
    */
-  public generateFingerprint(): string {
+  public async generateFingerprint(): Promise<string> {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (ctx) {
@@ -239,7 +215,7 @@ class SecurityManager {
       ctx.fillText('Security fingerprint', 2, 2);
     }
 
-    const fingerprint = [
+    const fingerprintData = [
       navigator.userAgent,
       navigator.language,
       screen.width + 'x' + screen.height,
@@ -248,7 +224,12 @@ class SecurityManager {
       this.sessionId
     ].join('|');
 
-    return CryptoJS.SHA256(fingerprint).toString();
+    // Use SubtleCrypto for secure hashing
+    const encoder = new TextEncoder();
+    const data = encoder.encode(fingerprintData);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
   /**
@@ -294,24 +275,25 @@ class SecurityManager {
 
     // Monitor for suspicious activity
     let suspiciousActivityCount = 0;
-    document.addEventListener('click', () => {
+    this.clickHandler = () => {
       suspiciousActivityCount++;
       if (suspiciousActivityCount > 1000) { // Bot detection
         this.reportSecurityViolation('SUSPICIOUS_ACTIVITY', { clicks: suspiciousActivityCount });
       }
-    });
+    };
+    document.addEventListener('click', this.clickHandler);
   }
 
   /**
    * Report security violations
    */
-  private reportSecurityViolation(type: string, details: any): void {
+  private async reportSecurityViolation(type: string, details: any): Promise<void> {
     const violation = {
       type,
       details,
       timestamp: Date.now(),
       sessionId: this.sessionId,
-      fingerprint: this.generateFingerprint(),
+      fingerprint: await this.generateFingerprint(),
       userAgent: navigator.userAgent,
       url: window.location.href
     };
@@ -366,10 +348,10 @@ class SecurityManager {
   /**
    * Get security status
    */
-  public getSecurityStatus(): any {
+  public async getSecurityStatus(): Promise<any> {
     return {
       sessionId: this.sessionId,
-      fingerprint: this.generateFingerprint(),
+      fingerprint: await this.generateFingerprint(),
       rateLimitsCount: this.rateLimits.size,
       activeTokens: this.tokens.size,
       isSecure: this.isEnvironmentSecure()
@@ -386,6 +368,20 @@ class SecurityManager {
       !window.location.protocol.includes('http:') &&
       window.crypto.subtle !== undefined
     );
+  }
+
+  /**
+   * Cleanup event listeners to prevent memory leaks
+   * Call this when the security manager is no longer needed
+   */
+  public cleanup(): void {
+    if (this.clickHandler) {
+      document.removeEventListener('click', this.clickHandler);
+      this.clickHandler = null;
+    }
+    // Clear rate limits and tokens
+    this.rateLimits.clear();
+    this.tokens.clear();
   }
 }
 

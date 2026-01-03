@@ -62,8 +62,16 @@ export const mockLogin = (email: string, password: string): User | null => {
 
 /**
  * Check if we should use mock auth (Firebase not configured)
+ *
+ * SECURITY: Mock auth is NEVER allowed in production builds.
+ * Even if Firebase is misconfigured, production will fail securely.
  */
 export const shouldUseMockAuth = (): boolean => {
+  // 🔒 SECURITY: NEVER allow mock auth in production
+  if (import.meta.env.PROD) {
+    return false;
+  }
+
   // Check if Firebase environment variables are set
   const firebaseConfigured =
     import.meta.env.VITE_FIREBASE_API_KEY &&

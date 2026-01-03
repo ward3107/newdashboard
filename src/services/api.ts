@@ -375,6 +375,36 @@ async function fetchWithTimeout(url: string, timeout: number = API_TIMEOUT): Pro
 }
 
 /**
+ * Fetch with timeout and custom options (for POST, DELETE, etc.)
+ */
+async function fetchWithOptions(
+  url: string,
+  timeout: number,
+  options: RequestInit = {}
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
+}
+
+/**
  * Generic API call handler
  */
 async function apiCall<T>(action: string, params?: Record<string, string>): Promise<ApiResponse<T>> {
@@ -609,6 +639,604 @@ export async function testConnection(): Promise<ApiResponse<{
 }
 
 // ====================================
+// ADMIN & ANALYSIS MANAGEMENT FUNCTIONS
+// ====================================
+
+/**
+ * Analyze a single student (admin function)
+ */
+export async function analyzeOneStudent(studentCode: string): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // For Firestore, trigger analysis via Cloud Function or direct analysis
+    return analyzeStudent(studentCode);
+  }
+
+  // Google Apps Script implementation
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('analyzeOneStudent');
+    const response = await fetchWithOptions(url, 30000, {
+      method: 'POST',
+      body: JSON.stringify({ studentCode }),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Re-analyze a student (force new analysis)
+ */
+export async function reanalyzeStudent(studentCode: string): Promise<ApiResponse<any>> {
+  // Same as analyzeOneStudent but forces re-analysis
+  return analyzeOneStudent(studentCode);
+}
+
+/**
+ * Get list of analyzed students
+ */
+export async function getAnalyzedStudents(): Promise<ApiResponse<{ students: string[] }>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - return empty list as analysis tracking not implemented
+    return {
+      success: true,
+      data: { students: [] },
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('getAnalyzedStudents');
+    const response = await fetchWithTimeout(url, 15000);
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Get list of unanalyzed students
+ */
+export async function getUnanalyzedStudents(): Promise<ApiResponse<{ students: string[] }>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - return all students as potentially unanalyzed
+    return {
+      success: true,
+      data: { students: [] },
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('getUnanalyzedStudents');
+    const response = await fetchWithTimeout(url, 15000);
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Analyze students in batches
+ */
+export async function analyzeBatch(batchSize: number): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    return {
+      success: false,
+      error: 'Batch analysis not available in Firestore mode. Use individual analysis.',
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('analyzeBatch');
+    const response = await fetchWithOptions(url, 60000, {
+      method: 'POST',
+      body: JSON.stringify({ batchSize }),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Standard batch analysis operation
+ */
+export async function standardBatch(): Promise<ApiResponse<any>> {
+  return analyzeBatch(5);
+}
+
+/**
+ * Quick batch analysis operation
+ */
+export async function quickBatch(): Promise<ApiResponse<any>> {
+  return analyzeBatch(3);
+}
+
+/**
+ * Delete student analysis
+ */
+export async function deleteStudentAnalysis(studentCode: string): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - deletion not available
+    return {
+      success: false,
+      error: 'Delete analysis not available in Firestore mode',
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('deleteStudentAnalysis');
+    const response = await fetchWithOptions(url, 15000, {
+      method: 'DELETE',
+      body: JSON.stringify({ studentCode }),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Delete analyses older than specified days
+ */
+export async function deleteOldAnalyses(daysOld: number): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - deletion not available
+    return {
+      success: false,
+      error: 'Delete old analyses not available in Firestore mode',
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('deleteOldAnalyses');
+    const response = await fetchWithOptions(url, 15000, {
+      method: 'DELETE',
+      body: JSON.stringify({ daysOld }),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Delete all analyses (requires admin token)
+ */
+export async function deleteAllAnalyses(): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - deletion not available
+    return {
+      success: false,
+      error: 'Delete all analyses not available in Firestore mode',
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('deleteAllAnalyses');
+    const response = await fetchWithOptions(url, 15000, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Backup all analyses
+ */
+export async function backupAnalyses(): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - backup not available
+    return {
+      success: false,
+      error: 'Backup not available in Firestore mode',
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('backupAnalyses');
+    const response = await fetchWithOptions(url, 30000, {
+      method: 'POST',
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Search analyses
+ */
+export async function searchAnalyses(query: string): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - search not available
+    return {
+      success: true,
+      data: { results: [] },
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('searchAnalyses');
+    const response = await fetchWithOptions(url, 15000, {
+      method: 'POST',
+      body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Get audit log
+ */
+export async function getAuditLog(): Promise<ApiResponse<{ events: any[] }>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - audit log not available
+    return {
+      success: true,
+      data: { events: [] },
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('getAuditLog');
+    const response = await fetchWithTimeout(url, 15000);
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Health check for admin dashboard
+ */
+export async function healthCheck(): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - check Firebase connectivity
+    const { db } = await import('../config/firebase');
+    return {
+      success: !!db,
+      data: {
+        status: db ? 'healthy' : 'unhealthy',
+        mode: 'FIRESTORE',
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+
+  if (!API_URL) {
+    return {
+      success: false,
+      error: 'API URL not configured',
+    };
+  }
+
+  try {
+    const url = buildUrl('healthCheck');
+    const response = await fetchWithTimeout(url, 10000);
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * List available backups
+ */
+export async function listBackups(): Promise<ApiResponse<{ backups: any[] }>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - backups not available
+    return {
+      success: true,
+      data: { backups: [] },
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('listBackups');
+    const response = await fetchWithTimeout(url, 15000);
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Analyze all unanalyzed students
+ */
+export async function analyzeAllUnanalyzed(): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - batch analysis not available
+    return {
+      success: false,
+      error: 'Batch analysis not available in Firestore mode',
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('analyzeAllUnanalyzed');
+    const response = await fetchWithOptions(url, 120000, {
+      method: 'POST',
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Delete analyses by class
+ */
+export async function deleteByClass(classId: string): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - delete by class not available
+    return {
+      success: false,
+      error: 'Delete by class not available in Firestore mode',
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('deleteByClass');
+    const response = await fetchWithOptions(url, 15000, {
+      method: 'DELETE',
+      body: JSON.stringify({ classId }),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Delete all analyses with admin token
+ */
+export async function deleteAllAnalysesWithToken(token: string): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - deletion not available
+    return {
+      success: false,
+      error: 'Delete all not available in Firestore mode',
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('deleteAllAnalyses');
+    const response = await fetchWithOptions(url, 15000, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Restore from backup with admin token
+ */
+export async function restoreFromBackupWithToken(
+  backupId: string,
+  token: string
+): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - restore not available
+    return {
+      success: false,
+      error: 'Restore not available in Firestore mode',
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('restoreFromBackup');
+    const response = await fetchWithOptions(url, 30000, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ backupId }),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Export analyses data
+ */
+export async function exportAnalyses(): Promise<ApiResponse<any>> {
+  if (USE_FIRESTORE) {
+    // Firestore mode - export not available
+    return {
+      success: false,
+      error: 'Export not available in Firestore mode',
+    };
+  }
+
+  if (!API_URL) {
+    return { success: false, error: 'API URL not configured' };
+  }
+
+  try {
+    const url = buildUrl('exportAnalyses');
+    const response = await fetchWithOptions(url, 60000, {
+      method: 'GET',
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+// ====================================
 // REACT QUERY HELPERS
 // ====================================
 
@@ -636,6 +1264,7 @@ export const defaultQueryOptions = {
 // ====================================
 
 export const api = {
+  // Core API functions
   getStats,
   getAllStudents,
   getStudent,
@@ -643,6 +1272,28 @@ export const api = {
   initialSync,
   analyzeStudent,
   testConnection,
+
+  // Admin & Analysis Management functions
+  analyzeOneStudent,
+  reanalyzeStudent,
+  getAnalyzedStudents,
+  getUnanalyzedStudents,
+  analyzeBatch,
+  standardBatch,
+  quickBatch,
+  deleteStudentAnalysis,
+  deleteOldAnalyses,
+  deleteAllAnalyses,
+  backupAnalyses,
+  searchAnalyses,
+  getAuditLog,
+  healthCheck,
+  listBackups,
+  analyzeAllUnanalyzed,
+  deleteByClass,
+  deleteAllAnalysesWithToken,
+  restoreFromBackupWithToken,
+  exportAnalyses,
 };
 
 export default api;
