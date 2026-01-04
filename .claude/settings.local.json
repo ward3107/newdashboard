@@ -27,7 +27,17 @@
       "Bash(npm run lint:errors:*)",
       "Bash(npm audit:*)",
       "Bash(npm run build)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(vercel:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx vite build:*)",
+      "Bash(cat:*)",
+      "Bash(dir:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

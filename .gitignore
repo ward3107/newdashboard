@@ -121,3 +121,4 @@ firebase-service-account.json
 # Local development only
 .vscode/settings.json
 .idea/workspace.xml
+.vercel
