@@ -13,7 +13,7 @@
  */
 
 import React, { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
@@ -171,11 +171,14 @@ function App() {
                       {/* Health Check (Public - for monitoring) */}
                       <Route path="/health" element={<HealthCheckPage />} />
 
-                      {/* Landing Page - Redirect to standalone HTML */}
-                      <Route path="/" element={<RedirectToLanding />} />
+                      {/* Root - Redirect to dashboard */}
+                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
                       {/* Authentication Routes (Public) */}
                       <Route path="/login" element={<LoginPage />} />
+
+                      {/* Landing Page (accessible via /landing.html) */}
+                      <Route path="/landing" element={<LandingPage />} />
 
                       {/* Public Route - Student Assessment (No authentication required) */}
                       <Route path="/assessment" element={<AssessmentPage />} />
@@ -269,21 +272,6 @@ const ScrollToTop: React.FC = () => {
   }, [pathname]);
 
   return null;
-};
-
-// Redirect to Landing HTML Component
-const RedirectToLanding: React.FC = () => {
-  React.useEffect(() => {
-    window.location.href = '/landing.html';
-  }, []);
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <p className="text-gray-600">מפנה לדף הבית...</p>
-      </div>
-    </div>
-  );
 };
 
 // 404 Not Found Component
