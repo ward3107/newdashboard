@@ -171,8 +171,8 @@ function App() {
                       {/* Health Check (Public - for monitoring) */}
                       <Route path="/health" element={<HealthCheckPage />} />
 
-                      {/* Root - Shows landing page (HTML file at /landing.html) */}
-                      <Route path="/" element={<LandingPage />} />
+                      {/* Root - Redirect to HTML landing page */}
+                      <Route path="/" element={< RedirectToHTMLLanding />} />
 
                       {/* Authentication Routes (Public) */}
                       <Route path="/login" element={<LoginPage />} />
@@ -269,6 +269,21 @@ const ScrollToTop: React.FC = () => {
   }, [pathname]);
 
   return null;
+};
+
+// Redirect to HTML Landing Page Component
+const RedirectToHTMLLanding: React.FC = () => {
+  React.useEffect(() => {
+    window.location.href = '/landing.html';
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-gray-600">טוען...</p>
+      </div>
+    </div>
+  );
 };
 
 // 404 Not Found Component
