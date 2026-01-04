@@ -107,8 +107,23 @@ function App() {
         <AuthProvider>
           <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ScrollToTop />
+            {/* Accessibility: Skip to main content link for keyboard users */}
+            <a
+              href="#main-content"
+              className="skip-to-main"
+              onClick={(e) => {
+                e.preventDefault();
+                const main = document.getElementById('main-content');
+                if (main) {
+                  main.focus();
+                  main.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+            >
+              דלג לתוכן ראשי
+            </a>
             <ErrorBoundary>
-              <div className="min-h-screen bg-gray-50" dir="rtl">
+              <div id="main-content" className="min-h-screen bg-gray-50" dir="rtl" tabIndex={-1}>
               {/* Toast Notifications */}
               <Toaster
                 position="top-center"

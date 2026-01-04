@@ -129,7 +129,7 @@ export const LoginPage: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
+            <div role="alert" aria-live="assertive" className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
               <svg
                 className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0"
                 fill="currentColor"
@@ -209,7 +209,7 @@ export const LoginPage: React.FC = () => {
                 disabled={isSubmitting || loading}
               />
               {errors.email && (
-                <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
+                <p id="email-error" role="alert" className="mt-2 text-sm text-red-600">{errors.email.message}</p>
               )}
             </div>
 
@@ -223,6 +223,7 @@ export const LoginPage: React.FC = () => {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   {...register('password')}
+                  aria-describedby={errors.password ? "password-error" : undefined}
                   className={`w-full px-4 py-3 pr-12 border ${
                     errors.password ? 'border-red-300' : 'border-gray-300'
                   } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none`}
@@ -232,8 +233,9 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  tabIndex={-1}
+                  aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                  aria-pressed={showPassword}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
                 >
                   {showPassword ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,7 +265,7 @@ export const LoginPage: React.FC = () => {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
+                <p id="password-error" role="alert" className="mt-2 text-sm text-red-600">{errors.password.message}</p>
               )}
             </div>
 

@@ -57,18 +57,26 @@ const StudentRow = memo<RowComponentProps<{
 
   return (
     <div style={style} className="px-4" {...ariaAttributes}>
-      <div
+      <button
+        type="button"
         onClick={() => onStudentClick?.(student)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onStudentClick?.(student);
+          }
+        }}
         className={`
-          relative overflow-hidden rounded-lg border-2 p-4 mb-2
+          w-full text-left relative overflow-hidden rounded-lg border-2 p-4 mb-2
           cursor-pointer transition-all duration-200 hover:shadow-lg
           ${getRatioColor()}
         `}
+        aria-label={`פרטי תלמיד ${student.name || student.studentCode}, כיתה ${student.classId}`}
       >
         {/* Background Pattern */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none" aria-hidden="true">
           <div className="absolute top-2 right-2">
-            <Brain className="w-32 h-32" />
+            <Brain className="w-32 h-32" aria-hidden="true" />
           </div>
         </div>
 
@@ -76,7 +84,7 @@ const StudentRow = memo<RowComponentProps<{
           {/* Student Info */}
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <User className="w-5 h-5 text-gray-600" />
+              <User className="w-5 h-5 text-gray-600" aria-hidden="true" />
               <h3 className="text-lg font-semibold text-gray-800">
                 {highlightText(student.name || `תלמיד ${student.studentCode}`)}
               </h3>
@@ -87,12 +95,12 @@ const StudentRow = memo<RowComponentProps<{
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
               <div className="flex items-center gap-1">
-                <BookOpen className="w-4 h-4 text-gray-500" />
+                <BookOpen className="w-4 h-4 text-gray-500" aria-hidden="true" />
                 <span className="text-gray-600">כיתה {student.classId}</span>
               </div>
 
               <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4 text-gray-500" />
+                <Calendar className="w-4 h-4 text-gray-500" aria-hidden="true" />
                 <span className="text-gray-600">{student.quarter}</span>
               </div>
 
@@ -167,7 +175,7 @@ const StudentRow = memo<RowComponentProps<{
             <span className="text-xs text-gray-500 mt-1">חוזקות</span>
           </div>
         </div>
-      </div>
+      </button>
     </div>
   );
 });
@@ -203,8 +211,8 @@ export const VirtualStudentList: React.FC<VirtualStudentListProps> = ({
 
   if (students.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-        <User className="w-16 h-16 mb-4 text-gray-300" />
+      <div className="flex flex-col items-center justify-center h-64 text-gray-500" role="status" aria-live="polite">
+        <User className="w-16 h-16 mb-4 text-gray-300" aria-hidden="true" />
         <p className="text-lg">לא נמצאו תלמידים</p>
         <p className="text-sm mt-2">נסה לשנות את הפילטרים או החיפוש</p>
       </div>
@@ -212,7 +220,8 @@ export const VirtualStudentList: React.FC<VirtualStudentListProps> = ({
   }
 
   return (
-    <div className={`${className} bg-white rounded-lg shadow-sm`}>
+    <div className={`${className} bg-white rounded-lg shadow-sm`} role="region" aria-labelledby="student-list-heading">
+      <h2 id="student-list-heading" className="sr-only">רשימת תלמידים</h2>
       <List
         defaultHeight={height}
         rowCount={students.length}
