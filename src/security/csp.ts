@@ -28,14 +28,18 @@ export function getCSPDirectives(isDevelopment = false): CSPDirectives {
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
-      "'unsafe-eval'", // Required for some React features
+      // SECURITY: 'unsafe-eval' is required for React Fast Refresh in development
+      // In production, this is removed for stricter security
+      isDevelopment ? "'unsafe-eval'" : '',
+      // SECURITY: 'unsafe-inline' is ONLY for development HMR
+      // In production, code is properly bundled with hashes
+      isDevelopment ? "'unsafe-inline'" : '',
       'https://apis.google.com',
       'https://script.google.com',
-      isDevelopment ? "'unsafe-inline'" : '', // Only in dev for HMR
     ].filter(Boolean),
     'style-src': [
       "'self'",
-      "'unsafe-inline'", // Required for styled-components
+      "'unsafe-inline'", // Required for styled-components and inline styles
       'https://fonts.googleapis.com'
     ],
     'img-src': [
@@ -170,11 +174,9 @@ export function setupCSPReporting(): void {
 export function initializeCSP(): void {
   const isDevelopment = import.meta.env.DEV;
 
-  // Skip CSP in development to avoid blocking development features
-  if (isDevelopment) {
-    return;
-  }
-
+  // Apply CSP in both development and production
+  // In development, policies are more permissive to allow HMR and debugging
+  // This ensures CSP is tested before production deployment
   applyCSPMetaTag(isDevelopment);
   setupCSPReporting();
 }

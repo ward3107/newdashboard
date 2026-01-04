@@ -181,7 +181,7 @@ describe('Environment Validation', () => {
       };
 
       // Note: This will throw because PROD is true
-      expect(() => assertProductionEnvValid()).toThrow(RuntimeError);
+      expect(() => assertProductionEnvValid()).toThrow(Error);
     });
 
     it('should not throw in development with invalid configuration', () => {

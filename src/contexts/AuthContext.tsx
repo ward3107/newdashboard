@@ -133,15 +133,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Check if using mock auth (Firebase not configured)
     if (shouldUseMockAuth()) {
-      // SECURITY: Verify we're not in production
-      if (import.meta.env.PROD) {
-        logger.error('🚨 SECURITY ALERT: Mock auth attempted in production!');
-        setError('Authentication system misconfigured. Please contact support.');
+      // SECURITY: FAIL CLOSED - Multiple layers of protection
+      // 1. shouldUseMockAuth() already checks PROD
+      // 2. Double-check here to prevent any edge case
+      // 3. Add environment verification
+
+      const isProduction = import.meta.env.PROD;
+      const isProductionDomain = window.location.hostname !== 'localhost' &&
+                                 window.location.hostname !== '127.0.0.1' &&
+                                 !window.location.hostname.includes('.vercel.app') &&
+                                 !window.location.hostname.includes('.local');
+
+      // CRITICAL: Fail closed in production
+      if (isProduction || isProductionDomain) {
+        logger.error('🚨 CRITICAL: Mock auth blocked in production environment!');
+        setError('Authentication system error. Please contact support immediately.');
+        setUser(null);
         setLoading(false);
+
+        // Report to monitoring
+        if (typeof window !== 'undefined' && (window as any).Sentry) {
+          (window as any).Sentry.captureMessage('CRITICAL: Mock auth attempted in production', {
+            level: 'fatal',
+            tags: { security: true, auth_failure: true }
+          });
+        }
         return;
       }
 
       logger.warn('⚠️ USING MOCK AUTHENTICATION - FOR TESTING ONLY');
+      logger.warn('⚠️ Domain:', window.location.hostname);
       const mockUser = getMockAuthSession();
       setUser(mockUser);
       setLoading(false);
@@ -150,6 +171,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     if (!auth) {
       logger.error('Firebase Auth not initialized');
+      setError('Authentication system not properly configured. Please contact support.');
       setLoading(false);
       return;
     }

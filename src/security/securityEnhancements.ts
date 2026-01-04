@@ -300,14 +300,35 @@ export class SecurityManager {
 
     logger.error('Security Violation:', violation);
 
-    // Store for monitoring
+    // Send to remote monitoring service (Sentry) instead of localStorage
+    // localStorage is vulnerable to XSS - violations should never be stored locally
     try {
-      const violations = JSON.parse(localStorage.getItem('security_violations') || '[]');
-      violations.push(violation);
-      if (violations.length > 100) violations.shift(); // Keep only last 100
-      localStorage.setItem('security_violations', JSON.stringify(violations));
+      // Check if Sentry is available
+      if (typeof window !== 'undefined' && (window as any).Sentry) {
+        (window as any).Sentry.captureMessage(`Security Violation: ${type}`, {
+          level: 'error',
+          extra: violation,
+          tags: {
+            security: true,
+            violation_type: type
+          }
+        });
+      }
+
+      // Also send to Google Analytics if available
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'security_violation', {
+          event_category: 'Security',
+          event_label: type,
+          value: 1
+        });
+      }
+
+      // SECURITY: Never store violations in localStorage (XSS risk)
+      // Violations are only sent to remote monitoring services
     } catch (error) {
-      logger.error('Failed to store security violation:', error);
+      // Silent fail to avoid loops
+      console.error('Failed to report security violation:', error);
     }
   }
 

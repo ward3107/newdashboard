@@ -87,13 +87,21 @@ const initApp = () => {
   } catch (error) {
     logger.error("❌ Error rendering app:", error);
     logger.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace');
+
+    // Sanitize error message for display (remove sensitive information)
+    const safeErrorMessage = import.meta.env.DEV
+      ? (error instanceof Error ? error.message : String(error))
+      : 'An unexpected error occurred. Please try again.';
+
     rootElement.innerHTML = `<div style="padding: 20px; font-family: sans-serif;">
       <h1>Error Loading Application</h1>
       <p>An error occurred while loading the application. Please refresh the page.</p>
+      ${import.meta.env.DEV ? `
       <details style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
-        <summary style="cursor: pointer; font-weight: bold;">Error Details</summary>
-        <pre style="margin-top: 10px; overflow: auto; font-size: 12px;">${error instanceof Error ? error.message : String(error)}</pre>
+        <summary style="cursor: pointer; font-weight: bold;">Error Details (Development Only)</summary>
+        <pre style="margin-top: 10px; overflow: auto; font-size: 12px;">${safeErrorMessage}</pre>
       </details>
+      ` : ''}
       <p style="color: #666; font-size: 12px; margin-top: 10px;">Error ID: RENDER_FAILED</p>
     </div>`;
   }
