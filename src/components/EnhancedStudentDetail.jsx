@@ -26,6 +26,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as API from '../services/api';
 import EnhancedAnalysisDisplay from './EnhancedAnalysisDisplay';
+import { SecurityUtils } from '../security/securityEnhancements';
 
 const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
   const [fullData, setFullData] = useState(null);
@@ -675,9 +676,15 @@ const EnhancedStudentDetail = ({ student, onClose, darkMode, theme }) => {
       // Add header
       const header = document.createElement('div');
       header.style.cssText = 'margin-bottom:30px;border-bottom:3px solid #000;padding-bottom:15px;';
+
+      // Sanitize user input to prevent XSS attacks
+      const sanitizedStudentCode = SecurityUtils.sanitizeInput(student.studentCode || '');
+      const sanitizedClassId = SecurityUtils.sanitizeInput(student.classId || '');
+      const sanitizedDate = SecurityUtils.sanitizeInput(student.date || 'רבעון 1');
+
       header.innerHTML = `
         <h1 style="font-size:24px;margin-bottom:10px;">${tabNames[activeTab]}</h1>
-        <p style="font-size:14px;"><strong>קוד תלמיד:</strong> ${student.studentCode} | <strong>כיתה:</strong> ${student.classId} | <strong>תאריך:</strong> ${student.date || 'רבעון 1'}</p>
+        <p style="font-size:14px;"><strong>קוד תלמיד:</strong> ${sanitizedStudentCode} | <strong>כיתה:</strong> ${sanitizedClassId} | <strong>תאריך:</strong> ${sanitizedDate}</p>
         <p style="font-size:14px;"><strong>תאריך יצירת דוח:</strong> ${new Date().toLocaleDateString('he-IL')}</p>
       `;
       tempContainer.appendChild(header);

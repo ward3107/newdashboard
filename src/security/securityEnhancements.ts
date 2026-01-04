@@ -54,7 +54,7 @@ interface SecurityToken {
 /**
  * Security State Management
  */
-class SecurityManager {
+export class SecurityManager {
   private static instance: SecurityManager;
   private rateLimits = new Map<string, RateLimitEntry>();
   private tokens = new Map<string, SecurityToken>();
@@ -464,6 +464,15 @@ export const SecurityUtils = {
     const array = new Uint32Array(1);
     window.crypto.getRandomValues(array);
     return min + (array[0] % (max - min + 1));
+  },
+
+  /**
+   * Generate secure random ID
+   */
+  generateSecureId(byteLength: number = 24): string {
+    const array = new Uint8Array(byteLength);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
   }
 };
 
