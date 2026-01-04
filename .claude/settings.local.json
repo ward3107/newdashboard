@@ -37,7 +37,8 @@
       "Bash(npx vite build:*)",
       "Bash(cat:*)",
       "Bash(dir:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

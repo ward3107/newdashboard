@@ -171,14 +171,11 @@ function App() {
                       {/* Health Check (Public - for monitoring) */}
                       <Route path="/health" element={<HealthCheckPage />} />
 
-                      {/* Root - Redirect to dashboard */}
-                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                      {/* Root - Shows landing page (HTML file at /landing.html) */}
+                      <Route path="/" element={<LandingPage />} />
 
                       {/* Authentication Routes (Public) */}
                       <Route path="/login" element={<LoginPage />} />
-
-                      {/* Landing Page (accessible via /landing.html) */}
-                      <Route path="/landing" element={<LandingPage />} />
 
                       {/* Public Route - Student Assessment (No authentication required) */}
                       <Route path="/assessment" element={<AssessmentPage />} />
